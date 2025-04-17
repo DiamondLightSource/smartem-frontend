@@ -1,10 +1,9 @@
 import type { Route } from "./+types/product";
 
-import { Box, Container, IconButton, Drawer, List, ListItem, ListItemButton, TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
-import { DensityMedium } from "@mui/icons-material";
+import { Container, TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
 import Paper from '@mui/material/Paper';
 
-import React from "react";
+import { useNavigate } from "react-router";
 
 import type { components } from "../schema"
 
@@ -17,7 +16,13 @@ export async function loader({ params }: Route.LoaderArgs) {
   return { result };
 }
 
-export default function Acquisition({ loaderData }: Route.ComponentProps) {
+export default function Acquisition({ loaderData, params }: Route.ComponentProps) {
+  const navigate = useNavigate();
+
+  const handleClick = (event: React.MouseEvent<unknown>, gridId: number) => {
+    navigate(`/acquisitions/${params.acqId}/grids/${gridId}`);
+  }
+
   return (
     <div>
       <Container content="center" style={{ width: "100%", paddingTop: "25px" }}>
@@ -33,7 +38,7 @@ export default function Acquisition({ loaderData }: Route.ComponentProps) {
             <TableBody>
               {loaderData.result.map((grid: GridResponse) => {
                 return (
-                <TableRow hover key={grid.id}>
+                <TableRow hover onClick={(event) => {handleClick(event, grid.id)}} key={grid.id}>
                   <TableCell>{grid.id}</TableCell>
                   <TableCell>{grid.name}</TableCell>
                   <TableCell>{grid.status}</TableCell>
