@@ -1,11 +1,14 @@
 import type { Route } from "./+types/product";
 
-import { Container, TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
+import { Container, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, ThemeProvider } from "@mui/material";
 import Paper from '@mui/material/Paper';
 
 import { useNavigate } from "react-router";
 
 import type { components } from "../schema"
+
+import { Navbar } from "../components/navbar";
+import { theme } from "../components/theme";
 
 type GridResponse = components["schemas"]["GridResponse"]
 
@@ -24,12 +27,13 @@ export default function Acquisition({ loaderData, params }: Route.ComponentProps
   }
 
   return (
-    <div>
-      <Container content="center" style={{ width: "100%", paddingTop: "25px" }}>
+    <ThemeProvider theme={theme}>
+      <Navbar/>
+      <Container content="center" style={{ width: "100%", paddingTop: "50px" }}>
         <TableContainer component={Paper} style={{ width: "80%" }}>
           <Table>
             <TableHead>
-              <TableRow style={{ backgroundColor: "orange" }}>
+              <TableRow>
                 <TableCell>Grid ID</TableCell>
                 <TableCell>Grid Name</TableCell>
                 <TableCell>Status</TableCell>
@@ -50,7 +54,7 @@ export default function Acquisition({ loaderData, params }: Route.ComponentProps
           </Table>
         </TableContainer>
       </Container>
-    </div>
+    </ThemeProvider>
   );
 }
 

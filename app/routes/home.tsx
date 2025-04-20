@@ -1,7 +1,6 @@
 import type { Route } from "./+types/product";
 
-import { Box, Container, IconButton, Drawer, List, ListItem, ListItemButton, TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
-import { DensityMedium } from "@mui/icons-material";
+import { Box, Container, Drawer, List, ListItem, ListItemButton, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, ThemeProvider } from "@mui/material";
 import Paper from '@mui/material/Paper';
 
 import React from "react";
@@ -9,6 +8,9 @@ import React from "react";
 import { useNavigate } from "react-router";
 
 import type { components } from "../schema"
+
+import { Navbar } from "../components/navbar";
+import { theme } from "../components/theme";
 
 type AcquisitionResponse = components["schemas"]["AcquisitionResponse"]
 
@@ -35,17 +37,14 @@ export default function Home({ loaderData }: Route.ComponentProps) {
   }
 
   return (
-    <div>
-      <IconButton aria-label="menu"  onClick={() => setMenuToggle(true)} color="primary">
-        <DensityMedium />
-      </IconButton>
-
-      <Container content="center" style={{ width: "100%", paddingTop: "25px"  }}>
+    <ThemeProvider theme={theme}>
+      <Navbar/>
+      <Container component="main" content="center" style={{ width: "100%", paddingTop: "50px"  }}>
         <TableContainer component={Paper} style={{ width: "80%" }}>
           <Table>
             <TableHead>
-              <TableRow style={{ backgroundColor: "orange" }}>
-                <TableCell>Acquisition ID</TableCell>
+              <TableRow>
+                <TableCell style={{ backgroundColor: "secondary" }}>Acquisition ID</TableCell>
                 <TableCell>EPU ID</TableCell>
                 <TableCell>Acquisition Name</TableCell>
               </TableRow>
@@ -75,7 +74,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           </List>
         </Box>
       </Drawer>
-    </div>
+    </ThemeProvider>
   );
 }
 

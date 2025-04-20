@@ -1,12 +1,16 @@
 import type { Route } from "./+types/product";
 
-import { Box, Container, Collapse, TableContainer, IconButton, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
+import { Box, Container, Collapse, TableContainer, IconButton, Table, TableHead, TableRow, TableCell, TableBody, ThemeProvider } from "@mui/material";
 import Paper from '@mui/material/Paper';
 import InsightsIcon from "@mui/icons-material/Insights";
 
 import React from "react";
+import { useNavigate } from "react-router";
 
 import type { components } from "../schema"
+
+import { Navbar } from "../components/navbar";
+import { theme } from "../components/theme";
 
 type GridSquareResponse = components["schemas"]["GridSquareResponse"]
 type FoilHoleResponse = components["schemas"]["FoilHoleResponse"]
@@ -24,6 +28,7 @@ export async function loader({ params }: Route.LoaderArgs) {
 
 const CollapsibleRow = ({ square, holes }: SquareDetails) => {
     const [open, setOpen] = React.useState(false);
+    const navigate = useNavigate();
 
     return (
         <React.Fragment>
@@ -33,7 +38,7 @@ const CollapsibleRow = ({ square, holes }: SquareDetails) => {
                 <TableCell>{square.status}</TableCell>
                 <TableCell>{holes.length}</TableCell>
                 <TableCell>
-                    <IconButton>
+                    <IconButton onClick={() => navigate(`./square/${square.id}/predictions`, { relative: "path" })}>
                         <InsightsIcon/>
                     </IconButton>
                 </TableCell>
@@ -62,17 +67,18 @@ const CollapsibleRow = ({ square, holes }: SquareDetails) => {
 
 export default function Grid({ loaderData }: Route.ComponentProps) {
   return (
-    <div>
+    <ThemeProvider theme={theme}>
+      <Navbar/>
       <Container content="center" style={{ width: "100%", paddingTop: "25px" }}>
         <TableContainer component={Paper} style={{ width: "80%" }} sx={{ maxHeight: 650 }}>
           <Table stickyHeader>
             <TableHead>
               <TableRow>
-                <TableCell style={{ backgroundColor: "orange" }}>Grid Square ID</TableCell>
-                <TableCell style={{ backgroundColor: "orange" }}>Grid Square Name</TableCell>
-                <TableCell style={{ backgroundColor: "orange" }}>Status</TableCell>
-                <TableCell style={{ backgroundColor: "orange" }}>Number of Holes</TableCell>
-                <TableCell style={{ backgroundColor: "orange" }}>More Info</TableCell>
+                <TableCell>Grid Square ID</TableCell>
+                <TableCell>Grid Square Name</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>Number of Holes</TableCell>
+                <TableCell>More Info</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -84,6 +90,6 @@ export default function Grid({ loaderData }: Route.ComponentProps) {
           </Table>
         </TableContainer>
       </Container>
-    </div>
+    </ThemeProvider>
   );
 }
