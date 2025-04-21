@@ -1,12 +1,14 @@
 import type { Route } from "./+types/product";
 
-import { Box, Grid, ThemeProvider, Card, CardContent, Container, IconButton, Typography } from "@mui/material";
-import { Science } from "@mui/icons-material";
-import { BarChart } from '@mui/x-charts';
+import { Box, Grid, ThemeProvider, Card, CardContent, Container, IconButton } from "@mui/material";
+import { BarChart as BarChartIcon, Science, Timeline } from "@mui/icons-material";
+import { BarChart, LineChart } from '@mui/x-charts';
 
 import { useNavigate } from "react-router";
 
 import { bin } from "d3-array";
+
+import React from "react";
 
 import { Navbar } from "../components/navbar";
 import { theme } from "../components/theme";
@@ -22,6 +24,57 @@ export async function loader({ params }: Route.LoaderArgs) {
   return { result };
 }
 
+const PredictionCharts = ({ predictions }: { predictions: QualityPrediction[][] }) => {
+  const [showTimeSeries, setShowTimeSeries] = React.useState(false);
+  const histGenerator = bin().domain([0, 1]).thresholds(19);
+
+  const ChartSwitcher = () => {
+    return <IconButton onClick={() => {setShowTimeSeries(!showTimeSeries)}} sx={{ marginBottom: "auto" }}>
+      {showTimeSeries ? <BarChartIcon/>: <Timeline/>}
+    </IconButton>
+  }
+
+  return (predictions.length > 1 ? 
+    showTimeSeries ?
+    <Box sx={{ display: "flex", alignItems: "center", margin: "5px" }}>
+      <LineChart
+          hideLegend
+          grid={{ horizontal: true }}
+          xAxis={predictions.map((elem) => {
+            return {
+                id: `timestamp-${elem.slice(-1)[0].foilhole_id}`,
+                data: elem.map((e) => {return e.timestamp? Date.parse(e.timestamp): 0}),
+                scaleType: "time",
+            }})
+          }
+          series={predictions.map((elem) => {
+            return {
+                id: `prediction-${elem.slice(-1)[0].foilhole_id}`,
+                data: elem.map((e) => {return e.value}),
+                label: elem.slice(-1)[0].foilhole_id?.toString()
+            }})
+          }
+          height={400}
+      />
+      <ChartSwitcher/>
+    </Box>:
+    <Box sx={{ display: "flex", alignItems: "center", margin: "5px" }}>
+      <BarChart 
+        xAxis={[{ scaleType: "band", 
+                  data: histGenerator(
+                    predictions.map((elem) => {
+                      return elem.slice(-1)[0].value})).map((b) => {return (b.x0 !== undefined && b.x1 !== undefined) ? 
+                        b.x0 + (b.x1-b.x0): 0}) 
+                }]} 
+        series={[{ 
+          data: histGenerator(predictions.map((elem) => {return elem.slice(-1)[0].value})).map((b) => {return b.length}),
+          color: "#1bafa5" 
+        }]} />
+      <ChartSwitcher/>
+    </Box>: <></>
+  )
+}
+
 export default function QualityPredictionsForSquare({ loaderData, params }: Route.ComponentProps) {
   const navigate = useNavigate();
 
@@ -29,8 +82,6 @@ export default function QualityPredictionsForSquare({ loaderData, params }: Rout
     const mostRecents = arr.map((el) => {return el.slice(-1)[0].value});
     return mostRecents.reduce((a: number, b: number) => a + b, 0) / mostRecents.length;
   }
-
-  const histGenerator = bin().domain([0, 1]).thresholds(19);
 
   return <ThemeProvider theme={theme}>
     <Navbar/>
@@ -50,8 +101,10 @@ export default function QualityPredictionsForSquare({ loaderData, params }: Rout
                   <CardContent sx={{ margin: "5px" }}>
                     {mostRecentsMean(value).toLocaleString(undefined, { maximumSignificantDigits: 3, minimumSignificantDigits: 3 })}
                   </CardContent>
+                  <CardContent>
+                    <PredictionCharts predictions={value} />
+                  </CardContent>
                 </Card>
-                {value.length > 1 ? <BarChart xAxis={[{ scaleType: "band", data: histGenerator(value.map((elem) => {return elem.slice(-1)[0].value})).map((b) => {return (b.x0 !== undefined && b.x1 !== undefined) ? b.x0 + (b.x1-b.x0): 0}) }]} series={[{ data: histGenerator(value.map((elem) => {return elem.slice(-1)[0].value})).map((b) => {return b.length}) }]} />: <></>}
               </Grid>
             )
           })
