@@ -1,11 +1,11 @@
 import type { Route } from "./+types/product";
 
-import { Box, Container, Collapse, TableContainer, IconButton, Table, TableHead, TableRow, TableCell, TableBody, ThemeProvider } from "@mui/material";
+import { Box, Container, Collapse, TableContainer, IconButton, Table, TableHead, TableRow, TableCell, TableBody, ThemeProvider, CircularProgress } from "@mui/material";
 import Paper from '@mui/material/Paper';
 import InsightsIcon from "@mui/icons-material/Insights";
 
 import React from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, Await } from "react-router";
 
 import type { components } from "../schema"
 
@@ -22,23 +22,23 @@ type SquareDetails = {
 type FullSquareDetails = {
     square: GridSquareResponse,
     holes: FoilHoleResponse[],
-    weightedPrediction: number;
+    weightedPrediction: number | null;
 }
 
 export async function loader({ params }: Route.LoaderArgs) {
   const squares_response = await fetch(`http://localhost:8000/grids/${params.gridId}/gridsquares`);
   const squares_data: GridSquareResponse[] = await squares_response.json(); 
-  const squares: SquareDetails[] = await Promise.all(
+  const squares = await Promise.all(
     squares_data.map((square) => fetch(`http://localhost:8000/gridsquares/${square.id}/foilholes`)
     .then((response) => {return response.json()})
     .then((holes) => {return { square: square, holes: holes }}))
   );
-  const weightedPredictionsAll: number[][] = await Promise.all(
+  const weightedPredictions: Promise<number[][]> = Promise.all(
     squares_data.map((square) => fetch(`http://localhost:8000/gridsquares/${square.id}/weighted_predictions`)
     .then((response) => {return response.json()})
     .then((scores) => { return Object.entries(scores as {[key: number]: Score[]}).map(([fh, elem]) => {return elem.slice(-1)[0].value}) }))
   );
-  const weightedPredictions = weightedPredictionsAll.map((elem) => {return elem.reduce((a: number, b: number) => a + b, 0) / elem.length});
+  // const weightedPredictions = weightedPredictionsAll.map((elem) => {return elem.reduce((a: number, b: number) => a + b, 0) / elem.length});
   return { squares, weightedPredictions };
 }
 
@@ -53,10 +53,15 @@ const CollapsibleRow = ({ square, holes, weightedPrediction }: FullSquareDetails
                 <TableCell>{square.name}</TableCell>
                 <TableCell>{square.status}</TableCell>
                 <TableCell>{holes.length}</TableCell>
+                {(weightedPrediction === null) ?
+                <TableCell>
+                  <CircularProgress size={25}/>
+                </TableCell>:
                 <TableCell>
                   {isNaN(weightedPrediction) ? 0: 
                   weightedPrediction.toLocaleString(undefined, { minimumSignificantDigits: 3, maximumSignificantDigits: 3 })}
-                  </TableCell>
+                </TableCell>
+                }
                 <TableCell>
                     <IconButton onClick={() => navigate(`./square/${square.id}/predictions`, { relative: "path" })}>
                         <InsightsIcon/>
@@ -102,12 +107,25 @@ export default function Grid({ loaderData }: Route.ComponentProps) {
                 <TableCell>More Info</TableCell>
               </TableRow>
             </TableHead>
-            <TableBody>
-              {loaderData.squares.map((square: SquareDetails, i: number) => {
-                return <CollapsibleRow square={square.square} holes={square.holes} weightedPrediction={loaderData.weightedPredictions[i]} />
-              })
-              }
-            </TableBody>
+            <React.Suspense fallback={
+              <TableBody>
+                {loaderData.squares.map((square: SquareDetails, i: number) => {
+                  return <CollapsibleRow square={square.square} holes={square.holes} weightedPrediction={null} />
+                })
+                }
+              </TableBody>
+            }>
+            <Await resolve={loaderData.weightedPredictions}>
+              { (result) =>
+              <TableBody>
+                {loaderData.squares.map((square: SquareDetails, i: number) => {
+                  return <CollapsibleRow square={square.square} holes={square.holes} weightedPrediction={(result[i]).reduce((a: number, b: number) => a + b, 0) / result[i].length} />
+                })
+                }
+              </TableBody>
+}
+            </Await>
+          </React.Suspense>
           </Table>
         </TableContainer>
       </Container>
