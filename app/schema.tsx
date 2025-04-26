@@ -293,6 +293,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/gridsquares/{gridsquare_id}/weigthed_predictions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Calculate Weighted Predictions */
+        get: operations["calculate_weighted_predictions_gridsquares__gridsquare_id__weigthed_predictions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/gridsquares/{gridsquare_id}/most_recent_quality_prediction": {
         parameters: {
             query?: never;
@@ -457,7 +474,7 @@ export interface components {
             /** Weight */
             weight: number;
             /** Timestamp */
-            timestamp: number;
+            timestamp: string;
         };
         /** PredictionModelResponse */
         PredictionModelResponse: {
@@ -492,6 +509,16 @@ export interface components {
              * @default
              */
             description: string;
+        };
+        /** Score */
+        Score: {
+            /** Value */
+            value: number;
+            /**
+             * Timestamp
+             * Format: date-time
+             */
+            timestamp: string;
         };
         /** ValidationError */
         ValidationError: {
@@ -908,7 +935,7 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
-                        [key: string]: components["schemas"]["QualityPrediction"][];
+                        [key: string]: components["schemas"]["QualityPrediction"][][];
                     };
                 };
             };
@@ -962,6 +989,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ModelWeightResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    calculate_weighted_predictions_gridsquares__gridsquare_id__weigthed_predictions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                gridsquare_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: components["schemas"]["Score"][];
+                    };
                 };
             };
             /** @description Validation Error */

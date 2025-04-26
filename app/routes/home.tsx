@@ -16,7 +16,7 @@ type AcquisitionResponse = components["schemas"]["AcquisitionResponse"]
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "New React Router App" },
+    { title: "SmartEM" },
     { name: "description", content: "Welcome to React Router!" },
   ];
 }

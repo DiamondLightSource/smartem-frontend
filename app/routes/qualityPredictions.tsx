@@ -10,18 +10,28 @@ import { bin } from "d3-array";
 
 import React from "react";
 
+
 import { Navbar } from "../components/navbar";
 import { theme } from "../components/theme";
+import { TimeSeriesChart } from "../components/timeseries";
 
 import type { components } from "../schema"
 
 type QualityPrediction = components["schemas"]["QualityPrediction"]
+type Score = components["schemas"]["Score"]
 type PredictionResponse = { [key: string]: QualityPrediction[][] }
 
 export async function loader({ params }: Route.LoaderArgs) {
   const grids = await fetch(`http://localhost:8000/gridsquares/${params.squareId}/quality_predictions`);
+  const weightedPredictionsAll: Score[][] = await fetch(`http://localhost:8000/gridsquares/${params.squareId}/weighted_predictions`)
+    .then((response) => {return response.json()})
+    .then((scores) => { return Object.entries(scores as {[key: number]: Score[]}).map(([fh, elem]) => {return elem}) })
+    .then(m => {return m[0].map((x,i) => {return m.map(x => x[i])})})
+  ;
+  const weightedPredictions = weightedPredictionsAll.map((elem) => {return elem.reduce((a, b) => a + b.value, 0) / elem.length});
+  const predictionTimes = weightedPredictionsAll.map((elem) => {return Date.parse(elem[0].timestamp)});
   const result  = await grids.json();
-  return { result };
+  return { result, weightedPredictions, predictionTimes };
 }
 
 const PredictionCharts = ({ predictions }: { predictions: QualityPrediction[][] }) => {
@@ -54,6 +64,7 @@ const PredictionCharts = ({ predictions }: { predictions: QualityPrediction[][] 
                 label: elem.slice(-1)[0].foilhole_id?.toString()
             }})
           }
+          yAxis={[{ min:0, max: 1 }]}
           height={400}
       />
       <ChartSwitcher/>
@@ -68,12 +79,13 @@ const PredictionCharts = ({ predictions }: { predictions: QualityPrediction[][] 
                 }]} 
         series={[{ 
           data: histGenerator(predictions.map((elem) => {return elem.slice(-1)[0].value})).map((b) => {return b.length}),
-          color: "#1bafa5" 
+          color: "#5C9EAD" 
         }]} />
       <ChartSwitcher/>
     </Box>: <></>
   )
 }
+
 
 export default function QualityPredictionsForSquare({ loaderData, params }: Route.ComponentProps) {
   const navigate = useNavigate();
@@ -86,7 +98,11 @@ export default function QualityPredictionsForSquare({ loaderData, params }: Rout
   return <ThemeProvider theme={theme}>
     <Navbar/>
     <Container content="center" style={{ width: "100%", paddingTop: "50px" }}> 
-      <Grid container spacing={3}>
+      <TimeSeriesChart 
+        xData={loaderData.predictionTimes} 
+        yData={loaderData.weightedPredictions}
+      />
+      <Grid container spacing={3} sx={{ padding: "20px" }}>
         {      
           Object.entries(loaderData.result as PredictionResponse).map(([key, value]) => 
             {return (

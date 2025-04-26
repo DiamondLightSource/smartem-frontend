@@ -14,19 +14,35 @@ import { theme } from "../components/theme";
 
 type GridSquareResponse = components["schemas"]["GridSquareResponse"]
 type FoilHoleResponse = components["schemas"]["FoilHoleResponse"]
+type Score = components["schemas"]["Score"]
 type SquareDetails = {
     square: GridSquareResponse,
     holes: FoilHoleResponse[];
+}
+type FullSquareDetails = {
+    square: GridSquareResponse,
+    holes: FoilHoleResponse[],
+    weightedPrediction: number;
 }
 
 export async function loader({ params }: Route.LoaderArgs) {
   const squares_response = await fetch(`http://localhost:8000/grids/${params.gridId}/gridsquares`);
   const squares_data: GridSquareResponse[] = await squares_response.json(); 
-  const squares: SquareDetails[] = await Promise.all(squares_data.map((square) => fetch(`http://localhost:8000/gridsquares/${square.id}/foilholes`).then((response) => {return response.json()}).then((holes) => {return { square: square, holes: holes }})));
-  return { squares };
+  const squares: SquareDetails[] = await Promise.all(
+    squares_data.map((square) => fetch(`http://localhost:8000/gridsquares/${square.id}/foilholes`)
+    .then((response) => {return response.json()})
+    .then((holes) => {return { square: square, holes: holes }}))
+  );
+  const weightedPredictionsAll: number[][] = await Promise.all(
+    squares_data.map((square) => fetch(`http://localhost:8000/gridsquares/${square.id}/weighted_predictions`)
+    .then((response) => {return response.json()})
+    .then((scores) => { return Object.entries(scores as {[key: number]: Score[]}).map(([fh, elem]) => {return elem.slice(-1)[0].value}) }))
+  );
+  const weightedPredictions = weightedPredictionsAll.map((elem) => {return elem.reduce((a: number, b: number) => a + b, 0) / elem.length});
+  return { squares, weightedPredictions };
 }
 
-const CollapsibleRow = ({ square, holes }: SquareDetails) => {
+const CollapsibleRow = ({ square, holes, weightedPrediction }: FullSquareDetails) => {
     const [open, setOpen] = React.useState(false);
     const navigate = useNavigate();
 
@@ -38,13 +54,17 @@ const CollapsibleRow = ({ square, holes }: SquareDetails) => {
                 <TableCell>{square.status}</TableCell>
                 <TableCell>{holes.length}</TableCell>
                 <TableCell>
+                  {isNaN(weightedPrediction) ? 0: 
+                  weightedPrediction.toLocaleString(undefined, { minimumSignificantDigits: 3, maximumSignificantDigits: 3 })}
+                  </TableCell>
+                <TableCell>
                     <IconButton onClick={() => navigate(`./square/${square.id}/predictions`, { relative: "path" })}>
                         <InsightsIcon/>
                     </IconButton>
                 </TableCell>
             </TableRow>
             <TableRow>
-                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={5}>
+                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box sx={{ margin: 1 }}>
                             <Table size="small">
@@ -78,12 +98,13 @@ export default function Grid({ loaderData }: Route.ComponentProps) {
                 <TableCell>Grid Square Name</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell>Number of Holes</TableCell>
+                <TableCell>Score</TableCell>
                 <TableCell>More Info</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {loaderData.squares.map((square: SquareDetails) => {
-                return <CollapsibleRow square={square.square} holes={square.holes} />
+              {loaderData.squares.map((square: SquareDetails, i: number) => {
+                return <CollapsibleRow square={square.square} holes={square.holes} weightedPrediction={loaderData.weightedPredictions[i]} />
               })
               }
             </TableBody>
