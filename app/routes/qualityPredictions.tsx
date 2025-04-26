@@ -4,7 +4,7 @@ import { Box, Grid, ThemeProvider, Card, CardContent, Container, IconButton } fr
 import { BarChart as BarChartIcon, Science, Timeline } from "@mui/icons-material";
 import { BarChart, LineChart } from '@mui/x-charts';
 
-import { useNavigate } from "react-router";
+import { Await, useNavigate } from "react-router";
 
 import { bin } from "d3-array";
 
@@ -23,15 +23,15 @@ type PredictionResponse = { [key: string]: QualityPrediction[][] }
 
 export async function loader({ params }: Route.LoaderArgs) {
   const grids = await fetch(`http://localhost:8000/gridsquares/${params.squareId}/quality_predictions`);
-  const weightedPredictionsAll: Score[][] = await fetch(`http://localhost:8000/gridsquares/${params.squareId}/weighted_predictions`)
+  const weightedPredictions: Promise<Score[][]> = fetch(`http://localhost:8000/gridsquares/${params.squareId}/weighted_predictions`)
     .then((response) => {return response.json()})
     .then((scores) => { return Object.entries(scores as {[key: number]: Score[]}).map(([fh, elem]) => {return elem}) })
     .then(m => {return m[0].map((x,i) => {return m.map(x => x[i])})})
   ;
-  const weightedPredictions = weightedPredictionsAll.map((elem) => {return elem.reduce((a, b) => a + b.value, 0) / elem.length});
-  const predictionTimes = weightedPredictionsAll.map((elem) => {return Date.parse(elem[0].timestamp)});
+  //const weightedPredictions = weightedPredictionsAll.map((elem) => {return elem.reduce((a, b) => a + b.value, 0) / elem.length});
+  //const predictionTimes = weightedPredictionsAll.map((elem) => {return Date.parse(elem[0].timestamp)});
   const result  = await grids.json();
-  return { result, weightedPredictions, predictionTimes };
+  return { result, weightedPredictions };
 }
 
 const PredictionCharts = ({ predictions }: { predictions: QualityPrediction[][] }) => {
@@ -98,10 +98,19 @@ export default function QualityPredictionsForSquare({ loaderData, params }: Rout
   return <ThemeProvider theme={theme}>
     <Navbar/>
     <Container content="center" style={{ width: "100%", paddingTop: "50px" }}> 
-      <TimeSeriesChart 
-        xData={loaderData.predictionTimes} 
-        yData={loaderData.weightedPredictions}
-      />
+      <React.Suspense fallback={
+        <TimeSeriesChart xData={[]} yData={[]} />
+      }
+      >
+        <Await resolve={loaderData.weightedPredictions}>
+          {(result: Score[][]) => 
+            <TimeSeriesChart 
+              xData={result.map((elem) => {return Date.parse(elem[0].timestamp)})} 
+              yData={result.map((elem) => {return elem.reduce((a, b) => a + b.value, 0) / elem.length})}
+            />
+          }
+        </Await>
+      </React.Suspense>
       <Grid container spacing={3} sx={{ padding: "20px" }}>
         {      
           Object.entries(loaderData.result as PredictionResponse).map(([key, value]) => 
