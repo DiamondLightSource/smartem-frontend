@@ -19,10 +19,14 @@ type SquareDetails = {
     square: GridSquareResponse,
     holes: FoilHoleResponse[];
 }
+type HolePrediction = {
+  prediction: number 
+  hole: string
+}
 type FullSquareDetails = {
     square: GridSquareResponse,
     holes: FoilHoleResponse[],
-    weightedPrediction: number | null;
+    weightedPredictions: HolePrediction[] | null;
 }
 
 export async function loader({ params }: Route.LoaderArgs) {
@@ -33,18 +37,24 @@ export async function loader({ params }: Route.LoaderArgs) {
     .then((response) => {return response.json()})
     .then((holes) => {return { square: square, holes: holes }}))
   );
-  const weightedPredictions: Promise<number[][]> = Promise.all(
+  const weightedPredictions: Promise<HolePrediction[][]> = Promise.all(
     squares_data.map((square) => fetch(`http://localhost:8000/gridsquares/${square.id}/weighted_predictions`)
     .then((response) => {return response.json()})
-    .then((scores) => { return Object.entries(scores as {[key: number]: Score[]}).map(([fh, elem]) => {return elem.slice(-1)[0].value}) }))
+    .then((scores) => { return Object.entries(scores as {[key: number]: Score[]}).map(([fh, elem]) => {return { prediction: elem.slice(-1)[0].value, hole: fh } }) }))
   );
-  // const weightedPredictions = weightedPredictionsAll.map((elem) => {return elem.reduce((a: number, b: number) => a + b, 0) / elem.length});
   return { squares, weightedPredictions };
 }
 
-const CollapsibleRow = ({ square, holes, weightedPrediction }: FullSquareDetails) => {
+const CollapsibleRow = ({ square, holes, weightedPredictions }: FullSquareDetails) => {
     const [open, setOpen] = React.useState(false);
     const navigate = useNavigate();
+
+    let weightedPrediction = null;
+    const holeWeights = new Map();
+    if(weightedPredictions) {
+      weightedPrediction = (weightedPredictions).reduce((a: number, b: HolePrediction) => a + b.prediction, 0) / weightedPredictions.length;
+      weightedPredictions.map((elem) => holeWeights.set(elem.hole, elem.prediction));
+    }
 
     return (
         <React.Fragment>
@@ -76,10 +86,17 @@ const CollapsibleRow = ({ square, holes, weightedPrediction }: FullSquareDetails
                                 <TableHead>
                                     <TableRow>
                                         <TableCell style={{ backgroundColor: "silver" }}>Hole Name</TableCell>
+                                        <TableCell style={{ backgroundColor: "silver" }}>Score</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {holes.map((hole) => {return <TableRow key={hole.id}><TableCell>{hole.name}</TableCell></TableRow>})}
+                                    {holes.map((hole) => {return <TableRow key={hole.id}>
+                                      <TableCell>{hole.name}</TableCell>
+                                      {(weightedPrediction === null) ?
+                                      <TableCell><CircularProgress size={10}/></TableCell>:
+                                      <TableCell>{holeWeights.get(hole.name) ?? weightedPrediction}</TableCell>
+                                      }
+                                    </TableRow>})}
                                 </TableBody>
                             </Table>
                         </Box>
@@ -110,7 +127,7 @@ export default function Grid({ loaderData }: Route.ComponentProps) {
             <React.Suspense fallback={
               <TableBody>
                 {loaderData.squares.map((square: SquareDetails, i: number) => {
-                  return <CollapsibleRow square={square.square} holes={square.holes} weightedPrediction={null} />
+                  return <CollapsibleRow square={square.square} holes={square.holes} weightedPredictions={null} />
                 })
                 }
               </TableBody>
@@ -119,7 +136,7 @@ export default function Grid({ loaderData }: Route.ComponentProps) {
               { (result) =>
               <TableBody>
                 {loaderData.squares.map((square: SquareDetails, i: number) => {
-                  return <CollapsibleRow square={square.square} holes={square.holes} weightedPrediction={(result[i]).reduce((a: number, b: number) => a + b, 0) / result[i].length} />
+                  return <CollapsibleRow square={square.square} holes={square.holes} weightedPredictions={result[i]} />
                 })
                 }
               </TableBody>

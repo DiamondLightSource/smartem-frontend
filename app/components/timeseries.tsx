@@ -27,7 +27,7 @@ export const TimeSeriesChart = ({ xData, yData }: { xData: number[] | Date[], yD
         <Box sx={{ borderColor: "#b927d9", borderWidth: 5, borderRadius: "10px", padding: "20px" }}>
         <Grid container spacing={2} columns={{ xs: 10 }}>
         <Grid size={8}>
-            <Skeleton variant="rounded" height={400}/>
+            <Skeleton variant="rounded" height={400} ref={innerRef}/>
             <Slider min={0} max={1} />
         </Grid>
         <Grid size={2}>
@@ -80,3 +80,4 @@ export const TimeSeriesChart = ({ xData, yData }: { xData: number[] | Date[], yD
         </Grid>
         </Box>
   }
+
