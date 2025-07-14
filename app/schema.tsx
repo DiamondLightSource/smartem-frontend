@@ -4,15 +4,18 @@
  */
 
 export interface paths {
-    "/acquisitions": {
+    "/status": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get Acquisitions */
-        get: operations["get_acquisitions_acquisitions_get"];
+        /**
+         * Get Status
+         * @description Get API status information
+         */
+        get: operations["get_status_status_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -21,18 +24,73 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/acquisitions/{acquisition_id}": {
+    "/health": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get Acquisition */
-        get: operations["get_acquisition_acquisitions__acquisition_id__get"];
+        /**
+         * Get Health
+         * @description Health check endpoint
+         */
+        get: operations["get_health_health_get"];
         put?: never;
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/acquisitions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Acquisitions
+         * @description Get all acquisitions
+         */
+        get: operations["get_acquisitions_acquisitions_get"];
+        put?: never;
+        /**
+         * Create Acquisition
+         * @description Create a new acquisition
+         */
+        post: operations["create_acquisition_acquisitions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/acquisitions/{acquisition_uuid}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Acquisition
+         * @description Get a single acquisition by ID
+         */
+        get: operations["get_acquisition_acquisitions__acquisition_uuid__get"];
+        /**
+         * Update Acquisition
+         * @description Update an acquisition
+         */
+        put: operations["update_acquisition_acquisitions__acquisition_uuid__put"];
+        post?: never;
+        /**
+         * Delete Acquisition
+         * @description Delete an acquisition
+         */
+        delete: operations["delete_acquisition_acquisitions__acquisition_uuid__delete"];
         options?: never;
         head?: never;
         patch?: never;
@@ -45,7 +103,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Grids */
+        /**
+         * Get Grids
+         * @description Get all grids
+         */
         get: operations["get_grids_grids_get"];
         put?: never;
         post?: never;
@@ -55,15 +116,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/grids/{grid_id}": {
+    "/grids/{grid_uuid}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get Grid */
-        get: operations["get_grid_grids__grid_id__get"];
+        /**
+         * Get Grid
+         * @description Get a single grid by ID
+         */
+        get: operations["get_grid_grids__grid_uuid__get"];
+        /**
+         * Update Grid
+         * @description Update a grid
+         */
+        put: operations["update_grid_grids__grid_uuid__put"];
+        post?: never;
+        /**
+         * Delete Grid
+         * @description Delete a grid by publishing to RabbitMQ
+         */
+        delete: operations["delete_grid_grids__grid_uuid__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/grids/{grid_uuid}/atlas_image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Grid Atlas Image
+         * @description Get a single grid by ID
+         */
+        get: operations["get_grid_atlas_image_grids__grid_uuid__atlas_image_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -72,17 +164,168 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/acquisitions/{acquisition_id}/grids": {
+    "/acquisitions/{acquisition_uuid}/grids": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get Acquisition Grids */
-        get: operations["get_acquisition_grids_acquisitions__acquisition_id__grids_get"];
+        /**
+         * Get Acquisition Grids
+         * @description Get all grids for a specific acquisition
+         */
+        get: operations["get_acquisition_grids_acquisitions__acquisition_uuid__grids_get"];
+        put?: never;
+        /**
+         * Create Acquisition Grid
+         * @description Create a new grid for a specific acquisition
+         */
+        post: operations["create_acquisition_grid_acquisitions__acquisition_uuid__grids_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/atlases": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Atlases
+         * @description Get all atlases
+         */
+        get: operations["get_atlases_atlases_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/atlases/{atlas_uuid}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Atlas
+         * @description Get a single atlas by ID
+         */
+        get: operations["get_atlas_atlases__atlas_uuid__get"];
+        /**
+         * Update Atlas
+         * @description Update an atlas
+         */
+        put: operations["update_atlas_atlases__atlas_uuid__put"];
+        post?: never;
+        /**
+         * Delete Atlas
+         * @description Delete an atlas by publishing to RabbitMQ
+         */
+        delete: operations["delete_atlas_atlases__atlas_uuid__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/grids/{grid_uuid}/atlas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Grid Atlas
+         * @description Get the atlas for a specific grid
+         */
+        get: operations["get_grid_atlas_grids__grid_uuid__atlas_get"];
+        put?: never;
+        /**
+         * Create Grid Atlas
+         * @description Create a new atlas for a grid
+         */
+        post: operations["create_grid_atlas_grids__grid_uuid__atlas_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/atlas-tiles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Atlas Tiles
+         * @description Get all atlas tiles
+         */
+        get: operations["get_atlas_tiles_atlas_tiles_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/atlas-tiles/{tile_uuid}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Atlas Tile
+         * @description Get a single atlas tile by ID
+         */
+        get: operations["get_atlas_tile_atlas_tiles__tile_uuid__get"];
+        /**
+         * Update Atlas Tile
+         * @description Update an atlas tile
+         */
+        put: operations["update_atlas_tile_atlas_tiles__tile_uuid__put"];
+        post?: never;
+        /**
+         * Delete Atlas Tile
+         * @description Delete an atlas tile by publishing to RabbitMQ
+         */
+        delete: operations["delete_atlas_tile_atlas_tiles__tile_uuid__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/atlases/{atlas_uuid}/tiles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Atlas Tiles By Atlas
+         * @description Get all tiles for a specific atlas
+         */
+        get: operations["get_atlas_tiles_by_atlas_atlases__atlas_uuid__tiles_get"];
+        put?: never;
+        /**
+         * Create Atlas Tile For Atlas
+         * @description Create a new tile for a specific atlas
+         */
+        post: operations["create_atlas_tile_for_atlas_atlases__atlas_uuid__tiles_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -96,7 +339,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Gridsquares */
+        /**
+         * Get Gridsquares
+         * @description Get all grid squares
+         */
         get: operations["get_gridsquares_gridsquares_get"];
         put?: never;
         post?: never;
@@ -106,34 +352,52 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/gridsquares/{gridsquare_id}": {
+    "/gridsquares/{gridsquare_uuid}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get Gridsquare */
-        get: operations["get_gridsquare_gridsquares__gridsquare_id__get"];
-        put?: never;
+        /**
+         * Get Gridsquare
+         * @description Get a single grid square by ID
+         */
+        get: operations["get_gridsquare_gridsquares__gridsquare_uuid__get"];
+        /**
+         * Update Gridsquare
+         * @description Update a grid square
+         */
+        put: operations["update_gridsquare_gridsquares__gridsquare_uuid__put"];
         post?: never;
-        delete?: never;
+        /**
+         * Delete Gridsquare
+         * @description Delete a grid square by publishing to RabbitMQ
+         */
+        delete: operations["delete_gridsquare_gridsquares__gridsquare_uuid__delete"];
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/grids/{grid_id}/gridsquares": {
+    "/grids/{grid_uuid}/gridsquares": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get Grid Gridsquares */
-        get: operations["get_grid_gridsquares_grids__grid_id__gridsquares_get"];
+        /**
+         * Get Grid Gridsquares
+         * @description Get all grid squares for a specific grid
+         */
+        get: operations["get_grid_gridsquares_grids__grid_uuid__gridsquares_get"];
         put?: never;
-        post?: never;
+        /**
+         * Create Grid Gridsquare
+         * @description Create a new grid square for a specific grid
+         */
+        post: operations["create_grid_gridsquare_grids__grid_uuid__gridsquares_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -147,7 +411,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Foilholes */
+        /**
+         * Get Foilholes
+         * @description Get all foil holes
+         */
         get: operations["get_foilholes_foilholes_get"];
         put?: never;
         post?: never;
@@ -157,34 +424,52 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/foilholes/{foilhole_id}": {
+    "/foilholes/{foilhole_uuid}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get Foilhole */
-        get: operations["get_foilhole_foilholes__foilhole_id__get"];
-        put?: never;
+        /**
+         * Get Foilhole
+         * @description Get a single foil hole by ID
+         */
+        get: operations["get_foilhole_foilholes__foilhole_uuid__get"];
+        /**
+         * Update Foilhole
+         * @description Update a foil hole
+         */
+        put: operations["update_foilhole_foilholes__foilhole_uuid__put"];
         post?: never;
-        delete?: never;
+        /**
+         * Delete Foilhole
+         * @description Delete a foil hole by publishing to RabbitMQ
+         */
+        delete: operations["delete_foilhole_foilholes__foilhole_uuid__delete"];
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/gridsquares/{gridsquare_id}/foilholes": {
+    "/gridsquares/{gridsquare_uuid}/foilholes": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get Gridsquare Foilholes */
-        get: operations["get_gridsquare_foilholes_gridsquares__gridsquare_id__foilholes_get"];
+        /**
+         * Get Gridsquare Foilholes
+         * @description Get all foil holes for a specific grid square
+         */
+        get: operations["get_gridsquare_foilholes_gridsquares__gridsquare_uuid__foilholes_get"];
         put?: never;
-        post?: never;
+        /**
+         * Create Gridsquare Foilhole
+         * @description Create a new foil hole for a specific grid square
+         */
+        post: operations["create_gridsquare_foilhole_gridsquares__gridsquare_uuid__foilholes_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -198,7 +483,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Micrographs */
+        /**
+         * Get Micrographs
+         * @description Get all micrographs
+         */
         get: operations["get_micrographs_micrographs_get"];
         put?: never;
         post?: never;
@@ -208,51 +496,52 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/micrographs/{micrograph_id}": {
+    "/micrographs/{micrograph_uuid}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get Micrograph */
-        get: operations["get_micrograph_micrographs__micrograph_id__get"];
-        put?: never;
+        /**
+         * Get Micrograph
+         * @description Get a single micrograph by ID
+         */
+        get: operations["get_micrograph_micrographs__micrograph_uuid__get"];
+        /**
+         * Update Micrograph
+         * @description Update a micrograph
+         */
+        put: operations["update_micrograph_micrographs__micrograph_uuid__put"];
         post?: never;
-        delete?: never;
+        /**
+         * Delete Micrograph
+         * @description Delete a micrograph by publishing to RabbitMQ
+         */
+        delete: operations["delete_micrograph_micrographs__micrograph_uuid__delete"];
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/foilholes/{foilhole_id}/micrographs": {
+    "/foilholes/{foilhole_uuid}/micrographs": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get Foilhole Micrographs */
-        get: operations["get_foilhole_micrographs_foilholes__foilhole_id__micrographs_get"];
+        /**
+         * Get Foilhole Micrographs
+         * @description Get all micrographs for a specific foil hole
+         */
+        get: operations["get_foilhole_micrographs_foilholes__foilhole_uuid__micrographs_get"];
         put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/gridsquares/{gridsquare_id}/quality_predictions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Quality Predictions For Square */
-        get: operations["get_quality_predictions_for_square_gridsquares__gridsquare_id__quality_predictions_get"];
-        put?: never;
-        post?: never;
+        /**
+         * Create Foilhole Micrograph
+         * @description Create a new micrograph for a specific foil hole
+         */
+        post: operations["create_foilhole_micrograph_foilholes__foilhole_uuid__micrographs_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -266,76 +555,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Stored Prediction Models */
-        get: operations["get_stored_prediction_models_prediction_models_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/prediction_models/{model_name}/grids/{grid_id}/weights": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Model Weights */
-        get: operations["get_model_weights_prediction_models__model_name__grids__grid_id__weights_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/gridsquares/{gridsquare_id}/weigthed_predictions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Calculate Weighted Predictions */
-        get: operations["calculate_weighted_predictions_gridsquares__gridsquare_id__weigthed_predictions_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/gridsquares/{gridsquare_id}/most_recent_quality_prediction": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Most Recent Quality Prediction For Square */
-        get: operations["get_most_recent_quality_prediction_for_square_gridsquares__gridsquare_id__most_recent_quality_prediction_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/foilholes/{foilhole_id}/quality_predictions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Quality Predictions For Hole */
-        get: operations["get_quality_predictions_for_hole_foilholes__foilhole_id__quality_predictions_get"];
+        /**
+         * Get Prediction Models
+         * @description Get all micrographs
+         */
+        get: operations["get_prediction_models_prediction_models_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -348,52 +572,338 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AcquisitionCreateRequest */
+        AcquisitionCreateRequest: {
+            /** Uuid */
+            uuid: string;
+            /** Name */
+            name?: string | null;
+            status?: components["schemas"]["AcquisitionStatus"] | null;
+            /** Start Time */
+            start_time?: string | null;
+            /** End Time */
+            end_time?: string | null;
+            /** Paused Time */
+            paused_time?: string | null;
+            /** Storage Path */
+            storage_path?: string | null;
+            /** Atlas Path */
+            atlas_path?: string | null;
+            /** Clustering Mode */
+            clustering_mode?: string | null;
+            /** Clustering Radius */
+            clustering_radius?: string | null;
+            /** Instrument Model */
+            instrument_model?: string | null;
+            /** Instrument Id */
+            instrument_id?: string | null;
+            /** Computer Name */
+            computer_name?: string | null;
+        };
         /** AcquisitionResponse */
         AcquisitionResponse: {
-            /** Id */
-            id: number;
-            /** Epu Id */
-            epu_id: string | null;
+            /** Uuid */
+            uuid: string;
             /** Name */
             name: string;
-            status: components["schemas"]["AcquisitionStatus"];
+            status: components["schemas"]["AcquisitionStatus"] | null;
             /** Start Time */
             start_time: string | null;
             /** End Time */
             end_time: string | null;
             /** Paused Time */
             paused_time: string | null;
+            /** Storage Path */
+            storage_path: string | null;
+            /** Atlas Path */
+            atlas_path: string | null;
+            /** Clustering Mode */
+            clustering_mode: string | null;
+            /** Clustering Radius */
+            clustering_radius: string | null;
+            /** Instrument Model */
+            instrument_model: string | null;
+            /** Instrument Id */
+            instrument_id: string | null;
+            /** Computer Name */
+            computer_name: string | null;
         };
         /**
          * AcquisitionStatus
          * @enum {string}
          */
         AcquisitionStatus: "planned" | "started" | "completed" | "paused" | "abandoned";
-        /** FoilHoleResponse */
-        FoilHoleResponse: {
-            /** Id */
-            id: number;
-            /** Gridsquare Id */
-            gridsquare_id: number | null;
-            status: components["schemas"]["FoilHoleStatus"];
+        /** AcquisitionUpdateRequest */
+        AcquisitionUpdateRequest: {
+            /** Uuid */
+            uuid?: string | null;
+            /** Name */
+            name?: string | null;
+            status?: components["schemas"]["AcquisitionStatus"] | null;
+            /** Start Time */
+            start_time?: string | null;
+            /** End Time */
+            end_time?: string | null;
+            /** Paused Time */
+            paused_time?: string | null;
+            /** Storage Path */
+            storage_path?: string | null;
+            /** Atlas Path */
+            atlas_path?: string | null;
+            /** Clustering Mode */
+            clustering_mode?: string | null;
+            /** Clustering Radius */
+            clustering_radius?: string | null;
+            /** Instrument Model */
+            instrument_model?: string | null;
+            /** Instrument Id */
+            instrument_id?: string | null;
+            /** Computer Name */
+            computer_name?: string | null;
+        };
+        /** AtlasCreateRequest */
+        AtlasCreateRequest: {
+            /** Atlas Id */
+            atlas_id: string;
+            /** Grid Id */
+            grid_id: string;
+            /** Acquisition Date */
+            acquisition_date?: string | null;
+            /** Storage Folder */
+            storage_folder?: string | null;
+            /** Description */
+            description?: string | null;
             /** Name */
             name: string;
+            /** Tiles */
+            tiles?: components["schemas"]["AtlasTileCreateRequest"][] | null;
+        };
+        /** AtlasResponse */
+        AtlasResponse: {
+            /** Uuid */
+            uuid: string;
+            /** Grid Id */
+            grid_id: string;
+            /** Atlas Id */
+            atlas_id: string;
+            /** Acquisition Date */
+            acquisition_date: string | null;
+            /** Storage Folder */
+            storage_folder: string | null;
+            /** Description */
+            description: string | null;
+            /** Name */
+            name: string;
+            /**
+             * Tiles
+             * @default []
+             */
+            tiles: components["schemas"]["AtlasTileResponse"][] | null;
+        };
+        /** AtlasTileCreateRequest */
+        AtlasTileCreateRequest: {
+            /** Uuid */
+            uuid: string;
+            /** Position X */
+            position_x?: number | null;
+            /** Position Y */
+            position_y?: number | null;
+            /** Size X */
+            size_x?: number | null;
+            /** Size Y */
+            size_y?: number | null;
+            /** File Format */
+            file_format?: string | null;
+            /** Base Filename */
+            base_filename?: string | null;
+            /** Atlas Id */
+            atlas_id: string;
+        };
+        /** AtlasTileResponse */
+        AtlasTileResponse: {
+            /** Uuid */
+            uuid: string;
+            /** Atlas Id */
+            atlas_id: string;
+            /** Tile Id */
+            tile_id: string;
+            /** Position X */
+            position_x: number | null;
+            /** Position Y */
+            position_y: number | null;
+            /** Size X */
+            size_x: number | null;
+            /** Size Y */
+            size_y: number | null;
+            /** File Format */
+            file_format: string | null;
+            /** Base Filename */
+            base_filename: string | null;
+        };
+        /** AtlasTileUpdateRequest */
+        AtlasTileUpdateRequest: {
+            /** Uuid */
+            uuid?: string | null;
+            /** Position X */
+            position_x?: number | null;
+            /** Position Y */
+            position_y?: number | null;
+            /** Size X */
+            size_x?: number | null;
+            /** Size Y */
+            size_y?: number | null;
+            /** File Format */
+            file_format?: string | null;
+            /** Base Filename */
+            base_filename?: string | null;
+            /** Atlas Id */
+            atlas_id?: string | null;
+        };
+        /** AtlasUpdateRequest */
+        AtlasUpdateRequest: {
+            /** Atlas Id */
+            atlas_id?: string | null;
+            /** Grid Id */
+            grid_id?: string | null;
+            /** Acquisition Date */
+            acquisition_date?: string | null;
+            /** Storage Folder */
+            storage_folder?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Name */
+            name?: string | null;
+        };
+        /** FoilHoleCreateRequest */
+        FoilHoleCreateRequest: {
+            /** Uuid */
+            uuid: string;
+            /** Foilhole Id */
+            foilhole_id: string;
+            /** Gridsquare Id */
+            gridsquare_id: string;
+            /** Gridsquare Uuid */
+            gridsquare_uuid: string;
+            /** Center X */
+            center_x?: number | null;
+            /** Center Y */
+            center_y?: number | null;
+            /** Quality */
+            quality?: number | null;
+            /** Rotation */
+            rotation?: number | null;
+            /** Size Width */
+            size_width?: number | null;
+            /** Size Height */
+            size_height?: number | null;
+            /** X Location */
+            x_location?: number | null;
+            /** Y Location */
+            y_location?: number | null;
+            /** X Stage Position */
+            x_stage_position?: number | null;
+            /** Y Stage Position */
+            y_stage_position?: number | null;
+            /** Diameter */
+            diameter?: number | null;
+            /**
+             * Is Near Grid Bar
+             * @default false
+             */
+            is_near_grid_bar: boolean;
+            status?: components["schemas"]["FoilHoleStatus"] | null;
+        };
+        /** FoilHoleResponse */
+        FoilHoleResponse: {
+            /** Uuid */
+            uuid: string;
+            /** Gridsquare Id */
+            gridsquare_id: string | null;
+            /** Foilhole Id */
+            foilhole_id: string;
+            status: components["schemas"]["FoilHoleStatus"];
+            /** Center X */
+            center_x: number | null;
+            /** Center Y */
+            center_y: number | null;
+            /** Quality */
+            quality: number | null;
+            /** Rotation */
+            rotation: number | null;
+            /** Size Width */
+            size_width: number | null;
+            /** Size Height */
+            size_height: number | null;
+            /** X Location */
+            x_location: number | null;
+            /** Y Location */
+            y_location: number | null;
+            /** X Stage Position */
+            x_stage_position: number | null;
+            /** Y Stage Position */
+            y_stage_position: number | null;
+            /** Diameter */
+            diameter: number | null;
+            /** Is Near Grid Bar */
+            is_near_grid_bar: boolean;
         };
         /**
          * FoilHoleStatus
          * @enum {string}
          */
         FoilHoleStatus: "none" | "micrographs detected";
-        /** Grid */
-        Grid: {
-            /** Id */
-            id?: number | null;
-            /** Acquisition Id */
-            acquisition_id?: number | null;
-            /** @default none */
-            status: components["schemas"]["GridStatus"];
+        /** FoilHoleUpdateRequest */
+        FoilHoleUpdateRequest: {
+            /** Uuid */
+            uuid?: string | null;
+            /** Foilhole Id */
+            foilhole_id?: string | null;
+            /** Gridsquare Id */
+            gridsquare_id?: string | null;
+            /** Gridsquare Uuid */
+            gridsquare_uuid?: string | null;
+            /** Center X */
+            center_x?: number | null;
+            /** Center Y */
+            center_y?: number | null;
+            /** Quality */
+            quality?: number | null;
+            /** Rotation */
+            rotation?: number | null;
+            /** Size Width */
+            size_width?: number | null;
+            /** Size Height */
+            size_height?: number | null;
+            /** X Location */
+            x_location?: number | null;
+            /** Y Location */
+            y_location?: number | null;
+            /** X Stage Position */
+            x_stage_position?: number | null;
+            /** Y Stage Position */
+            y_stage_position?: number | null;
+            /** Diameter */
+            diameter?: number | null;
+            /**
+             * Is Near Grid Bar
+             * @default false
+             */
+            is_near_grid_bar: boolean;
+            status?: components["schemas"]["FoilHoleStatus"] | null;
+        };
+        /** GridCreateRequest */
+        GridCreateRequest: {
+            /** Uuid */
+            uuid: string;
             /** Name */
             name: string;
+            /** Acquisition Uuid */
+            acquisition_uuid: string;
+            status?: components["schemas"]["GridStatus"] | null;
+            /** Data Dir */
+            data_dir?: string | null;
+            /** Atlas Dir */
+            atlas_dir?: string | null;
             /** Scan Start Time */
             scan_start_time?: string | null;
             /** Scan End Time */
@@ -401,124 +911,382 @@ export interface components {
         };
         /** GridResponse */
         GridResponse: {
-            /** Id */
-            id: number;
-            /** Acquisition Id */
-            acquisition_id: number | null;
-            status: components["schemas"]["GridStatus"];
+            /** Uuid */
+            uuid: string;
+            /** Acquisition Uuid */
+            acquisition_uuid: string | null;
+            status: components["schemas"]["GridStatus"] | null;
             /** Name */
             name: string;
+            /** Data Dir */
+            data_dir: string | null;
+            /** Atlas Dir */
+            atlas_dir: string | null;
             /** Scan Start Time */
             scan_start_time: string | null;
             /** Scan End Time */
             scan_end_time: string | null;
         };
+        /** GridSquareCreateRequest */
+        GridSquareCreateRequest: {
+            /** Uuid */
+            uuid: string;
+            /** Gridsquare Id */
+            gridsquare_id: string;
+            /** Grid Uuid */
+            grid_uuid: string;
+            /** Data Dir */
+            data_dir?: string | null;
+            /** Atlas Node Id */
+            atlas_node_id?: number | null;
+            /** State */
+            state?: string | null;
+            /** Rotation */
+            rotation?: number | null;
+            /** Image Path */
+            image_path?: string | null;
+            /** Selected */
+            selected?: boolean | null;
+            /** Unusable */
+            unusable?: boolean | null;
+            /** Stage Position X */
+            stage_position_x?: number | null;
+            /** Stage Position Y */
+            stage_position_y?: number | null;
+            /** Stage Position Z */
+            stage_position_z?: number | null;
+            /** Center X */
+            center_x?: number | null;
+            /** Center Y */
+            center_y?: number | null;
+            /** Physical X */
+            physical_x?: number | null;
+            /** Physical Y */
+            physical_y?: number | null;
+            /** Size Width */
+            size_width?: number | null;
+            /** Size Height */
+            size_height?: number | null;
+            /** Acquisition Datetime */
+            acquisition_datetime?: string | null;
+            /** Defocus */
+            defocus?: number | null;
+            /** Magnification */
+            magnification?: number | null;
+            /** Pixel Size */
+            pixel_size?: number | null;
+            /** Detector Name */
+            detector_name?: string | null;
+            /** Applied Defocus */
+            applied_defocus?: number | null;
+            status?: components["schemas"]["GridSquareStatus"] | null;
+        };
         /** GridSquareResponse */
         GridSquareResponse: {
-            /** Id */
-            id: number;
-            /** Grid Id */
-            grid_id: number | null;
-            status: components["schemas"]["GridSquareStatus"];
-            /** Atlastile Img */
-            atlastile_img: string;
-            /** Name */
-            name: string;
+            /** Uuid */
+            uuid: string;
+            /** Gridsquare Id */
+            gridsquare_id: string;
+            /** Grid Uuid */
+            grid_uuid: string | null;
+            status: components["schemas"]["GridSquareStatus"] | null;
+            /** Data Dir */
+            data_dir: string | null;
+            /** Atlas Node Id */
+            atlas_node_id: number | null;
+            /** State */
+            state: string | null;
+            /** Rotation */
+            rotation: number | null;
+            /** Image Path */
+            image_path: string | null;
+            /** Selected */
+            selected: boolean | null;
+            /** Unusable */
+            unusable: boolean | null;
+            /** Stage Position X */
+            stage_position_x: number | null;
+            /** Stage Position Y */
+            stage_position_y: number | null;
+            /** Stage Position Z */
+            stage_position_z: number | null;
+            /** Center X */
+            center_x: number | null;
+            /** Center Y */
+            center_y: number | null;
+            /** Physical X */
+            physical_x: number | null;
+            /** Physical Y */
+            physical_y: number | null;
+            /** Size Width */
+            size_width: number | null;
+            /** Size Height */
+            size_height: number | null;
+            /** Acquisition Datetime */
+            acquisition_datetime: string | null;
+            /** Defocus */
+            defocus: number | null;
+            /** Magnification */
+            magnification: number | null;
+            /** Pixel Size */
+            pixel_size: number | null;
+            /** Detector Name */
+            detector_name: string | null;
+            /** Applied Defocus */
+            applied_defocus: number | null;
         };
         /**
          * GridSquareStatus
          * @enum {string}
          */
         GridSquareStatus: "none" | "foil holes decision started" | "foil holes decision completed";
+        /** GridSquareUpdateRequest */
+        GridSquareUpdateRequest: {
+            /** Uuid */
+            uuid?: string | null;
+            /** Gridsquare Id */
+            gridsquare_id?: string | null;
+            /** Grid Uuid */
+            grid_uuid?: string | null;
+            /** Data Dir */
+            data_dir?: string | null;
+            /** Atlas Node Id */
+            atlas_node_id?: number | null;
+            /** State */
+            state?: string | null;
+            /** Rotation */
+            rotation?: number | null;
+            /** Image Path */
+            image_path?: string | null;
+            /** Selected */
+            selected?: boolean | null;
+            /** Unusable */
+            unusable?: boolean | null;
+            /** Stage Position X */
+            stage_position_x?: number | null;
+            /** Stage Position Y */
+            stage_position_y?: number | null;
+            /** Stage Position Z */
+            stage_position_z?: number | null;
+            /** Center X */
+            center_x?: number | null;
+            /** Center Y */
+            center_y?: number | null;
+            /** Physical X */
+            physical_x?: number | null;
+            /** Physical Y */
+            physical_y?: number | null;
+            /** Size Width */
+            size_width?: number | null;
+            /** Size Height */
+            size_height?: number | null;
+            /** Acquisition Datetime */
+            acquisition_datetime?: string | null;
+            /** Defocus */
+            defocus?: number | null;
+            /** Magnification */
+            magnification?: number | null;
+            /** Pixel Size */
+            pixel_size?: number | null;
+            /** Detector Name */
+            detector_name?: string | null;
+            /** Applied Defocus */
+            applied_defocus?: number | null;
+            status?: components["schemas"]["GridSquareStatus"] | null;
+        };
         /**
          * GridStatus
          * @enum {string}
          */
         GridStatus: "none" | "scan started" | "scan completed" | "grid squares decision started" | "grid squares decision completed";
+        /** GridUpdateRequest */
+        GridUpdateRequest: {
+            /** Uuid */
+            uuid?: string | null;
+            /** Name */
+            name?: string | null;
+            /** Acquisition Uuid */
+            acquisition_uuid?: string | null;
+            status?: components["schemas"]["GridStatus"] | null;
+            /** Data Dir */
+            data_dir?: string | null;
+            /** Atlas Dir */
+            atlas_dir?: string | null;
+            /** Scan Start Time */
+            scan_start_time?: string | null;
+            /** Scan End Time */
+            scan_end_time?: string | null;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
+        /** MicrographCreateRequest */
+        MicrographCreateRequest: {
+            /** Uuid */
+            uuid: string;
+            /** Foilhole Uuid */
+            foilhole_uuid?: string | null;
+            /** Foilhole Id */
+            foilhole_id: string;
+            /** Location Id */
+            location_id?: string | null;
+            /** High Res Path */
+            high_res_path?: string | null;
+            /** Manifest File */
+            manifest_file?: string | null;
+            /** Acquisition Datetime */
+            acquisition_datetime?: string | null;
+            /** Defocus */
+            defocus?: number | null;
+            /** Detector Name */
+            detector_name?: string | null;
+            /** Energy Filter */
+            energy_filter?: boolean | null;
+            /** Phase Plate */
+            phase_plate?: boolean | null;
+            /** Image Size X */
+            image_size_x?: number | null;
+            /** Image Size Y */
+            image_size_y?: number | null;
+            /** Binning X */
+            binning_x?: number | null;
+            /** Binning Y */
+            binning_y?: number | null;
+            /** Total Motion */
+            total_motion?: number | null;
+            /** Average Motion */
+            average_motion?: number | null;
+            /** Ctf Max Resolution Estimate */
+            ctf_max_resolution_estimate?: number | null;
+            /** Number Of Particles Selected */
+            number_of_particles_selected?: number | null;
+            /** Number Of Particles Rejected */
+            number_of_particles_rejected?: number | null;
+            /** Selection Distribution */
+            selection_distribution?: string | null;
+            /** Number Of Particles Picked */
+            number_of_particles_picked?: number | null;
+            /** Pick Distribution */
+            pick_distribution?: string | null;
+            /** @default none */
+            status: components["schemas"]["MicrographStatus"];
+        };
         /** MicrographResponse */
         MicrographResponse: {
-            /** Id */
-            id: number;
+            /** Uuid */
+            uuid: string;
+            /** Foilhole Uuid */
+            foilhole_uuid: string;
             /** Foilhole Id */
-            foilhole_id: number | null;
+            foilhole_id?: string | null;
+            /** Micrograph Id */
+            micrograph_id?: string | null;
+            /** Location Id */
+            location_id?: string | null;
             status: components["schemas"]["MicrographStatus"];
+            /** High Res Path */
+            high_res_path?: string | null;
+            /** Manifest File */
+            manifest_file?: string | null;
+            /** Acquisition Datetime */
+            acquisition_datetime?: string | null;
+            /** Defocus */
+            defocus?: number | null;
+            /** Detector Name */
+            detector_name?: string | null;
+            /** Energy Filter */
+            energy_filter?: boolean | null;
+            /** Phase Plate */
+            phase_plate?: boolean | null;
+            /** Image Size X */
+            image_size_x?: number | null;
+            /** Image Size Y */
+            image_size_y?: number | null;
+            /** Binning X */
+            binning_x?: number | null;
+            /** Binning Y */
+            binning_y?: number | null;
             /** Total Motion */
-            total_motion: number | null;
+            total_motion?: number | null;
             /** Average Motion */
-            average_motion: number | null;
+            average_motion?: number | null;
             /** Ctf Max Resolution Estimate */
-            ctf_max_resolution_estimate: number | null;
+            ctf_max_resolution_estimate?: number | null;
             /** Number Of Particles Selected */
-            number_of_particles_selected: number | null;
+            number_of_particles_selected?: number | null;
             /** Number Of Particles Rejected */
-            number_of_particles_rejected: number | null;
+            number_of_particles_rejected?: number | null;
             /** Selection Distribution */
-            selection_distribution: string | null;
+            selection_distribution?: string | null;
             /** Number Of Particles Picked */
-            number_of_particles_picked: number | null;
+            number_of_particles_picked?: number | null;
             /** Pick Distribution */
-            pick_distribution: string | null;
+            pick_distribution?: string | null;
         };
         /**
          * MicrographStatus
          * @enum {string}
          */
         MicrographStatus: "none" | "motion correction started" | "motion correction completed" | "ctf started" | "ctf completed" | "particle picking started" | "particle picking completed" | "particle selection started" | "particle selection completed";
-        /** ModelWeightResponse */
-        ModelWeightResponse: {
-            /** Weight */
-            weight: number;
-            /** Timestamp */
-            timestamp: string;
-        };
-        /** PredictionModelResponse */
-        PredictionModelResponse: {
-            prediction_model: components["schemas"]["QualityPredictionModel"];
-            /** Grids */
-            grids: components["schemas"]["Grid"][];
-        };
-        /** QualityPrediction */
-        QualityPrediction: {
-            /** Id */
-            id?: number | null;
-            /**
-             * Timestamp
-             * Format: date-time
-             */
-            timestamp?: string;
-            /** Value */
-            value: number;
-            /** Prediction Model Name */
-            prediction_model_name: string;
+        /** MicrographUpdateRequest */
+        MicrographUpdateRequest: {
+            /** Uuid */
+            uuid?: string | null;
+            /** Foilhole Uuid */
+            foilhole_uuid?: string | null;
             /** Foilhole Id */
-            foilhole_id?: number | null;
-            /** Gridsquare Id */
-            gridsquare_id?: number | null;
+            foilhole_id?: string | null;
+            /** Location Id */
+            location_id?: string | null;
+            /** High Res Path */
+            high_res_path?: string | null;
+            /** Manifest File */
+            manifest_file?: string | null;
+            /** Acquisition Datetime */
+            acquisition_datetime?: string | null;
+            /** Defocus */
+            defocus?: number | null;
+            /** Detector Name */
+            detector_name?: string | null;
+            /** Energy Filter */
+            energy_filter?: boolean | null;
+            /** Phase Plate */
+            phase_plate?: boolean | null;
+            /** Image Size X */
+            image_size_x?: number | null;
+            /** Image Size Y */
+            image_size_y?: number | null;
+            /** Binning X */
+            binning_x?: number | null;
+            /** Binning Y */
+            binning_y?: number | null;
+            /** Total Motion */
+            total_motion?: number | null;
+            /** Average Motion */
+            average_motion?: number | null;
+            /** Ctf Max Resolution Estimate */
+            ctf_max_resolution_estimate?: number | null;
+            /** Number Of Particles Selected */
+            number_of_particles_selected?: number | null;
+            /** Number Of Particles Rejected */
+            number_of_particles_rejected?: number | null;
+            /** Selection Distribution */
+            selection_distribution?: string | null;
+            /** Number Of Particles Picked */
+            number_of_particles_picked?: number | null;
+            /** Pick Distribution */
+            pick_distribution?: string | null;
+            /** @default none */
+            status: components["schemas"]["MicrographStatus"];
         };
-        /** QualityPredictionModel */
-        QualityPredictionModel: {
+        /** QualityPredictionModelResponse */
+        QualityPredictionModelResponse: {
             /** Name */
             name: string;
-            /**
-             * Description
-             * @default
-             */
+            /** Description */
             description: string;
-        };
-        /** Score */
-        Score: {
-            /** Value */
-            value: number;
-            /**
-             * Timestamp
-             * Format: date-time
-             */
-            timestamp: string;
         };
         /** ValidationError */
         ValidationError: {
@@ -538,6 +1306,46 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    get_status_status_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_health_health_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
     get_acquisitions_acquisitions_get: {
         parameters: {
             query?: never;
@@ -558,12 +1366,45 @@ export interface operations {
             };
         };
     };
-    get_acquisition_acquisitions__acquisition_id__get: {
+    create_acquisition_acquisitions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AcquisitionCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AcquisitionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_acquisition_acquisitions__acquisition_uuid__get: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                acquisition_id: number;
+                acquisition_uuid: string;
             };
             cookie?: never;
         };
@@ -577,6 +1418,70 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["AcquisitionResponse"];
                 };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_acquisition_acquisitions__acquisition_uuid__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                acquisition_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AcquisitionUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AcquisitionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_acquisition_acquisitions__acquisition_uuid__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                acquisition_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {
@@ -609,12 +1514,12 @@ export interface operations {
             };
         };
     };
-    get_grid_grids__grid_id__get: {
+    get_grid_grids__grid_uuid__get: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                grid_id: number;
+                grid_uuid: string;
             };
             cookie?: never;
         };
@@ -640,12 +1545,107 @@ export interface operations {
             };
         };
     };
-    get_acquisition_grids_acquisitions__acquisition_id__grids_get: {
+    update_grid_grids__grid_uuid__put: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                acquisition_id: number;
+                grid_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GridUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GridResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_grid_grids__grid_uuid__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                grid_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_grid_atlas_image_grids__grid_uuid__atlas_image_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                grid_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_acquisition_grids_acquisitions__acquisition_uuid__grids_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                acquisition_uuid: string;
             };
             cookie?: never;
         };
@@ -658,6 +1658,403 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["GridResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_acquisition_grid_acquisitions__acquisition_uuid__grids_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                acquisition_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GridCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GridResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_atlases_atlases_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AtlasResponse"][];
+                };
+            };
+        };
+    };
+    get_atlas_atlases__atlas_uuid__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                atlas_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AtlasResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_atlas_atlases__atlas_uuid__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                atlas_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AtlasUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AtlasResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_atlas_atlases__atlas_uuid__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                atlas_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_grid_atlas_grids__grid_uuid__atlas_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                grid_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AtlasResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_grid_atlas_grids__grid_uuid__atlas_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                grid_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AtlasCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AtlasResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_atlas_tiles_atlas_tiles_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AtlasTileResponse"][];
+                };
+            };
+        };
+    };
+    get_atlas_tile_atlas_tiles__tile_uuid__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tile_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AtlasTileResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_atlas_tile_atlas_tiles__tile_uuid__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tile_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AtlasTileUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AtlasTileResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_atlas_tile_atlas_tiles__tile_uuid__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tile_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_atlas_tiles_by_atlas_atlases__atlas_uuid__tiles_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                atlas_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AtlasTileResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_atlas_tile_for_atlas_atlases__atlas_uuid__tiles_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                atlas_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AtlasTileCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AtlasTileResponse"];
                 };
             };
             /** @description Validation Error */
@@ -691,12 +2088,12 @@ export interface operations {
             };
         };
     };
-    get_gridsquare_gridsquares__gridsquare_id__get: {
+    get_gridsquare_gridsquares__gridsquare_uuid__get: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                gridsquare_id: number;
+                gridsquare_uuid: string;
             };
             cookie?: never;
         };
@@ -722,12 +2119,76 @@ export interface operations {
             };
         };
     };
-    get_grid_gridsquares_grids__grid_id__gridsquares_get: {
+    update_gridsquare_gridsquares__gridsquare_uuid__put: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                grid_id: number;
+                gridsquare_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GridSquareUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GridSquareResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_gridsquare_gridsquares__gridsquare_uuid__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                gridsquare_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_grid_gridsquares_grids__grid_uuid__gridsquares_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                grid_uuid: string;
             };
             cookie?: never;
         };
@@ -740,6 +2201,41 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["GridSquareResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_grid_gridsquare_grids__grid_uuid__gridsquares_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                grid_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GridSquareCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GridSquareResponse"];
                 };
             };
             /** @description Validation Error */
@@ -773,12 +2269,12 @@ export interface operations {
             };
         };
     };
-    get_foilhole_foilholes__foilhole_id__get: {
+    get_foilhole_foilholes__foilhole_uuid__get: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                foilhole_id: number;
+                foilhole_uuid: string;
             };
             cookie?: never;
         };
@@ -804,12 +2300,76 @@ export interface operations {
             };
         };
     };
-    get_gridsquare_foilholes_gridsquares__gridsquare_id__foilholes_get: {
+    update_foilhole_foilholes__foilhole_uuid__put: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                gridsquare_id: number;
+                foilhole_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FoilHoleUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FoilHoleResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_foilhole_foilholes__foilhole_uuid__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                foilhole_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_gridsquare_foilholes_gridsquares__gridsquare_uuid__foilholes_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                gridsquare_uuid: string;
             };
             cookie?: never;
         };
@@ -822,6 +2382,41 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["FoilHoleResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_gridsquare_foilhole_gridsquares__gridsquare_uuid__foilholes_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                gridsquare_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FoilHoleCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FoilHoleResponse"];
                 };
             };
             /** @description Validation Error */
@@ -855,12 +2450,12 @@ export interface operations {
             };
         };
     };
-    get_micrograph_micrographs__micrograph_id__get: {
+    get_micrograph_micrographs__micrograph_uuid__get: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                micrograph_id: number;
+                micrograph_uuid: string;
             };
             cookie?: never;
         };
@@ -886,12 +2481,76 @@ export interface operations {
             };
         };
     };
-    get_foilhole_micrographs_foilholes__foilhole_id__micrographs_get: {
+    update_micrograph_micrographs__micrograph_uuid__put: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                foilhole_id: number;
+                micrograph_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MicrographUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MicrographResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_micrograph_micrographs__micrograph_uuid__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                micrograph_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_foilhole_micrographs_foilholes__foilhole_uuid__micrographs_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                foilhole_uuid: string;
             };
             cookie?: never;
         };
@@ -917,26 +2576,28 @@ export interface operations {
             };
         };
     };
-    get_quality_predictions_for_square_gridsquares__gridsquare_id__quality_predictions_get: {
+    create_foilhole_micrograph_foilholes__foilhole_uuid__micrographs_post: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                gridsquare_id: number;
+                foilhole_uuid: string;
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MicrographCreateRequest"];
+            };
+        };
         responses: {
             /** @description Successful Response */
-            200: {
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: components["schemas"]["QualityPrediction"][][];
-                    };
+                    "application/json": components["schemas"]["MicrographResponse"];
                 };
             };
             /** @description Validation Error */
@@ -950,7 +2611,7 @@ export interface operations {
             };
         };
     };
-    get_stored_prediction_models_prediction_models_get: {
+    get_prediction_models_prediction_models_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -965,138 +2626,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PredictionModelResponse"][];
-                };
-            };
-        };
-    };
-    get_model_weights_prediction_models__model_name__grids__grid_id__weights_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                model_name: string;
-                grid_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ModelWeightResponse"][];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    calculate_weighted_predictions_gridsquares__gridsquare_id__weigthed_predictions_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                gridsquare_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: components["schemas"]["Score"][];
-                    };
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_most_recent_quality_prediction_for_square_gridsquares__gridsquare_id__most_recent_quality_prediction_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                gridsquare_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: components["schemas"]["QualityPrediction"][];
-                    };
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_quality_predictions_for_hole_foilholes__foilhole_id__quality_predictions_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                foilhole_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: components["schemas"]["QualityPrediction"][];
-                    };
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
+                    "application/json": components["schemas"]["QualityPredictionModelResponse"][];
                 };
             };
         };

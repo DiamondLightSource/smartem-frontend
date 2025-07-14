@@ -30,6 +30,13 @@ export const theme = createTheme({
             }
         },
       },
+      MuiCardContent: {
+        styleOverrides: {
+            root: {
+                backgroundColor: '#E39EC1',
+            }
+        },
+      },
     },
     palette: {
       primary: {

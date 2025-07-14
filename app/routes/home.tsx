@@ -32,7 +32,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 
   const navigate = useNavigate();
 
-  const handleClick = (event: React.MouseEvent<unknown>, acquisitionId: number) => {
+  const handleClick = (event: React.MouseEvent<unknown>, acquisitionId: string) => {
     navigate(`/acquisitions/${acquisitionId}`);
   }
 
@@ -45,16 +45,16 @@ export default function Home({ loaderData }: Route.ComponentProps) {
             <TableHead>
               <TableRow>
                 <TableCell style={{ backgroundColor: "secondary" }}>Acquisition ID</TableCell>
-                <TableCell>EPU ID</TableCell>
+                <TableCell>Start Time</TableCell>
                 <TableCell>Acquisition Name</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {loaderData.result.map((acq: AcquisitionResponse) => {
                 return (
-                <TableRow hover onClick={(event) => handleClick(event, acq.id)} key={acq.id}>
-                  <TableCell>{acq.id}</TableCell>
-                  <TableCell>{acq.epu_id}</TableCell>
+                <TableRow hover onClick={(event) => handleClick(event, acq.uuid)} key={acq.uuid}>
+                  <TableCell>{acq.uuid}</TableCell>
+                  <TableCell>{acq.start_time ? Date(acq.start_time).toString(): null}</TableCell>
                   <TableCell>{acq.name}</TableCell>
                 </TableRow>
                 )

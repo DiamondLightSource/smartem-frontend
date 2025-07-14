@@ -1,8 +1,8 @@
 import type { Route } from "./+types/product";
 
-import { Accordion, AccordionActions, AccordionSummary, Button, Container, ThemeProvider, Tooltip, Typography, Grid, CardContent, Card } from "@mui/material";
+import { Container, ThemeProvider, Grid, CardContent, Card, CardHeader } from "@mui/material";
 
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Avatar from "boring-avatars";
 
 import { useNavigate } from "react-router";
 
@@ -11,7 +11,7 @@ import type { components } from "../schema"
 import { Navbar } from "../components/navbar";
 import { theme } from "../components/theme";
 
-type PredictionModelResponse = components["schemas"]["PredictionModelResponse"]
+type PredictionModelResponse = components["schemas"]["QualityPredictionModelResponse"]
 
 
 export async function loader({ params }: Route.LoaderArgs) {
@@ -26,21 +26,19 @@ export default function PredictionModels({ loaderData }: Route.ComponentProps) {
     <ThemeProvider theme={theme}>
       <Navbar/>
       <Container content="center" style={{ width: "100%", paddingTop: "50px" }}>
-        <Grid container spacing={3}>
+        <Grid container spacing={1}>
             {loaderData.result.map(
                 (model: PredictionModelResponse) => {
                     return (
-                      <Grid size={2}>
+                      <Grid size={4}>
                         <Card variant="outlined">
-                            <CardContent>{model.prediction_model.name}</CardContent>
-                            <Accordion>
-                                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                    <Typography component="span">Grids</Typography>
-                                </AccordionSummary>
-                                <AccordionActions>
-                                    {model.grids.map((grid) => {return <Tooltip title={grid.name}><Button onClick={() => {navigate(`/models/${model.prediction_model.name}/grids/${grid.id}/weights`)}}>{grid.id}</Button></Tooltip>})}
-                                </AccordionActions>
-                            </Accordion>
+                            <CardHeader
+                              avatar={
+                                <Avatar name={model.name} variant="ring" size={60}/>
+                              }
+                              title={model.name}
+                            />
+                            <CardContent>{model.description}</CardContent>
                         </Card>
                     </Grid>
                     )

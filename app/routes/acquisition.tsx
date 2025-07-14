@@ -1,7 +1,8 @@
 import type { Route } from "./+types/product";
 
-import { Container, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, ThemeProvider } from "@mui/material";
+import { Container, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, ThemeProvider, IconButton } from "@mui/material";
 import Paper from '@mui/material/Paper';
+import GridOnIcon from '@mui/icons-material/GridOn';
 
 import { useNavigate } from "react-router";
 
@@ -22,7 +23,7 @@ export async function loader({ params }: Route.LoaderArgs) {
 export default function Acquisition({ loaderData, params }: Route.ComponentProps) {
   const navigate = useNavigate();
 
-  const handleClick = (event: React.MouseEvent<unknown>, gridId: number) => {
+  const handleClick = (event: React.MouseEvent<unknown>, gridId: string) => {
     navigate(`/acquisitions/${params.acqId}/grids/${gridId}`);
   }
 
@@ -37,15 +38,21 @@ export default function Acquisition({ loaderData, params }: Route.ComponentProps
                 <TableCell>Grid ID</TableCell>
                 <TableCell>Grid Name</TableCell>
                 <TableCell>Status</TableCell>
+                <TableCell>Atlas</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {loaderData.result.map((grid: GridResponse) => {
                 return (
-                <TableRow hover onClick={(event) => {handleClick(event, grid.id)}} key={grid.id}>
-                  <TableCell>{grid.id}</TableCell>
+                <TableRow hover onClick={(event) => {handleClick(event, grid.uuid)}} key={grid.uuid}>
+                  <TableCell>{grid.uuid}</TableCell>
                   <TableCell>{grid.name}</TableCell>
                   <TableCell>{grid.status}</TableCell>
+                  <TableCell>
+                    <IconButton onClick={() => navigate(`./grid/${grid.uuid}/atlas`, { relative: "path" })}>
+                      <GridOnIcon/>
+                    </IconButton>
+                  </TableCell>
                 </TableRow>
                 )
               })
