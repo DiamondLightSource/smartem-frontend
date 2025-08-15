@@ -12,9 +12,10 @@ import type { components } from "../schema"
 import { Navbar } from "../components/navbar";
 import { theme } from "../components/theme";
 
+import { apiUrl } from "../utils/api";
+
 type GridSquareResponse = components["schemas"]["GridSquareResponse"]
 type FoilHoleResponse = components["schemas"]["FoilHoleResponse"]
-type Score = components["schemas"]["Score"]
 type SquareDetails = {
     square: GridSquareResponse,
     holes: FoilHoleResponse[];
@@ -30,15 +31,15 @@ type FullSquareDetails = {
 }
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const squares_response = await fetch(`http://localhost:8000/grids/${params.gridId}/gridsquares`);
+  const squares_response = await fetch(`${apiUrl()}/grids/${params.gridId}/gridsquares`);
   const squares_data: GridSquareResponse[] = await squares_response.json(); 
   const squares = await Promise.all(
-    squares_data.map((square) => {square.image_path ? fetch(`http://localhost:8000/gridsquares/${square.uuid}/foilholes`)
+    squares_data.map((square) => {square.image_path ? fetch(`${apiUrl()}/gridsquares/${square.uuid}/foilholes`)
     .then((response) => {return response.json()})
     .then((holes) => {return { square: square, holes: holes }}): { square: square, holes: []}})
   );
   //const weightedPredictions = Promise.all(
-  //  squares_data.map((square) => fetch(`http://localhost:8000/gridsquares/${square.uuid}/weighted_predictions`)
+  //  squares_data.map((square) => fetch(`${apiUrl()}/gridsquares/${square.uuid}/weighted_predictions`)
   //  .then((response) => {return response.json()})
   //  .then((scores) => { return [square.gridsquare_id, Object.entries(scores as {[key: number]: Score[]}).map(([fh, elem]) => {return { prediction: elem.slice(-1)[0].value, hole: fh } })] }))
   //);

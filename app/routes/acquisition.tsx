@@ -11,11 +11,13 @@ import type { components } from "../schema"
 import { Navbar } from "../components/navbar";
 import { theme } from "../components/theme";
 
+import { apiUrl } from "../utils/api";
+
 type GridResponse = components["schemas"]["GridResponse"]
 
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const grids = await fetch(`http://localhost:8000/acquisitions/${params.acqId}/grids`);
+  const grids = await fetch(`${apiUrl()}/acquisitions/${params.acqId}/grids`);
   const result = await grids.json();
   return { result };
 }

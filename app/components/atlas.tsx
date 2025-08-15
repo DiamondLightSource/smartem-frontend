@@ -10,10 +10,12 @@ import React from "react";
 
 import { theme } from "../components/theme";
 
+import { apiUrl } from "../utils/api";
+
 type GridSquare = components["schemas"]["GridSquareResponse"]
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const gridsquares = await fetch(`http://localhost:8000/grids/${params.gridId}/gridsquares`);
+  const gridsquares = await fetch(`${apiUrl()}/grids/${params.gridId}/gridsquares`);
   const squares = await gridsquares.json();
   return { squares };
 }
@@ -41,7 +43,7 @@ export default function Atlas({ params, onClose })  {
     React.useEffect(
         () => {
             const loadData = async () => {
-                const gridsquares = await fetch(`http://localhost:8000/grids/${params.gridId}/gridsquares`);
+                const gridsquares = await fetch(`${apiUrl()}/grids/${params.gridId}/gridsquares`);
                 const squares = await gridsquares.json();
                 setSquares(squares);
                 return squares;
@@ -62,7 +64,7 @@ export default function Atlas({ params, onClose })  {
                     </CardActions>
                     <CardContent>
                         <div style={{ display: "flex", flex: "1 0 300px", "position": "relative" }}>
-                        <img src={`http://localhost:8000/grids/${params.gridId}/atlas_image`} />
+                        <img src={`${apiUrl()}/grids/${params.gridId}/atlas_image`} />
                         <svg viewBox='0 0 4005 4005' style={{ "position": "absolute", "top": 0, "left": 0 }}>
                             {squares.map((gridSquare: GridSquare) => (
                             <Tooltip title={gridSquare.gridsquare_id}>

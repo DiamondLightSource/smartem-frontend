@@ -12,6 +12,8 @@ import type { components } from "../schema"
 import { Navbar } from "../components/navbar";
 import { theme } from "../components/theme";
 
+import { apiUrl } from "../utils/api";
+
 type AcquisitionResponse = components["schemas"]["AcquisitionResponse"]
 
 export function meta({}: Route.MetaArgs) {
@@ -22,7 +24,7 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const acquisitions = await fetch(`http://localhost:8000/acquisitions`);
+  const acquisitions = await fetch(`${apiUrl()}/acquisitions`);
   const result = await acquisitions.json();
   return { result };
 }

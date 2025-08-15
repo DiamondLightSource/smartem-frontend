@@ -9,11 +9,13 @@ import React from "react";
 import { Navbar } from "../components/navbar";
 import { theme } from "../components/theme";
 
+import { apiUrl } from "../utils/api";
+
 type GridSquare = components["schemas"]["GridSquareResponse"]
 
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const gridsquares = await fetch(`http://localhost:8000/grids/${params.gridId}/gridsquares`);
+  const gridsquares = await fetch(`${apiUrl()}/grids/${params.gridId}/gridsquares`);
   const squares = await gridsquares.json();
   return { squares };
 }
@@ -66,7 +68,7 @@ export default function GridSquareGallery({ loaderData, params }: Route.Componen
                                 />
                                 <CardMedia
                                     component="img"
-                                    image={`http://localhost:8000/grids/${params.gridId}/atlas_image?x=${square.center_x}&y=${square.center_y}&w=${square.size_width}&h=${square.size_height}`}
+                                    image={`${apiUrl()}/grids/${params.gridId}/atlas_image?x=${square.center_x}&y=${square.center_y}&w=${square.size_width}&h=${square.size_height}`}
                                 />
                             </CardActionArea>
                         </Card>

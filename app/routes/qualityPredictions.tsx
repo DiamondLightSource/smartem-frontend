@@ -17,13 +17,15 @@ import { TimeSeriesChart } from "../components/timeseries";
 
 import type { components } from "../schema"
 
+import { apiUrl } from "../utils/api";
+
 type QualityPrediction = components["schemas"]["QualityPrediction"]
 type Score = components["schemas"]["Score"]
 type PredictionResponse = { [key: string]: QualityPrediction[][] }
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const grids = await fetch(`http://localhost:8000/gridsquares/${params.squareId}/quality_predictions`);
-  const weightedPredictions: Promise<Score[][]> = fetch(`http://localhost:8000/gridsquares/${params.squareId}/weighted_predictions`)
+  const grids = await fetch(`${apiUrl()}/gridsquares/${params.squareId}/quality_predictions`);
+  const weightedPredictions: Promise<Score[][]> = fetch(`${apiUrl()}/gridsquares/${params.squareId}/weighted_predictions`)
     .then((response) => {return response.json()})
     .then((scores) => { return Object.entries(scores as {[key: number]: Score[]}).map(([fh, elem]) => {return elem}) })
     .then(m => {return m[0].map((x,i) => {return m.map(x => x[i])})})

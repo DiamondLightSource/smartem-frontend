@@ -11,11 +11,13 @@ import type { components } from "../schema"
 import { Navbar } from "../components/navbar";
 import { theme } from "../components/theme";
 
+import { apiUrl } from "../utils/api";
+
 type PredictionModelResponse = components["schemas"]["QualityPredictionModelResponse"]
 
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const models = await fetch(`http://localhost:8000/prediction_models`);
+  const models = await fetch(`${apiUrl()}/prediction_models`);
   const result = await models.json();
   return { result };
 }

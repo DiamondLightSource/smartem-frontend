@@ -14,6 +14,8 @@ import React from "react";
 import { Navbar } from "../components/navbar";
 import { theme } from "../components/theme";
 
+import { apiUrl } from "../utils/api";
+
 type GridSquare = components["schemas"]["GridSquareResponse"]
 type PredictionModel = components["schemas"]["QualityPredictionModelResponse"]
 type Prediction = components["schemas"]["QualityPredictionResponse"]
@@ -26,22 +28,22 @@ type Coords = {
 }
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const gridsquares = await fetch(`http://localhost:8000/grids/${params.gridId}/gridsquares`);
+  const gridsquares = await fetch(`${apiUrl()}/grids/${params.gridId}/gridsquares`);
   const squares = await gridsquares.json();
-  const predictionModels = await fetch(`http://localhost:8000/prediction_models`);
+  const predictionModels = await fetch(`${apiUrl()}/prediction_models`);
   const models = await predictionModels.json();
   return { squares, models };
 }
 
 const getPredictions = async (modelName: string, gridId: string) => {
-        const squarePredictionsResponse = await fetch(`http://localhost:8000/prediction_model/${modelName}/grid/${gridId}/prediction`);
+        const squarePredictionsResponse = await fetch(`${apiUrl()}/prediction_model/${modelName}/grid/${gridId}/prediction`);
         const squarePredictions = await squarePredictionsResponse.json();
         const squarePredictionsMap = new Map<string, number>(squarePredictions.map((elem: Prediction) => [elem.gridsquare_uuid, elem.value]));
         return squarePredictionsMap;
     }
 
 const getLatentRep = async (modelName: string, gridId: string) => {
-        const latentRepResponse = await fetch(`http://localhost:8000/prediction_model/${modelName}/grid/${gridId}/latent_representation`);
+        const latentRepResponse = await fetch(`${apiUrl()}/prediction_model/${modelName}/grid/${gridId}/latent_representation`);
         const latentRepResult = await latentRepResponse.json();
         const latentRepMap = new Map<string, Coords>(latentRepResult.map((elem: LatentRep) => [elem.gridsquare_uuid, {"x": elem.x, "y": elem.y, "index": elem.index} as Coords]));
         return latentRepMap;
@@ -116,7 +118,7 @@ export default function Atlas({ loaderData, params }: Route.ComponentProps) {
             <Container maxWidth="sm" content="center" style={{ width: "100%", paddingTop: "50px" }}>
                 <Card variant="outlined">
                     <div style={{ display: "flex", flex: "1 0 300px", "position": "relative" }}>
-                    <img src={`http://localhost:8000/grids/${params.gridId}/atlas_image`} />
+                    <img src={`${apiUrl()}/grids/${params.gridId}/atlas_image`} />
                     <svg viewBox='0 0 4005 4005' style={{ "position": "absolute", "top": 0, "left": 0 }}>
                         {loaderData.squares.map((gridSquare: GridSquare) => (
                         <Tooltip title={(showPredictions && predictions) ? `${gridSquare.gridsquare_id}: ${predictions.get(gridSquare.uuid)?.toFixed(3)}` : gridSquare.gridsquare_id}>

@@ -17,8 +17,10 @@ import { theme } from "../components/theme";
 import { TimeSeriesChart } from "../components/timeseries";
 import { Await } from "react-router";
 
+import { apiUrl } from "../utils/api";
+
 export async function loader({ params }: Route.LoaderArgs) {
-  const models = await fetch(`http://localhost:8000/prediction_models/${params.modelName}/grids/${params.gridId}/weights`);
+  const models = await fetch(`${apiUrl()}/prediction_models/${params.modelName}/grids/${params.gridId}/weights`);
   const result = models.json();
   return { result };
 }
