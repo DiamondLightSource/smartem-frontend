@@ -33,15 +33,16 @@ export async function loader({ params }: Route.LoaderArgs) {
   const squares_response = await fetch(`http://localhost:8000/grids/${params.gridId}/gridsquares`);
   const squares_data: GridSquareResponse[] = await squares_response.json(); 
   const squares = await Promise.all(
-    squares_data.map((square) => fetch(`http://localhost:8000/gridsquares/${square.id}/foilholes`)
+    squares_data.map((square) => {square.image_path ? fetch(`http://localhost:8000/gridsquares/${square.uuid}/foilholes`)
     .then((response) => {return response.json()})
-    .then((holes) => {return { square: square, holes: holes }}))
+    .then((holes) => {return { square: square, holes: holes }}): { square: square, holes: []}})
   );
-  const weightedPredictions = Promise.all(
-    squares_data.map((square) => fetch(`http://localhost:8000/gridsquares/${square.id}/weighted_predictions`)
-    .then((response) => {return response.json()})
-    .then((scores) => { return [square.name, Object.entries(scores as {[key: number]: Score[]}).map(([fh, elem]) => {return { prediction: elem.slice(-1)[0].value, hole: fh } })] }))
-  );
+  //const weightedPredictions = Promise.all(
+  //  squares_data.map((square) => fetch(`http://localhost:8000/gridsquares/${square.uuid}/weighted_predictions`)
+  //  .then((response) => {return response.json()})
+  //  .then((scores) => { return [square.gridsquare_id, Object.entries(scores as {[key: number]: Score[]}).map(([fh, elem]) => {return { prediction: elem.slice(-1)[0].value, hole: fh } })] }))
+  //);
+  const weightedPredictions = [[]];
   return { squares, weightedPredictions };
 }
 
@@ -59,22 +60,22 @@ const CollapsibleRow = ({ square, holes, weightedPredictions }: FullSquareDetail
 
     const holeWeightComparator = (a: FoilHoleResponse, b: FoilHoleResponse) => {
       if(sortOrderDescending) {
-        if(holeWeights.get(a.name) < holeWeights.get(b.name)) return 1;
-        else if(holeWeights.get(a.name) > holeWeights.get(b.name)) return -1;
+        if(holeWeights.get(a.foilhole_id) < holeWeights.get(b.foilhole_id)) return 1;
+        else if(holeWeights.get(a.foilhole_id) > holeWeights.get(b.foilhole_id)) return -1;
         return 0;
       }
       else {
-        if(holeWeights.get(a.name) < holeWeights.get(b.name)) return -1;
-        else if(holeWeights.get(a.name) > holeWeights.get(b.name)) return 1;
+        if(holeWeights.get(a.foilhole_id) < holeWeights.get(b.foilhole_id)) return -1;
+        else if(holeWeights.get(a.foilhole_id) > holeWeights.get(b.foilhole_id)) return 1;
         return 0;
       }
     }
 
     return (
         <React.Fragment>
-            <TableRow hover onClick={() => {setOpen(!open)}} key={square.id}>
-                <TableCell>{square.id}</TableCell>
-                <TableCell>{square.name}</TableCell>
+            <TableRow hover onClick={() => {setOpen(!open)}} key={square.uuid}>
+                <TableCell>{square.uuid}</TableCell>
+                <TableCell>{square.gridsquare_id}</TableCell>
                 <TableCell>{square.status}</TableCell>
                 <TableCell>{holes.length}</TableCell>
                 {(weightedPrediction === null) ?
@@ -87,7 +88,7 @@ const CollapsibleRow = ({ square, holes, weightedPredictions }: FullSquareDetail
                 </TableCell>
                 }
                 <TableCell>
-                    <IconButton onClick={() => navigate(`./square/${square.id}/predictions`, { relative: "path" })}>
+                    <IconButton onClick={() => navigate(`./square/${square.uuid}/predictions`, { relative: "path" })}>
                         <InsightsIcon/>
                     </IconButton>
                 </TableCell>
@@ -108,11 +109,11 @@ const CollapsibleRow = ({ square, holes, weightedPredictions }: FullSquareDetail
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {holes.sort(holeWeightComparator).map((hole) => {return <TableRow key={hole.id}>
-                                      <TableCell>{hole.name}</TableCell>
+                                    {holes.sort(holeWeightComparator).map((hole) => {return <TableRow key={hole.uuid}>
+                                      <TableCell>{hole.foilhole_id}</TableCell>
                                       {(weightedPrediction === null) ?
                                       <TableCell><CircularProgress size={10}/></TableCell>:
-                                      <TableCell>{holeWeights.get(hole.name) ?? weightedPrediction}</TableCell>
+                                      <TableCell>{holeWeights.get(hole.foilhole_id) ?? weightedPrediction}</TableCell>
                                       }
                                     </TableRow>})}
                                 </TableBody>
@@ -128,6 +129,8 @@ const CollapsibleRow = ({ square, holes, weightedPredictions }: FullSquareDetail
 export default function Grid({ loaderData }: Route.ComponentProps) {
   const [holeNumberOrder, setHoleNumberOrder] = React.useState(true);
   const [sortOrderDescending, setSortOrderDescending] = React.useState(true);
+
+  console.log(loaderData.squares);
 
   const holeNumberComparator = (a: SquareDetails, b: SquareDetails) => {
     if(sortOrderDescending) {
@@ -176,7 +179,7 @@ export default function Grid({ loaderData }: Route.ComponentProps) {
               const mapResult: Map<string, HolePrediction[]> = new Map(result);
               return <TableBody>
                 {loaderData.squares.sort(holeNumberComparator).map((square: SquareDetails) => {
-                  return <CollapsibleRow square={square.square} holes={square.holes} weightedPredictions={mapResult.get(square.square.name) ?? []} />
+                  return <CollapsibleRow square={square.square} holes={square.holes} weightedPredictions={mapResult.get(square.square.gridsquare_id) ?? []} />
                 })
                 }
               </TableBody>

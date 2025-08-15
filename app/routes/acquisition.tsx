@@ -44,12 +44,12 @@ export default function Acquisition({ loaderData, params }: Route.ComponentProps
             <TableBody>
               {loaderData.result.map((grid: GridResponse) => {
                 return (
-                <TableRow hover onClick={(event) => {handleClick(event, grid.uuid)}} key={grid.uuid}>
-                  <TableCell>{grid.uuid}</TableCell>
-                  <TableCell>{grid.name}</TableCell>
-                  <TableCell>{grid.status}</TableCell>
+                <TableRow hover key={grid.uuid}>
+                  <TableCell onClick={(event) => {handleClick(event, grid.uuid)}}>{grid.uuid}</TableCell>
+                  <TableCell onClick={(event) => {handleClick(event, grid.uuid)}}>{grid.name}</TableCell>
+                  <TableCell onClick={(event) => {handleClick(event, grid.uuid)}}>{grid.status}</TableCell>
                   <TableCell>
-                    <IconButton onClick={() => navigate(`./grid/${grid.uuid}/atlas`, { relative: "path" })}>
+                    <IconButton onClick={() => navigate(`./grids/${grid.uuid}/atlas`, { relative: "path" })}>
                       <GridOnIcon/>
                     </IconButton>
                   </TableCell>
