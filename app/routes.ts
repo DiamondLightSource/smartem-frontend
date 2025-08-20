@@ -7,6 +7,7 @@ export default [
     route("/acquisitions/:acqId", "./routes/acquisition.tsx"), 
     route("/acquisitions/:acqId/grids/:gridId/workspace", "./routes/workspace.tsx"),
     route("/acquisitions/:acqId/grids/:gridId/atlas", "./routes/atlas.tsx"),
+    route("/acquisitions/:acqId/grids/:gridId/squares/:squareId", "./routes/square_lr.tsx"),
     route("/acquisitions/:acqId/grids/:gridId/gridsquares", "./routes/gridsquares.tsx"),
     route("/acquisitions/:acqId/grids/:gridId", "./routes/grid.tsx"),
     route("/acquisitions/:acqId/grids/:gridId/square/:squareId/predictions", "./routes/qualityPredictions.tsx"),

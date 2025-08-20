@@ -72,7 +72,7 @@ export default function Atlas({ params, onClose })  {
                                 key={gridSquare.uuid}
                                 cx={gridSquare.center_x}
                                 cy={gridSquare.center_y}
-                                r={gridSquare.size_width / 2}
+                                r={gridSquare.size_width ? gridSquare.size_width / 2: 0}
                                 fillOpacity={0.5}
                                 fill={"purple"}
                                 strokeWidth={(gridSquare.uuid === selectedSquare) ? 0.25*gridSquare.size_width: 0.1*gridSquare.size_width}

@@ -6,11 +6,8 @@ import { ScatterChart } from '@mui/x-charts/ScatterChart';
 import type { ScatterItemIdentifier } from '@mui/x-charts/models';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
-import ZoomInIcon from '@mui/icons-material/ZoomIn';
 
 import type { components } from "../schema"
-
-import { useNavigate } from "react-router";
 
 import React from "react";
 
@@ -19,7 +16,7 @@ import { theme } from "../components/theme";
 
 import { apiUrl } from "../utils/api";
 
-type GridSquare = components["schemas"]["GridSquareResponse"]
+type FoilHole = components["schemas"]["FoilHoleResponse"]
 type PredictionModel = components["schemas"]["QualityPredictionModelResponse"]
 type Prediction = components["schemas"]["QualityPredictionResponse"]
 type LatentRep = components["schemas"]["LatentRepresentationResponse"]
@@ -31,32 +28,31 @@ type Coords = {
 }
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const gridsquares = await fetch(`${apiUrl()}/grids/${params.gridId}/gridsquares`);
-  const squares = await gridsquares.json();
+  const foilholes = await fetch(`${apiUrl()}/gridsquares/${params.squareId}/foilholes?on_square_only=true`);
+  const holes = await foilholes.json();
   const predictionModels = await fetch(`${apiUrl()}/prediction_models`);
   const models = await predictionModels.json();
-  return { squares, models };
+  return { holes, models };
 }
 
-
-const getPredictions = async (modelName: string, gridId: string) => {
-        const squarePredictionsResponse = await fetch(`${apiUrl()}/prediction_model/${modelName}/grid/${gridId}/prediction`);
+const getPredictions = async (modelName: string, gridSquareId: string) => {
+        const holePredictionsResponse = await fetch(`${apiUrl()}/prediction_model/${modelName}/gridsquare/${gridSquareId}/prediction`);
         const squarePredictions = await squarePredictionsResponse.json();
         const squarePredictionsMap = new Map<string, number>(squarePredictions.map((elem: Prediction) => [elem.gridsquare_uuid, elem.value]));
         return squarePredictionsMap;
     }
 
-const getLatentRep = async (modelName: string, gridId: string) => {
-        const latentRepResponse = await fetch(`${apiUrl()}/prediction_model/${modelName}/grid/${gridId}/latent_representation`);
+const getLatentRep = async (modelName: string, gridSquareId: string) => {
+        const latentRepResponse = await fetch(`${apiUrl()}/prediction_model/${modelName}/gridsquare/${gridSquareId}/latent_representation`);
         const latentRepResult = await latentRepResponse.json();
-        const latentRepMap = new Map<string, Coords>(latentRepResult.map((elem: LatentRep) => [elem.gridsquare_uuid, {"x": elem.x, "y": elem.y, "index": elem.index} as Coords]));
+        const latentRepMap = new Map<string, Coords>(latentRepResult.map((elem: LatentRep) => [elem.foilhole_uuid, {"x": elem.x, "y": elem.y, "index": elem.index} as Coords]));
         return latentRepMap;
     }
 
-export default function Atlas({ loaderData, params }: Route.ComponentProps) {
+export default function GridSquareLR({ loaderData, params }: Route.ComponentProps) {
     const [maxWidth, setMaxWidth] = React.useState(0);
-    const [squareNameMap, setSquareNameMap] = React.useState<Map<string, string>>()
-    const [selectedSquare, setSelectedSquare] = React.useState("");
+    const [holeNameMap, setHoleNameMap] = React.useState<Map<string, string>>()
+    const [selectedHole, setSelectedHole] = React.useState("");
     const [showPredictions, setShowPredictions] = React.useState(false);
     const [predictionModel, setPredictionModel] = React.useState("");
     const [repModel, setRepModel] = React.useState("");
@@ -68,13 +64,11 @@ export default function Atlas({ loaderData, params }: Route.ComponentProps) {
     const [showUnselectedInLatentSpace, setShowUnselectedInLatentSpace] = React.useState(true);
     const [selectionFrozen, setSelectionFrozen] = React.useState(false);
 
-    const navigate = useNavigate();
-
     const colourPalette = ["#E3B505", "#95190C", "#610345", "#107E7D", "#044B7F", "#916953", "#CF8E80", "#FCB5B5", "#FCDDF2", "#D8DC6A"]
 
     const handleChange = async (event: SelectChangeEvent) => {
         setPredictionModel(event.target.value);
-        const preds = await getPredictions(event.target.value, params.gridId);        
+        const preds = await getPredictions(event.target.value, params.squareId);        
         setPredictions(preds);
     }
 
@@ -84,7 +78,7 @@ export default function Atlas({ loaderData, params }: Route.ComponentProps) {
 
     const handleLatentRepChange = async (event: SelectChangeEvent) => {
         setRepModel(event.target.value);
-        const latentRepValues: Map<string, Coords> = await getLatentRep(event.target.value, params.gridId);      
+        const latentRepValues: Map<string, Coords> = await getLatentRep(event.target.value, params.squareId);      
         setLatentRep(latentRepValues);
     }
 
@@ -100,9 +94,9 @@ export default function Atlas({ loaderData, params }: Route.ComponentProps) {
 
     React.useEffect(
         () => {
-            const widths = loaderData.squares.map((elem: GridSquare) => {return elem.size_width});
+            const widths = loaderData.holes.map((elem: FoilHole) => {return elem.size_width});
             setMaxWidth(Math.max(...widths));
-            setSquareNameMap(new Map<string, string>(loaderData.squares.map((elem: GridSquare) => [elem.uuid, elem.gridsquare_id])));
+            setHoleNameMap(new Map<string, string>(loaderData.holes.map((elem: FoilHole) => [elem.uuid, elem.foilhole_id])));
         },
         []
     )
@@ -119,7 +113,6 @@ export default function Atlas({ loaderData, params }: Route.ComponentProps) {
 
     const url = apiUrl();
 
-
     return (
         <ThemeProvider theme={theme}>
             <Navbar/>
@@ -127,37 +120,32 @@ export default function Atlas({ loaderData, params }: Route.ComponentProps) {
             <Container maxWidth="sm" content="center" style={{ width: "100%", paddingTop: "50px" }}>
                 <Card variant="outlined">
                     <div style={{ display: "flex", flex: "1 0 300px", "position": "relative" }}>
-                    <img src={`${url}/grids/${params.gridId}/atlas_image`} />
-                    <svg viewBox='0 0 4005 4005' style={{ "position": "absolute", "top": 0, "left": 0 }} >
-                        {loaderData.squares.map((gridSquare: GridSquare) => (
-                        <Tooltip title={(showPredictions && predictions) ? `${gridSquare.gridsquare_id}: ${predictions.get(gridSquare.uuid)?.toFixed(3)}` : gridSquare.gridsquare_id}>
+                    <img src={`${url}/gridsquares/${params.squareId}/gridsquare_image`} />
+                    <svg viewBox='0 0 4096 4096' style={{ "position": "absolute", "top": 0, "left": 0 }}>
+                        {loaderData.holes.map((foilHole: FoilHole) => (
+                        <Tooltip title={(showPredictions && predictions) ? `${foilHole.foilhole_id}: ${predictions.get(foilHole.uuid)?.toFixed(3)}` : foilHole.foilhole_id}>
                         <circle
-                            key={gridSquare.uuid}
-                            cx={gridSquare.center_x}
-                            cy={gridSquare.center_y}
+                            key={foilHole.uuid}
+                            cx={foilHole.x_location}
+                            cy={foilHole.y_location}
+                            r={predictions?.get(foilHole.uuid) ? (1.5*(predictions.get(foilHole.uuid)-predictionMin)/(predictionMax-predictionMin))*maxWidth / 2: foilHole.diameter / 2}
                             fillOpacity={0.5}
-                            r={predictions?.get(gridSquare.uuid) ? (1.5*(predictions.get(gridSquare.uuid)-predictionMin)/(predictionMax-predictionMin))*maxWidth / 2: gridSquare.size_width / 2}
                             fill={latentRep ?
-                                colourPalette[latentRep.get(gridSquare.uuid).index] :
+                                colourPalette[latentRep.get(foilHole.uuid).index] :
                                 showPredictions ? 
-                                predictions?.get(gridSquare.uuid) ? 
-                                predictions.get(gridSquare.uuid) >= 0 ? 
+                                predictions?.get(foilHole.uuid) ? 
+                                predictions.get(foilHole.uuid) >= 0 ? 
                                 "green" : 
                                 "red": 
                                 "dark gray": 
                                 "purple"
                             }
-                            strokeWidth={(gridSquare.uuid === selectedSquare) ? 0.25*gridSquare.size_width: 0.1*gridSquare.size_width}
+                            strokeWidth={(foilHole.uuid === selectedHole) ? 0.25*foilHole.diameter: 0.1*foilHole.diameter}
                             strokeOpacity={1}
-                            stroke={(gridSquare.uuid === selectedSquare) ? "orange": showPredictions ? predictions?.get(gridSquare.uuid) ? predictions.get(gridSquare.uuid) >= 0 ? "green": "red": "gray": "gray"}
-                            onClick={() => handleSelectionClick(gridSquare.uuid)}
-                            onMouseOver={() => !selectionFrozen ? setSelectedSquare(gridSquare.uuid): {}}
-                        >
-                        { !!gridSquare.image_path ? 
-                          <animate attributeName="fill-opacity" dur="1s" values="0.25;1;0.25" repeatCount="indefinite" begin="0.25" /> :
-                          <></>
-                        }
-                        </circle>
+                            stroke={(foilHole.uuid === selectedHole) ? "orange": showPredictions ? predictions?.get(foilHole.uuid) ? predictions.get(foilHole.uuid) >= 0 ? "green": "red": "gray": "gray"}
+                            onClick={() => handleSelectionClick(foilHole.uuid)}
+                            onMouseOver={() => !selectionFrozen ? setSelectedHole(foilHole.uuid): {}}
+                        />
                         </Tooltip>
                         ))}
                     </svg> 
@@ -182,13 +170,6 @@ export default function Atlas({ loaderData, params }: Route.ComponentProps) {
                             </FormControl> :
                             <></>
                         }
-                        {
-                          !!selectedSquare ?
-                            <IconButton aria-label="inspect-square" style={{"display": "flex"}} onClick={() => navigate(`../squares/${selectedSquare}`, { relative: "path" })}>
-                            <ZoomInIcon />
-                          </IconButton> :
-                          <></>
-                        }
                         <Tooltip title={"Add latent panel"}>
                             <IconButton aria-label="add-panel" style={{"display": "flex", "marginLeft": "auto"}} onClick={() => setShowLatentSpace(true)}>
                                 <AddIcon />
@@ -211,11 +192,11 @@ export default function Atlas({ loaderData, params }: Route.ComponentProps) {
                                             label: k[0],
                                             id: k[0],
                                             data: [{x: k[1].x, y: k[1].y, id: k[0]}],
-                                            markerSize: ((k[0] == selectedSquare) || showUnselectedInLatentSpace) ? predictions ? 7 * (predictions?.get(k[0]) + 1)/2: 5: 0,
-                                            color: k[0] == selectedSquare ? "black" : colourPalette[k[1].index],
+                                            markerSize: ((k[0] == selectedHole) || showUnselectedInLatentSpace) ? predictions ? 7 * (predictions?.get(k[0]) + 1)/2: 5: 0,
+                                            color: k[0] == selectedHole ? "black" : colourPalette[k[1].index],
                                             valueFormatter: (v) => {
-                                                if(!selectionFrozen) setSelectedSquare(k[0]);
-                                                return `${squareNameMap?.get(v?.id)}: ${k[1].index}`;
+                                                if(!selectionFrozen) setSelectedHole(k[0]);
+                                                return `${holeNameMap?.get(v?.id)}: ${k[1].index}`;
                                             },
                                         }
                                     )  
@@ -229,7 +210,7 @@ export default function Atlas({ loaderData, params }: Route.ComponentProps) {
                         <></>
                         }
                     <CardActions>
-                        <Tooltip title={"Show unselected squares"} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {setShowUnselectedInLatentSpace(event.target.checked)}}>
+                        <Tooltip title={"Show unselected holes"} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {setShowUnselectedInLatentSpace(event.target.checked)}}>
                             <Checkbox defaultChecked />
                         </Tooltip>
                         <FormControl fullWidth>

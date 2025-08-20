@@ -26,7 +26,7 @@ export default function Acquisition({ loaderData, params }: Route.ComponentProps
   const navigate = useNavigate();
 
   const handleClick = (event: React.MouseEvent<unknown>, gridId: string) => {
-    navigate(`/acquisitions/${params.acqId}/grids/${gridId}`);
+    navigate(`./grids/${gridId}/atlas`, { relative: "path" });
   }
 
   return (
@@ -40,7 +40,6 @@ export default function Acquisition({ loaderData, params }: Route.ComponentProps
                 <TableCell>Grid ID</TableCell>
                 <TableCell>Grid Name</TableCell>
                 <TableCell>Status</TableCell>
-                <TableCell>Atlas</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -50,11 +49,6 @@ export default function Acquisition({ loaderData, params }: Route.ComponentProps
                   <TableCell onClick={(event) => {handleClick(event, grid.uuid)}}>{grid.uuid}</TableCell>
                   <TableCell onClick={(event) => {handleClick(event, grid.uuid)}}>{grid.name}</TableCell>
                   <TableCell onClick={(event) => {handleClick(event, grid.uuid)}}>{grid.status}</TableCell>
-                  <TableCell>
-                    <IconButton onClick={() => navigate(`./grids/${grid.uuid}/atlas`, { relative: "path" })}>
-                      <GridOnIcon/>
-                    </IconButton>
-                  </TableCell>
                 </TableRow>
                 )
               })
