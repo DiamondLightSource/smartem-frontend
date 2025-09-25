@@ -13,7 +13,7 @@ export interface paths {
         };
         /**
          * Get Status
-         * @description Get API status information
+         * @description Get API status and configuration information
          */
         get: operations["get_status_status_get"];
         put?: never;
@@ -33,7 +33,7 @@ export interface paths {
         };
         /**
          * Get Health
-         * @description Health check endpoint
+         * @description Health check endpoint with actual connectivity checks
          */
         get: operations["get_health_health_get"];
         put?: never;
@@ -144,26 +144,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/grids/{grid_uuid}/atlas_image": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Grid Atlas Image
-         * @description Get a single grid by ID
-         */
-        get: operations["get_grid_atlas_image_grids__grid_uuid__atlas_image_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/acquisitions/{acquisition_uuid}/grids": {
         parameters: {
             query?: never;
@@ -182,6 +162,26 @@ export interface paths {
          * @description Create a new grid for a specific acquisition
          */
         post: operations["create_acquisition_grid_acquisitions__acquisition_uuid__grids_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/grids/{grid_uuid}/registered": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Grid Registered
+         * @description All squares on a grid have been registered at low mag
+         */
+        post: operations["grid_registered_grids__grid_uuid__registered_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -332,6 +332,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/atlas-tiles/{tile_uuid}/gridsquares/{gridsquare_uuid}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Link Atlas Tile To Gridsquare
+         * @description Connect a grid square to a tile with its position information
+         */
+        post: operations["link_atlas_tile_to_gridsquare_atlas_tiles__tile_uuid__gridsquares__gridsquare_uuid__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/atlas-tiles/{tile_uuid}/gridsquares": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Link Atlas Tile To Gridsquares
+         * @description Connect mutliple grid squares to a tile with its position information
+         */
+        post: operations["link_atlas_tile_to_gridsquares_atlas_tiles__tile_uuid__gridsquares_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/gridsquares": {
         parameters: {
             query?: never;
@@ -398,6 +438,26 @@ export interface paths {
          * @description Create a new grid square for a specific grid
          */
         post: operations["create_grid_gridsquare_grids__grid_uuid__gridsquares_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/gridsquares/{gridsquare_uuid}/registered": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Gridsquare Registered
+         * @description All holes on a grid square have been registered at square mag
+         */
+        post: operations["gridsquare_registered_gridsquares__gridsquare_uuid__registered_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -557,9 +617,248 @@ export interface paths {
         };
         /**
          * Get Prediction Models
-         * @description Get all micrographs
+         * @description Get all prediction model
          */
         get: operations["get_prediction_models_prediction_models_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/grid/{grid_uuid}/model_weights": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Model Weights For Grid
+         * @description Get time series of model weights for grid
+         */
+        get: operations["get_model_weights_for_grid_grid__grid_uuid__model_weights_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/gridsquares/{gridsquare_uuid}/quality_predictions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Gridsquare Quality Prediction Time Series
+         * @description Get time ordered predictions for all models that provide them for this square
+         */
+        get: operations["get_gridsquare_quality_prediction_time_series_gridsquares__gridsquare_uuid__quality_predictions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/gridsquares/{gridsquare_uuid}/foilhole_quality_predictions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Foilhole Quality Prediction Time Series For Gridsquare
+         * @description Get time ordered predictions for all models that provide them for this square
+         */
+        get: operations["get_foilhole_quality_prediction_time_series_for_gridsquare_gridsquares__gridsquare_uuid__foilhole_quality_predictions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/quality_metrics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Quality Metrics */
+        get: operations["get_quality_metrics_quality_metrics_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/quality_metric/{metric_name}/gridsquares/{gridsquare_uuid}/foilhole_quality_predictions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Foilhole Quality Prediction Time Series For Gridsquare For Metric
+         * @description Get time ordered predictions for all models that provide them for this square
+         */
+        get: operations["get_foilhole_quality_prediction_time_series_for_gridsquare_for_metric_quality_metric__metric_name__gridsquares__gridsquare_uuid__foilhole_quality_predictions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/prediction_model/{prediction_model_name}/grid/{grid_uuid}/prediction": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Prediction For Grid */
+        get: operations["get_prediction_for_grid_prediction_model__prediction_model_name__grid__grid_uuid__prediction_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/prediction_model/{prediction_model_name}/gridsquare/{gridsquare_uuid}/prediction": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Prediction For Gridsquare */
+        get: operations["get_prediction_for_gridsquare_prediction_model__prediction_model_name__gridsquare__gridsquare_uuid__prediction_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/gridsquare/{gridsquare_uuid}/overall_prediction": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Prediction For Gridsquare */
+        get: operations["get_prediction_for_gridsquare_gridsquare__gridsquare_uuid__overall_prediction_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/grid/{grid_uuid}/prediction_model/{prediction_model_name}/latent_rep/{latent_rep_model_name}/suggested_squares": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Suggested Square Collections */
+        get: operations["get_suggested_square_collections_grid__grid_uuid__prediction_model__prediction_model_name__latent_rep__latent_rep_model_name__suggested_squares_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/prediction_model/{prediction_model_name}/grid/{grid_uuid}/latent_representation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Latent Rep */
+        get: operations["get_latent_rep_prediction_model__prediction_model_name__grid__grid_uuid__latent_representation_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/prediction_model/{prediction_model_name}/gridsquare/{gridsquare_uuid}/latent_representation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Square Latent Rep */
+        get: operations["get_square_latent_rep_prediction_model__prediction_model_name__gridsquare__gridsquare_uuid__latent_representation_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/grids/{grid_uuid}/atlas_image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Grid Atlas Image
+         * @description Get a single grid by ID
+         */
+        get: operations["get_grid_atlas_image_grids__grid_uuid__atlas_image_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/gridsquares/{gridsquare_uuid}/gridsquare_image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Gridsquare Image
+         * @description Get a single grid square by ID
+         */
+        get: operations["get_gridsquare_image_gridsquares__gridsquare_uuid__gridsquare_image_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -663,10 +962,12 @@ export interface components {
         };
         /** AtlasCreateRequest */
         AtlasCreateRequest: {
+            /** Uuid */
+            uuid: string;
             /** Atlas Id */
-            atlas_id: string;
-            /** Grid Id */
-            grid_id: string;
+            atlas_id?: string | null;
+            /** Grid Uuid */
+            grid_uuid: string;
             /** Acquisition Date */
             acquisition_date?: string | null;
             /** Storage Folder */
@@ -682,8 +983,8 @@ export interface components {
         AtlasResponse: {
             /** Uuid */
             uuid: string;
-            /** Grid Id */
-            grid_id: string;
+            /** Grid Uuid */
+            grid_uuid: string;
             /** Atlas Id */
             atlas_id: string;
             /** Acquisition Date */
@@ -704,6 +1005,8 @@ export interface components {
         AtlasTileCreateRequest: {
             /** Uuid */
             uuid: string;
+            /** Tile Id */
+            tile_id?: string | null;
             /** Position X */
             position_x?: number | null;
             /** Position Y */
@@ -716,15 +1019,30 @@ export interface components {
             file_format?: string | null;
             /** Base Filename */
             base_filename?: string | null;
-            /** Atlas Id */
-            atlas_id: string;
+            /** Atlas Uuid */
+            atlas_uuid: string;
+        };
+        /** AtlasTileGridSquarePositionResponse */
+        AtlasTileGridSquarePositionResponse: {
+            /** Atlastile Uuid */
+            atlastile_uuid: string;
+            /** Gridsquare Uuid */
+            gridsquare_uuid: string;
+            /** Center X */
+            center_x: number;
+            /** Center Y */
+            center_y: number;
+            /** Size Width */
+            size_width: number;
+            /** Size Height */
+            size_height: number;
         };
         /** AtlasTileResponse */
         AtlasTileResponse: {
             /** Uuid */
             uuid: string;
-            /** Atlas Id */
-            atlas_id: string;
+            /** Atlas Uuid */
+            atlas_uuid: string;
             /** Tile Id */
             tile_id: string;
             /** Position X */
@@ -744,6 +1062,8 @@ export interface components {
         AtlasTileUpdateRequest: {
             /** Uuid */
             uuid?: string | null;
+            /** Tile Id */
+            tile_id?: string | null;
             /** Position X */
             position_x?: number | null;
             /** Position Y */
@@ -756,15 +1076,17 @@ export interface components {
             file_format?: string | null;
             /** Base Filename */
             base_filename?: string | null;
-            /** Atlas Id */
-            atlas_id?: string | null;
+            /** Atlas Uuid */
+            atlas_uuid?: string | null;
         };
         /** AtlasUpdateRequest */
         AtlasUpdateRequest: {
+            /** Uuid */
+            uuid?: string | null;
             /** Atlas Id */
             atlas_id?: string | null;
-            /** Grid Id */
-            grid_id?: string | null;
+            /** Grid Uuid */
+            grid_uuid?: string | null;
             /** Acquisition Date */
             acquisition_date?: string | null;
             /** Storage Folder */
@@ -817,11 +1139,13 @@ export interface components {
         FoilHoleResponse: {
             /** Uuid */
             uuid: string;
+            /** Gridsquare Uuid */
+            gridsquare_uuid: string | null;
             /** Gridsquare Id */
             gridsquare_id: string | null;
             /** Foilhole Id */
             foilhole_id: string;
-            status: components["schemas"]["FoilHoleStatus"];
+            status: components["schemas"]["FoilHoleStatus"] | null;
             /** Center X */
             center_x: number | null;
             /** Center Y */
@@ -927,6 +1251,64 @@ export interface components {
             /** Scan End Time */
             scan_end_time: string | null;
         };
+        /** GridSquare */
+        GridSquare: {
+            /** Uuid */
+            uuid: string;
+            /** Grid Uuid */
+            grid_uuid?: string | null;
+            /** @default none */
+            status: components["schemas"]["GridSquareStatus"];
+            /**
+             * Gridsquare Id
+             * @default
+             */
+            gridsquare_id: string;
+            /** Data Dir */
+            data_dir?: string | null;
+            /** Atlas Node Id */
+            atlas_node_id?: number | null;
+            /** State */
+            state?: string | null;
+            /** Rotation */
+            rotation?: number | null;
+            /** Image Path */
+            image_path?: string | null;
+            /** Selected */
+            selected?: boolean | null;
+            /** Unusable */
+            unusable?: boolean | null;
+            /** Stage Position X */
+            stage_position_x?: number | null;
+            /** Stage Position Y */
+            stage_position_y?: number | null;
+            /** Stage Position Z */
+            stage_position_z?: number | null;
+            /** Center X */
+            center_x?: number | null;
+            /** Center Y */
+            center_y?: number | null;
+            /** Physical X */
+            physical_x?: number | null;
+            /** Physical Y */
+            physical_y?: number | null;
+            /** Size Width */
+            size_width?: number | null;
+            /** Size Height */
+            size_height?: number | null;
+            /** Acquisition Datetime */
+            acquisition_datetime?: string | null;
+            /** Defocus */
+            defocus?: number | null;
+            /** Magnification */
+            magnification?: number | null;
+            /** Pixel Size */
+            pixel_size?: number | null;
+            /** Detector Name */
+            detector_name?: string | null;
+            /** Applied Defocus */
+            applied_defocus?: number | null;
+        };
         /** GridSquareCreateRequest */
         GridSquareCreateRequest: {
             /** Uuid */
@@ -980,6 +1362,24 @@ export interface components {
             /** Applied Defocus */
             applied_defocus?: number | null;
             status?: components["schemas"]["GridSquareStatus"] | null;
+            /**
+             * Lowmag
+             * @default false
+             */
+            lowmag: boolean;
+        };
+        /** GridSquarePositionRequest */
+        GridSquarePositionRequest: {
+            /** Center X */
+            center_x: number;
+            /** Center Y */
+            center_y: number;
+            /** Size Width */
+            size_width: number;
+            /** Size Height */
+            size_height: number;
+            /** Gridsquare Uuid */
+            gridsquare_uuid?: string | null;
         };
         /** GridSquareResponse */
         GridSquareResponse: {
@@ -1039,7 +1439,7 @@ export interface components {
          * GridSquareStatus
          * @enum {string}
          */
-        GridSquareStatus: "none" | "foil holes decision started" | "foil holes decision completed";
+        GridSquareStatus: "none" | "all foil holes registered" | "foil holes decision started" | "foil holes decision completed";
         /** GridSquareUpdateRequest */
         GridSquareUpdateRequest: {
             /** Uuid */
@@ -1093,6 +1493,11 @@ export interface components {
             /** Applied Defocus */
             applied_defocus?: number | null;
             status?: components["schemas"]["GridSquareStatus"] | null;
+            /**
+             * Lowmag
+             * @default false
+             */
+            lowmag: boolean;
         };
         /**
          * GridStatus
@@ -1121,6 +1526,25 @@ export interface components {
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** LatentRepresentationResponse */
+        LatentRepresentationResponse: {
+            /** X */
+            x: number | null;
+            /** Y */
+            y: number | null;
+            /** Index */
+            index: number | null;
+            /**
+             * Gridsquare Uuid
+             * @default
+             */
+            gridsquare_uuid: string;
+            /**
+             * Foilhole Uuid
+             * @default
+             */
+            foilhole_uuid: string;
         };
         /** MicrographCreateRequest */
         MicrographCreateRequest: {
@@ -1281,12 +1705,95 @@ export interface components {
             /** @default none */
             status: components["schemas"]["MicrographStatus"];
         };
+        /** OverallQualityPrediction */
+        OverallQualityPrediction: {
+            /** Id */
+            id?: number | null;
+            /** Value */
+            value: number;
+            /** Foilhole Uuid */
+            foilhole_uuid: string;
+            /** Grid Uuid */
+            grid_uuid: string;
+            /** Gridsquare Uuid */
+            gridsquare_uuid?: string | null;
+        };
+        /** QualityMetric */
+        QualityMetric: {
+            /** Name */
+            name: string;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+        };
+        /** QualityPrediction */
+        QualityPrediction: {
+            /** Id */
+            id?: number | null;
+            /**
+             * Timestamp
+             * Format: date-time
+             */
+            timestamp?: string;
+            /** Value */
+            value: number;
+            /** Prediction Model Name */
+            prediction_model_name: string;
+            /** Metric Name */
+            metric_name?: string | null;
+            /** Foilhole Uuid */
+            foilhole_uuid?: string | null;
+            /** Gridsquare Uuid */
+            gridsquare_uuid?: string | null;
+        };
         /** QualityPredictionModelResponse */
         QualityPredictionModelResponse: {
             /** Name */
             name: string;
             /** Description */
             description: string;
+        };
+        /** QualityPredictionModelWeight */
+        QualityPredictionModelWeight: {
+            /** Id */
+            id?: number | null;
+            /** Grid Uuid */
+            grid_uuid: string;
+            /** Micrograph Uuid */
+            micrograph_uuid?: string | null;
+            /** Micrograph Quality */
+            micrograph_quality?: boolean | null;
+            /**
+             * Timestamp
+             * Format: date-time
+             */
+            timestamp?: string;
+            /** Prediction Model Name */
+            prediction_model_name: string;
+            /** Metric Name */
+            metric_name?: string | null;
+            /** Weight */
+            weight: number;
+        };
+        /** QualityPredictionResponse */
+        QualityPredictionResponse: {
+            /** Id */
+            id: number;
+            /** Prediction Model Name */
+            prediction_model_name: string;
+            /** Value */
+            value: number;
+            /**
+             * Timestamp
+             * Format: date-time
+             */
+            timestamp: string;
+            /** Gridsquare Uuid */
+            gridsquare_uuid?: string | null;
+            /** Foilhole Uuid */
+            foilhole_uuid?: string | null;
         };
         /** ValidationError */
         ValidationError: {
@@ -1609,37 +2116,6 @@ export interface operations {
             };
         };
     };
-    get_grid_atlas_image_grids__grid_uuid__atlas_image_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                grid_uuid: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
     get_acquisition_grids_acquisitions__acquisition_uuid__grids_get: {
         parameters: {
             query?: never;
@@ -1693,6 +2169,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["GridResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    grid_registered_grids__grid_uuid__registered_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                grid_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": boolean;
                 };
             };
             /** @description Validation Error */
@@ -2068,6 +2575,77 @@ export interface operations {
             };
         };
     };
+    link_atlas_tile_to_gridsquare_atlas_tiles__tile_uuid__gridsquares__gridsquare_uuid__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tile_uuid: string;
+                gridsquare_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GridSquarePositionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AtlasTileGridSquarePositionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    link_atlas_tile_to_gridsquares_atlas_tiles__tile_uuid__gridsquares_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tile_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GridSquarePositionRequest"][];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AtlasTileGridSquarePositionResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_gridsquares_gridsquares_get: {
         parameters: {
             query?: never;
@@ -2249,6 +2827,39 @@ export interface operations {
             };
         };
     };
+    gridsquare_registered_gridsquares__gridsquare_uuid__registered_post: {
+        parameters: {
+            query?: {
+                count?: number | null;
+            };
+            header?: never;
+            path: {
+                gridsquare_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": boolean;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_foilholes_foilholes_get: {
         parameters: {
             query?: never;
@@ -2366,7 +2977,9 @@ export interface operations {
     };
     get_gridsquare_foilholes_gridsquares__gridsquare_uuid__foilholes_get: {
         parameters: {
-            query?: never;
+            query?: {
+                on_square_only?: boolean;
+            };
             header?: never;
             path: {
                 gridsquare_uuid: string;
@@ -2406,7 +3019,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["FoilHoleCreateRequest"];
+                "application/json": components["schemas"]["FoilHoleCreateRequest"][];
             };
         };
         responses: {
@@ -2416,7 +3029,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["FoilHoleResponse"];
+                    "application/json": components["schemas"]["FoilHoleResponse"][];
                 };
             };
             /** @description Validation Error */
@@ -2627,6 +3240,422 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["QualityPredictionModelResponse"][];
+                };
+            };
+        };
+    };
+    get_model_weights_for_grid_grid__grid_uuid__model_weights_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                grid_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: components["schemas"]["QualityPredictionModelWeight"][];
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_gridsquare_quality_prediction_time_series_gridsquares__gridsquare_uuid__quality_predictions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                gridsquare_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: components["schemas"]["QualityPrediction"][];
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_foilhole_quality_prediction_time_series_for_gridsquare_gridsquares__gridsquare_uuid__foilhole_quality_predictions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                gridsquare_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: {
+                            [key: string]: components["schemas"]["QualityPrediction"][];
+                        };
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_quality_metrics_quality_metrics_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QualityMetric"][];
+                };
+            };
+        };
+    };
+    get_foilhole_quality_prediction_time_series_for_gridsquare_for_metric_quality_metric__metric_name__gridsquares__gridsquare_uuid__foilhole_quality_predictions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                metric_name: string;
+                gridsquare_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: {
+                            [key: string]: components["schemas"]["QualityPrediction"][];
+                        };
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_prediction_for_grid_prediction_model__prediction_model_name__grid__grid_uuid__prediction_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                prediction_model_name: string;
+                grid_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QualityPredictionResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_prediction_for_gridsquare_prediction_model__prediction_model_name__gridsquare__gridsquare_uuid__prediction_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                prediction_model_name: string;
+                gridsquare_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QualityPredictionResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_prediction_for_gridsquare_gridsquare__gridsquare_uuid__overall_prediction_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                gridsquare_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OverallQualityPrediction"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_suggested_square_collections_grid__grid_uuid__prediction_model__prediction_model_name__latent_rep__latent_rep_model_name__suggested_squares_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                grid_uuid: string;
+                prediction_model_name: string;
+                latent_rep_model_name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GridSquare"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_latent_rep_prediction_model__prediction_model_name__grid__grid_uuid__latent_representation_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                prediction_model_name: string;
+                grid_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LatentRepresentationResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_square_latent_rep_prediction_model__prediction_model_name__gridsquare__gridsquare_uuid__latent_representation_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                prediction_model_name: string;
+                gridsquare_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LatentRepresentationResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_grid_atlas_image_grids__grid_uuid__atlas_image_get: {
+        parameters: {
+            query?: {
+                x?: number | null;
+                y?: number | null;
+                w?: number | null;
+                h?: number | null;
+            };
+            header?: never;
+            path: {
+                grid_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_gridsquare_image_gridsquares__gridsquare_uuid__gridsquare_image_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                gridsquare_uuid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
