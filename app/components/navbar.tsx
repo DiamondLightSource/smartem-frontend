@@ -1,48 +1,105 @@
-import AppBar from '@mui/material/AppBar';
-import { Box, Drawer, IconButton, Toolbar, Stack, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import AppBar from '@mui/material/AppBar'
+import {
+  Box,
+  Drawer,
+  IconButton,
+  Toolbar,
+  Stack,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+} from '@mui/material'
 
-import React from 'react';
+import React from 'react'
 
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router'
 
-import HomeFilledIcon from '@mui/icons-material/HomeFilled';
-import { DensityMedium, Science } from '@mui/icons-material';
+import HomeFilledIcon from '@mui/icons-material/HomeFilled'
+import { DensityMedium, Science } from '@mui/icons-material'
 
 export const Navbar = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate()
 
-    const [drawer, setDrawer] = React.useState(false);
+  const [drawer, setDrawer] = React.useState(false)
 
-    return <Box sx={{ display: 'flex' }}>
-        <AppBar component="nav" position="sticky" style={{ top: 0 }} enableColorOnDark={true}>
-            <Toolbar>
-            <Stack direction="row" spacing={3}>
-                <IconButton edge="start" onClick={() => {setDrawer(true)}} >
-                    <DensityMedium />
-                </IconButton>
-                <IconButton edge="start" onClick={() => navigate("/")}>
-                    <HomeFilledIcon />
-                </IconButton>
-            </Stack>
-                <Stack sx={{ marginLeft: "auto" }} direction="row" spacing={3}>
-                    <Box component="img" src={"/fragment-screen-logo.png"} width={30} onClick={() => {window.open("https://fragmentscreen.org", "_blank")}} style= {{ cursor: "pointer" }} />
-                    <Box component="img" src={"/favicon.ico"} width={30} onClick={() => {window.open("https://www.diamond.ac.uk/Instruments/Biological-Cryo-Imaging/eBIC.html", "_blank")}} style= {{ cursor: "pointer" }} />
-                </Stack>
-            </Toolbar>
-        </AppBar>
-        <Drawer open={drawer} onClose={() => {setDrawer(!drawer)}}>
-          <Box sx={{ width: 250 }} role="presentation" onClick={() => {setDrawer(false)}}>
-            <List>
-                <ListItem>
-                <ListItemButton onClick={() => {navigate("/models")}}>
-                    <ListItemIcon>
-                      <Science />
-                    </ListItemIcon>
-                    <ListItemText primary="Models" />
-                </ListItemButton>
-                </ListItem>
-            </List>
-          </Box>
-        </Drawer>
+  return (
+    <Box sx={{ display: 'flex' }}>
+      <AppBar
+        component="nav"
+        position="sticky"
+        style={{ top: 0 }}
+        enableColorOnDark={true}
+      >
+        <Toolbar>
+          <Stack direction="row" spacing={3}>
+            <IconButton
+              edge="start"
+              onClick={() => {
+                setDrawer(true)
+              }}
+            >
+              <DensityMedium />
+            </IconButton>
+            <IconButton edge="start" onClick={() => navigate('/')}>
+              <HomeFilledIcon />
+            </IconButton>
+          </Stack>
+          <Stack sx={{ marginLeft: 'auto' }} direction="row" spacing={3}>
+            <Box
+              component="img"
+              src={'/fragment-screen-logo.png'}
+              width={30}
+              onClick={() => {
+                window.open('https://fragmentscreen.org', '_blank')
+              }}
+              style={{ cursor: 'pointer' }}
+            />
+            <Box
+              component="img"
+              src={'/favicon.ico'}
+              width={30}
+              onClick={() => {
+                window.open(
+                  'https://www.diamond.ac.uk/Instruments/Biological-Cryo-Imaging/eBIC.html',
+                  '_blank'
+                )
+              }}
+              style={{ cursor: 'pointer' }}
+            />
+          </Stack>
+        </Toolbar>
+      </AppBar>
+      <Drawer
+        open={drawer}
+        onClose={() => {
+          setDrawer(!drawer)
+        }}
+      >
+        <Box
+          sx={{ width: 250 }}
+          role="presentation"
+          onClick={() => {
+            setDrawer(false)
+          }}
+        >
+          <List>
+            <ListItem>
+              <ListItemButton
+                onClick={() => {
+                  navigate('/models')
+                }}
+              >
+                <ListItemIcon>
+                  <Science />
+                </ListItemIcon>
+                <ListItemText primary="Models" />
+              </ListItemButton>
+            </ListItem>
+          </List>
+        </Box>
+      </Drawer>
     </Box>
+  )
 }
