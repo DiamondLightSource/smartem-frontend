@@ -1,8 +1,9 @@
 import type { Route } from "./+types/product";
 
-import { Box, Grid, ThemeProvider, Card, CardContent, Container, IconButton, Slider, Stack } from "@mui/material";
+import { Box, Grid, ThemeProvider, Card, CardContent, Container, IconButton, Slider, Stack, Select, InputLabel, MenuItem, FormControl } from "@mui/material";
 import { BarChart as BarChartIcon, Science, Timeline } from "@mui/icons-material";
 import { BarChart, LineChart } from '@mui/x-charts';
+import type { SelectChangeEvent } from '@mui/material';
 
 import { Await, useNavigate } from "react-router";
 
@@ -25,10 +26,12 @@ type QualityPredictionModelWeight = components["schemas"]["QualityPredictionMode
 export async function loader({ params }: Route.LoaderArgs) {
   const squarePredictionsResponse = await fetch(`${apiUrl()}/gridsquares/${params.squareId}/quality_predictions`);
   const holePredictionsResponse = await fetch(`${apiUrl()}/gridsquares/${params.squareId}/foilhole_quality_predictions`);
-  const modelWeights = await fetch(`${apiUrl()}/grids/${params.gridId}`)
+  const modelWeights = await fetch(`${apiUrl()}/grids/${params.gridId}`);
+  const metricsResponse = await fetch(`${apiUrl()}/quality_metrics`);
   const squarePredictions  = await squarePredictionsResponse.json();
   const holePredictions  = await holePredictionsResponse.json();
-  return { squarePredictions, holePredictions, modelWeights };
+  const metrics = await metricsResponse.json();
+  return { squarePredictions, holePredictions, modelWeights, metrics };
 }
 
 
@@ -94,9 +97,29 @@ export default function QualityPredictionsForSquare({ loaderData, params }: Rout
     return mostRecents.reduce((a: number, b: number) => a + b, 0) / mostRecents.length;
   }
 
+  const [metricName, setMetricName] = React.useState("");
+  const [predictionsPerMetric, setPredictionsPerMetric] = React.useState({});
+
+  const handleChange = async (event: SelectChangeEvent) => {
+    setMetricName(event.target.value);
+    const holePredictionsResponse = await fetch(`${apiUrl()}/quality_metric/${event.target.value}/gridsquares/${params.squareId}/foilhole_quality_predictions`);
+    const holePredictions = await holePredictionsResponse.json();
+    setPredictionsPerMetric(holePredictions);
+  }
+
   return <ThemeProvider theme={theme}>
     <Navbar/>
-    <Container content="center" style={{ width: "100%", paddingTop: "50px" }}> 
+    <Stack content="center" style={{ width: "100%", paddingTop: "50px" }}> 
+    <FormControl fulWidth style={{ color: "black", backgroundColor: "#b927d9" }}>
+    <InputLabel id="metric-select-label" color="black">Metric</InputLabel>
+    <Select labelId="metric-select-label" color="black" id="metric-select" label="metric" value={metricName} onChange={handleChange}>
+      {
+        loaderData.metrics.map((metric) => (
+          <MenuItem value={metric.name}>{metric.name}</MenuItem>
+        ))
+      }
+      </Select>
+      </FormControl>
       <Grid container spacing={3} sx={{ padding: "20px" }}>
         {      
           Object.entries(loaderData.squarePredictions).map(([key, value]) => 
@@ -132,7 +155,24 @@ export default function QualityPredictionsForSquare({ loaderData, params }: Rout
             )
           })
         }
+        {      
+          Object.entries(predictionsPerMetric).map(([key, value]) => 
+            {return (
+              <Grid size={4}>
+                <Card>
+                  <CardContent style={{ backgroundColor: "#b927d9" }}>Model: {key}</CardContent>
+                  <CardContent style={{ backgroundColor: "#b927d9" }}>
+                  {mostRecentsMean(value as Map<string, QualityPrediction[]>).toLocaleString(undefined, { maximumSignificantDigits: 3, minimumSignificantDigits: 3 })}
+                  </CardContent>
+                  <CardContent style={{ backgroundColor: "#b927d9" }}>
+                    <FoilHolePredictionCharts predictions={value} />
+                  </CardContent>
+                </Card>
+              </Grid>
+            )
+          })
+        }
       </Grid>
-    </Container>
+    </Stack>
   </ThemeProvider>
 }
