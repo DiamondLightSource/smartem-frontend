@@ -7,6 +7,7 @@ import type { ScatterItemIdentifier } from '@mui/x-charts/models';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
+import RouteIcon from '@mui/icons-material/Route';
 
 import type { components } from "../schema"
 
@@ -53,6 +54,13 @@ const getLatentRep = async (modelName: string, gridId: string) => {
         return latentRepMap;
     }
 
+const getSuggestion = async (gridId: string) => {
+    const suggestionResponse = await fetch(`${apiUrl()}/grid/${gridId}/prediction_model/resnet-atlas/latent_rep/dae-atlas/suggested_squares`);
+    const suggestionResult = await suggestionResponse.json();
+    const suggestedIds = Array.from(suggestionResult, (s) => s.uuid);
+    return suggestedIds;
+}
+
 export default function Atlas({ loaderData, params }: Route.ComponentProps) {
     const [maxWidth, setMaxWidth] = React.useState(0);
     const [squareNameMap, setSquareNameMap] = React.useState<Map<string, string>>()
@@ -67,10 +75,11 @@ export default function Atlas({ loaderData, params }: Route.ComponentProps) {
     const [showLatentSpace, setShowLatentSpace] = React.useState(false);
     const [showUnselectedInLatentSpace, setShowUnselectedInLatentSpace] = React.useState(true);
     const [selectionFrozen, setSelectionFrozen] = React.useState(false);
+    const [suggestions, setSuggestions] = React.useState<string[]>([]);
 
     const navigate = useNavigate();
 
-    const colourPalette = ["#E3B505", "#95190C", "#610345", "#107E7D", "#044B7F", "#916953", "#CF8E80", "#FCB5B5", "#FCDDF2", "#D8DC6A"]
+    const colourPalette = ["#f2a2a9", "#85b6b2", "#a77c9f", "#e59344", "#6ba059", "#d1605e", "#5878a3", "#e7cc60", "#c1ff9b", "#fb62f6"]
 
     const handleChange = async (event: SelectChangeEvent) => {
         setPredictionModel(event.target.value);
@@ -96,6 +105,11 @@ export default function Atlas({ loaderData, params }: Route.ComponentProps) {
             setSelectionFrozen(true);
             setSelectedSquare(uuid);
         }
+    }
+
+    const handleSuggestionRequest = async () => {
+      const suggestions = await getSuggestion(params.gridId);
+      setSuggestions(suggestions);
     }
 
     React.useEffect(
@@ -141,7 +155,7 @@ export default function Atlas({ loaderData, params }: Route.ComponentProps) {
                                 colourPalette[latentRep.get(gridSquare.uuid).index] :
                                 showPredictions ? 
                                 predictions?.get(gridSquare.uuid) ? 
-                                predictions.get(gridSquare.uuid) >= 0 ? 
+                                predictions.get(gridSquare.uuid) >= 0.5 ? 
                                 "green" : 
                                 "red": 
                                 "dark gray": 
@@ -149,7 +163,7 @@ export default function Atlas({ loaderData, params }: Route.ComponentProps) {
                             }
                             strokeWidth={(gridSquare.uuid === selectedSquare) ? 0.25*gridSquare.size_width: 0.1*gridSquare.size_width}
                             strokeOpacity={1}
-                            stroke={(gridSquare.uuid === selectedSquare) ? "orange": showPredictions ? predictions?.get(gridSquare.uuid) ? predictions.get(gridSquare.uuid) >= 0 ? "green": "red": "gray": "gray"}
+                            stroke={suggestions.includes(gridSquare.uuid) ? "blue" : (gridSquare.uuid === selectedSquare) ? "orange": showPredictions ? predictions?.get(gridSquare.uuid) ? predictions.get(gridSquare.uuid) >= 0 ? "green": "red": "gray": "gray"}
                             onClick={() => handleSelectionClick(gridSquare.uuid)}
                             onMouseOver={() => !selectionFrozen ? setSelectedSquare(gridSquare.uuid): {}}
                         >
@@ -189,6 +203,9 @@ export default function Atlas({ loaderData, params }: Route.ComponentProps) {
                           </IconButton> :
                           <></>
                         }
+                        <IconButton aria-label="suggest-route" style={{"display": "flex"}} onClick={() => setShowLatentSpace(true)}>
+                          <RouteIcon />
+                        </IconButton>
                         <Tooltip title={"Add latent panel"}>
                             <IconButton aria-label="add-panel" style={{"display": "flex", "marginLeft": "auto"}} onClick={() => setShowLatentSpace(true)}>
                                 <AddIcon />
@@ -199,10 +216,11 @@ export default function Atlas({ loaderData, params }: Route.ComponentProps) {
             </Container>
             <Container maxWidth="sm" content="center" style={{ width: "100%", paddingTop: "50px" }}>
             {
-                showLatentSpace ? <Card>
+                showLatentSpace ? <Card variant="outlined">
                     { 
                         latentRep ?
                         <ScatterChart
+                            sx={{ backgroundColor: "black" }}
                             height={500} 
                             series={
                                 Array.from(latentRep).map((k, v) => 
@@ -212,7 +230,7 @@ export default function Atlas({ loaderData, params }: Route.ComponentProps) {
                                             id: k[0],
                                             data: [{x: k[1].x, y: k[1].y, id: k[0]}],
                                             markerSize: ((k[0] == selectedSquare) || showUnselectedInLatentSpace) ? predictions ? 7 * (predictions?.get(k[0]) + 1)/2: 5: 0,
-                                            color: k[0] == selectedSquare ? "black" : colourPalette[k[1].index],
+                                            color: k[0] == selectedSquare ? "white" : colourPalette[k[1].index],
                                             valueFormatter: (v) => {
                                                 if(!selectionFrozen) setSelectedSquare(k[0]);
                                                 return `${squareNameMap?.get(v?.id)}: ${k[1].index}`;
