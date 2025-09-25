@@ -15,7 +15,7 @@ export default [
   route('/acquisitions/:acqId/grids/:gridId/atlas', './routes/atlas.tsx'),
   route(
     '/acquisitions/:acqId/grids/:gridId/squares/:squareId',
-    './routes/square_lr.tsx'
+    './routes/squareLR.tsx'
   ),
   route(
     '/acquisitions/:acqId/grids/:gridId/gridsquares',
