@@ -2,9 +2,12 @@ import Axios from 'axios'
 import type { AxiosRequestConfig, AxiosError } from 'axios'
 
 export const apiUrl = () => {
-  return import.meta.env.VITE_API_ENDPOINT
-    ? import.meta.env.VITE_API_ENDPOINT
-    : 'http://localhost:8000'
+  // In development, use the Vite proxy to avoid CORS issues
+  // In production, use the configured API endpoint or default to localhost
+  if (import.meta.env.DEV) {
+    return '/api'
+  }
+  return import.meta.env.VITE_API_ENDPOINT || 'http://localhost:8000'
 }
 
 export const AXIOS_INSTANCE = Axios.create({

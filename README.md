@@ -39,11 +39,18 @@ Your application will be available at `http://localhost:5174`.
 
 ### Environment Configuration
 
-The application connects to the SmartEM backend API. By default, it uses `http://localhost:8000`. To use a different API endpoint, set the `VITE_API_ENDPOINT` environment variable:
+The application connects to the SmartEM backend API:
+
+- **Development**: Uses Vite proxy at `/api` → `http://localhost:8000` to avoid CORS issues
+- **Production**: Uses `VITE_API_ENDPOINT` environment variable or defaults to `http://localhost:8000`
+
+To use a different API endpoint in production:
 
 ```bash
-VITE_API_ENDPOINT=https://api.example.com npm run dev
+VITE_API_ENDPOINT=https://api.example.com npm run build
 ```
+
+**Note:** The backend API must have CORS configured correctly for production deployments. The development proxy bypasses CORS restrictions.
 
 ## API Client Generation
 

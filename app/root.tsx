@@ -7,11 +7,10 @@ import {
   ScrollRestoration,
 } from 'react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { useEffect } from 'react'
 
 import type { Route } from './+types/root'
 import './app.css'
-import { logApiVersion } from './api/version-check'
+import { ApiVersionCheck } from './components/ApiVersionCheck'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -54,16 +53,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  useEffect(() => {
-    // Check API version on app initialisation
-    if (import.meta.env.DEV) {
-      logApiVersion()
-    }
-  }, [])
-
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
+      <ApiVersionCheck />
     </QueryClientProvider>
   )
 }
