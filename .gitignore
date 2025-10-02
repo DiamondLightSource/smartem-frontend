@@ -6,3 +6,5 @@
 /build/
 .idea/
 .env
+
+.claude/settings.local.json

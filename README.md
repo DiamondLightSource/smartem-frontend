@@ -52,6 +52,16 @@ VITE_API_ENDPOINT=https://api.example.com npm run build
 
 **Note:** The backend API must have CORS configured correctly for production deployments. The development proxy bypasses CORS restrictions.
 
+### Mock API Mode
+
+Develop without a running backend using auto-generated mock data:
+
+```bash
+npm run dev:mock
+```
+
+Mock responses are generated from the OpenAPI specification and updated automatically when you regenerate the API client.
+
 ## API Client Generation
 
 The frontend uses [Orval](https://orval.dev/) to automatically generate a type-safe API client from the backend's OpenAPI specification. This ensures the frontend stays in sync with the backend API.
