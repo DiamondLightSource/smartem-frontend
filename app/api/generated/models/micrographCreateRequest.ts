@@ -3,7 +3,7 @@
  * Do not edit manually.
  * SmartEM Decisions Backend API
  * API for accessing and managing electron microscopy data
- * OpenAPI spec version: 0.1.dev276+g1b7ed28d6.d20250818
+ * OpenAPI spec version: 0.1.dev334+g5e29cd2e4.d20251002
  */
 import type { MicrographCreateRequestFoilholeUuid } from './micrographCreateRequestFoilholeUuid'
 import type { MicrographCreateRequestLocationId } from './micrographCreateRequestLocationId'

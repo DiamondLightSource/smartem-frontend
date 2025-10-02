@@ -3,7 +3,7 @@
  * Do not edit manually.
  * SmartEM Decisions Backend API
  * API for accessing and managing electron microscopy data
- * OpenAPI spec version: 0.1.dev276+g1b7ed28d6.d20250818
+ * OpenAPI spec version: 0.1.dev334+g5e29cd2e4.d20251002
  */
 import { faker } from '@faker-js/faker'
 
@@ -19,6 +19,7 @@ import {
 } from '.././models'
 import type {
   AcquisitionResponse,
+  AgentInstructionAcknowledgementResponse,
   AtlasResponse,
   AtlasTileGridSquarePositionResponse,
   AtlasTileResponse,
@@ -26,6 +27,10 @@ import type {
   GridResponse,
   GridSquareResponse,
   MicrographResponse,
+  QualityMetricsResponse,
+  QualityPredictionModelParameterResponse,
+  QualityPredictionModelResponse,
+  QualityPredictionResponse,
 } from '.././models'
 
 export const getGetAcquisitionsAcquisitionsGetResponseMock =
@@ -2623,6 +2628,193 @@ export const getCreateFoilholeMicrographFoilholesFoilholeUuidMicrographsPostResp
     ...overrideResponse,
   })
 
+export const getGetPredictionModelsPredictionModelsGetResponseMock =
+  (): QualityPredictionModelResponse[] =>
+    Array.from(
+      { length: faker.number.int({ min: 1, max: 10 }) },
+      (_, i) => i + 1
+    ).map(() => ({
+      name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+      description: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    }))
+
+export const getCreatePredictionModelPredictionModelsPostResponseMock = (
+  overrideResponse: Partial<QualityPredictionModelResponse> = {}
+): QualityPredictionModelResponse => ({
+  name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+  description: faker.string.alpha({ length: { min: 10, max: 20 } }),
+  ...overrideResponse,
+})
+
+export const getGetPredictionModelPredictionModelsNameGetResponseMock = (
+  overrideResponse: Partial<QualityPredictionModelResponse> = {}
+): QualityPredictionModelResponse => ({
+  name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+  description: faker.string.alpha({ length: { min: 10, max: 20 } }),
+  ...overrideResponse,
+})
+
+export const getUpdatePredictionModelPredictionModelsNamePutResponseMock = (
+  overrideResponse: Partial<QualityPredictionModelResponse> = {}
+): QualityPredictionModelResponse => ({
+  name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+  description: faker.string.alpha({ length: { min: 10, max: 20 } }),
+  ...overrideResponse,
+})
+
+export const getGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGetResponseMock =
+  (): QualityPredictionResponse[] =>
+    Array.from(
+      { length: faker.number.int({ min: 1, max: 10 }) },
+      (_, i) => i + 1
+    ).map(() => ({
+      id: faker.number.int({ min: undefined, max: undefined }),
+      timestamp: `${faker.date.past().toISOString().split('.')[0]}Z`,
+      value: faker.number.float({
+        min: undefined,
+        max: undefined,
+        fractionDigits: 2,
+      }),
+      prediction_model_name: faker.string.alpha({
+        length: { min: 10, max: 20 },
+      }),
+      foilhole_uuid: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        null,
+      ]),
+      gridsquare_uuid: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        null,
+      ]),
+    }))
+
+export const getGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGetResponseMock =
+  (): QualityPredictionResponse[] =>
+    Array.from(
+      { length: faker.number.int({ min: 1, max: 10 }) },
+      (_, i) => i + 1
+    ).map(() => ({
+      id: faker.number.int({ min: undefined, max: undefined }),
+      timestamp: `${faker.date.past().toISOString().split('.')[0]}Z`,
+      value: faker.number.float({
+        min: undefined,
+        max: undefined,
+        fractionDigits: 2,
+      }),
+      prediction_model_name: faker.string.alpha({
+        length: { min: 10, max: 20 },
+      }),
+      foilhole_uuid: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        null,
+      ]),
+      gridsquare_uuid: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        null,
+      ]),
+    }))
+
+export const getCreateQualityPredictionQualityPredictionsPostResponseMock = (
+  overrideResponse: Partial<QualityPredictionResponse> = {}
+): QualityPredictionResponse => ({
+  id: faker.number.int({ min: undefined, max: undefined }),
+  timestamp: `${faker.date.past().toISOString().split('.')[0]}Z`,
+  value: faker.number.float({
+    min: undefined,
+    max: undefined,
+    fractionDigits: 2,
+  }),
+  prediction_model_name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+  foilhole_uuid: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    null,
+  ]),
+  gridsquare_uuid: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    null,
+  ]),
+  ...overrideResponse,
+})
+
+export const getGetQualityMetricsQualityMetricsGetResponseMock = (
+  overrideResponse: Partial<QualityMetricsResponse> = {}
+): QualityMetricsResponse => ({
+  total_predictions: faker.number.int({ min: undefined, max: undefined }),
+  average_quality: faker.helpers.arrayElement([
+    faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+    null,
+  ]),
+  min_quality: faker.helpers.arrayElement([
+    faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+    null,
+  ]),
+  max_quality: faker.helpers.arrayElement([
+    faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+    null,
+  ]),
+  models_count: faker.number.int({ min: undefined, max: undefined }),
+  ...overrideResponse,
+})
+
+export const getGetGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGetResponseMock =
+  (): QualityPredictionResponse[] =>
+    Array.from(
+      { length: faker.number.int({ min: 1, max: 10 }) },
+      (_, i) => i + 1
+    ).map(() => ({
+      id: faker.number.int({ min: undefined, max: undefined }),
+      timestamp: `${faker.date.past().toISOString().split('.')[0]}Z`,
+      value: faker.number.float({
+        min: undefined,
+        max: undefined,
+        fractionDigits: 2,
+      }),
+      prediction_model_name: faker.string.alpha({
+        length: { min: 10, max: 20 },
+      }),
+      foilhole_uuid: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        null,
+      ]),
+      gridsquare_uuid: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        null,
+      ]),
+    }))
+
+export const getGetGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetResponseMock =
+  (): QualityPredictionModelParameterResponse[] =>
+    Array.from(
+      { length: faker.number.int({ min: 1, max: 10 }) },
+      (_, i) => i + 1
+    ).map(() => ({
+      id: faker.number.int({ min: undefined, max: undefined }),
+      grid_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
+      timestamp: `${faker.date.past().toISOString().split('.')[0]}Z`,
+      prediction_model_name: faker.string.alpha({
+        length: { min: 10, max: 20 },
+      }),
+      key: faker.string.alpha({ length: { min: 10, max: 20 } }),
+      value: faker.number.float({
+        min: undefined,
+        max: undefined,
+        fractionDigits: 2,
+      }),
+      group: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    }))
+
+export const getAcknowledgeInstructionAgentAgentIdSessionSessionIdInstructionsInstructionIdAckPostResponseMock =
+  (
+    overrideResponse: Partial<AgentInstructionAcknowledgementResponse> = {}
+  ): AgentInstructionAcknowledgementResponse => ({
+    status: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    instruction_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    acknowledged_at: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    agent_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    session_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    ...overrideResponse,
+  })
+
 export const getGetStatusStatusGetMockHandler = (
   overrideResponse?:
     | unknown
@@ -3858,6 +4050,574 @@ export const getCreateFoilholeMicrographFoilholesFoilholeUuidMicrographsPostMock
       options
     )
   }
+
+export const getGetPredictionModelsPredictionModelsGetMockHandler = (
+  overrideResponse?:
+    | QualityPredictionModelResponse[]
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0]
+      ) =>
+        | Promise<QualityPredictionModelResponse[]>
+        | QualityPredictionModelResponse[]),
+  options?: RequestHandlerOptions
+) => {
+  return http.get(
+    '*/prediction_models',
+    async (info) => {
+      await delay(1000)
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getGetPredictionModelsPredictionModelsGetResponseMock()
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } }
+      )
+    },
+    options
+  )
+}
+
+export const getCreatePredictionModelPredictionModelsPostMockHandler = (
+  overrideResponse?:
+    | QualityPredictionModelResponse
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0]
+      ) =>
+        | Promise<QualityPredictionModelResponse>
+        | QualityPredictionModelResponse),
+  options?: RequestHandlerOptions
+) => {
+  return http.post(
+    '*/prediction_models',
+    async (info) => {
+      await delay(1000)
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getCreatePredictionModelPredictionModelsPostResponseMock()
+        ),
+        { status: 201, headers: { 'Content-Type': 'application/json' } }
+      )
+    },
+    options
+  )
+}
+
+export const getGetPredictionModelPredictionModelsNameGetMockHandler = (
+  overrideResponse?:
+    | QualityPredictionModelResponse
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0]
+      ) =>
+        | Promise<QualityPredictionModelResponse>
+        | QualityPredictionModelResponse),
+  options?: RequestHandlerOptions
+) => {
+  return http.get(
+    '*/prediction_models/:name',
+    async (info) => {
+      await delay(1000)
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getGetPredictionModelPredictionModelsNameGetResponseMock()
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } }
+      )
+    },
+    options
+  )
+}
+
+export const getUpdatePredictionModelPredictionModelsNamePutMockHandler = (
+  overrideResponse?:
+    | QualityPredictionModelResponse
+    | ((
+        info: Parameters<Parameters<typeof http.put>[1]>[0]
+      ) =>
+        | Promise<QualityPredictionModelResponse>
+        | QualityPredictionModelResponse),
+  options?: RequestHandlerOptions
+) => {
+  return http.put(
+    '*/prediction_models/:name',
+    async (info) => {
+      await delay(1000)
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getUpdatePredictionModelPredictionModelsNamePutResponseMock()
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } }
+      )
+    },
+    options
+  )
+}
+
+export const getDeletePredictionModelPredictionModelsNameDeleteMockHandler = (
+  overrideResponse?:
+    | void
+    | ((
+        info: Parameters<Parameters<typeof http.delete>[1]>[0]
+      ) => Promise<void> | void),
+  options?: RequestHandlerOptions
+) => {
+  return http.delete(
+    '*/prediction_models/:name',
+    async (info) => {
+      await delay(1000)
+      if (typeof overrideResponse === 'function') {
+        await overrideResponse(info)
+      }
+      return new HttpResponse(null, { status: 204 })
+    },
+    options
+  )
+}
+
+export const getGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGetMockHandler =
+  (
+    overrideResponse?:
+      | QualityPredictionResponse[]
+      | ((
+          info: Parameters<Parameters<typeof http.get>[1]>[0]
+        ) =>
+          | Promise<QualityPredictionResponse[]>
+          | QualityPredictionResponse[]),
+    options?: RequestHandlerOptions
+  ) => {
+    return http.get(
+      '*/gridsquares/:gridsquareUuid/quality_predictions',
+      async (info) => {
+        await delay(1000)
+
+        return new HttpResponse(
+          JSON.stringify(
+            overrideResponse !== undefined
+              ? typeof overrideResponse === 'function'
+                ? await overrideResponse(info)
+                : overrideResponse
+              : getGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGetResponseMock()
+          ),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        )
+      },
+      options
+    )
+  }
+
+export const getGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGetMockHandler =
+  (
+    overrideResponse?:
+      | QualityPredictionResponse[]
+      | ((
+          info: Parameters<Parameters<typeof http.get>[1]>[0]
+        ) =>
+          | Promise<QualityPredictionResponse[]>
+          | QualityPredictionResponse[]),
+    options?: RequestHandlerOptions
+  ) => {
+    return http.get(
+      '*/gridsquares/:gridsquareUuid/foilhole_quality_predictions',
+      async (info) => {
+        await delay(1000)
+
+        return new HttpResponse(
+          JSON.stringify(
+            overrideResponse !== undefined
+              ? typeof overrideResponse === 'function'
+                ? await overrideResponse(info)
+                : overrideResponse
+              : getGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGetResponseMock()
+          ),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        )
+      },
+      options
+    )
+  }
+
+export const getCreateQualityPredictionQualityPredictionsPostMockHandler = (
+  overrideResponse?:
+    | QualityPredictionResponse
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0]
+      ) => Promise<QualityPredictionResponse> | QualityPredictionResponse),
+  options?: RequestHandlerOptions
+) => {
+  return http.post(
+    '*/quality_predictions',
+    async (info) => {
+      await delay(1000)
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getCreateQualityPredictionQualityPredictionsPostResponseMock()
+        ),
+        { status: 201, headers: { 'Content-Type': 'application/json' } }
+      )
+    },
+    options
+  )
+}
+
+export const getGetQualityMetricsQualityMetricsGetMockHandler = (
+  overrideResponse?:
+    | QualityMetricsResponse
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0]
+      ) => Promise<QualityMetricsResponse> | QualityMetricsResponse),
+  options?: RequestHandlerOptions
+) => {
+  return http.get(
+    '*/quality_metrics',
+    async (info) => {
+      await delay(1000)
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getGetQualityMetricsQualityMetricsGetResponseMock()
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } }
+      )
+    },
+    options
+  )
+}
+
+export const getGetGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGetMockHandler =
+  (
+    overrideResponse?:
+      | QualityPredictionResponse[]
+      | ((
+          info: Parameters<Parameters<typeof http.get>[1]>[0]
+        ) =>
+          | Promise<QualityPredictionResponse[]>
+          | QualityPredictionResponse[]),
+    options?: RequestHandlerOptions
+  ) => {
+    return http.get(
+      '*/prediction_model/:predictionModelName/grid/:gridUuid/prediction',
+      async (info) => {
+        await delay(1000)
+
+        return new HttpResponse(
+          JSON.stringify(
+            overrideResponse !== undefined
+              ? typeof overrideResponse === 'function'
+                ? await overrideResponse(info)
+                : overrideResponse
+              : getGetGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGetResponseMock()
+          ),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        )
+      },
+      options
+    )
+  }
+
+export const getGetGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetMockHandler =
+  (
+    overrideResponse?:
+      | QualityPredictionModelParameterResponse[]
+      | ((
+          info: Parameters<Parameters<typeof http.get>[1]>[0]
+        ) =>
+          | Promise<QualityPredictionModelParameterResponse[]>
+          | QualityPredictionModelParameterResponse[]),
+    options?: RequestHandlerOptions
+  ) => {
+    return http.get(
+      '*/prediction_model/:predictionModelName/grid/:gridUuid/latent_representation',
+      async (info) => {
+        await delay(1000)
+
+        return new HttpResponse(
+          JSON.stringify(
+            overrideResponse !== undefined
+              ? typeof overrideResponse === 'function'
+                ? await overrideResponse(info)
+                : overrideResponse
+              : getGetGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetResponseMock()
+          ),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        )
+      },
+      options
+    )
+  }
+
+export const getStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGetMockHandler =
+  (
+    overrideResponse?:
+      | unknown
+      | ((
+          info: Parameters<Parameters<typeof http.get>[1]>[0]
+        ) => Promise<unknown> | unknown),
+    options?: RequestHandlerOptions
+  ) => {
+    return http.get(
+      '*/agent/:agentId/session/:sessionId/instructions/stream',
+      async (info) => {
+        await delay(1000)
+        if (typeof overrideResponse === 'function') {
+          await overrideResponse(info)
+        }
+        return new HttpResponse(null, { status: 200 })
+      },
+      options
+    )
+  }
+
+export const getAcknowledgeInstructionAgentAgentIdSessionSessionIdInstructionsInstructionIdAckPostMockHandler =
+  (
+    overrideResponse?:
+      | AgentInstructionAcknowledgementResponse
+      | ((
+          info: Parameters<Parameters<typeof http.post>[1]>[0]
+        ) =>
+          | Promise<AgentInstructionAcknowledgementResponse>
+          | AgentInstructionAcknowledgementResponse),
+    options?: RequestHandlerOptions
+  ) => {
+    return http.post(
+      '*/agent/:agentId/session/:sessionId/instructions/:instructionId/ack',
+      async (info) => {
+        await delay(1000)
+
+        return new HttpResponse(
+          JSON.stringify(
+            overrideResponse !== undefined
+              ? typeof overrideResponse === 'function'
+                ? await overrideResponse(info)
+                : overrideResponse
+              : getAcknowledgeInstructionAgentAgentIdSessionSessionIdInstructionsInstructionIdAckPostResponseMock()
+          ),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        )
+      },
+      options
+    )
+  }
+
+export const getAgentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPostMockHandler =
+  (
+    overrideResponse?:
+      | unknown
+      | ((
+          info: Parameters<Parameters<typeof http.post>[1]>[0]
+        ) => Promise<unknown> | unknown),
+    options?: RequestHandlerOptions
+  ) => {
+    return http.post(
+      '*/agent/:agentId/session/:sessionId/heartbeat',
+      async (info) => {
+        await delay(1000)
+        if (typeof overrideResponse === 'function') {
+          await overrideResponse(info)
+        }
+        return new HttpResponse(null, { status: 200 })
+      },
+      options
+    )
+  }
+
+export const getGetActiveConnectionsDebugAgentConnectionsGetMockHandler = (
+  overrideResponse?:
+    | unknown
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0]
+      ) => Promise<unknown> | unknown),
+  options?: RequestHandlerOptions
+) => {
+  return http.get(
+    '*/debug/agent-connections',
+    async (info) => {
+      await delay(1000)
+      if (typeof overrideResponse === 'function') {
+        await overrideResponse(info)
+      }
+      return new HttpResponse(null, { status: 200 })
+    },
+    options
+  )
+}
+
+export const getGetSessionInstructionsDebugSessionSessionIdInstructionsGetMockHandler =
+  (
+    overrideResponse?:
+      | unknown
+      | ((
+          info: Parameters<Parameters<typeof http.get>[1]>[0]
+        ) => Promise<unknown> | unknown),
+    options?: RequestHandlerOptions
+  ) => {
+    return http.get(
+      '*/debug/session/:sessionId/instructions',
+      async (info) => {
+        await delay(1000)
+        if (typeof overrideResponse === 'function') {
+          await overrideResponse(info)
+        }
+        return new HttpResponse(null, { status: 200 })
+      },
+      options
+    )
+  }
+
+export const getGetActiveSessionsDebugSessionsGetMockHandler = (
+  overrideResponse?:
+    | unknown
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0]
+      ) => Promise<unknown> | unknown),
+  options?: RequestHandlerOptions
+) => {
+  return http.get(
+    '*/debug/sessions',
+    async (info) => {
+      await delay(1000)
+      if (typeof overrideResponse === 'function') {
+        await overrideResponse(info)
+      }
+      return new HttpResponse(null, { status: 200 })
+    },
+    options
+  )
+}
+
+export const getGetConnectionStatsDebugConnectionStatsGetMockHandler = (
+  overrideResponse?:
+    | unknown
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0]
+      ) => Promise<unknown> | unknown),
+  options?: RequestHandlerOptions
+) => {
+  return http.get(
+    '*/debug/connection-stats',
+    async (info) => {
+      await delay(1000)
+      if (typeof overrideResponse === 'function') {
+        await overrideResponse(info)
+      }
+      return new HttpResponse(null, { status: 200 })
+    },
+    options
+  )
+}
+
+export const getCreateManagedSessionDebugSessionsCreateManagedPostMockHandler =
+  (
+    overrideResponse?:
+      | unknown
+      | ((
+          info: Parameters<Parameters<typeof http.post>[1]>[0]
+        ) => Promise<unknown> | unknown),
+    options?: RequestHandlerOptions
+  ) => {
+    return http.post(
+      '*/debug/sessions/create-managed',
+      async (info) => {
+        await delay(1000)
+        if (typeof overrideResponse === 'function') {
+          await overrideResponse(info)
+        }
+        return new HttpResponse(null, { status: 200 })
+      },
+      options
+    )
+  }
+
+export const getCloseManagedSessionDebugSessionsSessionIdCloseDeleteMockHandler =
+  (
+    overrideResponse?:
+      | unknown
+      | ((
+          info: Parameters<Parameters<typeof http.delete>[1]>[0]
+        ) => Promise<unknown> | unknown),
+    options?: RequestHandlerOptions
+  ) => {
+    return http.delete(
+      '*/debug/sessions/:sessionId/close',
+      async (info) => {
+        await delay(1000)
+        if (typeof overrideResponse === 'function') {
+          await overrideResponse(info)
+        }
+        return new HttpResponse(null, { status: 200 })
+      },
+      options
+    )
+  }
+
+export const getCreateTestInstructionDebugSessionSessionIdCreateInstructionPostMockHandler =
+  (
+    overrideResponse?:
+      | unknown
+      | ((
+          info: Parameters<Parameters<typeof http.post>[1]>[0]
+        ) => Promise<unknown> | unknown),
+    options?: RequestHandlerOptions
+  ) => {
+    return http.post(
+      '*/debug/session/:sessionId/create-instruction',
+      async (info) => {
+        await delay(1000)
+        if (typeof overrideResponse === 'function') {
+          await overrideResponse(info)
+        }
+        return new HttpResponse(null, { status: 200 })
+      },
+      options
+    )
+  }
+
+export const getCreateTestSessionDebugSessionsCreatePostMockHandler = (
+  overrideResponse?:
+    | unknown
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0]
+      ) => Promise<unknown> | unknown),
+  options?: RequestHandlerOptions
+) => {
+  return http.post(
+    '*/debug/sessions/create',
+    async (info) => {
+      await delay(1000)
+      if (typeof overrideResponse === 'function') {
+        await overrideResponse(info)
+      }
+      return new HttpResponse(null, { status: 200 })
+    },
+    options
+  )
+}
 export const getDefaultMock = () => [
   getGetStatusStatusGetMockHandler(),
   getGetHealthHealthGetMockHandler(),
@@ -3905,4 +4665,26 @@ export const getDefaultMock = () => [
   getDeleteMicrographMicrographsMicrographUuidDeleteMockHandler(),
   getGetFoilholeMicrographsFoilholesFoilholeUuidMicrographsGetMockHandler(),
   getCreateFoilholeMicrographFoilholesFoilholeUuidMicrographsPostMockHandler(),
+  getGetPredictionModelsPredictionModelsGetMockHandler(),
+  getCreatePredictionModelPredictionModelsPostMockHandler(),
+  getGetPredictionModelPredictionModelsNameGetMockHandler(),
+  getUpdatePredictionModelPredictionModelsNamePutMockHandler(),
+  getDeletePredictionModelPredictionModelsNameDeleteMockHandler(),
+  getGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGetMockHandler(),
+  getGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGetMockHandler(),
+  getCreateQualityPredictionQualityPredictionsPostMockHandler(),
+  getGetQualityMetricsQualityMetricsGetMockHandler(),
+  getGetGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGetMockHandler(),
+  getGetGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetMockHandler(),
+  getStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGetMockHandler(),
+  getAcknowledgeInstructionAgentAgentIdSessionSessionIdInstructionsInstructionIdAckPostMockHandler(),
+  getAgentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPostMockHandler(),
+  getGetActiveConnectionsDebugAgentConnectionsGetMockHandler(),
+  getGetSessionInstructionsDebugSessionSessionIdInstructionsGetMockHandler(),
+  getGetActiveSessionsDebugSessionsGetMockHandler(),
+  getGetConnectionStatsDebugConnectionStatsGetMockHandler(),
+  getCreateManagedSessionDebugSessionsCreateManagedPostMockHandler(),
+  getCloseManagedSessionDebugSessionsSessionIdCloseDeleteMockHandler(),
+  getCreateTestInstructionDebugSessionSessionIdCreateInstructionPostMockHandler(),
+  getCreateTestSessionDebugSessionsCreatePostMockHandler(),
 ]

@@ -3,7 +3,7 @@
  * Do not edit manually.
  * SmartEM Decisions Backend API
  * API for accessing and managing electron microscopy data
- * OpenAPI spec version: 0.1.dev276+g1b7ed28d6.d20250818
+ * OpenAPI spec version: 0.1.dev334+g5e29cd2e4.d20251002
  */
 import { useMutation, useQuery } from '@tanstack/react-query'
 import type {
@@ -25,6 +25,8 @@ import type {
   AcquisitionCreateRequest,
   AcquisitionResponse,
   AcquisitionUpdateRequest,
+  AgentInstructionAcknowledgement,
+  AgentInstructionAcknowledgementResponse,
   AtlasCreateRequest,
   AtlasResponse,
   AtlasTileCreateRequest,
@@ -32,6 +34,9 @@ import type {
   AtlasTileResponse,
   AtlasTileUpdateRequest,
   AtlasUpdateRequest,
+  CreateManagedSessionDebugSessionsCreateManagedPostBody,
+  CreateTestInstructionDebugSessionSessionIdCreateInstructionPostBody,
+  CreateTestSessionDebugSessionsCreatePostBody,
   FoilHoleCreateRequest,
   FoilHoleResponse,
   FoilHoleUpdateRequest,
@@ -46,6 +51,13 @@ import type {
   MicrographCreateRequest,
   MicrographResponse,
   MicrographUpdateRequest,
+  QualityMetricsResponse,
+  QualityPredictionCreateRequest,
+  QualityPredictionModelCreateRequest,
+  QualityPredictionModelParameterResponse,
+  QualityPredictionModelResponse,
+  QualityPredictionModelUpdateRequest,
+  QualityPredictionResponse,
 } from '.././models'
 
 import { customInstance } from '../../mutator'
@@ -6588,6 +6600,3728 @@ export const useCreateFoilholeMicrographFoilholesFoilholeUuidMicrographsPost = <
     getCreateFoilholeMicrographFoilholesFoilholeUuidMicrographsPostMutationOptions(
       options
     )
+
+  return useMutation(mutationOptions, queryClient)
+}
+/**
+ * @summary Get Prediction Models
+ */
+export const getPredictionModelsPredictionModelsGet = (
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<QualityPredictionModelResponse[]>(
+    { url: `/prediction_models`, method: 'GET', signal },
+    options
+  )
+}
+
+export const getGetPredictionModelsPredictionModelsGetQueryKey = () => {
+  return [`/prediction_models`] as const
+}
+
+export const getGetPredictionModelsPredictionModelsGetQueryOptions = <
+  TData = Awaited<ReturnType<typeof getPredictionModelsPredictionModelsGet>>,
+  TError = unknown,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof getPredictionModelsPredictionModelsGet>>,
+      TError,
+      TData
+    >
+  >
+  request?: SecondParameter<typeof customInstance>
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetPredictionModelsPredictionModelsGetQueryKey()
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getPredictionModelsPredictionModelsGet>>
+  > = ({ signal }) =>
+    getPredictionModelsPredictionModelsGet(requestOptions, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 300000,
+    retry: 1,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getPredictionModelsPredictionModelsGet>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetPredictionModelsPredictionModelsGetQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getPredictionModelsPredictionModelsGet>>
+>
+export type GetPredictionModelsPredictionModelsGetQueryError = unknown
+
+export function useGetPredictionModelsPredictionModelsGet<
+  TData = Awaited<ReturnType<typeof getPredictionModelsPredictionModelsGet>>,
+  TError = unknown,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getPredictionModelsPredictionModelsGet>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getPredictionModelsPredictionModelsGet>>,
+          TError,
+          Awaited<ReturnType<typeof getPredictionModelsPredictionModelsGet>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetPredictionModelsPredictionModelsGet<
+  TData = Awaited<ReturnType<typeof getPredictionModelsPredictionModelsGet>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getPredictionModelsPredictionModelsGet>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getPredictionModelsPredictionModelsGet>>,
+          TError,
+          Awaited<ReturnType<typeof getPredictionModelsPredictionModelsGet>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetPredictionModelsPredictionModelsGet<
+  TData = Awaited<ReturnType<typeof getPredictionModelsPredictionModelsGet>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getPredictionModelsPredictionModelsGet>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Get Prediction Models
+ */
+
+export function useGetPredictionModelsPredictionModelsGet<
+  TData = Awaited<ReturnType<typeof getPredictionModelsPredictionModelsGet>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getPredictionModelsPredictionModelsGet>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions =
+    getGetPredictionModelsPredictionModelsGetQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Create Prediction Model
+ */
+export const createPredictionModelPredictionModelsPost = (
+  qualityPredictionModelCreateRequest: QualityPredictionModelCreateRequest,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<QualityPredictionModelResponse>(
+    {
+      url: `/prediction_models`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: qualityPredictionModelCreateRequest,
+      signal,
+    },
+    options
+  )
+}
+
+export const getCreatePredictionModelPredictionModelsPostMutationOptions = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createPredictionModelPredictionModelsPost>>,
+    TError,
+    { data: QualityPredictionModelCreateRequest },
+    TContext
+  >
+  request?: SecondParameter<typeof customInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createPredictionModelPredictionModelsPost>>,
+  TError,
+  { data: QualityPredictionModelCreateRequest },
+  TContext
+> => {
+  const mutationKey = ['createPredictionModelPredictionModelsPost']
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createPredictionModelPredictionModelsPost>>,
+    { data: QualityPredictionModelCreateRequest }
+  > = (props) => {
+    const { data } = props ?? {}
+
+    return createPredictionModelPredictionModelsPost(data, requestOptions)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type CreatePredictionModelPredictionModelsPostMutationResult =
+  NonNullable<
+    Awaited<ReturnType<typeof createPredictionModelPredictionModelsPost>>
+  >
+export type CreatePredictionModelPredictionModelsPostMutationBody =
+  QualityPredictionModelCreateRequest
+export type CreatePredictionModelPredictionModelsPostMutationError =
+  HTTPValidationError
+
+/**
+ * @summary Create Prediction Model
+ */
+export const useCreatePredictionModelPredictionModelsPost = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof createPredictionModelPredictionModelsPost>>,
+      TError,
+      { data: QualityPredictionModelCreateRequest },
+      TContext
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseMutationResult<
+  Awaited<ReturnType<typeof createPredictionModelPredictionModelsPost>>,
+  TError,
+  { data: QualityPredictionModelCreateRequest },
+  TContext
+> => {
+  const mutationOptions =
+    getCreatePredictionModelPredictionModelsPostMutationOptions(options)
+
+  return useMutation(mutationOptions, queryClient)
+}
+/**
+ * @summary Get Prediction Model
+ */
+export const getPredictionModelPredictionModelsNameGet = (
+  name: string,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<QualityPredictionModelResponse>(
+    { url: `/prediction_models/${name}`, method: 'GET', signal },
+    options
+  )
+}
+
+export const getGetPredictionModelPredictionModelsNameGetQueryKey = (
+  name?: string
+) => {
+  return [`/prediction_models/${name}`] as const
+}
+
+export const getGetPredictionModelPredictionModelsNameGetQueryOptions = <
+  TData = Awaited<ReturnType<typeof getPredictionModelPredictionModelsNameGet>>,
+  TError = HTTPValidationError,
+>(
+  name: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getPredictionModelPredictionModelsNameGet>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetPredictionModelPredictionModelsNameGetQueryKey(name)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getPredictionModelPredictionModelsNameGet>>
+  > = ({ signal }) =>
+    getPredictionModelPredictionModelsNameGet(name, requestOptions, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!name,
+    staleTime: 300000,
+    retry: 1,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getPredictionModelPredictionModelsNameGet>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetPredictionModelPredictionModelsNameGetQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getPredictionModelPredictionModelsNameGet>>
+>
+export type GetPredictionModelPredictionModelsNameGetQueryError =
+  HTTPValidationError
+
+export function useGetPredictionModelPredictionModelsNameGet<
+  TData = Awaited<ReturnType<typeof getPredictionModelPredictionModelsNameGet>>,
+  TError = HTTPValidationError,
+>(
+  name: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getPredictionModelPredictionModelsNameGet>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getPredictionModelPredictionModelsNameGet>>,
+          TError,
+          Awaited<ReturnType<typeof getPredictionModelPredictionModelsNameGet>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetPredictionModelPredictionModelsNameGet<
+  TData = Awaited<ReturnType<typeof getPredictionModelPredictionModelsNameGet>>,
+  TError = HTTPValidationError,
+>(
+  name: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getPredictionModelPredictionModelsNameGet>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getPredictionModelPredictionModelsNameGet>>,
+          TError,
+          Awaited<ReturnType<typeof getPredictionModelPredictionModelsNameGet>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetPredictionModelPredictionModelsNameGet<
+  TData = Awaited<ReturnType<typeof getPredictionModelPredictionModelsNameGet>>,
+  TError = HTTPValidationError,
+>(
+  name: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getPredictionModelPredictionModelsNameGet>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Get Prediction Model
+ */
+
+export function useGetPredictionModelPredictionModelsNameGet<
+  TData = Awaited<ReturnType<typeof getPredictionModelPredictionModelsNameGet>>,
+  TError = HTTPValidationError,
+>(
+  name: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getPredictionModelPredictionModelsNameGet>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getGetPredictionModelPredictionModelsNameGetQueryOptions(
+    name,
+    options
+  )
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Update Prediction Model
+ */
+export const updatePredictionModelPredictionModelsNamePut = (
+  name: string,
+  qualityPredictionModelUpdateRequest: QualityPredictionModelUpdateRequest,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<QualityPredictionModelResponse>(
+    {
+      url: `/prediction_models/${name}`,
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      data: qualityPredictionModelUpdateRequest,
+    },
+    options
+  )
+}
+
+export const getUpdatePredictionModelPredictionModelsNamePutMutationOptions = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updatePredictionModelPredictionModelsNamePut>>,
+    TError,
+    { name: string; data: QualityPredictionModelUpdateRequest },
+    TContext
+  >
+  request?: SecondParameter<typeof customInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updatePredictionModelPredictionModelsNamePut>>,
+  TError,
+  { name: string; data: QualityPredictionModelUpdateRequest },
+  TContext
+> => {
+  const mutationKey = ['updatePredictionModelPredictionModelsNamePut']
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updatePredictionModelPredictionModelsNamePut>>,
+    { name: string; data: QualityPredictionModelUpdateRequest }
+  > = (props) => {
+    const { name, data } = props ?? {}
+
+    return updatePredictionModelPredictionModelsNamePut(
+      name,
+      data,
+      requestOptions
+    )
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type UpdatePredictionModelPredictionModelsNamePutMutationResult =
+  NonNullable<
+    Awaited<ReturnType<typeof updatePredictionModelPredictionModelsNamePut>>
+  >
+export type UpdatePredictionModelPredictionModelsNamePutMutationBody =
+  QualityPredictionModelUpdateRequest
+export type UpdatePredictionModelPredictionModelsNamePutMutationError =
+  HTTPValidationError
+
+/**
+ * @summary Update Prediction Model
+ */
+export const useUpdatePredictionModelPredictionModelsNamePut = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof updatePredictionModelPredictionModelsNamePut>>,
+      TError,
+      { name: string; data: QualityPredictionModelUpdateRequest },
+      TContext
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseMutationResult<
+  Awaited<ReturnType<typeof updatePredictionModelPredictionModelsNamePut>>,
+  TError,
+  { name: string; data: QualityPredictionModelUpdateRequest },
+  TContext
+> => {
+  const mutationOptions =
+    getUpdatePredictionModelPredictionModelsNamePutMutationOptions(options)
+
+  return useMutation(mutationOptions, queryClient)
+}
+/**
+ * @summary Delete Prediction Model
+ */
+export const deletePredictionModelPredictionModelsNameDelete = (
+  name: string,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<void>(
+    { url: `/prediction_models/${name}`, method: 'DELETE' },
+    options
+  )
+}
+
+export const getDeletePredictionModelPredictionModelsNameDeleteMutationOptions =
+  <TError = HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<typeof deletePredictionModelPredictionModelsNameDelete>
+      >,
+      TError,
+      { name: string },
+      TContext
+    >
+    request?: SecondParameter<typeof customInstance>
+  }): UseMutationOptions<
+    Awaited<ReturnType<typeof deletePredictionModelPredictionModelsNameDelete>>,
+    TError,
+    { name: string },
+    TContext
+  > => {
+    const mutationKey = ['deletePredictionModelPredictionModelsNameDelete']
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined }
+
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<typeof deletePredictionModelPredictionModelsNameDelete>
+      >,
+      { name: string }
+    > = (props) => {
+      const { name } = props ?? {}
+
+      return deletePredictionModelPredictionModelsNameDelete(
+        name,
+        requestOptions
+      )
+    }
+
+    return { mutationFn, ...mutationOptions }
+  }
+
+export type DeletePredictionModelPredictionModelsNameDeleteMutationResult =
+  NonNullable<
+    Awaited<ReturnType<typeof deletePredictionModelPredictionModelsNameDelete>>
+  >
+
+export type DeletePredictionModelPredictionModelsNameDeleteMutationError =
+  HTTPValidationError
+
+/**
+ * @summary Delete Prediction Model
+ */
+export const useDeletePredictionModelPredictionModelsNameDelete = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<typeof deletePredictionModelPredictionModelsNameDelete>
+      >,
+      TError,
+      { name: string },
+      TContext
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseMutationResult<
+  Awaited<ReturnType<typeof deletePredictionModelPredictionModelsNameDelete>>,
+  TError,
+  { name: string },
+  TContext
+> => {
+  const mutationOptions =
+    getDeletePredictionModelPredictionModelsNameDeleteMutationOptions(options)
+
+  return useMutation(mutationOptions, queryClient)
+}
+/**
+ * @summary Get Gridsquare Quality Predictions
+ */
+export const getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet =
+  (
+    gridsquareUuid: string,
+    options?: SecondParameter<typeof customInstance>,
+    signal?: AbortSignal
+  ) => {
+    return customInstance<QualityPredictionResponse[]>(
+      {
+        url: `/gridsquares/${gridsquareUuid}/quality_predictions`,
+        method: 'GET',
+        signal,
+      },
+      options
+    )
+  }
+
+export const getGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGetQueryKey =
+  (gridsquareUuid?: string) => {
+    return [`/gridsquares/${gridsquareUuid}/quality_predictions`] as const
+  }
+
+export const getGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGetQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<
+        typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+      >
+    >,
+    TError = HTTPValidationError,
+  >(
+    gridsquareUuid: string,
+    options?: {
+      query?: Partial<
+        UseQueryOptions<
+          Awaited<
+            ReturnType<
+              typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+            >
+          >,
+          TError,
+          TData
+        >
+      >
+      request?: SecondParameter<typeof customInstance>
+    }
+  ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {}
+
+    const queryKey =
+      queryOptions?.queryKey ??
+      getGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGetQueryKey(
+        gridsquareUuid
+      )
+
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+        >
+      >
+    > = ({ signal }) =>
+      getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet(
+        gridsquareUuid,
+        requestOptions,
+        signal
+      )
+
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!gridsquareUuid,
+      staleTime: 300000,
+      retry: 1,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+        >
+      >,
+      TError,
+      TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> }
+  }
+
+export type GetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGetQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+      >
+    >
+  >
+export type GetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGetQueryError =
+  HTTPValidationError
+
+export function useGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  gridsquareUuid: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<
+            ReturnType<
+              typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+            >
+          >,
+          TError,
+          Awaited<
+            ReturnType<
+              typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+            >
+          >
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  gridsquareUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<
+            ReturnType<
+              typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+            >
+          >,
+          TError,
+          Awaited<
+            ReturnType<
+              typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+            >
+          >
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  gridsquareUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Get Gridsquare Quality Predictions
+ */
+
+export function useGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  gridsquareUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions =
+    getGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGetQueryOptions(
+      gridsquareUuid,
+      options
+    )
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Get Gridsquare Foilhole Quality Predictions
+ */
+export const getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet =
+  (
+    gridsquareUuid: string,
+    options?: SecondParameter<typeof customInstance>,
+    signal?: AbortSignal
+  ) => {
+    return customInstance<QualityPredictionResponse[]>(
+      {
+        url: `/gridsquares/${gridsquareUuid}/foilhole_quality_predictions`,
+        method: 'GET',
+        signal,
+      },
+      options
+    )
+  }
+
+export const getGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGetQueryKey =
+  (gridsquareUuid?: string) => {
+    return [
+      `/gridsquares/${gridsquareUuid}/foilhole_quality_predictions`,
+    ] as const
+  }
+
+export const getGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGetQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<
+        typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+      >
+    >,
+    TError = HTTPValidationError,
+  >(
+    gridsquareUuid: string,
+    options?: {
+      query?: Partial<
+        UseQueryOptions<
+          Awaited<
+            ReturnType<
+              typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+            >
+          >,
+          TError,
+          TData
+        >
+      >
+      request?: SecondParameter<typeof customInstance>
+    }
+  ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {}
+
+    const queryKey =
+      queryOptions?.queryKey ??
+      getGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGetQueryKey(
+        gridsquareUuid
+      )
+
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+        >
+      >
+    > = ({ signal }) =>
+      getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet(
+        gridsquareUuid,
+        requestOptions,
+        signal
+      )
+
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!gridsquareUuid,
+      staleTime: 300000,
+      retry: 1,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+        >
+      >,
+      TError,
+      TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> }
+  }
+
+export type GetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGetQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+      >
+    >
+  >
+export type GetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGetQueryError =
+  HTTPValidationError
+
+export function useGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  gridsquareUuid: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<
+            ReturnType<
+              typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+            >
+          >,
+          TError,
+          Awaited<
+            ReturnType<
+              typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+            >
+          >
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  gridsquareUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<
+            ReturnType<
+              typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+            >
+          >,
+          TError,
+          Awaited<
+            ReturnType<
+              typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+            >
+          >
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  gridsquareUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Get Gridsquare Foilhole Quality Predictions
+ */
+
+export function useGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  gridsquareUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions =
+    getGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGetQueryOptions(
+      gridsquareUuid,
+      options
+    )
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Create Quality Prediction
+ */
+export const createQualityPredictionQualityPredictionsPost = (
+  qualityPredictionCreateRequest: QualityPredictionCreateRequest,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<QualityPredictionResponse>(
+    {
+      url: `/quality_predictions`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: qualityPredictionCreateRequest,
+      signal,
+    },
+    options
+  )
+}
+
+export const getCreateQualityPredictionQualityPredictionsPostMutationOptions = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createQualityPredictionQualityPredictionsPost>>,
+    TError,
+    { data: QualityPredictionCreateRequest },
+    TContext
+  >
+  request?: SecondParameter<typeof customInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createQualityPredictionQualityPredictionsPost>>,
+  TError,
+  { data: QualityPredictionCreateRequest },
+  TContext
+> => {
+  const mutationKey = ['createQualityPredictionQualityPredictionsPost']
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createQualityPredictionQualityPredictionsPost>>,
+    { data: QualityPredictionCreateRequest }
+  > = (props) => {
+    const { data } = props ?? {}
+
+    return createQualityPredictionQualityPredictionsPost(data, requestOptions)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type CreateQualityPredictionQualityPredictionsPostMutationResult =
+  NonNullable<
+    Awaited<ReturnType<typeof createQualityPredictionQualityPredictionsPost>>
+  >
+export type CreateQualityPredictionQualityPredictionsPostMutationBody =
+  QualityPredictionCreateRequest
+export type CreateQualityPredictionQualityPredictionsPostMutationError =
+  HTTPValidationError
+
+/**
+ * @summary Create Quality Prediction
+ */
+export const useCreateQualityPredictionQualityPredictionsPost = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof createQualityPredictionQualityPredictionsPost>>,
+      TError,
+      { data: QualityPredictionCreateRequest },
+      TContext
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseMutationResult<
+  Awaited<ReturnType<typeof createQualityPredictionQualityPredictionsPost>>,
+  TError,
+  { data: QualityPredictionCreateRequest },
+  TContext
+> => {
+  const mutationOptions =
+    getCreateQualityPredictionQualityPredictionsPostMutationOptions(options)
+
+  return useMutation(mutationOptions, queryClient)
+}
+/**
+ * @summary Get Quality Metrics
+ */
+export const getQualityMetricsQualityMetricsGet = (
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<QualityMetricsResponse>(
+    { url: `/quality_metrics`, method: 'GET', signal },
+    options
+  )
+}
+
+export const getGetQualityMetricsQualityMetricsGetQueryKey = () => {
+  return [`/quality_metrics`] as const
+}
+
+export const getGetQualityMetricsQualityMetricsGetQueryOptions = <
+  TData = Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>,
+  TError = unknown,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>,
+      TError,
+      TData
+    >
+  >
+  request?: SecondParameter<typeof customInstance>
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetQualityMetricsQualityMetricsGetQueryKey()
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>
+  > = ({ signal }) => getQualityMetricsQualityMetricsGet(requestOptions, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 300000,
+    retry: 1,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetQualityMetricsQualityMetricsGetQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>
+>
+export type GetQualityMetricsQualityMetricsGetQueryError = unknown
+
+export function useGetQualityMetricsQualityMetricsGet<
+  TData = Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>,
+  TError = unknown,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>,
+          TError,
+          Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetQualityMetricsQualityMetricsGet<
+  TData = Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>,
+          TError,
+          Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetQualityMetricsQualityMetricsGet<
+  TData = Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Get Quality Metrics
+ */
+
+export function useGetQualityMetricsQualityMetricsGet<
+  TData = Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions =
+    getGetQualityMetricsQualityMetricsGetQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Get Grid Predictions
+ */
+export const getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet =
+  (
+    predictionModelName: string,
+    gridUuid: string,
+    options?: SecondParameter<typeof customInstance>,
+    signal?: AbortSignal
+  ) => {
+    return customInstance<QualityPredictionResponse[]>(
+      {
+        url: `/prediction_model/${predictionModelName}/grid/${gridUuid}/prediction`,
+        method: 'GET',
+        signal,
+      },
+      options
+    )
+  }
+
+export const getGetGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGetQueryKey =
+  (predictionModelName?: string, gridUuid?: string) => {
+    return [
+      `/prediction_model/${predictionModelName}/grid/${gridUuid}/prediction`,
+    ] as const
+  }
+
+export const getGetGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGetQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<
+        typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+      >
+    >,
+    TError = HTTPValidationError,
+  >(
+    predictionModelName: string,
+    gridUuid: string,
+    options?: {
+      query?: Partial<
+        UseQueryOptions<
+          Awaited<
+            ReturnType<
+              typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+            >
+          >,
+          TError,
+          TData
+        >
+      >
+      request?: SecondParameter<typeof customInstance>
+    }
+  ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {}
+
+    const queryKey =
+      queryOptions?.queryKey ??
+      getGetGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGetQueryKey(
+        predictionModelName,
+        gridUuid
+      )
+
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+        >
+      >
+    > = ({ signal }) =>
+      getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet(
+        predictionModelName,
+        gridUuid,
+        requestOptions,
+        signal
+      )
+
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!(predictionModelName && gridUuid),
+      staleTime: 300000,
+      retry: 1,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+        >
+      >,
+      TError,
+      TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> }
+  }
+
+export type GetGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGetQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+      >
+    >
+  >
+export type GetGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGetQueryError =
+  HTTPValidationError
+
+export function useGetGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  predictionModelName: string,
+  gridUuid: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<
+            ReturnType<
+              typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+            >
+          >,
+          TError,
+          Awaited<
+            ReturnType<
+              typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+            >
+          >
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  predictionModelName: string,
+  gridUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<
+            ReturnType<
+              typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+            >
+          >,
+          TError,
+          Awaited<
+            ReturnType<
+              typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+            >
+          >
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  predictionModelName: string,
+  gridUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Get Grid Predictions
+ */
+
+export function useGetGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  predictionModelName: string,
+  gridUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions =
+    getGetGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGetQueryOptions(
+      predictionModelName,
+      gridUuid,
+      options
+    )
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Get Grid Latent Representation
+ */
+export const getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet =
+  (
+    predictionModelName: string,
+    gridUuid: string,
+    options?: SecondParameter<typeof customInstance>,
+    signal?: AbortSignal
+  ) => {
+    return customInstance<QualityPredictionModelParameterResponse[]>(
+      {
+        url: `/prediction_model/${predictionModelName}/grid/${gridUuid}/latent_representation`,
+        method: 'GET',
+        signal,
+      },
+      options
+    )
+  }
+
+export const getGetGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetQueryKey =
+  (predictionModelName?: string, gridUuid?: string) => {
+    return [
+      `/prediction_model/${predictionModelName}/grid/${gridUuid}/latent_representation`,
+    ] as const
+  }
+
+export const getGetGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<
+        typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+      >
+    >,
+    TError = HTTPValidationError,
+  >(
+    predictionModelName: string,
+    gridUuid: string,
+    options?: {
+      query?: Partial<
+        UseQueryOptions<
+          Awaited<
+            ReturnType<
+              typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+            >
+          >,
+          TError,
+          TData
+        >
+      >
+      request?: SecondParameter<typeof customInstance>
+    }
+  ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {}
+
+    const queryKey =
+      queryOptions?.queryKey ??
+      getGetGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetQueryKey(
+        predictionModelName,
+        gridUuid
+      )
+
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+        >
+      >
+    > = ({ signal }) =>
+      getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet(
+        predictionModelName,
+        gridUuid,
+        requestOptions,
+        signal
+      )
+
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!(predictionModelName && gridUuid),
+      staleTime: 300000,
+      retry: 1,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+        >
+      >,
+      TError,
+      TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> }
+  }
+
+export type GetGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+      >
+    >
+  >
+export type GetGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetQueryError =
+  HTTPValidationError
+
+export function useGetGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  predictionModelName: string,
+  gridUuid: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<
+            ReturnType<
+              typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+            >
+          >,
+          TError,
+          Awaited<
+            ReturnType<
+              typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+            >
+          >
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  predictionModelName: string,
+  gridUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<
+            ReturnType<
+              typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+            >
+          >,
+          TError,
+          Awaited<
+            ReturnType<
+              typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+            >
+          >
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  predictionModelName: string,
+  gridUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Get Grid Latent Representation
+ */
+
+export function useGetGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  predictionModelName: string,
+  gridUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions =
+    getGetGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetQueryOptions(
+      predictionModelName,
+      gridUuid,
+      options
+    )
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * SSE endpoint for streaming instructions to agents for a specific session
+ * @summary Stream Instructions
+ */
+export const streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet =
+  (
+    agentId: string,
+    sessionId: string,
+    options?: SecondParameter<typeof customInstance>,
+    signal?: AbortSignal
+  ) => {
+    return customInstance<unknown>(
+      {
+        url: `/agent/${agentId}/session/${sessionId}/instructions/stream`,
+        method: 'GET',
+        signal,
+      },
+      options
+    )
+  }
+
+export const getStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGetQueryKey =
+  (agentId?: string, sessionId?: string) => {
+    return [
+      `/agent/${agentId}/session/${sessionId}/instructions/stream`,
+    ] as const
+  }
+
+export const getStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGetQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<
+        typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
+      >
+    >,
+    TError = HTTPValidationError,
+  >(
+    agentId: string,
+    sessionId: string,
+    options?: {
+      query?: Partial<
+        UseQueryOptions<
+          Awaited<
+            ReturnType<
+              typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
+            >
+          >,
+          TError,
+          TData
+        >
+      >
+      request?: SecondParameter<typeof customInstance>
+    }
+  ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {}
+
+    const queryKey =
+      queryOptions?.queryKey ??
+      getStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGetQueryKey(
+        agentId,
+        sessionId
+      )
+
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
+        >
+      >
+    > = ({ signal }) =>
+      streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet(
+        agentId,
+        sessionId,
+        requestOptions,
+        signal
+      )
+
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!(agentId && sessionId),
+      staleTime: 300000,
+      retry: 1,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
+        >
+      >,
+      TError,
+      TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> }
+  }
+
+export type StreamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGetQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
+      >
+    >
+  >
+export type StreamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGetQueryError =
+  HTTPValidationError
+
+export function useStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet<
+  TData = Awaited<
+    ReturnType<
+      typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  agentId: string,
+  sessionId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<
+            ReturnType<
+              typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
+            >
+          >,
+          TError,
+          Awaited<
+            ReturnType<
+              typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
+            >
+          >
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet<
+  TData = Awaited<
+    ReturnType<
+      typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  agentId: string,
+  sessionId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<
+            ReturnType<
+              typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
+            >
+          >,
+          TError,
+          Awaited<
+            ReturnType<
+              typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
+            >
+          >
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet<
+  TData = Awaited<
+    ReturnType<
+      typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  agentId: string,
+  sessionId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Stream Instructions
+ */
+
+export function useStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet<
+  TData = Awaited<
+    ReturnType<
+      typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  agentId: string,
+  sessionId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions =
+    getStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGetQueryOptions(
+      agentId,
+      sessionId,
+      options
+    )
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * HTTP endpoint for instruction acknowledgements with database persistence
+ * @summary Acknowledge Instruction
+ */
+export const acknowledgeInstructionAgentAgentIdSessionSessionIdInstructionsInstructionIdAckPost =
+  (
+    agentId: string,
+    sessionId: string,
+    instructionId: string,
+    agentInstructionAcknowledgement: AgentInstructionAcknowledgement,
+    options?: SecondParameter<typeof customInstance>,
+    signal?: AbortSignal
+  ) => {
+    return customInstance<AgentInstructionAcknowledgementResponse>(
+      {
+        url: `/agent/${agentId}/session/${sessionId}/instructions/${instructionId}/ack`,
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        data: agentInstructionAcknowledgement,
+        signal,
+      },
+      options
+    )
+  }
+
+export const getAcknowledgeInstructionAgentAgentIdSessionSessionIdInstructionsInstructionIdAckPostMutationOptions =
+  <TError = HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof acknowledgeInstructionAgentAgentIdSessionSessionIdInstructionsInstructionIdAckPost
+        >
+      >,
+      TError,
+      {
+        agentId: string
+        sessionId: string
+        instructionId: string
+        data: AgentInstructionAcknowledgement
+      },
+      TContext
+    >
+    request?: SecondParameter<typeof customInstance>
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof acknowledgeInstructionAgentAgentIdSessionSessionIdInstructionsInstructionIdAckPost
+      >
+    >,
+    TError,
+    {
+      agentId: string
+      sessionId: string
+      instructionId: string
+      data: AgentInstructionAcknowledgement
+    },
+    TContext
+  > => {
+    const mutationKey = [
+      'acknowledgeInstructionAgentAgentIdSessionSessionIdInstructionsInstructionIdAckPost',
+    ]
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined }
+
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof acknowledgeInstructionAgentAgentIdSessionSessionIdInstructionsInstructionIdAckPost
+        >
+      >,
+      {
+        agentId: string
+        sessionId: string
+        instructionId: string
+        data: AgentInstructionAcknowledgement
+      }
+    > = (props) => {
+      const { agentId, sessionId, instructionId, data } = props ?? {}
+
+      return acknowledgeInstructionAgentAgentIdSessionSessionIdInstructionsInstructionIdAckPost(
+        agentId,
+        sessionId,
+        instructionId,
+        data,
+        requestOptions
+      )
+    }
+
+    return { mutationFn, ...mutationOptions }
+  }
+
+export type AcknowledgeInstructionAgentAgentIdSessionSessionIdInstructionsInstructionIdAckPostMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof acknowledgeInstructionAgentAgentIdSessionSessionIdInstructionsInstructionIdAckPost
+      >
+    >
+  >
+export type AcknowledgeInstructionAgentAgentIdSessionSessionIdInstructionsInstructionIdAckPostMutationBody =
+  AgentInstructionAcknowledgement
+export type AcknowledgeInstructionAgentAgentIdSessionSessionIdInstructionsInstructionIdAckPostMutationError =
+  HTTPValidationError
+
+/**
+ * @summary Acknowledge Instruction
+ */
+export const useAcknowledgeInstructionAgentAgentIdSessionSessionIdInstructionsInstructionIdAckPost =
+  <TError = HTTPValidationError, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof acknowledgeInstructionAgentAgentIdSessionSessionIdInstructionsInstructionIdAckPost
+          >
+        >,
+        TError,
+        {
+          agentId: string
+          sessionId: string
+          instructionId: string
+          data: AgentInstructionAcknowledgement
+        },
+        TContext
+      >
+      request?: SecondParameter<typeof customInstance>
+    },
+    queryClient?: QueryClient
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof acknowledgeInstructionAgentAgentIdSessionSessionIdInstructionsInstructionIdAckPost
+      >
+    >,
+    TError,
+    {
+      agentId: string
+      sessionId: string
+      instructionId: string
+      data: AgentInstructionAcknowledgement
+    },
+    TContext
+  > => {
+    const mutationOptions =
+      getAcknowledgeInstructionAgentAgentIdSessionSessionIdInstructionsInstructionIdAckPostMutationOptions(
+        options
+      )
+
+    return useMutation(mutationOptions, queryClient)
+  }
+/**
+ * Agent heartbeat endpoint to update connection health status.
+
+Args:
+    agent_id: The agent identifier
+    session_id: The session identifier
+    db: Database session
+
+Returns:
+    Heartbeat response with status and timestamp
+ * @summary Agent Heartbeat
+ */
+export const agentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPost = (
+  agentId: string,
+  sessionId: string,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<unknown>(
+    {
+      url: `/agent/${agentId}/session/${sessionId}/heartbeat`,
+      method: 'POST',
+      signal,
+    },
+    options
+  )
+}
+
+export const getAgentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPostMutationOptions =
+  <TError = HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof agentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPost
+        >
+      >,
+      TError,
+      { agentId: string; sessionId: string },
+      TContext
+    >
+    request?: SecondParameter<typeof customInstance>
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<typeof agentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPost>
+    >,
+    TError,
+    { agentId: string; sessionId: string },
+    TContext
+  > => {
+    const mutationKey = [
+      'agentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPost',
+    ]
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined }
+
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof agentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPost
+        >
+      >,
+      { agentId: string; sessionId: string }
+    > = (props) => {
+      const { agentId, sessionId } = props ?? {}
+
+      return agentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPost(
+        agentId,
+        sessionId,
+        requestOptions
+      )
+    }
+
+    return { mutationFn, ...mutationOptions }
+  }
+
+export type AgentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPostMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<typeof agentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPost>
+    >
+  >
+
+export type AgentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPostMutationError =
+  HTTPValidationError
+
+/**
+ * @summary Agent Heartbeat
+ */
+export const useAgentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPost = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof agentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPost
+        >
+      >,
+      TError,
+      { agentId: string; sessionId: string },
+      TContext
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseMutationResult<
+  Awaited<
+    ReturnType<typeof agentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPost>
+  >,
+  TError,
+  { agentId: string; sessionId: string },
+  TContext
+> => {
+  const mutationOptions =
+    getAgentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPostMutationOptions(
+      options
+    )
+
+  return useMutation(mutationOptions, queryClient)
+}
+/**
+ * Debug endpoint to view active agent connections
+ * @summary Get Active Connections
+ */
+export const getActiveConnectionsDebugAgentConnectionsGet = (
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<unknown>(
+    { url: `/debug/agent-connections`, method: 'GET', signal },
+    options
+  )
+}
+
+export const getGetActiveConnectionsDebugAgentConnectionsGetQueryKey = () => {
+  return [`/debug/agent-connections`] as const
+}
+
+export const getGetActiveConnectionsDebugAgentConnectionsGetQueryOptions = <
+  TData = Awaited<
+    ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>
+  >,
+  TError = unknown,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>>,
+      TError,
+      TData
+    >
+  >
+  request?: SecondParameter<typeof customInstance>
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetActiveConnectionsDebugAgentConnectionsGetQueryKey()
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>>
+  > = ({ signal }) =>
+    getActiveConnectionsDebugAgentConnectionsGet(requestOptions, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 300000,
+    retry: 1,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetActiveConnectionsDebugAgentConnectionsGetQueryResult =
+  NonNullable<
+    Awaited<ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>>
+  >
+export type GetActiveConnectionsDebugAgentConnectionsGetQueryError = unknown
+
+export function useGetActiveConnectionsDebugAgentConnectionsGet<
+  TData = Awaited<
+    ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>
+  >,
+  TError = unknown,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<
+            ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>
+          >,
+          TError,
+          Awaited<
+            ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>
+          >
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetActiveConnectionsDebugAgentConnectionsGet<
+  TData = Awaited<
+    ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>
+  >,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<
+            ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>
+          >,
+          TError,
+          Awaited<
+            ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>
+          >
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetActiveConnectionsDebugAgentConnectionsGet<
+  TData = Awaited<
+    ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>
+  >,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Get Active Connections
+ */
+
+export function useGetActiveConnectionsDebugAgentConnectionsGet<
+  TData = Awaited<
+    ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>
+  >,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions =
+    getGetActiveConnectionsDebugAgentConnectionsGetQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * Debug endpoint to view instructions for a session
+ * @summary Get Session Instructions
+ */
+export const getSessionInstructionsDebugSessionSessionIdInstructionsGet = (
+  sessionId: string,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<unknown>(
+    { url: `/debug/session/${sessionId}/instructions`, method: 'GET', signal },
+    options
+  )
+}
+
+export const getGetSessionInstructionsDebugSessionSessionIdInstructionsGetQueryKey =
+  (sessionId?: string) => {
+    return [`/debug/session/${sessionId}/instructions`] as const
+  }
+
+export const getGetSessionInstructionsDebugSessionSessionIdInstructionsGetQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<
+        typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
+      >
+    >,
+    TError = HTTPValidationError,
+  >(
+    sessionId: string,
+    options?: {
+      query?: Partial<
+        UseQueryOptions<
+          Awaited<
+            ReturnType<
+              typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
+            >
+          >,
+          TError,
+          TData
+        >
+      >
+      request?: SecondParameter<typeof customInstance>
+    }
+  ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {}
+
+    const queryKey =
+      queryOptions?.queryKey ??
+      getGetSessionInstructionsDebugSessionSessionIdInstructionsGetQueryKey(
+        sessionId
+      )
+
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
+        >
+      >
+    > = ({ signal }) =>
+      getSessionInstructionsDebugSessionSessionIdInstructionsGet(
+        sessionId,
+        requestOptions,
+        signal
+      )
+
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!sessionId,
+      staleTime: 300000,
+      retry: 1,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
+        >
+      >,
+      TError,
+      TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> }
+  }
+
+export type GetSessionInstructionsDebugSessionSessionIdInstructionsGetQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
+      >
+    >
+  >
+export type GetSessionInstructionsDebugSessionSessionIdInstructionsGetQueryError =
+  HTTPValidationError
+
+export function useGetSessionInstructionsDebugSessionSessionIdInstructionsGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  sessionId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<
+            ReturnType<
+              typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
+            >
+          >,
+          TError,
+          Awaited<
+            ReturnType<
+              typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
+            >
+          >
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetSessionInstructionsDebugSessionSessionIdInstructionsGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  sessionId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<
+            ReturnType<
+              typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
+            >
+          >,
+          TError,
+          Awaited<
+            ReturnType<
+              typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
+            >
+          >
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetSessionInstructionsDebugSessionSessionIdInstructionsGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  sessionId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Get Session Instructions
+ */
+
+export function useGetSessionInstructionsDebugSessionSessionIdInstructionsGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  sessionId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions =
+    getGetSessionInstructionsDebugSessionSessionIdInstructionsGetQueryOptions(
+      sessionId,
+      options
+    )
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * Debug endpoint to view all active sessions
+ * @summary Get Active Sessions
+ */
+export const getActiveSessionsDebugSessionsGet = (
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<unknown>(
+    { url: `/debug/sessions`, method: 'GET', signal },
+    options
+  )
+}
+
+export const getGetActiveSessionsDebugSessionsGetQueryKey = () => {
+  return [`/debug/sessions`] as const
+}
+
+export const getGetActiveSessionsDebugSessionsGetQueryOptions = <
+  TData = Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>,
+  TError = unknown,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>,
+      TError,
+      TData
+    >
+  >
+  request?: SecondParameter<typeof customInstance>
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetActiveSessionsDebugSessionsGetQueryKey()
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>
+  > = ({ signal }) => getActiveSessionsDebugSessionsGet(requestOptions, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 300000,
+    retry: 1,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetActiveSessionsDebugSessionsGetQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>
+>
+export type GetActiveSessionsDebugSessionsGetQueryError = unknown
+
+export function useGetActiveSessionsDebugSessionsGet<
+  TData = Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>,
+  TError = unknown,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>,
+          TError,
+          Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetActiveSessionsDebugSessionsGet<
+  TData = Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>,
+          TError,
+          Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetActiveSessionsDebugSessionsGet<
+  TData = Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Get Active Sessions
+ */
+
+export function useGetActiveSessionsDebugSessionsGet<
+  TData = Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getGetActiveSessionsDebugSessionsGetQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * Get real-time connection and session statistics
+ * @summary Get Connection Stats
+ */
+export const getConnectionStatsDebugConnectionStatsGet = (
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<unknown>(
+    { url: `/debug/connection-stats`, method: 'GET', signal },
+    options
+  )
+}
+
+export const getGetConnectionStatsDebugConnectionStatsGetQueryKey = () => {
+  return [`/debug/connection-stats`] as const
+}
+
+export const getGetConnectionStatsDebugConnectionStatsGetQueryOptions = <
+  TData = Awaited<ReturnType<typeof getConnectionStatsDebugConnectionStatsGet>>,
+  TError = unknown,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof getConnectionStatsDebugConnectionStatsGet>>,
+      TError,
+      TData
+    >
+  >
+  request?: SecondParameter<typeof customInstance>
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetConnectionStatsDebugConnectionStatsGetQueryKey()
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getConnectionStatsDebugConnectionStatsGet>>
+  > = ({ signal }) =>
+    getConnectionStatsDebugConnectionStatsGet(requestOptions, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 300000,
+    retry: 1,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getConnectionStatsDebugConnectionStatsGet>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetConnectionStatsDebugConnectionStatsGetQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getConnectionStatsDebugConnectionStatsGet>>
+>
+export type GetConnectionStatsDebugConnectionStatsGetQueryError = unknown
+
+export function useGetConnectionStatsDebugConnectionStatsGet<
+  TData = Awaited<ReturnType<typeof getConnectionStatsDebugConnectionStatsGet>>,
+  TError = unknown,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getConnectionStatsDebugConnectionStatsGet>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getConnectionStatsDebugConnectionStatsGet>>,
+          TError,
+          Awaited<ReturnType<typeof getConnectionStatsDebugConnectionStatsGet>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetConnectionStatsDebugConnectionStatsGet<
+  TData = Awaited<ReturnType<typeof getConnectionStatsDebugConnectionStatsGet>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getConnectionStatsDebugConnectionStatsGet>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getConnectionStatsDebugConnectionStatsGet>>,
+          TError,
+          Awaited<ReturnType<typeof getConnectionStatsDebugConnectionStatsGet>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetConnectionStatsDebugConnectionStatsGet<
+  TData = Awaited<ReturnType<typeof getConnectionStatsDebugConnectionStatsGet>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getConnectionStatsDebugConnectionStatsGet>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Get Connection Stats
+ */
+
+export function useGetConnectionStatsDebugConnectionStatsGet<
+  TData = Awaited<ReturnType<typeof getConnectionStatsDebugConnectionStatsGet>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getConnectionStatsDebugConnectionStatsGet>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions =
+    getGetConnectionStatsDebugConnectionStatsGetQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * Create a session using the connection manager
+ * @summary Create Managed Session
+ */
+export const createManagedSessionDebugSessionsCreateManagedPost = (
+  createManagedSessionDebugSessionsCreateManagedPostBody: CreateManagedSessionDebugSessionsCreateManagedPostBody,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<unknown>(
+    {
+      url: `/debug/sessions/create-managed`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: createManagedSessionDebugSessionsCreateManagedPostBody,
+      signal,
+    },
+    options
+  )
+}
+
+export const getCreateManagedSessionDebugSessionsCreateManagedPostMutationOptions =
+  <TError = HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<typeof createManagedSessionDebugSessionsCreateManagedPost>
+      >,
+      TError,
+      { data: CreateManagedSessionDebugSessionsCreateManagedPostBody },
+      TContext
+    >
+    request?: SecondParameter<typeof customInstance>
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<typeof createManagedSessionDebugSessionsCreateManagedPost>
+    >,
+    TError,
+    { data: CreateManagedSessionDebugSessionsCreateManagedPostBody },
+    TContext
+  > => {
+    const mutationKey = ['createManagedSessionDebugSessionsCreateManagedPost']
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined }
+
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<typeof createManagedSessionDebugSessionsCreateManagedPost>
+      >,
+      { data: CreateManagedSessionDebugSessionsCreateManagedPostBody }
+    > = (props) => {
+      const { data } = props ?? {}
+
+      return createManagedSessionDebugSessionsCreateManagedPost(
+        data,
+        requestOptions
+      )
+    }
+
+    return { mutationFn, ...mutationOptions }
+  }
+
+export type CreateManagedSessionDebugSessionsCreateManagedPostMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<typeof createManagedSessionDebugSessionsCreateManagedPost>
+    >
+  >
+export type CreateManagedSessionDebugSessionsCreateManagedPostMutationBody =
+  CreateManagedSessionDebugSessionsCreateManagedPostBody
+export type CreateManagedSessionDebugSessionsCreateManagedPostMutationError =
+  HTTPValidationError
+
+/**
+ * @summary Create Managed Session
+ */
+export const useCreateManagedSessionDebugSessionsCreateManagedPost = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<typeof createManagedSessionDebugSessionsCreateManagedPost>
+      >,
+      TError,
+      { data: CreateManagedSessionDebugSessionsCreateManagedPostBody },
+      TContext
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseMutationResult<
+  Awaited<
+    ReturnType<typeof createManagedSessionDebugSessionsCreateManagedPost>
+  >,
+  TError,
+  { data: CreateManagedSessionDebugSessionsCreateManagedPostBody },
+  TContext
+> => {
+  const mutationOptions =
+    getCreateManagedSessionDebugSessionsCreateManagedPostMutationOptions(
+      options
+    )
+
+  return useMutation(mutationOptions, queryClient)
+}
+/**
+ * Close a session using the connection manager
+ * @summary Close Managed Session
+ */
+export const closeManagedSessionDebugSessionsSessionIdCloseDelete = (
+  sessionId: string,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<unknown>(
+    { url: `/debug/sessions/${sessionId}/close`, method: 'DELETE' },
+    options
+  )
+}
+
+export const getCloseManagedSessionDebugSessionsSessionIdCloseDeleteMutationOptions =
+  <TError = HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<typeof closeManagedSessionDebugSessionsSessionIdCloseDelete>
+      >,
+      TError,
+      { sessionId: string },
+      TContext
+    >
+    request?: SecondParameter<typeof customInstance>
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<typeof closeManagedSessionDebugSessionsSessionIdCloseDelete>
+    >,
+    TError,
+    { sessionId: string },
+    TContext
+  > => {
+    const mutationKey = ['closeManagedSessionDebugSessionsSessionIdCloseDelete']
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined }
+
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<typeof closeManagedSessionDebugSessionsSessionIdCloseDelete>
+      >,
+      { sessionId: string }
+    > = (props) => {
+      const { sessionId } = props ?? {}
+
+      return closeManagedSessionDebugSessionsSessionIdCloseDelete(
+        sessionId,
+        requestOptions
+      )
+    }
+
+    return { mutationFn, ...mutationOptions }
+  }
+
+export type CloseManagedSessionDebugSessionsSessionIdCloseDeleteMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<typeof closeManagedSessionDebugSessionsSessionIdCloseDelete>
+    >
+  >
+
+export type CloseManagedSessionDebugSessionsSessionIdCloseDeleteMutationError =
+  HTTPValidationError
+
+/**
+ * @summary Close Managed Session
+ */
+export const useCloseManagedSessionDebugSessionsSessionIdCloseDelete = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<typeof closeManagedSessionDebugSessionsSessionIdCloseDelete>
+      >,
+      TError,
+      { sessionId: string },
+      TContext
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseMutationResult<
+  Awaited<
+    ReturnType<typeof closeManagedSessionDebugSessionsSessionIdCloseDelete>
+  >,
+  TError,
+  { sessionId: string },
+  TContext
+> => {
+  const mutationOptions =
+    getCloseManagedSessionDebugSessionsSessionIdCloseDeleteMutationOptions(
+      options
+    )
+
+  return useMutation(mutationOptions, queryClient)
+}
+/**
+ * Debug endpoint to create test instructions
+ * @summary Create Test Instruction
+ */
+export const createTestInstructionDebugSessionSessionIdCreateInstructionPost = (
+  sessionId: string,
+  createTestInstructionDebugSessionSessionIdCreateInstructionPostBody: CreateTestInstructionDebugSessionSessionIdCreateInstructionPostBody,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<unknown>(
+    {
+      url: `/debug/session/${sessionId}/create-instruction`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: createTestInstructionDebugSessionSessionIdCreateInstructionPostBody,
+      signal,
+    },
+    options
+  )
+}
+
+export const getCreateTestInstructionDebugSessionSessionIdCreateInstructionPostMutationOptions =
+  <TError = HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof createTestInstructionDebugSessionSessionIdCreateInstructionPost
+        >
+      >,
+      TError,
+      {
+        sessionId: string
+        data: CreateTestInstructionDebugSessionSessionIdCreateInstructionPostBody
+      },
+      TContext
+    >
+    request?: SecondParameter<typeof customInstance>
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof createTestInstructionDebugSessionSessionIdCreateInstructionPost
+      >
+    >,
+    TError,
+    {
+      sessionId: string
+      data: CreateTestInstructionDebugSessionSessionIdCreateInstructionPostBody
+    },
+    TContext
+  > => {
+    const mutationKey = [
+      'createTestInstructionDebugSessionSessionIdCreateInstructionPost',
+    ]
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined }
+
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof createTestInstructionDebugSessionSessionIdCreateInstructionPost
+        >
+      >,
+      {
+        sessionId: string
+        data: CreateTestInstructionDebugSessionSessionIdCreateInstructionPostBody
+      }
+    > = (props) => {
+      const { sessionId, data } = props ?? {}
+
+      return createTestInstructionDebugSessionSessionIdCreateInstructionPost(
+        sessionId,
+        data,
+        requestOptions
+      )
+    }
+
+    return { mutationFn, ...mutationOptions }
+  }
+
+export type CreateTestInstructionDebugSessionSessionIdCreateInstructionPostMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof createTestInstructionDebugSessionSessionIdCreateInstructionPost
+      >
+    >
+  >
+export type CreateTestInstructionDebugSessionSessionIdCreateInstructionPostMutationBody =
+  CreateTestInstructionDebugSessionSessionIdCreateInstructionPostBody
+export type CreateTestInstructionDebugSessionSessionIdCreateInstructionPostMutationError =
+  HTTPValidationError
+
+/**
+ * @summary Create Test Instruction
+ */
+export const useCreateTestInstructionDebugSessionSessionIdCreateInstructionPost =
+  <TError = HTTPValidationError, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof createTestInstructionDebugSessionSessionIdCreateInstructionPost
+          >
+        >,
+        TError,
+        {
+          sessionId: string
+          data: CreateTestInstructionDebugSessionSessionIdCreateInstructionPostBody
+        },
+        TContext
+      >
+      request?: SecondParameter<typeof customInstance>
+    },
+    queryClient?: QueryClient
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof createTestInstructionDebugSessionSessionIdCreateInstructionPost
+      >
+    >,
+    TError,
+    {
+      sessionId: string
+      data: CreateTestInstructionDebugSessionSessionIdCreateInstructionPostBody
+    },
+    TContext
+  > => {
+    const mutationOptions =
+      getCreateTestInstructionDebugSessionSessionIdCreateInstructionPostMutationOptions(
+        options
+      )
+
+    return useMutation(mutationOptions, queryClient)
+  }
+/**
+ * Debug endpoint to create test sessions
+ * @summary Create Test Session
+ */
+export const createTestSessionDebugSessionsCreatePost = (
+  createTestSessionDebugSessionsCreatePostBody: CreateTestSessionDebugSessionsCreatePostBody,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<unknown>(
+    {
+      url: `/debug/sessions/create`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: createTestSessionDebugSessionsCreatePostBody,
+      signal,
+    },
+    options
+  )
+}
+
+export const getCreateTestSessionDebugSessionsCreatePostMutationOptions = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createTestSessionDebugSessionsCreatePost>>,
+    TError,
+    { data: CreateTestSessionDebugSessionsCreatePostBody },
+    TContext
+  >
+  request?: SecondParameter<typeof customInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createTestSessionDebugSessionsCreatePost>>,
+  TError,
+  { data: CreateTestSessionDebugSessionsCreatePostBody },
+  TContext
+> => {
+  const mutationKey = ['createTestSessionDebugSessionsCreatePost']
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createTestSessionDebugSessionsCreatePost>>,
+    { data: CreateTestSessionDebugSessionsCreatePostBody }
+  > = (props) => {
+    const { data } = props ?? {}
+
+    return createTestSessionDebugSessionsCreatePost(data, requestOptions)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type CreateTestSessionDebugSessionsCreatePostMutationResult =
+  NonNullable<
+    Awaited<ReturnType<typeof createTestSessionDebugSessionsCreatePost>>
+  >
+export type CreateTestSessionDebugSessionsCreatePostMutationBody =
+  CreateTestSessionDebugSessionsCreatePostBody
+export type CreateTestSessionDebugSessionsCreatePostMutationError =
+  HTTPValidationError
+
+/**
+ * @summary Create Test Session
+ */
+export const useCreateTestSessionDebugSessionsCreatePost = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof createTestSessionDebugSessionsCreatePost>>,
+      TError,
+      { data: CreateTestSessionDebugSessionsCreatePostBody },
+      TContext
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseMutationResult<
+  Awaited<ReturnType<typeof createTestSessionDebugSessionsCreatePost>>,
+  TError,
+  { data: CreateTestSessionDebugSessionsCreatePostBody },
+  TContext
+> => {
+  const mutationOptions =
+    getCreateTestSessionDebugSessionsCreatePostMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }
