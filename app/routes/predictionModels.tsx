@@ -19,7 +19,7 @@ import { useNavigate } from 'react-router'
 import { Navbar } from '../components/navbar'
 import { theme } from '../components/theme'
 import { useGetPredictionModels } from '../hooks/useApi'
-import type { QualityPredictionModelResponse } from '../utils/api'
+import type { QualityPredictionModelResponse } from '../api/generated/models'
 
 export default function PredictionModels() {
   const navigate = useNavigate()

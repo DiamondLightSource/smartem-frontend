@@ -25,12 +25,15 @@ import { useQueries } from '@tanstack/react-query'
 
 import { Navbar } from '../components/navbar'
 import { theme } from '../components/theme'
-import { useGetGridSquares } from '../hooks/useApi'
-import { api, queryKeys } from '../hooks/useApi'
+import {
+  useGetGridGridsquaresGridsGridUuidGridsquaresGet,
+  getGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetQueryKey,
+  getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet,
+} from '../api/generated/default/default'
 import type {
   GridSquareResponse,
   FoilHoleResponse,
-} from '../utils/api'
+} from '../api/generated/models'
 
 type SquareDetails = {
   square: GridSquareResponse
@@ -182,14 +185,14 @@ export default function Grid({ params }: Route.ComponentProps) {
     data: squares_data,
     isLoading: squaresLoading,
     error: squaresError,
-  } = useGetGridSquares(params.gridId)
+  } = useGetGridGridsquaresGridsGridUuidGridsquaresGet(params.gridId)
 
   // Fetch foil holes for each grid square with image_path
   const foilHoleQueries = useQueries({
     queries:
       squares_data?.map((square) => ({
-        queryKey: queryKeys.foilHoles.byGridSquare(square.uuid),
-        queryFn: () => api.getFoilHoles(square.uuid),
+        queryKey: getGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetQueryKey(square.uuid),
+        queryFn: () => getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet(square.uuid),
         enabled: !!square.image_path,
       })) || [],
   })

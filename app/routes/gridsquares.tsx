@@ -19,15 +19,15 @@ import React from 'react'
 
 import { Navbar } from '../components/navbar'
 import { theme } from '../components/theme'
-import { useGetGridSquares } from '../hooks/useApi'
-import type { GridSquareResponse } from '../utils/api'
+import { useGetGridGridsquaresGridsGridUuidGridsquaresGet } from '../api/generated/default/default'
+import type { GridSquareResponse } from '../api/generated/models'
 
 export default function GridSquareGallery({ params }: Route.ComponentProps) {
   const {
     data: squares,
     isLoading,
     error,
-  } = useGetGridSquares(params.gridId)
+  } = useGetGridGridsquaresGridsGridUuidGridsquaresGet(params.gridId)
 
   const [pageIndex, setPageIndex] = React.useState(0)
   const [numPages, setNumPages] = React.useState(

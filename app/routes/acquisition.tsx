@@ -21,8 +21,8 @@ import { useNavigate } from 'react-router'
 
 import { Navbar } from '../components/navbar'
 import { theme } from '../components/theme'
-import { useGetAcquisitionGrids } from '../hooks/useApi'
-import type { GridResponse } from '../utils/api'
+import { useGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet } from '../api/generated/default/default'
+import type { GridResponse } from '../api/generated/models'
 
 export default function Acquisition({ params }: Route.ComponentProps) {
   const navigate = useNavigate()
@@ -30,7 +30,7 @@ export default function Acquisition({ params }: Route.ComponentProps) {
     data: grids,
     isLoading,
     error,
-  } = useGetAcquisitionGrids(params.acqId)
+  } = useGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet(params.acqId)
 
   const handleClick = (event: React.MouseEvent<unknown>, gridId: string) => {
     navigate(`./grids/${gridId}/atlas`, { relative: 'path' })

@@ -25,8 +25,8 @@ import { useNavigate } from 'react-router'
 
 import { Navbar } from '../components/navbar'
 import { theme } from '../components/theme'
-import { useGetAcquisitions } from '../hooks/useApi'
-import type { AcquisitionResponse } from '../utils/api'
+import { useGetAcquisitionsAcquisitionsGet } from '../api/generated/default/default'
+import type { AcquisitionResponse } from '../api/generated/models'
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -37,7 +37,7 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Home() {
   const [menuToggle, setMenuToggle] = React.useState(false)
-  const { data: acquisitions, isLoading, error } = useGetAcquisitions()
+  const { data: acquisitions, isLoading, error } = useGetAcquisitionsAcquisitionsGet()
   const navigate = useNavigate()
 
   const handleClick = (
