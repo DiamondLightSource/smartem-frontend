@@ -10,37 +10,33 @@ import {
   CardActionArea,
   Grid,
   Pagination,
+  CircularProgress,
+  Alert,
+  Box,
 } from '@mui/material'
-
-import type { components } from '../schema'
 
 import React from 'react'
 
 import { Navbar } from '../components/navbar'
 import { theme } from '../components/theme'
+import { useGetGridSquares } from '../hooks/useApi'
+import type { GridSquareResponse } from '../utils/api'
 
-import { apiUrl } from '../utils/api'
+export default function GridSquareGallery({ params }: Route.ComponentProps) {
+  const {
+    data: squares,
+    isLoading,
+    error,
+  } = useGetGridSquares(params.gridId)
 
-type GridSquare = components['schemas']['GridSquareResponse']
-
-export async function loader({ params }: Route.LoaderArgs) {
-  const gridsquares = await fetch(
-    `${apiUrl()}/grids/${params.gridId}/gridsquares`
-  )
-  const squares = await gridsquares.json()
-  return { squares }
-}
-
-export default function GridSquareGallery({
-  loaderData,
-  params,
-}: Route.ComponentProps) {
   const [pageIndex, setPageIndex] = React.useState(0)
   const [numPages, setNumPages] = React.useState(
-    Math.ceil(loaderData.squares.length / 9)
+    Math.ceil((squares?.length || 0) / 9)
   )
   const [showCollectedOnly, setShowCollectedOnly] = React.useState(false)
-  const [filteredSquares, setFilteredSquares] = React.useState<GridSquare[]>([])
+  const [filteredSquares, setFilteredSquares] = React.useState<
+    GridSquareResponse[]
+  >([])
 
   const handlePageChange = (
     event: React.ChangeEvent<unknown>,
@@ -49,7 +45,10 @@ export default function GridSquareGallery({
     setPageIndex(value - 1)
   }
 
-  const sizeComparator = (gs01: GridSquare, gs02: GridSquare) => {
+  const sizeComparator = (
+    gs01: GridSquareResponse,
+    gs02: GridSquareResponse
+  ) => {
     if (gs01.size_height === null || gs01.size_width === null) return 1
     else if (gs02.size_height === null || gs02.size_width === null) return -1
     return (
@@ -58,16 +57,18 @@ export default function GridSquareGallery({
   }
 
   React.useEffect(() => {
-    setFilteredSquares(
-      showCollectedOnly
-        ? loaderData.squares
-            .filter((square: GridSquare) => {
-              return square.image_path !== null
-            })
-            .sort(sizeComparator)
-        : loaderData.squares.sort(sizeComparator)
-    )
-  }, [showCollectedOnly])
+    if (squares) {
+      setFilteredSquares(
+        showCollectedOnly
+          ? squares
+              .filter((square: GridSquareResponse) => {
+                return square.image_path !== null
+              })
+              .sort(sizeComparator)
+          : squares.sort(sizeComparator)
+      )
+    }
+  }, [showCollectedOnly, squares])
 
   React.useEffect(() => {
     setNumPages(Math.ceil(filteredSquares.length / 9))
@@ -87,43 +88,55 @@ export default function GridSquareGallery({
           borderWidth: '5px',
         }}
       >
-        <Pagination
-          count={numPages}
-          color="primary"
-          onChange={handlePageChange}
-          sx={{ padding: '20px' }}
-        />
-        <Checkbox
-          checked={showCollectedOnly}
-          onChange={(event) => setShowCollectedOnly(event.target.checked)}
-        />
-        <Grid container spacing={2} columns={3}>
-          {filteredSquares
-            .slice(9 * pageIndex, 9 * (pageIndex + 1))
-            .map((square: GridSquare) => {
-              return (
-                <Grid size={1}>
-                  <Card
-                    variant="outlined"
-                    sx={{
-                      maxWidth: 256,
-                      backgroundColor: square.image_path
-                        ? '#5C9EAD'
-                        : '#b927d9',
-                    }}
-                  >
-                    <CardActionArea>
-                      <CardHeader title={square.gridsquare_id} />
-                      <CardMedia
-                        component="img"
-                        image={`${apiUrl()}/grids/${params.gridId}/atlas_image?x=${square.center_x}&y=${square.center_y}&w=${square.size_width}&h=${square.size_height}`}
-                      />
-                    </CardActionArea>
-                  </Card>
-                </Grid>
-              )
-            })}
-        </Grid>
+        {isLoading ? (
+          <Box display="flex" justifyContent="center" p={4}>
+            <CircularProgress />
+          </Box>
+        ) : error ? (
+          <Alert severity="error">
+            Error loading grid squares: {error.message}
+          </Alert>
+        ) : (
+          <>
+            <Pagination
+              count={numPages}
+              color="primary"
+              onChange={handlePageChange}
+              sx={{ padding: '20px' }}
+            />
+            <Checkbox
+              checked={showCollectedOnly}
+              onChange={(event) => setShowCollectedOnly(event.target.checked)}
+            />
+            <Grid container spacing={2} columns={3}>
+              {filteredSquares
+                .slice(9 * pageIndex, 9 * (pageIndex + 1))
+                .map((square: GridSquareResponse) => {
+                  return (
+                    <Grid size={1} key={square.uuid}>
+                      <Card
+                        variant="outlined"
+                        sx={{
+                          maxWidth: 256,
+                          backgroundColor: square.image_path
+                            ? '#5C9EAD'
+                            : '#b927d9',
+                        }}
+                      >
+                        <CardActionArea>
+                          <CardHeader title={square.gridsquare_id} />
+                          <CardMedia
+                            component="img"
+                            image={`http://localhost:8000/grids/${params.gridId}/atlas_image?x=${square.center_x}&y=${square.center_y}&w=${square.size_width}&h=${square.size_height}`}
+                          />
+                        </CardActionArea>
+                      </Card>
+                    </Grid>
+                  )
+                })}
+            </Grid>
+          </>
+        )}
       </Container>
     </ThemeProvider>
   )

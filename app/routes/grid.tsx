@@ -14,22 +14,24 @@ import {
   ThemeProvider,
   CircularProgress,
   TableSortLabel,
+  Alert,
 } from '@mui/material'
 import Paper from '@mui/material/Paper'
 import InsightsIcon from '@mui/icons-material/Insights'
 
 import React from 'react'
 import { useNavigate, Await } from 'react-router'
-
-import type { components } from '../schema'
+import { useQueries } from '@tanstack/react-query'
 
 import { Navbar } from '../components/navbar'
 import { theme } from '../components/theme'
+import { useGetGridSquares } from '../hooks/useApi'
+import { api, queryKeys } from '../hooks/useApi'
+import type {
+  GridSquareResponse,
+  FoilHoleResponse,
+} from '../utils/api'
 
-import { apiUrl } from '../utils/api'
-
-type GridSquareResponse = components['schemas']['GridSquareResponse']
-type FoilHoleResponse = components['schemas']['FoilHoleResponse']
 type SquareDetails = {
   square: GridSquareResponse
   holes: FoilHoleResponse[]
@@ -42,33 +44,6 @@ type FullSquareDetails = {
   square: GridSquareResponse
   holes: FoilHoleResponse[]
   weightedPredictions: HolePrediction[] | null
-}
-
-export async function loader({ params }: Route.LoaderArgs) {
-  const squares_response = await fetch(
-    `${apiUrl()}/grids/${params.gridId}/gridsquares`
-  )
-  const squares_data: GridSquareResponse[] = await squares_response.json()
-  const squares = await Promise.all(
-    squares_data.map((square) => {
-      square.image_path
-        ? fetch(`${apiUrl()}/gridsquares/${square.uuid}/foilholes`)
-            .then((response) => {
-              return response.json()
-            })
-            .then((holes) => {
-              return { square: square, holes: holes }
-            })
-        : { square: square, holes: [] }
-    })
-  )
-  //const weightedPredictions = Promise.all(
-  //  squares_data.map((square) => fetch(`${apiUrl()}/gridsquares/${square.uuid}/weighted_predictions`)
-  //  .then((response) => {return response.json()})
-  //  .then((scores) => { return [square.gridsquare_id, Object.entries(scores as {[key: number]: Score[]}).map(([fh, elem]) => {return { prediction: elem.slice(-1)[0].value, hole: fh } })] }))
-  //);
-  const weightedPredictions = [[]]
-  return { squares, weightedPredictions }
 }
 
 const CollapsibleRow = ({
@@ -199,11 +174,39 @@ const CollapsibleRow = ({
   )
 }
 
-export default function Grid({ loaderData }: Route.ComponentProps) {
+export default function Grid({ params }: Route.ComponentProps) {
   const [holeNumberOrder, setHoleNumberOrder] = React.useState(true)
   const [sortOrderDescending, setSortOrderDescending] = React.useState(true)
 
-  console.log(loaderData.squares)
+  const {
+    data: squares_data,
+    isLoading: squaresLoading,
+    error: squaresError,
+  } = useGetGridSquares(params.gridId)
+
+  // Fetch foil holes for each grid square with image_path
+  const foilHoleQueries = useQueries({
+    queries:
+      squares_data?.map((square) => ({
+        queryKey: queryKeys.foilHoles.byGridSquare(square.uuid),
+        queryFn: () => api.getFoilHoles(square.uuid),
+        enabled: !!square.image_path,
+      })) || [],
+  })
+
+  const squares: SquareDetails[] = React.useMemo(() => {
+    if (!squares_data) return []
+    return squares_data.map((square, index) => ({
+      square,
+      holes: foilHoleQueries[index]?.data || [],
+    }))
+  }, [squares_data, foilHoleQueries])
+
+  const isLoading = squaresLoading || foilHoleQueries.some((q) => q.isLoading)
+  const error =
+    squaresError || foilHoleQueries.find((q) => q.error)?.error
+
+  console.log(squares)
 
   const holeNumberComparator = (a: SquareDetails, b: SquareDetails) => {
     if (sortOrderDescending) {

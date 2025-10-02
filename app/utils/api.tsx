@@ -115,8 +115,113 @@ export const api = {
     >(`/grids/${gridId}`, {
       method: 'DELETE',
     }),
+
+  // Grid Squares
+  getGridSquares: (gridId: string) =>
+    apiFetch<
+      paths['/grids/{grid_uuid}/gridsquares']['get']['responses'][200]['content']['application/json']
+    >(`/grids/${gridId}/gridsquares`),
+
+  getGridSquare: (gridsquareId: string) =>
+    apiFetch<
+      paths['/gridsquares/{gridsquare_uuid}']['get']['responses'][200]['content']['application/json']
+    >(`/gridsquares/${gridsquareId}`),
+
+  updateGridSquare: (
+    gridsquareId: string,
+    data: paths['/gridsquares/{gridsquare_uuid}']['put']['requestBody']['content']['application/json']
+  ) =>
+    apiFetch<
+      paths['/gridsquares/{gridsquare_uuid}']['put']['responses'][200]['content']['application/json']
+    >(`/gridsquares/${gridsquareId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+
+  // Foil Holes
+  getFoilHoles: (gridsquareId: string) =>
+    apiFetch<
+      paths['/gridsquares/{gridsquare_uuid}/foilholes']['get']['responses'][200]['content']['application/json']
+    >(`/gridsquares/${gridsquareId}/foilholes`),
+
+  getFoilHole: (foilholeId: string) =>
+    apiFetch<
+      paths['/foilholes/{foilhole_uuid}']['get']['responses'][200]['content']['application/json']
+    >(`/foilholes/${foilholeId}`),
+
+  // Prediction Models
+  getPredictionModels: () =>
+    apiFetch<
+      paths['/prediction_models']['get']['responses'][200]['content']['application/json']
+    >('/prediction_models'),
+
+  // Quality Predictions
+  getGridSquareQualityPredictions: (gridsquareId: string) =>
+    apiFetch<
+      paths['/gridsquares/{gridsquare_uuid}/quality_predictions']['get']['responses'][200]['content']['application/json']
+    >(`/gridsquares/${gridsquareId}/quality_predictions`),
+
+  getFoilHoleQualityPredictions: (gridsquareId: string) =>
+    apiFetch<
+      paths['/gridsquares/{gridsquare_uuid}/foilhole_quality_predictions']['get']['responses'][200]['content']['application/json']
+    >(`/gridsquares/${gridsquareId}/foilhole_quality_predictions`),
+
+  getQualityMetrics: () =>
+    apiFetch<
+      paths['/quality_metrics']['get']['responses'][200]['content']['application/json']
+    >('/quality_metrics'),
+
+  // Model Predictions
+  getModelPredictionsForGrid: (modelName: string, gridId: string) =>
+    apiFetch<
+      paths['/prediction_model/{prediction_model_name}/grid/{grid_uuid}/prediction']['get']['responses'][200]['content']['application/json']
+    >(`/prediction_model/${modelName}/grid/${gridId}/prediction`),
+
+  getModelPredictionsForGridSquare: (modelName: string, gridsquareId: string) =>
+    apiFetch<
+      paths['/prediction_model/{prediction_model_name}/gridsquare/{gridsquare_uuid}/prediction']['get']['responses'][200]['content']['application/json']
+    >(`/prediction_model/${modelName}/gridsquare/${gridsquareId}/prediction`),
+
+  // Latent Representations
+  getLatentRepresentationForGrid: (modelName: string, gridId: string) =>
+    apiFetch<
+      paths['/prediction_model/{prediction_model_name}/grid/{grid_uuid}/latent_representation']['get']['responses'][200]['content']['application/json']
+    >(`/prediction_model/${modelName}/grid/${gridId}/latent_representation`),
+
+  getLatentRepresentationForGridSquare: (
+    modelName: string,
+    gridsquareId: string
+  ) =>
+    apiFetch<
+      paths['/prediction_model/{prediction_model_name}/gridsquare/{gridsquare_uuid}/latent_representation']['get']['responses'][200]['content']['application/json']
+    >(`/prediction_model/${modelName}/gridsquare/${gridsquareId}/latent_representation`),
+
+  // Atlas
+  getGridAtlas: (gridId: string) =>
+    apiFetch<
+      paths['/grids/{grid_uuid}/atlas']['get']['responses'][200]['content']['application/json']
+    >(`/grids/${gridId}/atlas`),
+
+  // Images
+  getAtlasImage: (gridId: string) =>
+    apiFetch<
+      paths['/grids/{grid_uuid}/atlas_image']['get']['responses'][200]['content']['application/json']
+    >(`/grids/${gridId}/atlas_image`),
+
+  getGridSquareImage: (gridsquareId: string) =>
+    apiFetch<
+      paths['/gridsquares/{gridsquare_uuid}/gridsquare_image']['get']['responses'][200]['content']['application/json']
+    >(`/gridsquares/${gridsquareId}/gridsquare_image`),
 }
 
 // Export types for convenience
 export type AcquisitionResponse = components['schemas']['AcquisitionResponse']
 export type GridResponse = components['schemas']['GridResponse']
+export type GridSquareResponse = components['schemas']['GridSquareResponse']
+export type FoilHoleResponse = components['schemas']['FoilHoleResponse']
+export type QualityPredictionModelResponse =
+  components['schemas']['QualityPredictionModelResponse']
+export type QualityPredictionResponse =
+  components['schemas']['QualityPredictionResponse']
+export type LatentRepresentationResponse =
+  components['schemas']['LatentRepresentationResponse']
