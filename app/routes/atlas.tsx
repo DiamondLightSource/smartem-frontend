@@ -32,7 +32,7 @@ import React from 'react'
 import { Navbar } from '../components/navbar'
 import { theme } from '../components/theme'
 
-import { apiUrl } from '../utils/api'
+import { apiUrl } from '../api/mutator'
 
 type GridSquare = components['schemas']['GridSquareResponse']
 type PredictionModel = components['schemas']['QualityPredictionModelResponse']

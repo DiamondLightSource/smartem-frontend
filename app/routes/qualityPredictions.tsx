@@ -35,7 +35,7 @@ import { TimeSeriesChart } from '../components/timeseries'
 
 import type { components } from '../schema'
 
-import { apiUrl } from '../utils/api'
+import { apiUrl } from '../api/mutator'
 
 type QualityPrediction = components['schemas']['QualityPrediction']
 type QualityPredictionModelWeight =

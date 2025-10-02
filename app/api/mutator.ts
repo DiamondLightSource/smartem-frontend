@@ -1,6 +1,7 @@
-import Axios, { AxiosRequestConfig, AxiosError } from 'axios'
+import Axios from 'axios'
+import type { AxiosRequestConfig, AxiosError } from 'axios'
 
-const apiUrl = () => {
+export const apiUrl = () => {
   return import.meta.env.VITE_API_ENDPOINT
     ? import.meta.env.VITE_API_ENDPOINT
     : 'http://localhost:8000'
