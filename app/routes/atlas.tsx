@@ -23,7 +23,18 @@ import CloseIcon from '@mui/icons-material/Close'
 import ZoomInIcon from '@mui/icons-material/ZoomIn'
 import RouteIcon from '@mui/icons-material/Route'
 
-import type { components } from '../schema'
+import type {
+  GridSquareResponse,
+  QualityPredictionModelResponse,
+  QualityPredictionResponse,
+  QualityPredictionModelParameterResponse,
+} from '../api/generated/models'
+import {
+  getGridGridsquaresGridsGridUuidGridsquaresGet,
+  getPredictionModelsPredictionModelsGet,
+  getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet,
+  getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet,
+} from '../api/generated/default/default'
 
 import { useNavigate } from 'react-router'
 
@@ -32,12 +43,12 @@ import React from 'react'
 import { Navbar } from '../components/navbar'
 import { theme } from '../components/theme'
 
-import { apiUrl } from '../utils/api'
+import { apiUrl } from '../api/mutator'
 
-type GridSquare = components['schemas']['GridSquareResponse']
-type PredictionModel = components['schemas']['QualityPredictionModelResponse']
-type Prediction = components['schemas']['QualityPredictionResponse']
-type LatentRep = components['schemas']['LatentRepresentationResponse']
+type GridSquare = GridSquareResponse
+type PredictionModel = QualityPredictionModelResponse
+type Prediction = QualityPredictionResponse
+type LatentRep = QualityPredictionModelParameterResponse
 
 type Coords = {
   x: number
@@ -46,23 +57,19 @@ type Coords = {
 }
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const gridsquares = await fetch(
-    `${apiUrl()}/grids/${params.gridId}/gridsquares`
-  )
-  const squares = await gridsquares.json()
-  const predictionModels = await fetch(`${apiUrl()}/prediction_models`)
-  const models = await predictionModels.json()
+  const squares = await getGridGridsquaresGridsGridUuidGridsquaresGet(params.gridId)
+  const models = await getPredictionModelsPredictionModelsGet()
   return { squares, models }
 }
 
 const getPredictions = async (modelName: string, gridId: string) => {
-  const squarePredictionsResponse = await fetch(
-    `${apiUrl()}/prediction_model/${modelName}/grid/${gridId}/prediction`
+  const squarePredictions = await getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet(
+    modelName,
+    gridId
   )
-  const squarePredictions = await squarePredictionsResponse.json()
   const squarePredictionsMap = new Map<string, number>(
     squarePredictions.map((elem: Prediction) => [
-      elem.gridsquare_uuid,
+      elem.gridsquare_uuid ?? '',
       elem.value,
     ])
   )
@@ -70,14 +77,14 @@ const getPredictions = async (modelName: string, gridId: string) => {
 }
 
 const getLatentRep = async (modelName: string, gridId: string) => {
-  const latentRepResponse = await fetch(
-    `${apiUrl()}/prediction_model/${modelName}/grid/${gridId}/latent_representation`
+  const latentRepResult = await getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet(
+    modelName,
+    gridId
   )
-  const latentRepResult = await latentRepResponse.json()
   const latentRepMap = new Map<string, Coords>(
     latentRepResult.map((elem: LatentRep) => [
-      elem.gridsquare_uuid,
-      { x: elem.x, y: elem.y, index: elem.index } as Coords,
+      elem.grid_uuid,
+      { x: elem.value, y: 0, index: parseInt(elem.group) } as Coords,
     ])
   )
   return latentRepMap

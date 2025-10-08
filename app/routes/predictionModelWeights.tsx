@@ -28,7 +28,7 @@ import { theme } from '../components/theme'
 import { TimeSeriesChart } from '../components/timeseries'
 import { Await } from 'react-router'
 
-import { apiUrl } from '../utils/api'
+import { apiUrl } from '../api/mutator'
 
 export async function loader({ params }: Route.LoaderArgs) {
   const models = await fetch(
