@@ -172,6 +172,36 @@ app/
 └── root.tsx            # Application root with providers
 ```
 
+## Git Hooks
+
+This project uses [Lefthook](https://github.com/evilmartians/lefthook) for managing Git hooks.
+
+### Installation
+
+Git hooks are automatically installed when you run `npm install` (via the `prepare` script).
+
+To manually install or reinstall hooks:
+
+```bash
+npx lefthook install
+```
+
+### Configuration
+
+Hook configuration is defined in `lefthook.yml`. Individual hooks will be configured as needed for the project.
+
+### Skipping Hooks
+
+To temporarily skip hooks during development:
+
+```bash
+# Skip all hooks for a single commit
+LEFTHOOK=0 git commit -m "message"
+
+# Skip specific hook
+git commit --no-verify -m "message"
+```
+
 ## Technology Stack
 
 - **React 19** - UI library
@@ -182,6 +212,7 @@ app/
 - **TypeScript** - Type safety
 - **Vite** - Build tool
 - **Tailwind CSS** - Utility-first styling
+- **Lefthook** - Git hooks manager
 
 ## Contributing
 

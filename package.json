@@ -11,7 +11,8 @@
     "api:fetch": "curl -s https://diamondlightsource.github.io/smartem-decisions/main/api/smartem/swagger.json -o app/api/openapi.json",
     "api:fetch:local": "curl -s http://localhost:8000/openapi.json -o app/api/openapi.json",
     "api:generate": "orval --config orval.config.ts && node scripts/extract-api-version.js",
-    "api:update": "npm run api:fetch && npm run api:generate"
+    "api:update": "npm run api:fetch && npm run api:generate",
+    "prepare": "lefthook install"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -38,6 +39,7 @@
     "@types/node": "^20",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.1",
+    "lefthook": "^1.13.6",
     "msw": "^2.11.3",
     "orval": "^7.13.0",
     "react-router-devtools": "^1.1.0",
