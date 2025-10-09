@@ -75,6 +75,7 @@ npm run api:update
 ```
 
 This command:
+
 1. Fetches the latest OpenAPI specification from the published source
 2. Generates TypeScript types and React Query hooks in `app/api/generated/`
 
@@ -150,7 +151,66 @@ Start the production server:
 npm start
 ```
 
-## Type Checking
+## Code Quality
+
+### Linting and Formatting
+
+This project uses a hybrid approach for code quality:
+
+- **Biome** for TypeScript/JavaScript code (linting + formatting)
+- **Prettier** for configuration files (YAML, Markdown)
+
+#### Available Commands
+
+```bash
+# Lint code files
+npm run lint
+
+# Lint and auto-fix issues
+npm run lint:fix
+
+# Format all files (Biome + Prettier)
+npm run format
+
+# Check formatting without writing
+npm run format:check
+
+# Run all checks (format + lint + organize imports)
+npm run check
+
+# Run all checks and auto-fix
+npm run check:fix
+```
+
+#### What Each Tool Handles
+
+**Biome** (fast, modern):
+
+- `*.ts`, `*.tsx`, `*.js`, `*.jsx`, `*.json` files
+- Linting (catches bugs, enforces best practices)
+- Formatting (code style)
+- Import sorting
+
+**Prettier** (mature, comprehensive):
+
+- `*.yml`, `*.yaml` files (Lefthook, CI configs)
+- `*.md` files (documentation)
+
+#### Editor Setup (VS Code)
+
+Install the recommended extensions:
+
+- [Biome](https://marketplace.visualstudio.com/items?itemName=biomejs.biome)
+- [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+
+The workspace is pre-configured in `.vscode/settings.json` to:
+
+- Format on save
+- Use Biome for code files
+- Use Prettier for config files
+- Organize imports automatically
+
+### Type Checking
 
 Run TypeScript type checking:
 
@@ -172,6 +232,50 @@ app/
 └── root.tsx            # Application root with providers
 ```
 
+## Git Hooks
+
+This project uses [Lefthook](https://github.com/evilmartians/lefthook) for managing Git hooks.
+
+### Installation
+
+Git hooks are automatically installed when you run `npm install` (via the `prepare` script).
+
+To manually install or reinstall hooks:
+
+```bash
+npx lefthook install
+```
+
+### Active Hooks
+
+**Pre-commit** (runs on every commit):
+
+- **Biome check**: Lints and formats staged TypeScript/JavaScript files, auto-fixes issues
+- **Prettier**: Formats staged YAML and Markdown files
+- Changes are automatically staged after fixes
+
+**Pre-push** (runs before pushing to remote):
+
+- **Type checking**: Runs `npm run typecheck` to catch TypeScript errors
+- **Lint check**: Full project lint without auto-fixing
+- **Format check**: Verifies all files are properly formatted
+
+### Configuration
+
+All hook configuration is in `lefthook.yml`. You can customize which checks run and when.
+
+### Skipping Hooks
+
+To temporarily skip hooks during development:
+
+```bash
+# Skip all hooks for a single commit
+LEFTHOOK=0 git commit -m "message"
+
+# Skip specific hook
+git commit --no-verify -m "message"
+```
+
 ## Technology Stack
 
 - **React 19** - UI library
@@ -182,6 +286,9 @@ app/
 - **TypeScript** - Type safety
 - **Vite** - Build tool
 - **Tailwind CSS** - Utility-first styling
+- **Biome** - Fast linter and formatter for code
+- **Prettier** - Formatter for config files
+- **Lefthook** - Git hooks manager
 
 ## Contributing
 

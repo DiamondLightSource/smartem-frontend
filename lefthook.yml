@@ -1,0 +1,31 @@
+# Lefthook Git Hooks Configuration
+# Documentation: https://github.com/evilmartians/lefthook/blob/master/docs/configuration.md
+
+pre-commit:
+  parallel: true
+  commands:
+    # Lint and auto-fix staged code files
+    biome-check:
+      glob: '*.{ts,tsx,js,jsx,json}'
+      run: npx @biomejs/biome check --write --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
+      stage_fixed: true
+
+    # Format config files
+    prettier:
+      glob: '*.{yml,yaml,md}'
+      run: npx prettier --write {staged_files}
+      stage_fixed: true
+
+pre-push:
+  commands:
+    # Type checking
+    typecheck:
+      run: npm run typecheck
+
+    # Full lint check (don't auto-fix on pre-push)
+    biome-lint:
+      run: npm run lint
+
+    # Format check
+    format-check:
+      run: npm run format:check

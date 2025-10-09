@@ -1,0 +1,15 @@
+# Ignore code files (handled by Biome)
+*.ts
+*.tsx
+*.js
+*.jsx
+*.json
+*.jsonc
+
+# Ignore build outputs
+build/
+dist/
+node_modules/
+
+# Ignore generated files
+app/api/generated/
