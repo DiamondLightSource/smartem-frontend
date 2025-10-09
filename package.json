@@ -12,7 +12,15 @@
     "api:fetch:local": "curl -s http://localhost:8000/openapi.json -o app/api/openapi.json",
     "api:generate": "orval --config orval.config.ts && node scripts/extract-api-version.js",
     "api:update": "npm run api:fetch && npm run api:generate",
-    "prepare": "lefthook install"
+    "prepare": "lefthook install",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --write .",
+    "format": "npm run format:biome && npm run format:prettier",
+    "format:biome": "biome format --write .",
+    "format:prettier": "prettier --write \"**/*.{yml,yaml,md}\"",
+    "format:check": "biome format . && prettier --check \"**/*.{yml,yaml,md}\"",
+    "check": "biome check .",
+    "check:fix": "biome check --write ."
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -33,6 +41,7 @@
     "react-router": "^7.5.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.2.5",
     "@faker-js/faker": "^10.0.0",
     "@react-router/dev": "^7.5.0",
     "@tailwindcss/vite": "^4.0.0",

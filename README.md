@@ -150,7 +150,61 @@ Start the production server:
 npm start
 ```
 
-## Type Checking
+## Code Quality
+
+### Linting and Formatting
+
+This project uses a hybrid approach for code quality:
+- **Biome** for TypeScript/JavaScript code (linting + formatting)
+- **Prettier** for configuration files (YAML, Markdown)
+
+#### Available Commands
+
+```bash
+# Lint code files
+npm run lint
+
+# Lint and auto-fix issues
+npm run lint:fix
+
+# Format all files (Biome + Prettier)
+npm run format
+
+# Check formatting without writing
+npm run format:check
+
+# Run all checks (format + lint + organize imports)
+npm run check
+
+# Run all checks and auto-fix
+npm run check:fix
+```
+
+#### What Each Tool Handles
+
+**Biome** (fast, modern):
+- `*.ts`, `*.tsx`, `*.js`, `*.jsx`, `*.json` files
+- Linting (catches bugs, enforces best practices)
+- Formatting (code style)
+- Import sorting
+
+**Prettier** (mature, comprehensive):
+- `*.yml`, `*.yaml` files (Lefthook, CI configs)
+- `*.md` files (documentation)
+
+#### Editor Setup (VS Code)
+
+Install the recommended extensions:
+- [Biome](https://marketplace.visualstudio.com/items?itemName=biomejs.biome)
+- [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+
+The workspace is pre-configured in `.vscode/settings.json` to:
+- Format on save
+- Use Biome for code files
+- Use Prettier for config files
+- Organize imports automatically
+
+### Type Checking
 
 Run TypeScript type checking:
 
@@ -212,6 +266,8 @@ git commit --no-verify -m "message"
 - **TypeScript** - Type safety
 - **Vite** - Build tool
 - **Tailwind CSS** - Utility-first styling
+- **Biome** - Fast linter and formatter for code
+- **Prettier** - Formatter for config files
 - **Lefthook** - Git hooks manager
 
 ## Contributing
