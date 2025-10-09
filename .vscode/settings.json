@@ -37,7 +37,6 @@
 
   // Enable Biome for linting and organizing imports
   "editor.codeActionsOnSave": {
-    "quickfix.biome": "explicit",
     "source.organizeImports.biome": "explicit"
   },
 
