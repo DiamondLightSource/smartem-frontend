@@ -29,6 +29,8 @@ import { Navbar } from '../components/navbar'
 import { theme } from '../components/theme'
 
 import { apiUrl } from '../api/mutator'
+import { useParams, useNavigate } from 'react-router'
+import InsightsIcon from '@mui/icons-material/Insights'
 
 type FoilHole = components['schemas']['FoilHoleResponse']
 type PredictionModel = components['schemas']['QualityPredictionModelResponse']
@@ -39,16 +41,6 @@ type Coords = {
   x: number
   y: number
   index: number
-}
-
-export async function loader({ params }: Route.LoaderArgs) {
-  const foilholes = await fetch(
-    `${apiUrl()}/gridsquares/${params.squareId}/foilholes?on_square_only=true`
-  )
-  const holes = await foilholes.json()
-  const predictionModels = await fetch(`${apiUrl()}/prediction_models`)
-  const models = await predictionModels.json()
-  return { holes, models }
 }
 
 const getPredictions = async (modelName: string, gridSquareId: string) => {
@@ -87,11 +79,27 @@ const getLatentRep = async (modelName: string, gridSquareId: string) => {
   return latentRepMap
 }
 
-export default function GridSquareLR({
-  loaderData,
-  params,
-}: Route.ComponentProps) {
+export default function GridSquareLR() {
+  const params = useParams()
+  const navigate = useNavigate()
+  const [holes, setHoles] = React.useState<FoilHole[]>([])
+  const [models, setModels] = React.useState<PredictionModel[]>([])
   const [maxWidth, setMaxWidth] = React.useState(0)
+  const [selectedSquare, setSelectedSquare] = React.useState('')
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      const foilholesResponse = await fetch(
+        `${apiUrl()}/gridsquares/${params.squareId}/foilholes?on_square_only=true`
+      )
+      const holesData = await foilholesResponse.json()
+      const predictionModelsResponse = await fetch(`${apiUrl()}/prediction_models`)
+      const modelsData = await predictionModelsResponse.json()
+      setHoles(holesData)
+      setModels(modelsData)
+    }
+    fetchData()
+  }, [params.squareId])
   const [holeNameMap, setHoleNameMap] = React.useState<Map<string, string>>()
   const [selectedHole, setSelectedHole] = React.useState('')
   const [showPredictions, setShowPredictions] = React.useState(false)
@@ -155,15 +163,17 @@ export default function GridSquareLR({
   }
 
   React.useEffect(() => {
-    const widths = loaderData.holes.map((elem: FoilHole) => {
-      return elem.size_width
-    })
-    setHoleNameMap(
-      new Map<string, string>(
-        loaderData.holes.map((elem: FoilHole) => [elem.uuid, elem.foilhole_id])
+    if (holes.length > 0) {
+      const widths = holes.map((elem: FoilHole) => {
+        return elem.size_width
+      })
+      setHoleNameMap(
+        new Map<string, string>(
+          holes.map((elem: FoilHole) => [elem.uuid, elem.foilhole_id])
+        )
       )
-    )
-  }, [])
+    }
+  }, [holes])
 
   React.useEffect(() => {
     if (predictions) {
@@ -200,7 +210,7 @@ export default function GridSquareLR({
                 viewBox="0 0 2880 2046"
                 style={{ position: 'absolute', top: 0, left: 0 }}
               >
-                {loaderData.holes.map((foilHole: FoilHole) => (
+                {holes.map((foilHole: FoilHole) => (
                   <Tooltip
                     title={
                       showPredictions && predictions
@@ -279,7 +289,7 @@ export default function GridSquareLR({
                     onChange={handleChange}
                   >
                     <MenuItem value="overall">overall</MenuItem>
-                    {loaderData.models.map((model: PredictionModel) => (
+                    {models.map((model: PredictionModel) => (
                       <MenuItem value={model.name}>{model.name}</MenuItem>
                     ))}
                   </Select>
@@ -370,7 +380,7 @@ export default function GridSquareLR({
                     label="Latent Representation Model"
                     onChange={handleLatentRepChange}
                   >
-                    {loaderData.models.map((model: PredictionModel) => (
+                    {models.map((model: PredictionModel) => (
                       <MenuItem value={model.name}>{model.name}</MenuItem>
                     ))}
                   </Select>

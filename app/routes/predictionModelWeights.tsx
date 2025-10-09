@@ -26,21 +26,24 @@ type ModelWeightResponse = components['schemas']['ModelWeightResponse']
 import { Navbar } from '../components/navbar'
 import { theme } from '../components/theme'
 import { TimeSeriesChart } from '../components/timeseries'
-import { Await } from 'react-router'
+import { useParams } from 'react-router'
 
 import { apiUrl } from '../api/mutator'
 
-export async function loader({ params }: Route.LoaderArgs) {
-  const models = await fetch(
-    `${apiUrl()}/prediction_models/${params.modelName}/grids/${params.gridId}/weights`
-  )
-  const result = models.json()
-  return { result }
-}
+export default function PredictionModelWeights() {
+  const params = useParams()
+  const [result, setResult] = React.useState<ModelWeightResponse[] | null>(null)
 
-export default function PredictionModelWeights({
-  loaderData,
-}: Route.ComponentProps) {
+  React.useEffect(() => {
+    const fetchData = async () => {
+      const models = await fetch(
+        `${apiUrl()}/prediction_models/${params.modelName}/grids/${params.gridId}/weights`
+      )
+      const data = await models.json()
+      setResult(data)
+    }
+    fetchData()
+  }, [params.modelName, params.gridId])
   return (
     <div>
       <ThemeProvider theme={theme}>
@@ -50,20 +53,18 @@ export default function PredictionModelWeights({
           content="center"
           style={{ width: '100%', paddingTop: '50px' }}
         >
-          <React.Suspense fallback={<TimeSeriesChart xData={[]} yData={[]} />}>
-            <Await resolve={loaderData.result}>
-              {(result) => (
-                <TimeSeriesChart
-                  xData={result.map((elem: ModelWeightResponse) => {
-                    return Date.parse(elem.timestamp)
-                  })}
-                  yData={result.map((elem: ModelWeightResponse) => {
-                    return elem.weight
-                  })}
-                />
-              )}
-            </Await>
-          </React.Suspense>
+          {result ? (
+            <TimeSeriesChart
+              xData={result.map((elem: ModelWeightResponse) => {
+                return Date.parse(elem.timestamp)
+              })}
+              yData={result.map((elem: ModelWeightResponse) => {
+                return elem.weight
+              })}
+            />
+          ) : (
+            <TimeSeriesChart xData={[]} yData={[]} />
+          )}
         </Container>
       </ThemeProvider>
     </div>

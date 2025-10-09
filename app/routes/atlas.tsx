@@ -56,12 +56,6 @@ type Coords = {
   index: number
 }
 
-export async function loader({ params }: Route.LoaderArgs) {
-  const squares = await getGridGridsquaresGridsGridUuidGridsquaresGet(params.gridId)
-  const models = await getPredictionModelsPredictionModelsGet()
-  return { squares, models }
-}
-
 const getPredictions = async (modelName: string, gridId: string) => {
   const squarePredictions = await getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet(
     modelName,
@@ -99,11 +93,24 @@ const getSuggestion = async (gridId: string) => {
   return suggestedIds
 }
 
-export default function Atlas({ loaderData, params }: Route.ComponentProps) {
+export default function Atlas() {
+  const params = useParams()
+  const [squares, setSquares] = React.useState<GridSquare[]>([])
+  const [models, setModels] = React.useState<PredictionModel[]>([])
   const [maxWidth, setMaxWidth] = React.useState(0)
   const [squareNameMap, setSquareNameMap] =
     React.useState<Map<string, string>>()
   const [selectedSquare, setSelectedSquare] = React.useState('')
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      const squaresData = await getGridGridsquaresGridsGridUuidGridsquaresGet(params.gridId!)
+      const modelsData = await getPredictionModelsPredictionModelsGet()
+      setSquares(squaresData)
+      setModels(modelsData)
+    }
+    fetchData()
+  }, [params.gridId])
   const [showPredictions, setShowPredictions] = React.useState(false)
   const [predictionModel, setPredictionModel] = React.useState('')
   const [repModel, setRepModel] = React.useState('')
@@ -166,19 +173,21 @@ export default function Atlas({ loaderData, params }: Route.ComponentProps) {
   }
 
   React.useEffect(() => {
-    const widths = loaderData.squares.map((elem: GridSquare) => {
-      return elem.size_width
-    })
-    setMaxWidth(Math.max(...widths))
-    setSquareNameMap(
-      new Map<string, string>(
-        loaderData.squares.map((elem: GridSquare) => [
-          elem.uuid,
-          elem.gridsquare_id,
-        ])
+    if (squares.length > 0) {
+      const widths = squares.map((elem: GridSquare) => {
+        return elem.size_width
+      })
+      setMaxWidth(Math.max(...widths))
+      setSquareNameMap(
+        new Map<string, string>(
+          squares.map((elem: GridSquare) => [
+            elem.uuid,
+            elem.gridsquare_id,
+          ])
+        )
       )
-    )
-  }, [])
+    }
+  }, [squares])
 
   React.useEffect(() => {
     if (predictions) {
@@ -211,7 +220,7 @@ export default function Atlas({ loaderData, params }: Route.ComponentProps) {
                 viewBox="0 0 4005 4005"
                 style={{ position: 'absolute', top: 0, left: 0 }}
               >
-                {loaderData.squares.map((gridSquare: GridSquare) => (
+                {squares.map((gridSquare: GridSquare) => (
                   <Tooltip
                     title={
                       showPredictions && predictions
@@ -304,7 +313,7 @@ export default function Atlas({ loaderData, params }: Route.ComponentProps) {
                     label="Prediction Model"
                     onChange={handleChange}
                   >
-                    {loaderData.models.map((model: PredictionModel) => (
+                    {models.map((model: PredictionModel) => (
                       <MenuItem value={model.name}>{model.name}</MenuItem>
                     ))}
                   </Select>
@@ -406,7 +415,7 @@ export default function Atlas({ loaderData, params }: Route.ComponentProps) {
                     label="Latent Representation Model"
                     onChange={handleLatentRepChange}
                   >
-                    {loaderData.models.map((model: PredictionModel) => (
+                    {models.map((model: PredictionModel) => (
                       <MenuItem value={model.name}>{model.name}</MenuItem>
                     ))}
                   </Select>

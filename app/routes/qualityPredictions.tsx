@@ -36,25 +36,11 @@ import { TimeSeriesChart } from '../components/timeseries'
 import type { components } from '../schema'
 
 import { apiUrl } from '../api/mutator'
+import { useParams } from 'react-router'
 
 type QualityPrediction = components['schemas']['QualityPrediction']
 type QualityPredictionModelWeight =
   components['schemas']['QualityPredictionModelWeight']
-
-export async function loader({ params }: Route.LoaderArgs) {
-  const squarePredictionsResponse = await fetch(
-    `${apiUrl()}/gridsquares/${params.squareId}/quality_predictions`
-  )
-  const holePredictionsResponse = await fetch(
-    `${apiUrl()}/gridsquares/${params.squareId}/foilhole_quality_predictions`
-  )
-  const modelWeights = await fetch(`${apiUrl()}/grids/${params.gridId}`)
-  const metricsResponse = await fetch(`${apiUrl()}/quality_metrics`)
-  const squarePredictions = await squarePredictionsResponse.json()
-  const holePredictions = await holePredictionsResponse.json()
-  const metrics = await metricsResponse.json()
-  return { squarePredictions, holePredictions, modelWeights, metrics }
-}
 
 const GridSquarePredictionCharts = ({
   predictions,
@@ -164,11 +150,31 @@ const FoilHolePredictionCharts = ({
   )
 }
 
-export default function QualityPredictionsForSquare({
-  loaderData,
-  params,
-}: Route.ComponentProps) {
+export default function QualityPredictionsForSquare() {
+  const params = useParams()
   const navigate = useNavigate()
+  const [squarePredictions, setSquarePredictions] = React.useState<any>({})
+  const [holePredictions, setHolePredictions] = React.useState<any>({})
+  const [metrics, setMetrics] = React.useState<any[]>([])
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      const squarePredictionsResponse = await fetch(
+        `${apiUrl()}/gridsquares/${params.squareId}/quality_predictions`
+      )
+      const holePredictionsResponse = await fetch(
+        `${apiUrl()}/gridsquares/${params.squareId}/foilhole_quality_predictions`
+      )
+      const metricsResponse = await fetch(`${apiUrl()}/quality_metrics`)
+      const squarePredictionsData = await squarePredictionsResponse.json()
+      const holePredictionsData = await holePredictionsResponse.json()
+      const metricsData = await metricsResponse.json()
+      setSquarePredictions(squarePredictionsData)
+      setHolePredictions(holePredictionsData)
+      setMetrics(metricsData)
+    }
+    fetchData()
+  }, [params.squareId, params.gridId])
 
   const mostRecentsMean = (fhPredictions: Map<string, QualityPrediction[]>) => {
     const mostRecents = Object.entries(fhPredictions).map(([key, el]) => {
@@ -211,13 +217,13 @@ export default function QualityPredictionsForSquare({
             value={metricName}
             onChange={handleChange}
           >
-            {loaderData.metrics.map((metric) => (
+            {metrics.map((metric) => (
               <MenuItem value={metric.name}>{metric.name}</MenuItem>
             ))}
           </Select>
         </FormControl>
         <Grid container spacing={3} sx={{ padding: '20px' }}>
-          {Object.entries(loaderData.squarePredictions).map(([key, value]) => {
+          {Object.entries(squarePredictions).map(([key, value]) => {
             return (
               <Grid size={4}>
                 <Card>
@@ -239,7 +245,7 @@ export default function QualityPredictionsForSquare({
               </Grid>
             )
           })}
-          {Object.entries(loaderData.holePredictions).map(([key, value]) => {
+          {Object.entries(holePredictions).map(([key, value]) => {
             return (
               <Grid size={4}>
                 <Card>

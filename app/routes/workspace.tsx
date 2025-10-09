@@ -19,15 +19,10 @@ import React from 'react'
 import { Navbar } from '../components/navbar'
 import Atlas from '../components/atlas'
 import { theme } from '../components/theme'
+import { useParams } from 'react-router'
 
-export async function loader({ params }: Route.LoaderArgs) {
-  return {}
-}
-
-export default function Workspace({
-  loaderData,
-  params,
-}: Route.ComponentProps) {
+export default function Workspace() {
+  const params = useParams()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const [atlasView, setAtlasView] = React.useState(false)
   const open = Boolean(anchorEl)
