@@ -1,28 +1,26 @@
-import type { Route } from './+types/product'
-
-import {
-  Container,
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  ThemeProvider,
-  IconButton,
-  CircularProgress,
-  Alert,
-  Box,
-} from '@mui/material'
-import Paper from '@mui/material/Paper'
 import GridOnIcon from '@mui/icons-material/GridOn'
 
+import {
+  Alert,
+  Box,
+  CircularProgress,
+  Container,
+  IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  ThemeProvider,
+} from '@mui/material'
+import Paper from '@mui/material/Paper'
 import { useNavigate } from 'react-router'
-
-import { Navbar } from '../components/navbar'
-import { theme } from '../components/theme'
 import { useGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet } from '../api/generated/default/default'
 import type { GridResponse } from '../api/generated/models'
+import { Navbar } from '../components/navbar'
+import { theme } from '../components/theme'
+import type { Route } from './+types/acquisition'
 
 export default function Acquisition({ params }: Route.ComponentProps) {
   const navigate = useNavigate()
@@ -45,7 +43,7 @@ export default function Acquisition({ params }: Route.ComponentProps) {
             <CircularProgress />
           </Box>
         ) : error ? (
-          <Alert severity="error">Error loading grids: {error.message}</Alert>
+          <Alert severity="error">Error loading grids: {String(error)}</Alert>
         ) : (
           <TableContainer component={Paper} style={{ width: '80%' }}>
             <Table>

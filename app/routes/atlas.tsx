@@ -1,5 +1,8 @@
-import type { Route } from './+types/product'
-
+import AddIcon from '@mui/icons-material/Add'
+import CloseIcon from '@mui/icons-material/Close'
+import RouteIcon from '@mui/icons-material/Route'
+import ZoomInIcon from '@mui/icons-material/ZoomIn'
+import type { SelectChangeEvent } from '@mui/material'
 import {
   Card,
   CardActions,
@@ -9,46 +12,38 @@ import {
   IconButton,
   InputLabel,
   MenuItem,
-  Tooltip,
-  ThemeProvider,
   Select,
   Stack,
   Switch,
+  ThemeProvider,
+  Tooltip,
 } from '@mui/material'
-import type { SelectChangeEvent } from '@mui/material'
-import { ScatterChart } from '@mui/x-charts/ScatterChart'
 import type { ScatterItemIdentifier } from '@mui/x-charts/models'
-import AddIcon from '@mui/icons-material/Add'
-import CloseIcon from '@mui/icons-material/Close'
-import ZoomInIcon from '@mui/icons-material/ZoomIn'
-import RouteIcon from '@mui/icons-material/Route'
-
-import type {
-  GridSquareResponse,
-  QualityPredictionModelResponse,
-  QualityPredictionResponse,
-  QualityPredictionModelParameterResponse,
-} from '../api/generated/models'
+import { ScatterChart } from '@mui/x-charts/ScatterChart'
+import React from 'react'
+import { useNavigate, useParams } from 'react-router'
 import {
   getGridGridsquaresGridsGridUuidGridsquaresGet,
+  getLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet,
+  getPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGet,
   getPredictionModelsPredictionModelsGet,
-  getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet,
-  getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet,
 } from '../api/generated/default/default'
-
-import { useNavigate } from 'react-router'
-
-import React from 'react'
+import type {
+  GridSquareResponse,
+  LatentRepresentationResponse,
+  QualityPredictionModelResponse,
+  QualityPredictionResponse,
+} from '../api/generated/models'
+import { apiUrl } from '../api/mutator'
 
 import { Navbar } from '../components/navbar'
 import { theme } from '../components/theme'
-
-import { apiUrl } from '../api/mutator'
+import type { Route } from './+types/atlas'
 
 type GridSquare = GridSquareResponse
 type PredictionModel = QualityPredictionModelResponse
 type Prediction = QualityPredictionResponse
-type LatentRep = QualityPredictionModelParameterResponse
+type LatentRep = LatentRepresentationResponse
 
 type Coords = {
   x: number
@@ -57,28 +52,27 @@ type Coords = {
 }
 
 const getPredictions = async (modelName: string, gridId: string) => {
-  const squarePredictions = await getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet(
-    modelName,
-    gridId
-  )
+  const squarePredictions =
+    await getPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGet(
+      modelName,
+      gridId
+    )
   const squarePredictionsMap = new Map<string, number>(
-    squarePredictions.map((elem: Prediction) => [
-      elem.gridsquare_uuid ?? '',
-      elem.value,
-    ])
+    squarePredictions.map((elem: Prediction) => [elem.gridsquare_uuid ?? '', elem.value])
   )
   return squarePredictionsMap
 }
 
 const getLatentRep = async (modelName: string, gridId: string) => {
-  const latentRepResult = await getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet(
-    modelName,
-    gridId
-  )
+  const latentRepResult =
+    await getLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet(
+      modelName,
+      gridId
+    )
   const latentRepMap = new Map<string, Coords>(
     latentRepResult.map((elem: LatentRep) => [
-      elem.grid_uuid,
-      { x: elem.value, y: 0, index: parseInt(elem.group) } as Coords,
+      elem.gridsquare_uuid ?? '',
+      { x: elem.x, y: elem.y, index: elem.index } as Coords,
     ])
   )
   return latentRepMap
@@ -89,17 +83,17 @@ const getSuggestion = async (gridId: string) => {
     `${apiUrl()}/grid/${gridId}/prediction_model/resnet-atlas/latent_rep/dae-atlas/suggested_squares`
   )
   const suggestionResult = await suggestionResponse.json()
-  const suggestedIds = Array.from(suggestionResult, (s) => s.uuid)
+  const suggestedIds = Array.from(suggestionResult, (s: any) => s.uuid)
   return suggestedIds
 }
 
 export default function Atlas() {
   const params = useParams()
+  const gridId = params.gridId
   const [squares, setSquares] = React.useState<GridSquare[]>([])
   const [models, setModels] = React.useState<PredictionModel[]>([])
   const [maxWidth, setMaxWidth] = React.useState(0)
-  const [squareNameMap, setSquareNameMap] =
-    React.useState<Map<string, string>>()
+  const [squareNameMap, setSquareNameMap] = React.useState<Map<string, string>>()
   const [selectedSquare, setSelectedSquare] = React.useState('')
 
   React.useEffect(() => {
@@ -119,8 +113,7 @@ export default function Atlas() {
   const [predictionMax, setPredictionMax] = React.useState(0)
   const [latentRep, setLatentRep] = React.useState<Map<string, Coords>>()
   const [showLatentSpace, setShowLatentSpace] = React.useState(false)
-  const [showUnselectedInLatentSpace, setShowUnselectedInLatentSpace] =
-    React.useState(true)
+  const [showUnselectedInLatentSpace, setShowUnselectedInLatentSpace] = React.useState(true)
   const [selectionFrozen, setSelectionFrozen] = React.useState(false)
   const [suggestions, setSuggestions] = React.useState<string[]>([])
 
@@ -141,7 +134,7 @@ export default function Atlas() {
 
   const handleChange = async (event: SelectChangeEvent) => {
     setPredictionModel(event.target.value)
-    const preds = await getPredictions(event.target.value, params.gridId)
+    const preds = await getPredictions(event.target.value, gridId ?? '')
     setPredictions(preds)
   }
 
@@ -153,7 +146,7 @@ export default function Atlas() {
     setRepModel(event.target.value)
     const latentRepValues: Map<string, Coords> = await getLatentRep(
       event.target.value,
-      params.gridId
+      gridId ?? ''
     )
     setLatentRep(latentRepValues)
   }
@@ -168,23 +161,18 @@ export default function Atlas() {
   }
 
   const handleSuggestionRequest = async () => {
-    const suggestions = await getSuggestion(params.gridId)
+    const suggestions = await getSuggestion(gridId ?? '')
     setSuggestions(suggestions)
   }
 
   React.useEffect(() => {
     if (squares.length > 0) {
-      const widths = squares.map((elem: GridSquare) => {
-        return elem.size_width
-      })
+      const widths = squares
+        .map((elem: GridSquare) => elem.size_width)
+        .filter((w): w is number => w !== null)
       setMaxWidth(Math.max(...widths))
       setSquareNameMap(
-        new Map<string, string>(
-          squares.map((elem: GridSquare) => [
-            elem.uuid,
-            elem.gridsquare_id,
-          ])
-        )
+        new Map<string, string>(squares.map((elem: GridSquare) => [elem.uuid, elem.gridsquare_id]))
       )
     }
   }, [squares])
@@ -202,11 +190,7 @@ export default function Atlas() {
     <ThemeProvider theme={theme}>
       <Navbar />
       <Stack direction="row" spacing={2}>
-        <Container
-          maxWidth="sm"
-          content="center"
-          style={{ width: '100%', paddingTop: '50px' }}
-        >
+        <Container maxWidth="sm" content="center" style={{ width: '100%', paddingTop: '50px' }}>
           <Card variant="outlined">
             <div
               style={{
@@ -216,10 +200,7 @@ export default function Atlas() {
               }}
             >
               <img src={`${url}/grids/${params.gridId}/atlas_image`} />
-              <svg
-                viewBox="0 0 4005 4005"
-                style={{ position: 'absolute', top: 0, left: 0 }}
-              >
+              <svg viewBox="0 0 4005 4005" style={{ position: 'absolute', top: 0, left: 0 }}>
                 {squares.map((gridSquare: GridSquare) => (
                   <Tooltip
                     title={
@@ -230,25 +211,23 @@ export default function Atlas() {
                   >
                     <circle
                       key={gridSquare.uuid}
-                      cx={gridSquare.center_x}
-                      cy={gridSquare.center_y}
+                      cx={gridSquare.center_x ?? 0}
+                      cy={gridSquare.center_y ?? 0}
                       fillOpacity={0.5}
                       r={
-                        predictions?.get(gridSquare.uuid)
-                          ? (((1.5 *
-                              (predictions.get(gridSquare.uuid) -
-                                predictionMin)) /
+                        predictions?.get(gridSquare.uuid) !== undefined
+                          ? (((1.5 * ((predictions.get(gridSquare.uuid) ?? 0) - predictionMin)) /
                               (predictionMax - predictionMin)) *
                               maxWidth) /
                             2
-                          : gridSquare.size_width / 2
+                          : (gridSquare.size_width ?? 0) / 2
                       }
                       fill={
                         latentRep
-                          ? colourPalette[latentRep.get(gridSquare.uuid).index]
+                          ? colourPalette[latentRep.get(gridSquare.uuid)?.index ?? 0]
                           : showPredictions
-                            ? predictions?.get(gridSquare.uuid)
-                              ? predictions.get(gridSquare.uuid) >= 0.5
+                            ? predictions?.get(gridSquare.uuid) !== undefined
+                              ? (predictions.get(gridSquare.uuid) ?? 0) >= 0.5
                                 ? 'green'
                                 : 'red'
                               : 'dark gray'
@@ -256,8 +235,8 @@ export default function Atlas() {
                       }
                       strokeWidth={
                         gridSquare.uuid === selectedSquare
-                          ? 0.25 * gridSquare.size_width
-                          : 0.1 * gridSquare.size_width
+                          ? 0.25 * (gridSquare.size_width ?? 0)
+                          : 0.1 * (gridSquare.size_width ?? 0)
                       }
                       strokeOpacity={1}
                       stroke={
@@ -266,8 +245,8 @@ export default function Atlas() {
                           : gridSquare.uuid === selectedSquare
                             ? 'orange'
                             : showPredictions
-                              ? predictions?.get(gridSquare.uuid)
-                                ? predictions.get(gridSquare.uuid) >= 0
+                              ? predictions?.get(gridSquare.uuid) !== undefined
+                                ? (predictions.get(gridSquare.uuid) ?? 0) >= 0
                                   ? 'green'
                                   : 'red'
                                 : 'gray'
@@ -275,12 +254,10 @@ export default function Atlas() {
                       }
                       onClick={() => handleSelectionClick(gridSquare.uuid)}
                       onMouseOver={() =>
-                        !selectionFrozen
-                          ? setSelectedSquare(gridSquare.uuid)
-                          : {}
+                        !selectionFrozen ? setSelectedSquare(gridSquare.uuid) : {}
                       }
                     >
-                      {!!gridSquare.image_path ? (
+                      {gridSquare.image_path ? (
                         <animate
                           attributeName="fill-opacity"
                           dur="1s"
@@ -297,15 +274,10 @@ export default function Atlas() {
               </svg>
             </div>
             <CardActions>
-              <Switch
-                checked={showPredictions}
-                onChange={handlePredictionChange}
-              />
+              <Switch checked={showPredictions} onChange={handlePredictionChange} />
               {showPredictions ? (
                 <FormControl fullWidth>
-                  <InputLabel id="model-select-label">
-                    Prediction Model
-                  </InputLabel>
+                  <InputLabel id="model-select-label">Prediction Model</InputLabel>
                   <Select
                     labelId="model-select-label"
                     id="model-select"
@@ -321,7 +293,7 @@ export default function Atlas() {
               ) : (
                 <></>
               )}
-              {!!selectedSquare ? (
+              {selectedSquare ? (
                 <IconButton
                   aria-label="inspect-square"
                   style={{ display: 'flex' }}
@@ -355,11 +327,7 @@ export default function Atlas() {
             </CardActions>
           </Card>
         </Container>
-        <Container
-          maxWidth="sm"
-          content="center"
-          style={{ width: '100%', paddingTop: '50px' }}
-        >
+        <Container maxWidth="sm" content="center" style={{ width: '100%', paddingTop: '50px' }}>
           {showLatentSpace ? (
             <Card variant="outlined">
               {latentRep ? (
@@ -373,16 +341,13 @@ export default function Atlas() {
                     markerSize:
                       k[0] == selectedSquare || showUnselectedInLatentSpace
                         ? predictions
-                          ? (7 * (predictions?.get(k[0]) + 1)) / 2
+                          ? (7 * ((predictions?.get(k[0]) ?? 0) + 1)) / 2
                           : 5
                         : 0,
-                    color:
-                      k[0] == selectedSquare
-                        ? 'white'
-                        : colourPalette[k[1].index],
+                    color: k[0] == selectedSquare ? 'white' : colourPalette[k[1].index],
                     valueFormatter: (v) => {
                       if (!selectionFrozen) setSelectedSquare(k[0])
-                      return `${squareNameMap?.get(v?.id)}: ${k[1].index}`
+                      return `${squareNameMap?.get(String(v?.id ?? '')) ?? ''}: ${String(k[1].index)}`
                     },
                   }))}
                   yAxis={[{ position: 'none' }]}
@@ -405,9 +370,7 @@ export default function Atlas() {
                   <Checkbox defaultChecked />
                 </Tooltip>
                 <FormControl fullWidth>
-                  <InputLabel id="rep-model-select-label">
-                    Prediction Model
-                  </InputLabel>
+                  <InputLabel id="rep-model-select-label">Prediction Model</InputLabel>
                   <Select
                     labelId="rep-model-select-label"
                     id="model-select"

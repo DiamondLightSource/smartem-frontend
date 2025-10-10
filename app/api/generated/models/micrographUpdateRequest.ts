@@ -3,32 +3,33 @@
  * Do not edit manually.
  * SmartEM Decisions Backend API
  * API for accessing and managing electron microscopy data
- * OpenAPI spec version: 0.1.dev334+g5e29cd2e4.d20251002
+ * OpenAPI spec version: 0.1.dev372+g0f036fa24
  */
-import type { MicrographUpdateRequestUuid } from './micrographUpdateRequestUuid'
-import type { MicrographUpdateRequestFoilholeUuid } from './micrographUpdateRequestFoilholeUuid'
-import type { MicrographUpdateRequestFoilholeId } from './micrographUpdateRequestFoilholeId'
-import type { MicrographUpdateRequestLocationId } from './micrographUpdateRequestLocationId'
-import type { MicrographUpdateRequestHighResPath } from './micrographUpdateRequestHighResPath'
-import type { MicrographUpdateRequestManifestFile } from './micrographUpdateRequestManifestFile'
+
+import type { MicrographStatus } from './micrographStatus'
 import type { MicrographUpdateRequestAcquisitionDatetime } from './micrographUpdateRequestAcquisitionDatetime'
+import type { MicrographUpdateRequestAverageMotion } from './micrographUpdateRequestAverageMotion'
+import type { MicrographUpdateRequestBinningX } from './micrographUpdateRequestBinningX'
+import type { MicrographUpdateRequestBinningY } from './micrographUpdateRequestBinningY'
+import type { MicrographUpdateRequestCtfMaxResolutionEstimate } from './micrographUpdateRequestCtfMaxResolutionEstimate'
 import type { MicrographUpdateRequestDefocus } from './micrographUpdateRequestDefocus'
 import type { MicrographUpdateRequestDetectorName } from './micrographUpdateRequestDetectorName'
 import type { MicrographUpdateRequestEnergyFilter } from './micrographUpdateRequestEnergyFilter'
-import type { MicrographUpdateRequestPhasePlate } from './micrographUpdateRequestPhasePlate'
+import type { MicrographUpdateRequestFoilholeId } from './micrographUpdateRequestFoilholeId'
+import type { MicrographUpdateRequestFoilholeUuid } from './micrographUpdateRequestFoilholeUuid'
+import type { MicrographUpdateRequestHighResPath } from './micrographUpdateRequestHighResPath'
 import type { MicrographUpdateRequestImageSizeX } from './micrographUpdateRequestImageSizeX'
 import type { MicrographUpdateRequestImageSizeY } from './micrographUpdateRequestImageSizeY'
-import type { MicrographUpdateRequestBinningX } from './micrographUpdateRequestBinningX'
-import type { MicrographUpdateRequestBinningY } from './micrographUpdateRequestBinningY'
-import type { MicrographUpdateRequestTotalMotion } from './micrographUpdateRequestTotalMotion'
-import type { MicrographUpdateRequestAverageMotion } from './micrographUpdateRequestAverageMotion'
-import type { MicrographUpdateRequestCtfMaxResolutionEstimate } from './micrographUpdateRequestCtfMaxResolutionEstimate'
-import type { MicrographUpdateRequestNumberOfParticlesSelected } from './micrographUpdateRequestNumberOfParticlesSelected'
-import type { MicrographUpdateRequestNumberOfParticlesRejected } from './micrographUpdateRequestNumberOfParticlesRejected'
-import type { MicrographUpdateRequestSelectionDistribution } from './micrographUpdateRequestSelectionDistribution'
+import type { MicrographUpdateRequestLocationId } from './micrographUpdateRequestLocationId'
+import type { MicrographUpdateRequestManifestFile } from './micrographUpdateRequestManifestFile'
 import type { MicrographUpdateRequestNumberOfParticlesPicked } from './micrographUpdateRequestNumberOfParticlesPicked'
+import type { MicrographUpdateRequestNumberOfParticlesRejected } from './micrographUpdateRequestNumberOfParticlesRejected'
+import type { MicrographUpdateRequestNumberOfParticlesSelected } from './micrographUpdateRequestNumberOfParticlesSelected'
+import type { MicrographUpdateRequestPhasePlate } from './micrographUpdateRequestPhasePlate'
 import type { MicrographUpdateRequestPickDistribution } from './micrographUpdateRequestPickDistribution'
-import type { MicrographStatus } from './micrographStatus'
+import type { MicrographUpdateRequestSelectionDistribution } from './micrographUpdateRequestSelectionDistribution'
+import type { MicrographUpdateRequestTotalMotion } from './micrographUpdateRequestTotalMotion'
+import type { MicrographUpdateRequestUuid } from './micrographUpdateRequestUuid'
 
 export interface MicrographUpdateRequest {
   uuid?: MicrographUpdateRequestUuid

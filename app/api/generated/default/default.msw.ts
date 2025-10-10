@@ -3,20 +3,11 @@
  * Do not edit manually.
  * SmartEM Decisions Backend API
  * API for accessing and managing electron microscopy data
- * OpenAPI spec version: 0.1.dev334+g5e29cd2e4.d20251002
+ * OpenAPI spec version: 0.1.dev372+g0f036fa24
  */
 import { faker } from '@faker-js/faker'
-
-import { HttpResponse, delay, http } from 'msw'
 import type { RequestHandlerOptions } from 'msw'
-
-import {
-  AcquisitionStatus,
-  FoilHoleStatus,
-  GridSquareStatus,
-  GridStatus,
-  MicrographStatus,
-} from '.././models'
+import { delay, HttpResponse, http } from 'msw'
 import type {
   AcquisitionResponse,
   AgentInstructionAcknowledgementResponse,
@@ -24,68 +15,77 @@ import type {
   AtlasTileGridSquarePositionResponse,
   AtlasTileResponse,
   FoilHoleResponse,
+  GetFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGet200,
+  GetFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGet200,
+  GetGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGet200,
+  GetModelWeightsForGridGridGridUuidModelWeightsGet200,
   GridResponse,
+  GridSquare,
   GridSquareResponse,
+  LatentRepresentationResponse,
   MicrographResponse,
+  OverallQualityPrediction,
   QualityMetricsResponse,
-  QualityPredictionModelParameterResponse,
   QualityPredictionModelResponse,
   QualityPredictionResponse,
 } from '.././models'
+import {
+  AcquisitionStatus,
+  FoilHoleStatus,
+  GridSquareStatus,
+  GridStatus,
+  MicrographStatus,
+} from '.././models'
 
-export const getGetAcquisitionsAcquisitionsGetResponseMock =
-  (): AcquisitionResponse[] =>
-    Array.from(
-      { length: faker.number.int({ min: 1, max: 10 }) },
-      (_, i) => i + 1
-    ).map(() => ({
-      uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
-      name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-      status: faker.helpers.arrayElement([
-        faker.helpers.arrayElement(Object.values(AcquisitionStatus)),
-        null,
-      ]),
-      start_time: faker.helpers.arrayElement([
-        `${faker.date.past().toISOString().split('.')[0]}Z`,
-        null,
-      ]),
-      end_time: faker.helpers.arrayElement([
-        `${faker.date.past().toISOString().split('.')[0]}Z`,
-        null,
-      ]),
-      paused_time: faker.helpers.arrayElement([
-        `${faker.date.past().toISOString().split('.')[0]}Z`,
-        null,
-      ]),
-      storage_path: faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        null,
-      ]),
-      atlas_path: faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        null,
-      ]),
-      clustering_mode: faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        null,
-      ]),
-      clustering_radius: faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        null,
-      ]),
-      instrument_model: faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        null,
-      ]),
-      instrument_id: faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        null,
-      ]),
-      computer_name: faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        null,
-      ]),
-    }))
+export const getGetAcquisitionsAcquisitionsGetResponseMock = (): AcquisitionResponse[] =>
+  Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({
+    uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    status: faker.helpers.arrayElement([
+      faker.helpers.arrayElement(Object.values(AcquisitionStatus)),
+      null,
+    ]),
+    start_time: faker.helpers.arrayElement([
+      `${faker.date.past().toISOString().split('.')[0]}Z`,
+      null,
+    ]),
+    end_time: faker.helpers.arrayElement([
+      `${faker.date.past().toISOString().split('.')[0]}Z`,
+      null,
+    ]),
+    paused_time: faker.helpers.arrayElement([
+      `${faker.date.past().toISOString().split('.')[0]}Z`,
+      null,
+    ]),
+    storage_path: faker.helpers.arrayElement([
+      faker.string.alpha({ length: { min: 10, max: 20 } }),
+      null,
+    ]),
+    atlas_path: faker.helpers.arrayElement([
+      faker.string.alpha({ length: { min: 10, max: 20 } }),
+      null,
+    ]),
+    clustering_mode: faker.helpers.arrayElement([
+      faker.string.alpha({ length: { min: 10, max: 20 } }),
+      null,
+    ]),
+    clustering_radius: faker.helpers.arrayElement([
+      faker.string.alpha({ length: { min: 10, max: 20 } }),
+      null,
+    ]),
+    instrument_model: faker.helpers.arrayElement([
+      faker.string.alpha({ length: { min: 10, max: 20 } }),
+      null,
+    ]),
+    instrument_id: faker.helpers.arrayElement([
+      faker.string.alpha({ length: { min: 10, max: 20 } }),
+      null,
+    ]),
+    computer_name: faker.helpers.arrayElement([
+      faker.string.alpha({ length: { min: 10, max: 20 } }),
+      null,
+    ]),
+  }))
 
 export const getCreateAcquisitionAcquisitionsPostResponseMock = (
   overrideResponse: Partial<AcquisitionResponse> = {}
@@ -100,10 +100,7 @@ export const getCreateAcquisitionAcquisitionsPostResponseMock = (
     `${faker.date.past().toISOString().split('.')[0]}Z`,
     null,
   ]),
-  end_time: faker.helpers.arrayElement([
-    `${faker.date.past().toISOString().split('.')[0]}Z`,
-    null,
-  ]),
+  end_time: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, null]),
   paused_time: faker.helpers.arrayElement([
     `${faker.date.past().toISOString().split('.')[0]}Z`,
     null,
@@ -152,10 +149,7 @@ export const getGetAcquisitionAcquisitionsAcquisitionUuidGetResponseMock = (
     `${faker.date.past().toISOString().split('.')[0]}Z`,
     null,
   ]),
-  end_time: faker.helpers.arrayElement([
-    `${faker.date.past().toISOString().split('.')[0]}Z`,
-    null,
-  ]),
+  end_time: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, null]),
   paused_time: faker.helpers.arrayElement([
     `${faker.date.past().toISOString().split('.')[0]}Z`,
     null,
@@ -204,10 +198,7 @@ export const getUpdateAcquisitionAcquisitionsAcquisitionUuidPutResponseMock = (
     `${faker.date.past().toISOString().split('.')[0]}Z`,
     null,
   ]),
-  end_time: faker.helpers.arrayElement([
-    `${faker.date.past().toISOString().split('.')[0]}Z`,
-    null,
-  ]),
+  end_time: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, null]),
   paused_time: faker.helpers.arrayElement([
     `${faker.date.past().toISOString().split('.')[0]}Z`,
     null,
@@ -244,10 +235,7 @@ export const getUpdateAcquisitionAcquisitionsAcquisitionUuidPutResponseMock = (
 })
 
 export const getGetGridsGridsGetResponseMock = (): GridResponse[] =>
-  Array.from(
-    { length: faker.number.int({ min: 1, max: 10 }) },
-    (_, i) => i + 1
-  ).map(() => ({
+  Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({
     uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
     acquisition_uuid: faker.helpers.arrayElement([
       faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -284,10 +272,7 @@ export const getGetGridGridsGridUuidGetResponseMock = (
     faker.string.alpha({ length: { min: 10, max: 20 } }),
     null,
   ]),
-  status: faker.helpers.arrayElement([
-    faker.helpers.arrayElement(Object.values(GridStatus)),
-    null,
-  ]),
+  status: faker.helpers.arrayElement([faker.helpers.arrayElement(Object.values(GridStatus)), null]),
   name: faker.string.alpha({ length: { min: 10, max: 20 } }),
   data_dir: faker.helpers.arrayElement([
     faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -316,10 +301,7 @@ export const getUpdateGridGridsGridUuidPutResponseMock = (
     faker.string.alpha({ length: { min: 10, max: 20 } }),
     null,
   ]),
-  status: faker.helpers.arrayElement([
-    faker.helpers.arrayElement(Object.values(GridStatus)),
-    null,
-  ]),
+  status: faker.helpers.arrayElement([faker.helpers.arrayElement(Object.values(GridStatus)), null]),
   name: faker.string.alpha({ length: { min: 10, max: 20 } }),
   data_dir: faker.helpers.arrayElement([
     faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -342,10 +324,7 @@ export const getUpdateGridGridsGridUuidPutResponseMock = (
 
 export const getGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGetResponseMock =
   (): GridResponse[] =>
-    Array.from(
-      { length: faker.number.int({ min: 1, max: 10 }) },
-      (_, i) => i + 1
-    ).map(() => ({
+    Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({
       uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
       acquisition_uuid: faker.helpers.arrayElement([
         faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -374,45 +353,40 @@ export const getGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGetResponseMo
       ]),
     }))
 
-export const getCreateAcquisitionGridAcquisitionsAcquisitionUuidGridsPostResponseMock =
-  (overrideResponse: Partial<GridResponse> = {}): GridResponse => ({
-    uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
-    acquisition_uuid: faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    status: faker.helpers.arrayElement([
-      faker.helpers.arrayElement(Object.values(GridStatus)),
-      null,
-    ]),
-    name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-    data_dir: faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    atlas_dir: faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    scan_start_time: faker.helpers.arrayElement([
-      `${faker.date.past().toISOString().split('.')[0]}Z`,
-      null,
-    ]),
-    scan_end_time: faker.helpers.arrayElement([
-      `${faker.date.past().toISOString().split('.')[0]}Z`,
-      null,
-    ]),
-    ...overrideResponse,
-  })
+export const getCreateAcquisitionGridAcquisitionsAcquisitionUuidGridsPostResponseMock = (
+  overrideResponse: Partial<GridResponse> = {}
+): GridResponse => ({
+  uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
+  acquisition_uuid: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    null,
+  ]),
+  status: faker.helpers.arrayElement([faker.helpers.arrayElement(Object.values(GridStatus)), null]),
+  name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+  data_dir: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    null,
+  ]),
+  atlas_dir: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    null,
+  ]),
+  scan_start_time: faker.helpers.arrayElement([
+    `${faker.date.past().toISOString().split('.')[0]}Z`,
+    null,
+  ]),
+  scan_end_time: faker.helpers.arrayElement([
+    `${faker.date.past().toISOString().split('.')[0]}Z`,
+    null,
+  ]),
+  ...overrideResponse,
+})
 
-export const getGridRegisteredGridsGridUuidRegisteredPostResponseMock =
-  (): boolean => faker.datatype.boolean()
+export const getGridRegisteredGridsGridUuidRegisteredPostResponseMock = (): boolean =>
+  faker.datatype.boolean()
 
 export const getGetAtlasesAtlasesGetResponseMock = (): AtlasResponse[] =>
-  Array.from(
-    { length: faker.number.int({ min: 1, max: 10 }) },
-    (_, i) => i + 1
-  ).map(() => ({
+  Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({
     uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
     grid_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
     atlas_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -431,10 +405,7 @@ export const getGetAtlasesAtlasesGetResponseMock = (): AtlasResponse[] =>
     name: faker.string.alpha({ length: { min: 10, max: 20 } }),
     tiles: faker.helpers.arrayElement([
       faker.helpers.arrayElement([
-        Array.from(
-          { length: faker.number.int({ min: 1, max: 10 }) },
-          (_, i) => i + 1
-        ).map(() => ({
+        Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({
           uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
           atlas_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
           tile_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -490,10 +461,7 @@ export const getGetAtlasAtlasesAtlasUuidGetResponseMock = (
   name: faker.string.alpha({ length: { min: 10, max: 20 } }),
   tiles: faker.helpers.arrayElement([
     faker.helpers.arrayElement([
-      Array.from(
-        { length: faker.number.int({ min: 1, max: 10 }) },
-        (_, i) => i + 1
-      ).map(() => ({
+      Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({
         uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
         atlas_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
         tile_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -550,10 +518,7 @@ export const getUpdateAtlasAtlasesAtlasUuidPutResponseMock = (
   name: faker.string.alpha({ length: { min: 10, max: 20 } }),
   tiles: faker.helpers.arrayElement([
     faker.helpers.arrayElement([
-      Array.from(
-        { length: faker.number.int({ min: 1, max: 10 }) },
-        (_, i) => i + 1
-      ).map(() => ({
+      Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({
         uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
         atlas_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
         tile_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -610,10 +575,7 @@ export const getGetGridAtlasGridsGridUuidAtlasGetResponseMock = (
   name: faker.string.alpha({ length: { min: 10, max: 20 } }),
   tiles: faker.helpers.arrayElement([
     faker.helpers.arrayElement([
-      Array.from(
-        { length: faker.number.int({ min: 1, max: 10 }) },
-        (_, i) => i + 1
-      ).map(() => ({
+      Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({
         uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
         atlas_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
         tile_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -670,10 +632,7 @@ export const getCreateGridAtlasGridsGridUuidAtlasPostResponseMock = (
   name: faker.string.alpha({ length: { min: 10, max: 20 } }),
   tiles: faker.helpers.arrayElement([
     faker.helpers.arrayElement([
-      Array.from(
-        { length: faker.number.int({ min: 1, max: 10 }) },
-        (_, i) => i + 1
-      ).map(() => ({
+      Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({
         uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
         atlas_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
         tile_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -709,40 +668,36 @@ export const getCreateGridAtlasGridsGridUuidAtlasPostResponseMock = (
   ...overrideResponse,
 })
 
-export const getGetAtlasTilesAtlasTilesGetResponseMock =
-  (): AtlasTileResponse[] =>
-    Array.from(
-      { length: faker.number.int({ min: 1, max: 10 }) },
-      (_, i) => i + 1
-    ).map(() => ({
-      uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
-      atlas_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
-      tile_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-      position_x: faker.helpers.arrayElement([
-        faker.number.int({ min: undefined, max: undefined }),
-        null,
-      ]),
-      position_y: faker.helpers.arrayElement([
-        faker.number.int({ min: undefined, max: undefined }),
-        null,
-      ]),
-      size_x: faker.helpers.arrayElement([
-        faker.number.int({ min: undefined, max: undefined }),
-        null,
-      ]),
-      size_y: faker.helpers.arrayElement([
-        faker.number.int({ min: undefined, max: undefined }),
-        null,
-      ]),
-      file_format: faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        null,
-      ]),
-      base_filename: faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        null,
-      ]),
-    }))
+export const getGetAtlasTilesAtlasTilesGetResponseMock = (): AtlasTileResponse[] =>
+  Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({
+    uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    atlas_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    tile_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    position_x: faker.helpers.arrayElement([
+      faker.number.int({ min: undefined, max: undefined }),
+      null,
+    ]),
+    position_y: faker.helpers.arrayElement([
+      faker.number.int({ min: undefined, max: undefined }),
+      null,
+    ]),
+    size_x: faker.helpers.arrayElement([
+      faker.number.int({ min: undefined, max: undefined }),
+      null,
+    ]),
+    size_y: faker.helpers.arrayElement([
+      faker.number.int({ min: undefined, max: undefined }),
+      null,
+    ]),
+    file_format: faker.helpers.arrayElement([
+      faker.string.alpha({ length: { min: 10, max: 20 } }),
+      null,
+    ]),
+    base_filename: faker.helpers.arrayElement([
+      faker.string.alpha({ length: { min: 10, max: 20 } }),
+      null,
+    ]),
+  }))
 
 export const getGetAtlasTileAtlasTilesTileUuidGetResponseMock = (
   overrideResponse: Partial<AtlasTileResponse> = {}
@@ -758,14 +713,8 @@ export const getGetAtlasTileAtlasTilesTileUuidGetResponseMock = (
     faker.number.int({ min: undefined, max: undefined }),
     null,
   ]),
-  size_x: faker.helpers.arrayElement([
-    faker.number.int({ min: undefined, max: undefined }),
-    null,
-  ]),
-  size_y: faker.helpers.arrayElement([
-    faker.number.int({ min: undefined, max: undefined }),
-    null,
-  ]),
+  size_x: faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+  size_y: faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
   file_format: faker.helpers.arrayElement([
     faker.string.alpha({ length: { min: 10, max: 20 } }),
     null,
@@ -791,14 +740,8 @@ export const getUpdateAtlasTileAtlasTilesTileUuidPutResponseMock = (
     faker.number.int({ min: undefined, max: undefined }),
     null,
   ]),
-  size_x: faker.helpers.arrayElement([
-    faker.number.int({ min: undefined, max: undefined }),
-    null,
-  ]),
-  size_y: faker.helpers.arrayElement([
-    faker.number.int({ min: undefined, max: undefined }),
-    null,
-  ]),
+  size_x: faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+  size_y: faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
   file_format: faker.helpers.arrayElement([
     faker.string.alpha({ length: { min: 10, max: 20 } }),
     null,
@@ -812,10 +755,7 @@ export const getUpdateAtlasTileAtlasTilesTileUuidPutResponseMock = (
 
 export const getGetAtlasTilesByAtlasAtlasesAtlasUuidTilesGetResponseMock =
   (): AtlasTileResponse[] =>
-    Array.from(
-      { length: faker.number.int({ min: 1, max: 10 }) },
-      (_, i) => i + 1
-    ).map(() => ({
+    Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({
       uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
       atlas_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
       tile_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -859,14 +799,8 @@ export const getCreateAtlasTileForAtlasAtlasesAtlasUuidTilesPostResponseMock = (
     faker.number.int({ min: undefined, max: undefined }),
     null,
   ]),
-  size_x: faker.helpers.arrayElement([
-    faker.number.int({ min: undefined, max: undefined }),
-    null,
-  ]),
-  size_y: faker.helpers.arrayElement([
-    faker.number.int({ min: undefined, max: undefined }),
-    null,
-  ]),
+  size_x: faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+  size_y: faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
   file_format: faker.helpers.arrayElement([
     faker.string.alpha({ length: { min: 10, max: 20 } }),
     null,
@@ -891,145 +825,109 @@ export const getLinkAtlasTileToGridsquareAtlasTilesTileUuidGridsquaresGridsquare
     ...overrideResponse,
   })
 
-export const getGetGridsquaresGridsquaresGetResponseMock =
-  (): GridSquareResponse[] =>
-    Array.from(
-      { length: faker.number.int({ min: 1, max: 10 }) },
-      (_, i) => i + 1
-    ).map(() => ({
-      uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
-      gridsquare_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-      grid_uuid: faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        null,
-      ]),
-      status: faker.helpers.arrayElement([
-        faker.helpers.arrayElement(Object.values(GridSquareStatus)),
-        null,
-      ]),
-      data_dir: faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        null,
-      ]),
-      atlas_node_id: faker.helpers.arrayElement([
-        faker.number.int({ min: undefined, max: undefined }),
-        null,
-      ]),
-      state: faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        null,
-      ]),
-      rotation: faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
-        null,
-      ]),
-      image_path: faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        null,
-      ]),
-      selected: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
-      unusable: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
-      stage_position_x: faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
-        null,
-      ]),
-      stage_position_y: faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
-        null,
-      ]),
-      stage_position_z: faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
-        null,
-      ]),
-      center_x: faker.helpers.arrayElement([
-        faker.number.int({ min: undefined, max: undefined }),
-        null,
-      ]),
-      center_y: faker.helpers.arrayElement([
-        faker.number.int({ min: undefined, max: undefined }),
-        null,
-      ]),
-      physical_x: faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
-        null,
-      ]),
-      physical_y: faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
-        null,
-      ]),
-      size_width: faker.helpers.arrayElement([
-        faker.number.int({ min: undefined, max: undefined }),
-        null,
-      ]),
-      size_height: faker.helpers.arrayElement([
-        faker.number.int({ min: undefined, max: undefined }),
-        null,
-      ]),
-      acquisition_datetime: faker.helpers.arrayElement([
-        `${faker.date.past().toISOString().split('.')[0]}Z`,
-        null,
-      ]),
-      defocus: faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
-        null,
-      ]),
-      magnification: faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
-        null,
-      ]),
-      pixel_size: faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
-        null,
-      ]),
-      detector_name: faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        null,
-      ]),
-      applied_defocus: faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
-        null,
-      ]),
+export const getLinkAtlasTileToGridsquaresAtlasTilesTileUuidGridsquaresPostResponseMock =
+  (): AtlasTileGridSquarePositionResponse[] =>
+    Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({
+      atlastile_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
+      gridsquare_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
+      center_x: faker.number.int({ min: undefined, max: undefined }),
+      center_y: faker.number.int({ min: undefined, max: undefined }),
+      size_width: faker.number.int({ min: undefined, max: undefined }),
+      size_height: faker.number.int({ min: undefined, max: undefined }),
     }))
+
+export const getGetGridsquaresGridsquaresGetResponseMock = (): GridSquareResponse[] =>
+  Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({
+    uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    gridsquare_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    grid_uuid: faker.helpers.arrayElement([
+      faker.string.alpha({ length: { min: 10, max: 20 } }),
+      null,
+    ]),
+    status: faker.helpers.arrayElement([
+      faker.helpers.arrayElement(Object.values(GridSquareStatus)),
+      null,
+    ]),
+    data_dir: faker.helpers.arrayElement([
+      faker.string.alpha({ length: { min: 10, max: 20 } }),
+      null,
+    ]),
+    atlas_node_id: faker.helpers.arrayElement([
+      faker.number.int({ min: undefined, max: undefined }),
+      null,
+    ]),
+    state: faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+    rotation: faker.helpers.arrayElement([
+      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+      null,
+    ]),
+    image_path: faker.helpers.arrayElement([
+      faker.string.alpha({ length: { min: 10, max: 20 } }),
+      null,
+    ]),
+    selected: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+    unusable: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+    stage_position_x: faker.helpers.arrayElement([
+      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+      null,
+    ]),
+    stage_position_y: faker.helpers.arrayElement([
+      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+      null,
+    ]),
+    stage_position_z: faker.helpers.arrayElement([
+      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+      null,
+    ]),
+    center_x: faker.helpers.arrayElement([
+      faker.number.int({ min: undefined, max: undefined }),
+      null,
+    ]),
+    center_y: faker.helpers.arrayElement([
+      faker.number.int({ min: undefined, max: undefined }),
+      null,
+    ]),
+    physical_x: faker.helpers.arrayElement([
+      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+      null,
+    ]),
+    physical_y: faker.helpers.arrayElement([
+      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+      null,
+    ]),
+    size_width: faker.helpers.arrayElement([
+      faker.number.int({ min: undefined, max: undefined }),
+      null,
+    ]),
+    size_height: faker.helpers.arrayElement([
+      faker.number.int({ min: undefined, max: undefined }),
+      null,
+    ]),
+    acquisition_datetime: faker.helpers.arrayElement([
+      `${faker.date.past().toISOString().split('.')[0]}Z`,
+      null,
+    ]),
+    defocus: faker.helpers.arrayElement([
+      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+      null,
+    ]),
+    magnification: faker.helpers.arrayElement([
+      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+      null,
+    ]),
+    pixel_size: faker.helpers.arrayElement([
+      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+      null,
+    ]),
+    detector_name: faker.helpers.arrayElement([
+      faker.string.alpha({ length: { min: 10, max: 20 } }),
+      null,
+    ]),
+    applied_defocus: faker.helpers.arrayElement([
+      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+      null,
+    ]),
+  }))
 
 export const getGetGridsquareGridsquaresGridsquareUuidGetResponseMock = (
   overrideResponse: Partial<GridSquareResponse> = {}
@@ -1052,10 +950,7 @@ export const getGetGridsquareGridsquaresGridsquareUuidGetResponseMock = (
     faker.number.int({ min: undefined, max: undefined }),
     null,
   ]),
-  state: faker.helpers.arrayElement([
-    faker.string.alpha({ length: { min: 10, max: 20 } }),
-    null,
-  ]),
+  state: faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
   rotation: faker.helpers.arrayElement([
     faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
     null,
@@ -1150,10 +1045,7 @@ export const getUpdateGridsquareGridsquaresGridsquareUuidPutResponseMock = (
     faker.number.int({ min: undefined, max: undefined }),
     null,
   ]),
-  state: faker.helpers.arrayElement([
-    faker.string.alpha({ length: { min: 10, max: 20 } }),
-    null,
-  ]),
+  state: faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
   rotation: faker.helpers.arrayElement([
     faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
     null,
@@ -1229,10 +1121,7 @@ export const getUpdateGridsquareGridsquaresGridsquareUuidPutResponseMock = (
 
 export const getGetGridGridsquaresGridsGridUuidGridsquaresGetResponseMock =
   (): GridSquareResponse[] =>
-    Array.from(
-      { length: faker.number.int({ min: 1, max: 10 }) },
-      (_, i) => i + 1
-    ).map(() => ({
+    Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({
       uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
       gridsquare_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
       grid_uuid: faker.helpers.arrayElement([
@@ -1256,11 +1145,7 @@ export const getGetGridGridsquaresGridsGridUuidGridsquaresGetResponseMock =
         null,
       ]),
       rotation: faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
         null,
       ]),
       image_path: faker.helpers.arrayElement([
@@ -1270,27 +1155,15 @@ export const getGetGridGridsquaresGridsGridUuidGridsquaresGetResponseMock =
       selected: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
       unusable: faker.helpers.arrayElement([faker.datatype.boolean(), null]),
       stage_position_x: faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
         null,
       ]),
       stage_position_y: faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
         null,
       ]),
       stage_position_z: faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
         null,
       ]),
       center_x: faker.helpers.arrayElement([
@@ -1302,19 +1175,11 @@ export const getGetGridGridsquaresGridsGridUuidGridsquaresGetResponseMock =
         null,
       ]),
       physical_x: faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
         null,
       ]),
       physical_y: faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
         null,
       ]),
       size_width: faker.helpers.arrayElement([
@@ -1330,27 +1195,15 @@ export const getGetGridGridsquaresGridsGridUuidGridsquaresGetResponseMock =
         null,
       ]),
       defocus: faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
         null,
       ]),
       magnification: faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
         null,
       ]),
       pixel_size: faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
         null,
       ]),
       detector_name: faker.helpers.arrayElement([
@@ -1358,11 +1211,7 @@ export const getGetGridGridsquaresGridsGridUuidGridsquaresGetResponseMock =
         null,
       ]),
       applied_defocus: faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
         null,
       ]),
     }))
@@ -1388,10 +1237,7 @@ export const getCreateGridGridsquareGridsGridUuidGridsquaresPostResponseMock = (
     faker.number.int({ min: undefined, max: undefined }),
     null,
   ]),
-  state: faker.helpers.arrayElement([
-    faker.string.alpha({ length: { min: 10, max: 20 } }),
-    null,
-  ]),
+  state: faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
   rotation: faker.helpers.arrayElement([
     faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
     null,
@@ -1469,10 +1315,7 @@ export const getGridsquareRegisteredGridsquaresGridsquareUuidRegisteredPostRespo
   (): boolean => faker.datatype.boolean()
 
 export const getGetFoilholesFoilholesGetResponseMock = (): FoilHoleResponse[] =>
-  Array.from(
-    { length: faker.number.int({ min: 1, max: 10 }) },
-    (_, i) => i + 1
-  ).map(() => ({
+  Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({
     uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
     gridsquare_id: faker.helpers.arrayElement([
       faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -1645,10 +1488,7 @@ export const getUpdateFoilholeFoilholesFoilholeUuidPutResponseMock = (
 
 export const getGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetResponseMock =
   (): FoilHoleResponse[] =>
-    Array.from(
-      { length: faker.number.int({ min: 1, max: 10 }) },
-      (_, i) => i + 1
-    ).map(() => ({
+    Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({
       uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
       gridsquare_id: faker.helpers.arrayElement([
         faker.string.alpha({ length: { min: 10, max: 20 } }),
@@ -1657,51 +1497,27 @@ export const getGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetRespo
       foilhole_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
       status: faker.helpers.arrayElement(Object.values(FoilHoleStatus)),
       center_x: faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
         null,
       ]),
       center_y: faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
         null,
       ]),
       quality: faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
         null,
       ]),
       rotation: faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
         null,
       ]),
       size_width: faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
         null,
       ]),
       size_height: faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
         null,
       ]),
       x_location: faker.helpers.arrayElement([
@@ -1713,19 +1529,11 @@ export const getGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetRespo
         null,
       ]),
       x_stage_position: faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
         null,
       ]),
       y_stage_position: faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
         null,
       ]),
       diameter: faker.helpers.arrayElement([
@@ -1736,789 +1544,100 @@ export const getGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetRespo
     }))
 
 export const getCreateGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPostResponseMock =
-  (overrideResponse: Partial<FoilHoleResponse> = {}): FoilHoleResponse => ({
-    uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
-    gridsquare_id: faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    foilhole_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-    status: faker.helpers.arrayElement(Object.values(FoilHoleStatus)),
-    center_x: faker.helpers.arrayElement([
-      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-      null,
-    ]),
-    center_y: faker.helpers.arrayElement([
-      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-      null,
-    ]),
-    quality: faker.helpers.arrayElement([
-      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-      null,
-    ]),
-    rotation: faker.helpers.arrayElement([
-      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-      null,
-    ]),
-    size_width: faker.helpers.arrayElement([
-      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-      null,
-    ]),
-    size_height: faker.helpers.arrayElement([
-      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-      null,
-    ]),
-    x_location: faker.helpers.arrayElement([
-      faker.number.int({ min: undefined, max: undefined }),
-      null,
-    ]),
-    y_location: faker.helpers.arrayElement([
-      faker.number.int({ min: undefined, max: undefined }),
-      null,
-    ]),
-    x_stage_position: faker.helpers.arrayElement([
-      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-      null,
-    ]),
-    y_stage_position: faker.helpers.arrayElement([
-      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-      null,
-    ]),
-    diameter: faker.helpers.arrayElement([
-      faker.number.int({ min: undefined, max: undefined }),
-      null,
-    ]),
-    is_near_grid_bar: faker.datatype.boolean(),
-    ...overrideResponse,
-  })
-
-export const getGetMicrographsMicrographsGetResponseMock =
-  (): MicrographResponse[] =>
-    Array.from(
-      { length: faker.number.int({ min: 1, max: 10 }) },
-      (_, i) => i + 1
-    ).map(() => ({
+  (): FoilHoleResponse[] =>
+    Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({
       uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
-      foilhole_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
-      foilhole_id: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          null,
-        ]),
-        undefined,
+      gridsquare_id: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        null,
       ]),
-      micrograph_id: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          null,
-        ]),
-        undefined,
+      foilhole_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
+      status: faker.helpers.arrayElement(Object.values(FoilHoleStatus)),
+      center_x: faker.helpers.arrayElement([
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+        null,
       ]),
-      location_id: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          null,
-        ]),
-        undefined,
+      center_y: faker.helpers.arrayElement([
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+        null,
       ]),
-      status: faker.helpers.arrayElement(Object.values(MicrographStatus)),
-      high_res_path: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          null,
-        ]),
-        undefined,
+      quality: faker.helpers.arrayElement([
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+        null,
       ]),
-      manifest_file: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          null,
-        ]),
-        undefined,
+      rotation: faker.helpers.arrayElement([
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+        null,
       ]),
-      acquisition_datetime: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          `${faker.date.past().toISOString().split('.')[0]}Z`,
-          null,
-        ]),
-        undefined,
+      size_width: faker.helpers.arrayElement([
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+        null,
       ]),
-      defocus: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.number.float({
-            min: undefined,
-            max: undefined,
-            fractionDigits: 2,
-          }),
-          null,
-        ]),
-        undefined,
+      size_height: faker.helpers.arrayElement([
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+        null,
       ]),
-      detector_name: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          null,
-        ]),
-        undefined,
+      x_location: faker.helpers.arrayElement([
+        faker.number.int({ min: undefined, max: undefined }),
+        null,
       ]),
-      energy_filter: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([faker.datatype.boolean(), null]),
-        undefined,
+      y_location: faker.helpers.arrayElement([
+        faker.number.int({ min: undefined, max: undefined }),
+        null,
       ]),
-      phase_plate: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([faker.datatype.boolean(), null]),
-        undefined,
+      x_stage_position: faker.helpers.arrayElement([
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+        null,
       ]),
-      image_size_x: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.number.int({ min: undefined, max: undefined }),
-          null,
-        ]),
-        undefined,
+      y_stage_position: faker.helpers.arrayElement([
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+        null,
       ]),
-      image_size_y: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.number.int({ min: undefined, max: undefined }),
-          null,
-        ]),
-        undefined,
+      diameter: faker.helpers.arrayElement([
+        faker.number.int({ min: undefined, max: undefined }),
+        null,
       ]),
-      binning_x: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.number.int({ min: undefined, max: undefined }),
-          null,
-        ]),
-        undefined,
-      ]),
-      binning_y: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.number.int({ min: undefined, max: undefined }),
-          null,
-        ]),
-        undefined,
-      ]),
-      total_motion: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.number.float({
-            min: undefined,
-            max: undefined,
-            fractionDigits: 2,
-          }),
-          null,
-        ]),
-        undefined,
-      ]),
-      average_motion: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.number.float({
-            min: undefined,
-            max: undefined,
-            fractionDigits: 2,
-          }),
-          null,
-        ]),
-        undefined,
-      ]),
-      ctf_max_resolution_estimate: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.number.float({
-            min: undefined,
-            max: undefined,
-            fractionDigits: 2,
-          }),
-          null,
-        ]),
-        undefined,
-      ]),
-      number_of_particles_selected: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.number.int({ min: undefined, max: undefined }),
-          null,
-        ]),
-        undefined,
-      ]),
-      number_of_particles_rejected: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.number.int({ min: undefined, max: undefined }),
-          null,
-        ]),
-        undefined,
-      ]),
-      selection_distribution: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          null,
-        ]),
-        undefined,
-      ]),
-      number_of_particles_picked: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.number.int({ min: undefined, max: undefined }),
-          null,
-        ]),
-        undefined,
-      ]),
-      pick_distribution: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          null,
-        ]),
-        undefined,
-      ]),
+      is_near_grid_bar: faker.datatype.boolean(),
     }))
 
-export const getGetMicrographMicrographsMicrographUuidGetResponseMock = (
-  overrideResponse: Partial<MicrographResponse> = {}
-): MicrographResponse => ({
-  uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  foilhole_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  foilhole_id: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    undefined,
-  ]),
-  micrograph_id: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    undefined,
-  ]),
-  location_id: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    undefined,
-  ]),
-  status: faker.helpers.arrayElement(Object.values(MicrographStatus)),
-  high_res_path: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    undefined,
-  ]),
-  manifest_file: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    undefined,
-  ]),
-  acquisition_datetime: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      `${faker.date.past().toISOString().split('.')[0]}Z`,
-      null,
-    ]),
-    undefined,
-  ]),
-  defocus: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-      null,
-    ]),
-    undefined,
-  ]),
-  detector_name: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    undefined,
-  ]),
-  energy_filter: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([faker.datatype.boolean(), null]),
-    undefined,
-  ]),
-  phase_plate: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([faker.datatype.boolean(), null]),
-    undefined,
-  ]),
-  image_size_x: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.number.int({ min: undefined, max: undefined }),
-      null,
-    ]),
-    undefined,
-  ]),
-  image_size_y: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.number.int({ min: undefined, max: undefined }),
-      null,
-    ]),
-    undefined,
-  ]),
-  binning_x: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.number.int({ min: undefined, max: undefined }),
-      null,
-    ]),
-    undefined,
-  ]),
-  binning_y: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.number.int({ min: undefined, max: undefined }),
-      null,
-    ]),
-    undefined,
-  ]),
-  total_motion: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-      null,
-    ]),
-    undefined,
-  ]),
-  average_motion: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-      null,
-    ]),
-    undefined,
-  ]),
-  ctf_max_resolution_estimate: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-      null,
-    ]),
-    undefined,
-  ]),
-  number_of_particles_selected: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.number.int({ min: undefined, max: undefined }),
-      null,
-    ]),
-    undefined,
-  ]),
-  number_of_particles_rejected: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.number.int({ min: undefined, max: undefined }),
-      null,
-    ]),
-    undefined,
-  ]),
-  selection_distribution: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    undefined,
-  ]),
-  number_of_particles_picked: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.number.int({ min: undefined, max: undefined }),
-      null,
-    ]),
-    undefined,
-  ]),
-  pick_distribution: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    undefined,
-  ]),
-  ...overrideResponse,
-})
-
-export const getUpdateMicrographMicrographsMicrographUuidPutResponseMock = (
-  overrideResponse: Partial<MicrographResponse> = {}
-): MicrographResponse => ({
-  uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  foilhole_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  foilhole_id: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    undefined,
-  ]),
-  micrograph_id: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    undefined,
-  ]),
-  location_id: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    undefined,
-  ]),
-  status: faker.helpers.arrayElement(Object.values(MicrographStatus)),
-  high_res_path: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    undefined,
-  ]),
-  manifest_file: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    undefined,
-  ]),
-  acquisition_datetime: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      `${faker.date.past().toISOString().split('.')[0]}Z`,
-      null,
-    ]),
-    undefined,
-  ]),
-  defocus: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-      null,
-    ]),
-    undefined,
-  ]),
-  detector_name: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    undefined,
-  ]),
-  energy_filter: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([faker.datatype.boolean(), null]),
-    undefined,
-  ]),
-  phase_plate: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([faker.datatype.boolean(), null]),
-    undefined,
-  ]),
-  image_size_x: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.number.int({ min: undefined, max: undefined }),
-      null,
-    ]),
-    undefined,
-  ]),
-  image_size_y: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.number.int({ min: undefined, max: undefined }),
-      null,
-    ]),
-    undefined,
-  ]),
-  binning_x: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.number.int({ min: undefined, max: undefined }),
-      null,
-    ]),
-    undefined,
-  ]),
-  binning_y: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.number.int({ min: undefined, max: undefined }),
-      null,
-    ]),
-    undefined,
-  ]),
-  total_motion: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-      null,
-    ]),
-    undefined,
-  ]),
-  average_motion: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-      null,
-    ]),
-    undefined,
-  ]),
-  ctf_max_resolution_estimate: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-      null,
-    ]),
-    undefined,
-  ]),
-  number_of_particles_selected: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.number.int({ min: undefined, max: undefined }),
-      null,
-    ]),
-    undefined,
-  ]),
-  number_of_particles_rejected: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.number.int({ min: undefined, max: undefined }),
-      null,
-    ]),
-    undefined,
-  ]),
-  selection_distribution: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    undefined,
-  ]),
-  number_of_particles_picked: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.number.int({ min: undefined, max: undefined }),
-      null,
-    ]),
-    undefined,
-  ]),
-  pick_distribution: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    undefined,
-  ]),
-  ...overrideResponse,
-})
-
-export const getGetFoilholeMicrographsFoilholesFoilholeUuidMicrographsGetResponseMock =
-  (): MicrographResponse[] =>
-    Array.from(
-      { length: faker.number.int({ min: 1, max: 10 }) },
-      (_, i) => i + 1
-    ).map(() => ({
-      uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
-      foilhole_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
-      foilhole_id: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          null,
-        ]),
-        undefined,
-      ]),
-      micrograph_id: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          null,
-        ]),
-        undefined,
-      ]),
-      location_id: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          null,
-        ]),
-        undefined,
-      ]),
-      status: faker.helpers.arrayElement(Object.values(MicrographStatus)),
-      high_res_path: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          null,
-        ]),
-        undefined,
-      ]),
-      manifest_file: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          null,
-        ]),
-        undefined,
-      ]),
-      acquisition_datetime: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          `${faker.date.past().toISOString().split('.')[0]}Z`,
-          null,
-        ]),
-        undefined,
-      ]),
-      defocus: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.number.float({
-            min: undefined,
-            max: undefined,
-            fractionDigits: 2,
-          }),
-          null,
-        ]),
-        undefined,
-      ]),
-      detector_name: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          null,
-        ]),
-        undefined,
-      ]),
-      energy_filter: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([faker.datatype.boolean(), null]),
-        undefined,
-      ]),
-      phase_plate: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([faker.datatype.boolean(), null]),
-        undefined,
-      ]),
-      image_size_x: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.number.int({ min: undefined, max: undefined }),
-          null,
-        ]),
-        undefined,
-      ]),
-      image_size_y: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.number.int({ min: undefined, max: undefined }),
-          null,
-        ]),
-        undefined,
-      ]),
-      binning_x: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.number.int({ min: undefined, max: undefined }),
-          null,
-        ]),
-        undefined,
-      ]),
-      binning_y: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.number.int({ min: undefined, max: undefined }),
-          null,
-        ]),
-        undefined,
-      ]),
-      total_motion: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.number.float({
-            min: undefined,
-            max: undefined,
-            fractionDigits: 2,
-          }),
-          null,
-        ]),
-        undefined,
-      ]),
-      average_motion: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.number.float({
-            min: undefined,
-            max: undefined,
-            fractionDigits: 2,
-          }),
-          null,
-        ]),
-        undefined,
-      ]),
-      ctf_max_resolution_estimate: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.number.float({
-            min: undefined,
-            max: undefined,
-            fractionDigits: 2,
-          }),
-          null,
-        ]),
-        undefined,
-      ]),
-      number_of_particles_selected: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.number.int({ min: undefined, max: undefined }),
-          null,
-        ]),
-        undefined,
-      ]),
-      number_of_particles_rejected: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.number.int({ min: undefined, max: undefined }),
-          null,
-        ]),
-        undefined,
-      ]),
-      selection_distribution: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          null,
-        ]),
-        undefined,
-      ]),
-      number_of_particles_picked: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.number.int({ min: undefined, max: undefined }),
-          null,
-        ]),
-        undefined,
-      ]),
-      pick_distribution: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          null,
-        ]),
-        undefined,
-      ]),
-    }))
-
-export const getCreateFoilholeMicrographFoilholesFoilholeUuidMicrographsPostResponseMock =
-  (overrideResponse: Partial<MicrographResponse> = {}): MicrographResponse => ({
+export const getGetMicrographsMicrographsGetResponseMock = (): MicrographResponse[] =>
+  Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({
     uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
     foilhole_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
     foilhole_id: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        null,
-      ]),
+      faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
       undefined,
     ]),
     micrograph_id: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        null,
-      ]),
+      faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
       undefined,
     ]),
     location_id: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        null,
-      ]),
+      faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
       undefined,
     ]),
     status: faker.helpers.arrayElement(Object.values(MicrographStatus)),
     high_res_path: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        null,
-      ]),
+      faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
       undefined,
     ]),
     manifest_file: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        null,
-      ]),
+      faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
       undefined,
     ]),
     acquisition_datetime: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([
-        `${faker.date.past().toISOString().split('.')[0]}Z`,
-        null,
-      ]),
+      faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, null]),
       undefined,
     ]),
     defocus: faker.helpers.arrayElement([
       faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
         null,
       ]),
       undefined,
     ]),
     detector_name: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        null,
-      ]),
+      faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
       undefined,
     ]),
     energy_filter: faker.helpers.arrayElement([
@@ -2530,110 +1649,502 @@ export const getCreateFoilholeMicrographFoilholesFoilholeUuidMicrographsPostResp
       undefined,
     ]),
     image_size_x: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([
-        faker.number.int({ min: undefined, max: undefined }),
-        null,
-      ]),
+      faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
       undefined,
     ]),
     image_size_y: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([
-        faker.number.int({ min: undefined, max: undefined }),
-        null,
-      ]),
+      faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
       undefined,
     ]),
     binning_x: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([
-        faker.number.int({ min: undefined, max: undefined }),
-        null,
-      ]),
+      faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
       undefined,
     ]),
     binning_y: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([
-        faker.number.int({ min: undefined, max: undefined }),
-        null,
-      ]),
+      faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
       undefined,
     ]),
     total_motion: faker.helpers.arrayElement([
       faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
         null,
       ]),
       undefined,
     ]),
     average_motion: faker.helpers.arrayElement([
       faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
         null,
       ]),
       undefined,
     ]),
     ctf_max_resolution_estimate: faker.helpers.arrayElement([
       faker.helpers.arrayElement([
-        faker.number.float({
-          min: undefined,
-          max: undefined,
-          fractionDigits: 2,
-        }),
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
         null,
       ]),
       undefined,
     ]),
     number_of_particles_selected: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([
-        faker.number.int({ min: undefined, max: undefined }),
-        null,
-      ]),
+      faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
       undefined,
     ]),
     number_of_particles_rejected: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([
-        faker.number.int({ min: undefined, max: undefined }),
-        null,
-      ]),
+      faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
       undefined,
     ]),
     selection_distribution: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        null,
-      ]),
+      faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
       undefined,
     ]),
     number_of_particles_picked: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([
-        faker.number.int({ min: undefined, max: undefined }),
-        null,
-      ]),
+      faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
       undefined,
     ]),
     pick_distribution: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        null,
-      ]),
+      faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
       undefined,
     ]),
-    ...overrideResponse,
-  })
+  }))
+
+export const getGetMicrographMicrographsMicrographUuidGetResponseMock = (
+  overrideResponse: Partial<MicrographResponse> = {}
+): MicrographResponse => ({
+  uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
+  foilhole_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
+  foilhole_id: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+    undefined,
+  ]),
+  micrograph_id: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+    undefined,
+  ]),
+  location_id: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+    undefined,
+  ]),
+  status: faker.helpers.arrayElement(Object.values(MicrographStatus)),
+  high_res_path: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+    undefined,
+  ]),
+  manifest_file: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+    undefined,
+  ]),
+  acquisition_datetime: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, null]),
+    undefined,
+  ]),
+  defocus: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([
+      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+      null,
+    ]),
+    undefined,
+  ]),
+  detector_name: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+    undefined,
+  ]),
+  energy_filter: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+    undefined,
+  ]),
+  phase_plate: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+    undefined,
+  ]),
+  image_size_x: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+    undefined,
+  ]),
+  image_size_y: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+    undefined,
+  ]),
+  binning_x: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+    undefined,
+  ]),
+  binning_y: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+    undefined,
+  ]),
+  total_motion: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([
+      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+      null,
+    ]),
+    undefined,
+  ]),
+  average_motion: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([
+      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+      null,
+    ]),
+    undefined,
+  ]),
+  ctf_max_resolution_estimate: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([
+      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+      null,
+    ]),
+    undefined,
+  ]),
+  number_of_particles_selected: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+    undefined,
+  ]),
+  number_of_particles_rejected: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+    undefined,
+  ]),
+  selection_distribution: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+    undefined,
+  ]),
+  number_of_particles_picked: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+    undefined,
+  ]),
+  pick_distribution: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+    undefined,
+  ]),
+  ...overrideResponse,
+})
+
+export const getUpdateMicrographMicrographsMicrographUuidPutResponseMock = (
+  overrideResponse: Partial<MicrographResponse> = {}
+): MicrographResponse => ({
+  uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
+  foilhole_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
+  foilhole_id: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+    undefined,
+  ]),
+  micrograph_id: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+    undefined,
+  ]),
+  location_id: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+    undefined,
+  ]),
+  status: faker.helpers.arrayElement(Object.values(MicrographStatus)),
+  high_res_path: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+    undefined,
+  ]),
+  manifest_file: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+    undefined,
+  ]),
+  acquisition_datetime: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, null]),
+    undefined,
+  ]),
+  defocus: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([
+      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+      null,
+    ]),
+    undefined,
+  ]),
+  detector_name: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+    undefined,
+  ]),
+  energy_filter: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+    undefined,
+  ]),
+  phase_plate: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+    undefined,
+  ]),
+  image_size_x: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+    undefined,
+  ]),
+  image_size_y: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+    undefined,
+  ]),
+  binning_x: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+    undefined,
+  ]),
+  binning_y: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+    undefined,
+  ]),
+  total_motion: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([
+      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+      null,
+    ]),
+    undefined,
+  ]),
+  average_motion: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([
+      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+      null,
+    ]),
+    undefined,
+  ]),
+  ctf_max_resolution_estimate: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([
+      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+      null,
+    ]),
+    undefined,
+  ]),
+  number_of_particles_selected: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+    undefined,
+  ]),
+  number_of_particles_rejected: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+    undefined,
+  ]),
+  selection_distribution: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+    undefined,
+  ]),
+  number_of_particles_picked: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+    undefined,
+  ]),
+  pick_distribution: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+    undefined,
+  ]),
+  ...overrideResponse,
+})
+
+export const getGetFoilholeMicrographsFoilholesFoilholeUuidMicrographsGetResponseMock =
+  (): MicrographResponse[] =>
+    Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({
+      uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
+      foilhole_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
+      foilhole_id: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+        undefined,
+      ]),
+      micrograph_id: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+        undefined,
+      ]),
+      location_id: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+        undefined,
+      ]),
+      status: faker.helpers.arrayElement(Object.values(MicrographStatus)),
+      high_res_path: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+        undefined,
+      ]),
+      manifest_file: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+        undefined,
+      ]),
+      acquisition_datetime: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, null]),
+        undefined,
+      ]),
+      defocus: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+          null,
+        ]),
+        undefined,
+      ]),
+      detector_name: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+        undefined,
+      ]),
+      energy_filter: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+        undefined,
+      ]),
+      phase_plate: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+        undefined,
+      ]),
+      image_size_x: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+        undefined,
+      ]),
+      image_size_y: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+        undefined,
+      ]),
+      binning_x: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+        undefined,
+      ]),
+      binning_y: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+        undefined,
+      ]),
+      total_motion: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+          null,
+        ]),
+        undefined,
+      ]),
+      average_motion: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+          null,
+        ]),
+        undefined,
+      ]),
+      ctf_max_resolution_estimate: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+          null,
+        ]),
+        undefined,
+      ]),
+      number_of_particles_selected: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+        undefined,
+      ]),
+      number_of_particles_rejected: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+        undefined,
+      ]),
+      selection_distribution: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+        undefined,
+      ]),
+      number_of_particles_picked: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+        undefined,
+      ]),
+      pick_distribution: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+        undefined,
+      ]),
+    }))
+
+export const getCreateFoilholeMicrographFoilholesFoilholeUuidMicrographsPostResponseMock = (
+  overrideResponse: Partial<MicrographResponse> = {}
+): MicrographResponse => ({
+  uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
+  foilhole_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
+  foilhole_id: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+    undefined,
+  ]),
+  micrograph_id: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+    undefined,
+  ]),
+  location_id: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+    undefined,
+  ]),
+  status: faker.helpers.arrayElement(Object.values(MicrographStatus)),
+  high_res_path: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+    undefined,
+  ]),
+  manifest_file: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+    undefined,
+  ]),
+  acquisition_datetime: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, null]),
+    undefined,
+  ]),
+  defocus: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([
+      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+      null,
+    ]),
+    undefined,
+  ]),
+  detector_name: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+    undefined,
+  ]),
+  energy_filter: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+    undefined,
+  ]),
+  phase_plate: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+    undefined,
+  ]),
+  image_size_x: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+    undefined,
+  ]),
+  image_size_y: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+    undefined,
+  ]),
+  binning_x: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+    undefined,
+  ]),
+  binning_y: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+    undefined,
+  ]),
+  total_motion: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([
+      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+      null,
+    ]),
+    undefined,
+  ]),
+  average_motion: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([
+      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+      null,
+    ]),
+    undefined,
+  ]),
+  ctf_max_resolution_estimate: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([
+      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+      null,
+    ]),
+    undefined,
+  ]),
+  number_of_particles_selected: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+    undefined,
+  ]),
+  number_of_particles_rejected: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+    undefined,
+  ]),
+  selection_distribution: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+    undefined,
+  ]),
+  number_of_particles_picked: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+    undefined,
+  ]),
+  pick_distribution: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+    undefined,
+  ]),
+  ...overrideResponse,
+})
 
 export const getGetPredictionModelsPredictionModelsGetResponseMock =
   (): QualityPredictionModelResponse[] =>
-    Array.from(
-      { length: faker.number.int({ min: 1, max: 10 }) },
-      (_, i) => i + 1
-    ).map(() => ({
+    Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({
       name: faker.string.alpha({ length: { min: 10, max: 20 } }),
       description: faker.string.alpha({ length: { min: 10, max: 20 } }),
     }))
@@ -2662,76 +2173,84 @@ export const getUpdatePredictionModelPredictionModelsNamePutResponseMock = (
   ...overrideResponse,
 })
 
-export const getGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGetResponseMock =
-  (): QualityPredictionResponse[] =>
-    Array.from(
+export const getGetGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGetResponseMock =
+  (): GetGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGet200 => ({
+    [faker.string.alphanumeric(5)]: Array.from(
       { length: faker.number.int({ min: 1, max: 10 }) },
       (_, i) => i + 1
     ).map(() => ({
-      id: faker.number.int({ min: undefined, max: undefined }),
-      timestamp: `${faker.date.past().toISOString().split('.')[0]}Z`,
-      value: faker.number.float({
-        min: undefined,
-        max: undefined,
-        fractionDigits: 2,
-      }),
-      prediction_model_name: faker.string.alpha({
-        length: { min: 10, max: 20 },
-      }),
+      id: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+        undefined,
+      ]),
+      timestamp: faker.helpers.arrayElement([
+        `${faker.date.past().toISOString().split('.')[0]}Z`,
+        undefined,
+      ]),
+      value: faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+      prediction_model_name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+      metric_name: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+        undefined,
+      ]),
       foilhole_uuid: faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        null,
+        faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+        undefined,
       ]),
       gridsquare_uuid: faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        null,
+        faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+        undefined,
       ]),
-    }))
+    })),
+  })
 
-export const getGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGetResponseMock =
-  (): QualityPredictionResponse[] =>
-    Array.from(
-      { length: faker.number.int({ min: 1, max: 10 }) },
-      (_, i) => i + 1
-    ).map(() => ({
-      id: faker.number.int({ min: undefined, max: undefined }),
-      timestamp: `${faker.date.past().toISOString().split('.')[0]}Z`,
-      value: faker.number.float({
-        min: undefined,
-        max: undefined,
-        fractionDigits: 2,
-      }),
-      prediction_model_name: faker.string.alpha({
-        length: { min: 10, max: 20 },
-      }),
-      foilhole_uuid: faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        null,
-      ]),
-      gridsquare_uuid: faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        null,
-      ]),
-    }))
+export const getGetFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGetResponseMock =
+  (): GetFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGet200 => ({
+    [faker.string.alphanumeric(5)]: {
+      [faker.string.alphanumeric(5)]: Array.from(
+        { length: faker.number.int({ min: 1, max: 10 }) },
+        (_, i) => i + 1
+      ).map(() => ({
+        id: faker.helpers.arrayElement([
+          faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+          undefined,
+        ]),
+        timestamp: faker.helpers.arrayElement([
+          `${faker.date.past().toISOString().split('.')[0]}Z`,
+          undefined,
+        ]),
+        value: faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+        prediction_model_name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+        metric_name: faker.helpers.arrayElement([
+          faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+          undefined,
+        ]),
+        foilhole_uuid: faker.helpers.arrayElement([
+          faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+          undefined,
+        ]),
+        gridsquare_uuid: faker.helpers.arrayElement([
+          faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+          undefined,
+        ]),
+      })),
+    },
+  })
 
 export const getCreateQualityPredictionQualityPredictionsPostResponseMock = (
   overrideResponse: Partial<QualityPredictionResponse> = {}
 ): QualityPredictionResponse => ({
   id: faker.number.int({ min: undefined, max: undefined }),
-  timestamp: `${faker.date.past().toISOString().split('.')[0]}Z`,
-  value: faker.number.float({
-    min: undefined,
-    max: undefined,
-    fractionDigits: 2,
-  }),
   prediction_model_name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  foilhole_uuid: faker.helpers.arrayElement([
-    faker.string.alpha({ length: { min: 10, max: 20 } }),
-    null,
-  ]),
+  value: faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+  timestamp: `${faker.date.past().toISOString().split('.')[0]}Z`,
   gridsquare_uuid: faker.helpers.arrayElement([
-    faker.string.alpha({ length: { min: 10, max: 20 } }),
-    null,
+    faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+    undefined,
+  ]),
+  foilhole_uuid: faker.helpers.arrayElement([
+    faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+    undefined,
   ]),
   ...overrideResponse,
 })
@@ -2756,51 +2275,46 @@ export const getGetQualityMetricsQualityMetricsGetResponseMock = (
   ...overrideResponse,
 })
 
-export const getGetGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGetResponseMock =
+export const getGetPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGetResponseMock =
   (): QualityPredictionResponse[] =>
-    Array.from(
-      { length: faker.number.int({ min: 1, max: 10 }) },
-      (_, i) => i + 1
-    ).map(() => ({
+    Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({
       id: faker.number.int({ min: undefined, max: undefined }),
+      prediction_model_name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+      value: faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
       timestamp: `${faker.date.past().toISOString().split('.')[0]}Z`,
-      value: faker.number.float({
-        min: undefined,
-        max: undefined,
-        fractionDigits: 2,
-      }),
-      prediction_model_name: faker.string.alpha({
-        length: { min: 10, max: 20 },
-      }),
+      gridsquare_uuid: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+        undefined,
+      ]),
       foilhole_uuid: faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+        undefined,
+      ]),
+    }))
+
+export const getGetLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetResponseMock =
+  (): LatentRepresentationResponse[] =>
+    Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({
+      x: faker.helpers.arrayElement([
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+        null,
+      ]),
+      y: faker.helpers.arrayElement([
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+        null,
+      ]),
+      index: faker.helpers.arrayElement([
+        faker.number.int({ min: undefined, max: undefined }),
         null,
       ]),
       gridsquare_uuid: faker.helpers.arrayElement([
         faker.string.alpha({ length: { min: 10, max: 20 } }),
-        null,
+        undefined,
       ]),
-    }))
-
-export const getGetGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetResponseMock =
-  (): QualityPredictionModelParameterResponse[] =>
-    Array.from(
-      { length: faker.number.int({ min: 1, max: 10 }) },
-      (_, i) => i + 1
-    ).map(() => ({
-      id: faker.number.int({ min: undefined, max: undefined }),
-      grid_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
-      timestamp: `${faker.date.past().toISOString().split('.')[0]}Z`,
-      prediction_model_name: faker.string.alpha({
-        length: { min: 10, max: 20 },
-      }),
-      key: faker.string.alpha({ length: { min: 10, max: 20 } }),
-      value: faker.number.float({
-        min: undefined,
-        max: undefined,
-        fractionDigits: 2,
-      }),
-      group: faker.string.alpha({ length: { min: 10, max: 20 } }),
+      foilhole_uuid: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
     }))
 
 export const getAcknowledgeInstructionAgentAgentIdSessionSessionIdInstructionsInstructionIdAckPostResponseMock =
@@ -2815,12 +2329,266 @@ export const getAcknowledgeInstructionAgentAgentIdSessionSessionIdInstructionsIn
     ...overrideResponse,
   })
 
+export const getGetModelWeightsForGridGridGridUuidModelWeightsGetResponseMock =
+  (): GetModelWeightsForGridGridGridUuidModelWeightsGet200 => ({
+    [faker.string.alphanumeric(5)]: Array.from(
+      { length: faker.number.int({ min: 1, max: 10 }) },
+      (_, i) => i + 1
+    ).map(() => ({
+      id: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+        undefined,
+      ]),
+      grid_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
+      micrograph_uuid: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+        undefined,
+      ]),
+      micrograph_quality: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+        undefined,
+      ]),
+      timestamp: faker.helpers.arrayElement([
+        `${faker.date.past().toISOString().split('.')[0]}Z`,
+        undefined,
+      ]),
+      prediction_model_name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+      metric_name: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+        undefined,
+      ]),
+      weight: faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+    })),
+  })
+
+export const getGetFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGetResponseMock =
+  (): GetFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGet200 => ({
+    [faker.string.alphanumeric(5)]: {
+      [faker.string.alphanumeric(5)]: Array.from(
+        { length: faker.number.int({ min: 1, max: 10 }) },
+        (_, i) => i + 1
+      ).map(() => ({
+        id: faker.helpers.arrayElement([
+          faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+          undefined,
+        ]),
+        timestamp: faker.helpers.arrayElement([
+          `${faker.date.past().toISOString().split('.')[0]}Z`,
+          undefined,
+        ]),
+        value: faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+        prediction_model_name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+        metric_name: faker.helpers.arrayElement([
+          faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+          undefined,
+        ]),
+        foilhole_uuid: faker.helpers.arrayElement([
+          faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+          undefined,
+        ]),
+        gridsquare_uuid: faker.helpers.arrayElement([
+          faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+          undefined,
+        ]),
+      })),
+    },
+  })
+
+export const getGetPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGetResponseMock =
+  (): QualityPredictionResponse[] =>
+    Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({
+      id: faker.number.int({ min: undefined, max: undefined }),
+      prediction_model_name: faker.string.alpha({ length: { min: 10, max: 20 } }),
+      value: faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+      timestamp: `${faker.date.past().toISOString().split('.')[0]}Z`,
+      gridsquare_uuid: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+        undefined,
+      ]),
+      foilhole_uuid: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+        undefined,
+      ]),
+    }))
+
+export const getGetOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGetResponseMock =
+  (): OverallQualityPrediction[] =>
+    Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({
+      id: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+        undefined,
+      ]),
+      value: faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+      foilhole_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
+      grid_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
+      gridsquare_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    }))
+
+export const getGetSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGetResponseMock =
+  (): GridSquare[] =>
+    Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({
+      uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
+      grid_uuid: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+        undefined,
+      ]),
+      status: faker.helpers.arrayElement([
+        faker.helpers.arrayElement(Object.values(GridSquareStatus)),
+        undefined,
+      ]),
+      gridsquare_id: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+      data_dir: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+        undefined,
+      ]),
+      atlas_node_id: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+        undefined,
+      ]),
+      state: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+        undefined,
+      ]),
+      rotation: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+          null,
+        ]),
+        undefined,
+      ]),
+      image_path: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+        undefined,
+      ]),
+      selected: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+        undefined,
+      ]),
+      unusable: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.datatype.boolean(), null]),
+        undefined,
+      ]),
+      stage_position_x: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+          null,
+        ]),
+        undefined,
+      ]),
+      stage_position_y: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+          null,
+        ]),
+        undefined,
+      ]),
+      stage_position_z: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+          null,
+        ]),
+        undefined,
+      ]),
+      center_x: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+        undefined,
+      ]),
+      center_y: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+        undefined,
+      ]),
+      physical_x: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+          null,
+        ]),
+        undefined,
+      ]),
+      physical_y: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+          null,
+        ]),
+        undefined,
+      ]),
+      size_width: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+        undefined,
+      ]),
+      size_height: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.number.int({ min: undefined, max: undefined }), null]),
+        undefined,
+      ]),
+      acquisition_datetime: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, null]),
+        undefined,
+      ]),
+      defocus: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+          null,
+        ]),
+        undefined,
+      ]),
+      magnification: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+          null,
+        ]),
+        undefined,
+      ]),
+      pixel_size: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+          null,
+        ]),
+        undefined,
+      ]),
+      detector_name: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([faker.string.alpha({ length: { min: 10, max: 20 } }), null]),
+        undefined,
+      ]),
+      applied_defocus: faker.helpers.arrayElement([
+        faker.helpers.arrayElement([
+          faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+          null,
+        ]),
+        undefined,
+      ]),
+    }))
+
+export const getGetSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGetResponseMock =
+  (): LatentRepresentationResponse[] =>
+    Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({
+      x: faker.helpers.arrayElement([
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+        null,
+      ]),
+      y: faker.helpers.arrayElement([
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+        null,
+      ]),
+      index: faker.helpers.arrayElement([
+        faker.number.int({ min: undefined, max: undefined }),
+        null,
+      ]),
+      gridsquare_uuid: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+      foilhole_uuid: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+    }))
+
 export const getGetStatusStatusGetMockHandler = (
   overrideResponse?:
     | unknown
-    | ((
-        info: Parameters<Parameters<typeof http.get>[1]>[0]
-      ) => Promise<unknown> | unknown),
+    | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<unknown> | unknown),
   options?: RequestHandlerOptions
 ) => {
   return http.get(
@@ -2839,9 +2607,7 @@ export const getGetStatusStatusGetMockHandler = (
 export const getGetHealthHealthGetMockHandler = (
   overrideResponse?:
     | unknown
-    | ((
-        info: Parameters<Parameters<typeof http.get>[1]>[0]
-      ) => Promise<unknown> | unknown),
+    | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<unknown> | unknown),
   options?: RequestHandlerOptions
 ) => {
   return http.get(
@@ -2969,27 +2735,24 @@ export const getUpdateAcquisitionAcquisitionsAcquisitionUuidPutMockHandler = (
   )
 }
 
-export const getDeleteAcquisitionAcquisitionsAcquisitionUuidDeleteMockHandler =
-  (
-    overrideResponse?:
-      | void
-      | ((
-          info: Parameters<Parameters<typeof http.delete>[1]>[0]
-        ) => Promise<void> | void),
-    options?: RequestHandlerOptions
-  ) => {
-    return http.delete(
-      '*/acquisitions/:acquisitionUuid',
-      async (info) => {
-        await delay(1000)
-        if (typeof overrideResponse === 'function') {
-          await overrideResponse(info)
-        }
-        return new HttpResponse(null, { status: 204 })
-      },
-      options
-    )
-  }
+export const getDeleteAcquisitionAcquisitionsAcquisitionUuidDeleteMockHandler = (
+  overrideResponse?:
+    | void
+    | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void),
+  options?: RequestHandlerOptions
+) => {
+  return http.delete(
+    '*/acquisitions/:acquisitionUuid',
+    async (info) => {
+      await delay(1000)
+      if (typeof overrideResponse === 'function') {
+        await overrideResponse(info)
+      }
+      return new HttpResponse(null, { status: 204 })
+    },
+    options
+  )
+}
 
 export const getGetGridsGridsGetMockHandler = (
   overrideResponse?:
@@ -3078,9 +2841,7 @@ export const getUpdateGridGridsGridUuidPutMockHandler = (
 export const getDeleteGridGridsGridUuidDeleteMockHandler = (
   overrideResponse?:
     | void
-    | ((
-        info: Parameters<Parameters<typeof http.delete>[1]>[0]
-      ) => Promise<void> | void),
+    | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void),
   options?: RequestHandlerOptions
 ) => {
   return http.delete(
@@ -3096,70 +2857,66 @@ export const getDeleteGridGridsGridUuidDeleteMockHandler = (
   )
 }
 
-export const getGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGetMockHandler =
-  (
-    overrideResponse?:
-      | GridResponse[]
-      | ((
-          info: Parameters<Parameters<typeof http.get>[1]>[0]
-        ) => Promise<GridResponse[]> | GridResponse[]),
-    options?: RequestHandlerOptions
-  ) => {
-    return http.get(
-      '*/acquisitions/:acquisitionUuid/grids',
-      async (info) => {
-        await delay(1000)
+export const getGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGetMockHandler = (
+  overrideResponse?:
+    | GridResponse[]
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0]
+      ) => Promise<GridResponse[]> | GridResponse[]),
+  options?: RequestHandlerOptions
+) => {
+  return http.get(
+    '*/acquisitions/:acquisitionUuid/grids',
+    async (info) => {
+      await delay(1000)
 
-        return new HttpResponse(
-          JSON.stringify(
-            overrideResponse !== undefined
-              ? typeof overrideResponse === 'function'
-                ? await overrideResponse(info)
-                : overrideResponse
-              : getGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGetResponseMock()
-          ),
-          { status: 200, headers: { 'Content-Type': 'application/json' } }
-        )
-      },
-      options
-    )
-  }
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGetResponseMock()
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } }
+      )
+    },
+    options
+  )
+}
 
-export const getCreateAcquisitionGridAcquisitionsAcquisitionUuidGridsPostMockHandler =
-  (
-    overrideResponse?:
-      | GridResponse
-      | ((
-          info: Parameters<Parameters<typeof http.post>[1]>[0]
-        ) => Promise<GridResponse> | GridResponse),
-    options?: RequestHandlerOptions
-  ) => {
-    return http.post(
-      '*/acquisitions/:acquisitionUuid/grids',
-      async (info) => {
-        await delay(1000)
+export const getCreateAcquisitionGridAcquisitionsAcquisitionUuidGridsPostMockHandler = (
+  overrideResponse?:
+    | GridResponse
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0]
+      ) => Promise<GridResponse> | GridResponse),
+  options?: RequestHandlerOptions
+) => {
+  return http.post(
+    '*/acquisitions/:acquisitionUuid/grids',
+    async (info) => {
+      await delay(1000)
 
-        return new HttpResponse(
-          JSON.stringify(
-            overrideResponse !== undefined
-              ? typeof overrideResponse === 'function'
-                ? await overrideResponse(info)
-                : overrideResponse
-              : getCreateAcquisitionGridAcquisitionsAcquisitionUuidGridsPostResponseMock()
-          ),
-          { status: 201, headers: { 'Content-Type': 'application/json' } }
-        )
-      },
-      options
-    )
-  }
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getCreateAcquisitionGridAcquisitionsAcquisitionUuidGridsPostResponseMock()
+        ),
+        { status: 201, headers: { 'Content-Type': 'application/json' } }
+      )
+    },
+    options
+  )
+}
 
 export const getGridRegisteredGridsGridUuidRegisteredPostMockHandler = (
   overrideResponse?:
     | boolean
-    | ((
-        info: Parameters<Parameters<typeof http.post>[1]>[0]
-      ) => Promise<boolean> | boolean),
+    | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<boolean> | boolean),
   options?: RequestHandlerOptions
 ) => {
   return http.post(
@@ -3269,9 +3026,7 @@ export const getUpdateAtlasAtlasesAtlasUuidPutMockHandler = (
 export const getDeleteAtlasAtlasesAtlasUuidDeleteMockHandler = (
   overrideResponse?:
     | void
-    | ((
-        info: Parameters<Parameters<typeof http.delete>[1]>[0]
-      ) => Promise<void> | void),
+    | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void),
   options?: RequestHandlerOptions
 ) => {
   return http.delete(
@@ -3430,9 +3185,7 @@ export const getUpdateAtlasTileAtlasTilesTileUuidPutMockHandler = (
 export const getDeleteAtlasTileAtlasTilesTileUuidDeleteMockHandler = (
   overrideResponse?:
     | void
-    | ((
-        info: Parameters<Parameters<typeof http.delete>[1]>[0]
-      ) => Promise<void> | void),
+    | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void),
   options?: RequestHandlerOptions
 ) => {
   return http.delete(
@@ -3510,9 +3263,7 @@ export const getLinkAtlasTileToGridsquareAtlasTilesTileUuidGridsquaresGridsquare
       | AtlasTileGridSquarePositionResponse
       | ((
           info: Parameters<Parameters<typeof http.post>[1]>[0]
-        ) =>
-          | Promise<AtlasTileGridSquarePositionResponse>
-          | AtlasTileGridSquarePositionResponse),
+        ) => Promise<AtlasTileGridSquarePositionResponse> | AtlasTileGridSquarePositionResponse),
     options?: RequestHandlerOptions
   ) => {
     return http.post(
@@ -3534,6 +3285,34 @@ export const getLinkAtlasTileToGridsquareAtlasTilesTileUuidGridsquaresGridsquare
       options
     )
   }
+
+export const getLinkAtlasTileToGridsquaresAtlasTilesTileUuidGridsquaresPostMockHandler = (
+  overrideResponse?:
+    | AtlasTileGridSquarePositionResponse[]
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0]
+      ) => Promise<AtlasTileGridSquarePositionResponse[]> | AtlasTileGridSquarePositionResponse[]),
+  options?: RequestHandlerOptions
+) => {
+  return http.post(
+    '*/atlas-tiles/:tileUuid/gridsquares',
+    async (info) => {
+      await delay(1000)
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getLinkAtlasTileToGridsquaresAtlasTilesTileUuidGridsquaresPostResponseMock()
+        ),
+        { status: 201, headers: { 'Content-Type': 'application/json' } }
+      )
+    },
+    options
+  )
+}
 
 export const getGetGridsquaresGridsquaresGetMockHandler = (
   overrideResponse?:
@@ -3622,9 +3401,7 @@ export const getUpdateGridsquareGridsquaresGridsquareUuidPutMockHandler = (
 export const getDeleteGridsquareGridsquaresGridsquareUuidDeleteMockHandler = (
   overrideResponse?:
     | void
-    | ((
-        info: Parameters<Parameters<typeof http.delete>[1]>[0]
-      ) => Promise<void> | void),
+    | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void),
   options?: RequestHandlerOptions
 ) => {
   return http.delete(
@@ -3696,34 +3473,31 @@ export const getCreateGridGridsquareGridsGridUuidGridsquaresPostMockHandler = (
   )
 }
 
-export const getGridsquareRegisteredGridsquaresGridsquareUuidRegisteredPostMockHandler =
-  (
-    overrideResponse?:
-      | boolean
-      | ((
-          info: Parameters<Parameters<typeof http.post>[1]>[0]
-        ) => Promise<boolean> | boolean),
-    options?: RequestHandlerOptions
-  ) => {
-    return http.post(
-      '*/gridsquares/:gridsquareUuid/registered',
-      async (info) => {
-        await delay(1000)
+export const getGridsquareRegisteredGridsquaresGridsquareUuidRegisteredPostMockHandler = (
+  overrideResponse?:
+    | boolean
+    | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<boolean> | boolean),
+  options?: RequestHandlerOptions
+) => {
+  return http.post(
+    '*/gridsquares/:gridsquareUuid/registered',
+    async (info) => {
+      await delay(1000)
 
-        return new HttpResponse(
-          JSON.stringify(
-            overrideResponse !== undefined
-              ? typeof overrideResponse === 'function'
-                ? await overrideResponse(info)
-                : overrideResponse
-              : getGridsquareRegisteredGridsquaresGridsquareUuidRegisteredPostResponseMock()
-          ),
-          { status: 200, headers: { 'Content-Type': 'application/json' } }
-        )
-      },
-      options
-    )
-  }
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getGridsquareRegisteredGridsquaresGridsquareUuidRegisteredPostResponseMock()
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } }
+      )
+    },
+    options
+  )
+}
 
 export const getGetFoilholesFoilholesGetMockHandler = (
   overrideResponse?:
@@ -3812,9 +3586,7 @@ export const getUpdateFoilholeFoilholesFoilholeUuidPutMockHandler = (
 export const getDeleteFoilholeFoilholesFoilholeUuidDeleteMockHandler = (
   overrideResponse?:
     | void
-    | ((
-        info: Parameters<Parameters<typeof http.delete>[1]>[0]
-      ) => Promise<void> | void),
+    | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void),
   options?: RequestHandlerOptions
 ) => {
   return http.delete(
@@ -3830,63 +3602,61 @@ export const getDeleteFoilholeFoilholesFoilholeUuidDeleteMockHandler = (
   )
 }
 
-export const getGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetMockHandler =
-  (
-    overrideResponse?:
-      | FoilHoleResponse[]
-      | ((
-          info: Parameters<Parameters<typeof http.get>[1]>[0]
-        ) => Promise<FoilHoleResponse[]> | FoilHoleResponse[]),
-    options?: RequestHandlerOptions
-  ) => {
-    return http.get(
-      '*/gridsquares/:gridsquareUuid/foilholes',
-      async (info) => {
-        await delay(1000)
+export const getGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetMockHandler = (
+  overrideResponse?:
+    | FoilHoleResponse[]
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0]
+      ) => Promise<FoilHoleResponse[]> | FoilHoleResponse[]),
+  options?: RequestHandlerOptions
+) => {
+  return http.get(
+    '*/gridsquares/:gridsquareUuid/foilholes',
+    async (info) => {
+      await delay(1000)
 
-        return new HttpResponse(
-          JSON.stringify(
-            overrideResponse !== undefined
-              ? typeof overrideResponse === 'function'
-                ? await overrideResponse(info)
-                : overrideResponse
-              : getGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetResponseMock()
-          ),
-          { status: 200, headers: { 'Content-Type': 'application/json' } }
-        )
-      },
-      options
-    )
-  }
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetResponseMock()
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } }
+      )
+    },
+    options
+  )
+}
 
-export const getCreateGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPostMockHandler =
-  (
-    overrideResponse?:
-      | FoilHoleResponse
-      | ((
-          info: Parameters<Parameters<typeof http.post>[1]>[0]
-        ) => Promise<FoilHoleResponse> | FoilHoleResponse),
-    options?: RequestHandlerOptions
-  ) => {
-    return http.post(
-      '*/gridsquares/:gridsquareUuid/foilholes',
-      async (info) => {
-        await delay(1000)
+export const getCreateGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPostMockHandler = (
+  overrideResponse?:
+    | FoilHoleResponse[]
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0]
+      ) => Promise<FoilHoleResponse[]> | FoilHoleResponse[]),
+  options?: RequestHandlerOptions
+) => {
+  return http.post(
+    '*/gridsquares/:gridsquareUuid/foilholes',
+    async (info) => {
+      await delay(1000)
 
-        return new HttpResponse(
-          JSON.stringify(
-            overrideResponse !== undefined
-              ? typeof overrideResponse === 'function'
-                ? await overrideResponse(info)
-                : overrideResponse
-              : getCreateGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPostResponseMock()
-          ),
-          { status: 201, headers: { 'Content-Type': 'application/json' } }
-        )
-      },
-      options
-    )
-  }
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getCreateGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPostResponseMock()
+        ),
+        { status: 201, headers: { 'Content-Type': 'application/json' } }
+      )
+    },
+    options
+  )
+}
 
 export const getGetMicrographsMicrographsGetMockHandler = (
   overrideResponse?:
@@ -3975,9 +3745,7 @@ export const getUpdateMicrographMicrographsMicrographUuidPutMockHandler = (
 export const getDeleteMicrographMicrographsMicrographUuidDeleteMockHandler = (
   overrideResponse?:
     | void
-    | ((
-        info: Parameters<Parameters<typeof http.delete>[1]>[0]
-      ) => Promise<void> | void),
+    | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void),
   options?: RequestHandlerOptions
 ) => {
   return http.delete(
@@ -3993,72 +3761,68 @@ export const getDeleteMicrographMicrographsMicrographUuidDeleteMockHandler = (
   )
 }
 
-export const getGetFoilholeMicrographsFoilholesFoilholeUuidMicrographsGetMockHandler =
-  (
-    overrideResponse?:
-      | MicrographResponse[]
-      | ((
-          info: Parameters<Parameters<typeof http.get>[1]>[0]
-        ) => Promise<MicrographResponse[]> | MicrographResponse[]),
-    options?: RequestHandlerOptions
-  ) => {
-    return http.get(
-      '*/foilholes/:foilholeUuid/micrographs',
-      async (info) => {
-        await delay(1000)
+export const getGetFoilholeMicrographsFoilholesFoilholeUuidMicrographsGetMockHandler = (
+  overrideResponse?:
+    | MicrographResponse[]
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0]
+      ) => Promise<MicrographResponse[]> | MicrographResponse[]),
+  options?: RequestHandlerOptions
+) => {
+  return http.get(
+    '*/foilholes/:foilholeUuid/micrographs',
+    async (info) => {
+      await delay(1000)
 
-        return new HttpResponse(
-          JSON.stringify(
-            overrideResponse !== undefined
-              ? typeof overrideResponse === 'function'
-                ? await overrideResponse(info)
-                : overrideResponse
-              : getGetFoilholeMicrographsFoilholesFoilholeUuidMicrographsGetResponseMock()
-          ),
-          { status: 200, headers: { 'Content-Type': 'application/json' } }
-        )
-      },
-      options
-    )
-  }
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getGetFoilholeMicrographsFoilholesFoilholeUuidMicrographsGetResponseMock()
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } }
+      )
+    },
+    options
+  )
+}
 
-export const getCreateFoilholeMicrographFoilholesFoilholeUuidMicrographsPostMockHandler =
-  (
-    overrideResponse?:
-      | MicrographResponse
-      | ((
-          info: Parameters<Parameters<typeof http.post>[1]>[0]
-        ) => Promise<MicrographResponse> | MicrographResponse),
-    options?: RequestHandlerOptions
-  ) => {
-    return http.post(
-      '*/foilholes/:foilholeUuid/micrographs',
-      async (info) => {
-        await delay(1000)
+export const getCreateFoilholeMicrographFoilholesFoilholeUuidMicrographsPostMockHandler = (
+  overrideResponse?:
+    | MicrographResponse
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0]
+      ) => Promise<MicrographResponse> | MicrographResponse),
+  options?: RequestHandlerOptions
+) => {
+  return http.post(
+    '*/foilholes/:foilholeUuid/micrographs',
+    async (info) => {
+      await delay(1000)
 
-        return new HttpResponse(
-          JSON.stringify(
-            overrideResponse !== undefined
-              ? typeof overrideResponse === 'function'
-                ? await overrideResponse(info)
-                : overrideResponse
-              : getCreateFoilholeMicrographFoilholesFoilholeUuidMicrographsPostResponseMock()
-          ),
-          { status: 201, headers: { 'Content-Type': 'application/json' } }
-        )
-      },
-      options
-    )
-  }
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getCreateFoilholeMicrographFoilholesFoilholeUuidMicrographsPostResponseMock()
+        ),
+        { status: 201, headers: { 'Content-Type': 'application/json' } }
+      )
+    },
+    options
+  )
+}
 
 export const getGetPredictionModelsPredictionModelsGetMockHandler = (
   overrideResponse?:
     | QualityPredictionModelResponse[]
     | ((
         info: Parameters<Parameters<typeof http.get>[1]>[0]
-      ) =>
-        | Promise<QualityPredictionModelResponse[]>
-        | QualityPredictionModelResponse[]),
+      ) => Promise<QualityPredictionModelResponse[]> | QualityPredictionModelResponse[]),
   options?: RequestHandlerOptions
 ) => {
   return http.get(
@@ -4086,9 +3850,7 @@ export const getCreatePredictionModelPredictionModelsPostMockHandler = (
     | QualityPredictionModelResponse
     | ((
         info: Parameters<Parameters<typeof http.post>[1]>[0]
-      ) =>
-        | Promise<QualityPredictionModelResponse>
-        | QualityPredictionModelResponse),
+      ) => Promise<QualityPredictionModelResponse> | QualityPredictionModelResponse),
   options?: RequestHandlerOptions
 ) => {
   return http.post(
@@ -4116,9 +3878,7 @@ export const getGetPredictionModelPredictionModelsNameGetMockHandler = (
     | QualityPredictionModelResponse
     | ((
         info: Parameters<Parameters<typeof http.get>[1]>[0]
-      ) =>
-        | Promise<QualityPredictionModelResponse>
-        | QualityPredictionModelResponse),
+      ) => Promise<QualityPredictionModelResponse> | QualityPredictionModelResponse),
   options?: RequestHandlerOptions
 ) => {
   return http.get(
@@ -4146,9 +3906,7 @@ export const getUpdatePredictionModelPredictionModelsNamePutMockHandler = (
     | QualityPredictionModelResponse
     | ((
         info: Parameters<Parameters<typeof http.put>[1]>[0]
-      ) =>
-        | Promise<QualityPredictionModelResponse>
-        | QualityPredictionModelResponse),
+      ) => Promise<QualityPredictionModelResponse> | QualityPredictionModelResponse),
   options?: RequestHandlerOptions
 ) => {
   return http.put(
@@ -4174,9 +3932,7 @@ export const getUpdatePredictionModelPredictionModelsNamePutMockHandler = (
 export const getDeletePredictionModelPredictionModelsNameDeleteMockHandler = (
   overrideResponse?:
     | void
-    | ((
-        info: Parameters<Parameters<typeof http.delete>[1]>[0]
-      ) => Promise<void> | void),
+    | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void),
   options?: RequestHandlerOptions
 ) => {
   return http.delete(
@@ -4192,15 +3948,15 @@ export const getDeletePredictionModelPredictionModelsNameDeleteMockHandler = (
   )
 }
 
-export const getGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGetMockHandler =
+export const getGetGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGetMockHandler =
   (
     overrideResponse?:
-      | QualityPredictionResponse[]
+      | GetGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGet200
       | ((
           info: Parameters<Parameters<typeof http.get>[1]>[0]
         ) =>
-          | Promise<QualityPredictionResponse[]>
-          | QualityPredictionResponse[]),
+          | Promise<GetGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGet200>
+          | GetGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGet200),
     options?: RequestHandlerOptions
   ) => {
     return http.get(
@@ -4214,7 +3970,7 @@ export const getGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityP
               ? typeof overrideResponse === 'function'
                 ? await overrideResponse(info)
                 : overrideResponse
-              : getGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGetResponseMock()
+              : getGetGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGetResponseMock()
           ),
           { status: 200, headers: { 'Content-Type': 'application/json' } }
         )
@@ -4223,15 +3979,15 @@ export const getGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityP
     )
   }
 
-export const getGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGetMockHandler =
+export const getGetFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGetMockHandler =
   (
     overrideResponse?:
-      | QualityPredictionResponse[]
+      | GetFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGet200
       | ((
           info: Parameters<Parameters<typeof http.get>[1]>[0]
         ) =>
-          | Promise<QualityPredictionResponse[]>
-          | QualityPredictionResponse[]),
+          | Promise<GetFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGet200>
+          | GetFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGet200),
     options?: RequestHandlerOptions
   ) => {
     return http.get(
@@ -4245,7 +4001,7 @@ export const getGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuid
               ? typeof overrideResponse === 'function'
                 ? await overrideResponse(info)
                 : overrideResponse
-              : getGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGetResponseMock()
+              : getGetFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGetResponseMock()
           ),
           { status: 200, headers: { 'Content-Type': 'application/json' } }
         )
@@ -4310,15 +4066,13 @@ export const getGetQualityMetricsQualityMetricsGetMockHandler = (
   )
 }
 
-export const getGetGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGetMockHandler =
+export const getGetPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGetMockHandler =
   (
     overrideResponse?:
       | QualityPredictionResponse[]
       | ((
           info: Parameters<Parameters<typeof http.get>[1]>[0]
-        ) =>
-          | Promise<QualityPredictionResponse[]>
-          | QualityPredictionResponse[]),
+        ) => Promise<QualityPredictionResponse[]> | QualityPredictionResponse[]),
     options?: RequestHandlerOptions
   ) => {
     return http.get(
@@ -4332,7 +4086,7 @@ export const getGetGridPredictionsPredictionModelPredictionModelNameGridGridUuid
               ? typeof overrideResponse === 'function'
                 ? await overrideResponse(info)
                 : overrideResponse
-              : getGetGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGetResponseMock()
+              : getGetPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGetResponseMock()
           ),
           { status: 200, headers: { 'Content-Type': 'application/json' } }
         )
@@ -4341,15 +4095,13 @@ export const getGetGridPredictionsPredictionModelPredictionModelNameGridGridUuid
     )
   }
 
-export const getGetGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetMockHandler =
+export const getGetLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetMockHandler =
   (
     overrideResponse?:
-      | QualityPredictionModelParameterResponse[]
+      | LatentRepresentationResponse[]
       | ((
           info: Parameters<Parameters<typeof http.get>[1]>[0]
-        ) =>
-          | Promise<QualityPredictionModelParameterResponse[]>
-          | QualityPredictionModelParameterResponse[]),
+        ) => Promise<LatentRepresentationResponse[]> | LatentRepresentationResponse[]),
     options?: RequestHandlerOptions
   ) => {
     return http.get(
@@ -4363,7 +4115,7 @@ export const getGetGridLatentRepresentationPredictionModelPredictionModelNameGri
               ? typeof overrideResponse === 'function'
                 ? await overrideResponse(info)
                 : overrideResponse
-              : getGetGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetResponseMock()
+              : getGetLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetResponseMock()
           ),
           { status: 200, headers: { 'Content-Type': 'application/json' } }
         )
@@ -4372,27 +4124,24 @@ export const getGetGridLatentRepresentationPredictionModelPredictionModelNameGri
     )
   }
 
-export const getStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGetMockHandler =
-  (
-    overrideResponse?:
-      | unknown
-      | ((
-          info: Parameters<Parameters<typeof http.get>[1]>[0]
-        ) => Promise<unknown> | unknown),
-    options?: RequestHandlerOptions
-  ) => {
-    return http.get(
-      '*/agent/:agentId/session/:sessionId/instructions/stream',
-      async (info) => {
-        await delay(1000)
-        if (typeof overrideResponse === 'function') {
-          await overrideResponse(info)
-        }
-        return new HttpResponse(null, { status: 200 })
-      },
-      options
-    )
-  }
+export const getStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGetMockHandler = (
+  overrideResponse?:
+    | unknown
+    | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<unknown> | unknown),
+  options?: RequestHandlerOptions
+) => {
+  return http.get(
+    '*/agent/:agentId/session/:sessionId/instructions/stream',
+    async (info) => {
+      await delay(1000)
+      if (typeof overrideResponse === 'function') {
+        await overrideResponse(info)
+      }
+      return new HttpResponse(null, { status: 200 })
+    },
+    options
+  )
+}
 
 export const getAcknowledgeInstructionAgentAgentIdSessionSessionIdInstructionsInstructionIdAckPostMockHandler =
   (
@@ -4425,34 +4174,29 @@ export const getAcknowledgeInstructionAgentAgentIdSessionSessionIdInstructionsIn
     )
   }
 
-export const getAgentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPostMockHandler =
-  (
-    overrideResponse?:
-      | unknown
-      | ((
-          info: Parameters<Parameters<typeof http.post>[1]>[0]
-        ) => Promise<unknown> | unknown),
-    options?: RequestHandlerOptions
-  ) => {
-    return http.post(
-      '*/agent/:agentId/session/:sessionId/heartbeat',
-      async (info) => {
-        await delay(1000)
-        if (typeof overrideResponse === 'function') {
-          await overrideResponse(info)
-        }
-        return new HttpResponse(null, { status: 200 })
-      },
-      options
-    )
-  }
+export const getAgentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPostMockHandler = (
+  overrideResponse?:
+    | unknown
+    | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<unknown> | unknown),
+  options?: RequestHandlerOptions
+) => {
+  return http.post(
+    '*/agent/:agentId/session/:sessionId/heartbeat',
+    async (info) => {
+      await delay(1000)
+      if (typeof overrideResponse === 'function') {
+        await overrideResponse(info)
+      }
+      return new HttpResponse(null, { status: 200 })
+    },
+    options
+  )
+}
 
 export const getGetActiveConnectionsDebugAgentConnectionsGetMockHandler = (
   overrideResponse?:
     | unknown
-    | ((
-        info: Parameters<Parameters<typeof http.get>[1]>[0]
-      ) => Promise<unknown> | unknown),
+    | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<unknown> | unknown),
   options?: RequestHandlerOptions
 ) => {
   return http.get(
@@ -4468,34 +4212,29 @@ export const getGetActiveConnectionsDebugAgentConnectionsGetMockHandler = (
   )
 }
 
-export const getGetSessionInstructionsDebugSessionSessionIdInstructionsGetMockHandler =
-  (
-    overrideResponse?:
-      | unknown
-      | ((
-          info: Parameters<Parameters<typeof http.get>[1]>[0]
-        ) => Promise<unknown> | unknown),
-    options?: RequestHandlerOptions
-  ) => {
-    return http.get(
-      '*/debug/session/:sessionId/instructions',
-      async (info) => {
-        await delay(1000)
-        if (typeof overrideResponse === 'function') {
-          await overrideResponse(info)
-        }
-        return new HttpResponse(null, { status: 200 })
-      },
-      options
-    )
-  }
+export const getGetSessionInstructionsDebugSessionSessionIdInstructionsGetMockHandler = (
+  overrideResponse?:
+    | unknown
+    | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<unknown> | unknown),
+  options?: RequestHandlerOptions
+) => {
+  return http.get(
+    '*/debug/session/:sessionId/instructions',
+    async (info) => {
+      await delay(1000)
+      if (typeof overrideResponse === 'function') {
+        await overrideResponse(info)
+      }
+      return new HttpResponse(null, { status: 200 })
+    },
+    options
+  )
+}
 
 export const getGetActiveSessionsDebugSessionsGetMockHandler = (
   overrideResponse?:
     | unknown
-    | ((
-        info: Parameters<Parameters<typeof http.get>[1]>[0]
-      ) => Promise<unknown> | unknown),
+    | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<unknown> | unknown),
   options?: RequestHandlerOptions
 ) => {
   return http.get(
@@ -4514,9 +4253,7 @@ export const getGetActiveSessionsDebugSessionsGetMockHandler = (
 export const getGetConnectionStatsDebugConnectionStatsGetMockHandler = (
   overrideResponse?:
     | unknown
-    | ((
-        info: Parameters<Parameters<typeof http.get>[1]>[0]
-      ) => Promise<unknown> | unknown),
+    | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<unknown> | unknown),
   options?: RequestHandlerOptions
 ) => {
   return http.get(
@@ -4532,82 +4269,286 @@ export const getGetConnectionStatsDebugConnectionStatsGetMockHandler = (
   )
 }
 
-export const getCreateManagedSessionDebugSessionsCreateManagedPostMockHandler =
-  (
-    overrideResponse?:
-      | unknown
-      | ((
-          info: Parameters<Parameters<typeof http.post>[1]>[0]
-        ) => Promise<unknown> | unknown),
-    options?: RequestHandlerOptions
-  ) => {
-    return http.post(
-      '*/debug/sessions/create-managed',
-      async (info) => {
-        await delay(1000)
-        if (typeof overrideResponse === 'function') {
-          await overrideResponse(info)
-        }
-        return new HttpResponse(null, { status: 200 })
-      },
-      options
-    )
-  }
+export const getCreateManagedSessionDebugSessionsCreateManagedPostMockHandler = (
+  overrideResponse?:
+    | unknown
+    | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<unknown> | unknown),
+  options?: RequestHandlerOptions
+) => {
+  return http.post(
+    '*/debug/sessions/create-managed',
+    async (info) => {
+      await delay(1000)
+      if (typeof overrideResponse === 'function') {
+        await overrideResponse(info)
+      }
+      return new HttpResponse(null, { status: 200 })
+    },
+    options
+  )
+}
 
-export const getCloseManagedSessionDebugSessionsSessionIdCloseDeleteMockHandler =
-  (
-    overrideResponse?:
-      | unknown
-      | ((
-          info: Parameters<Parameters<typeof http.delete>[1]>[0]
-        ) => Promise<unknown> | unknown),
-    options?: RequestHandlerOptions
-  ) => {
-    return http.delete(
-      '*/debug/sessions/:sessionId/close',
-      async (info) => {
-        await delay(1000)
-        if (typeof overrideResponse === 'function') {
-          await overrideResponse(info)
-        }
-        return new HttpResponse(null, { status: 200 })
-      },
-      options
-    )
-  }
+export const getCloseManagedSessionDebugSessionsSessionIdCloseDeleteMockHandler = (
+  overrideResponse?:
+    | unknown
+    | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<unknown> | unknown),
+  options?: RequestHandlerOptions
+) => {
+  return http.delete(
+    '*/debug/sessions/:sessionId/close',
+    async (info) => {
+      await delay(1000)
+      if (typeof overrideResponse === 'function') {
+        await overrideResponse(info)
+      }
+      return new HttpResponse(null, { status: 200 })
+    },
+    options
+  )
+}
 
-export const getCreateTestInstructionDebugSessionSessionIdCreateInstructionPostMockHandler =
-  (
-    overrideResponse?:
-      | unknown
-      | ((
-          info: Parameters<Parameters<typeof http.post>[1]>[0]
-        ) => Promise<unknown> | unknown),
-    options?: RequestHandlerOptions
-  ) => {
-    return http.post(
-      '*/debug/session/:sessionId/create-instruction',
-      async (info) => {
-        await delay(1000)
-        if (typeof overrideResponse === 'function') {
-          await overrideResponse(info)
-        }
-        return new HttpResponse(null, { status: 200 })
-      },
-      options
-    )
-  }
+export const getCreateTestInstructionDebugSessionSessionIdCreateInstructionPostMockHandler = (
+  overrideResponse?:
+    | unknown
+    | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<unknown> | unknown),
+  options?: RequestHandlerOptions
+) => {
+  return http.post(
+    '*/debug/session/:sessionId/create-instruction',
+    async (info) => {
+      await delay(1000)
+      if (typeof overrideResponse === 'function') {
+        await overrideResponse(info)
+      }
+      return new HttpResponse(null, { status: 200 })
+    },
+    options
+  )
+}
 
 export const getCreateTestSessionDebugSessionsCreatePostMockHandler = (
   overrideResponse?:
     | unknown
-    | ((
-        info: Parameters<Parameters<typeof http.post>[1]>[0]
-      ) => Promise<unknown> | unknown),
+    | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<unknown> | unknown),
   options?: RequestHandlerOptions
 ) => {
   return http.post(
     '*/debug/sessions/create',
+    async (info) => {
+      await delay(1000)
+      if (typeof overrideResponse === 'function') {
+        await overrideResponse(info)
+      }
+      return new HttpResponse(null, { status: 200 })
+    },
+    options
+  )
+}
+
+export const getGetModelWeightsForGridGridGridUuidModelWeightsGetMockHandler = (
+  overrideResponse?:
+    | GetModelWeightsForGridGridGridUuidModelWeightsGet200
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0]
+      ) =>
+        | Promise<GetModelWeightsForGridGridGridUuidModelWeightsGet200>
+        | GetModelWeightsForGridGridGridUuidModelWeightsGet200),
+  options?: RequestHandlerOptions
+) => {
+  return http.get(
+    '*/grid/:gridUuid/model_weights',
+    async (info) => {
+      await delay(1000)
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getGetModelWeightsForGridGridGridUuidModelWeightsGetResponseMock()
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } }
+      )
+    },
+    options
+  )
+}
+
+export const getGetFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGetMockHandler =
+  (
+    overrideResponse?:
+      | GetFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGet200
+      | ((
+          info: Parameters<Parameters<typeof http.get>[1]>[0]
+        ) =>
+          | Promise<GetFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGet200>
+          | GetFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGet200),
+    options?: RequestHandlerOptions
+  ) => {
+    return http.get(
+      '*/quality_metric/:metricName/gridsquares/:gridsquareUuid/foilhole_quality_predictions',
+      async (info) => {
+        await delay(1000)
+
+        return new HttpResponse(
+          JSON.stringify(
+            overrideResponse !== undefined
+              ? typeof overrideResponse === 'function'
+                ? await overrideResponse(info)
+                : overrideResponse
+              : getGetFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGetResponseMock()
+          ),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        )
+      },
+      options
+    )
+  }
+
+export const getGetPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGetMockHandler =
+  (
+    overrideResponse?:
+      | QualityPredictionResponse[]
+      | ((
+          info: Parameters<Parameters<typeof http.get>[1]>[0]
+        ) => Promise<QualityPredictionResponse[]> | QualityPredictionResponse[]),
+    options?: RequestHandlerOptions
+  ) => {
+    return http.get(
+      '*/prediction_model/:predictionModelName/gridsquare/:gridsquareUuid/prediction',
+      async (info) => {
+        await delay(1000)
+
+        return new HttpResponse(
+          JSON.stringify(
+            overrideResponse !== undefined
+              ? typeof overrideResponse === 'function'
+                ? await overrideResponse(info)
+                : overrideResponse
+              : getGetPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGetResponseMock()
+          ),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        )
+      },
+      options
+    )
+  }
+
+export const getGetOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGetMockHandler =
+  (
+    overrideResponse?:
+      | OverallQualityPrediction[]
+      | ((
+          info: Parameters<Parameters<typeof http.get>[1]>[0]
+        ) => Promise<OverallQualityPrediction[]> | OverallQualityPrediction[]),
+    options?: RequestHandlerOptions
+  ) => {
+    return http.get(
+      '*/gridsquare/:gridsquareUuid/overall_prediction',
+      async (info) => {
+        await delay(1000)
+
+        return new HttpResponse(
+          JSON.stringify(
+            overrideResponse !== undefined
+              ? typeof overrideResponse === 'function'
+                ? await overrideResponse(info)
+                : overrideResponse
+              : getGetOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGetResponseMock()
+          ),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        )
+      },
+      options
+    )
+  }
+
+export const getGetSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGetMockHandler =
+  (
+    overrideResponse?:
+      | GridSquare[]
+      | ((
+          info: Parameters<Parameters<typeof http.get>[1]>[0]
+        ) => Promise<GridSquare[]> | GridSquare[]),
+    options?: RequestHandlerOptions
+  ) => {
+    return http.get(
+      '*/grid/:gridUuid/prediction_model/:predictionModelName/latent_rep/:latentRepModelName/suggested_squares',
+      async (info) => {
+        await delay(1000)
+
+        return new HttpResponse(
+          JSON.stringify(
+            overrideResponse !== undefined
+              ? typeof overrideResponse === 'function'
+                ? await overrideResponse(info)
+                : overrideResponse
+              : getGetSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGetResponseMock()
+          ),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        )
+      },
+      options
+    )
+  }
+
+export const getGetSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGetMockHandler =
+  (
+    overrideResponse?:
+      | LatentRepresentationResponse[]
+      | ((
+          info: Parameters<Parameters<typeof http.get>[1]>[0]
+        ) => Promise<LatentRepresentationResponse[]> | LatentRepresentationResponse[]),
+    options?: RequestHandlerOptions
+  ) => {
+    return http.get(
+      '*/prediction_model/:predictionModelName/gridsquare/:gridsquareUuid/latent_representation',
+      async (info) => {
+        await delay(1000)
+
+        return new HttpResponse(
+          JSON.stringify(
+            overrideResponse !== undefined
+              ? typeof overrideResponse === 'function'
+                ? await overrideResponse(info)
+                : overrideResponse
+              : getGetSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGetResponseMock()
+          ),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        )
+      },
+      options
+    )
+  }
+
+export const getGetGridAtlasImageGridsGridUuidAtlasImageGetMockHandler = (
+  overrideResponse?:
+    | unknown
+    | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<unknown> | unknown),
+  options?: RequestHandlerOptions
+) => {
+  return http.get(
+    '*/grids/:gridUuid/atlas_image',
+    async (info) => {
+      await delay(1000)
+      if (typeof overrideResponse === 'function') {
+        await overrideResponse(info)
+      }
+      return new HttpResponse(null, { status: 200 })
+    },
+    options
+  )
+}
+
+export const getGetGridsquareImageGridsquaresGridsquareUuidGridsquareImageGetMockHandler = (
+  overrideResponse?:
+    | unknown
+    | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<unknown> | unknown),
+  options?: RequestHandlerOptions
+) => {
+  return http.get(
+    '*/gridsquares/:gridsquareUuid/gridsquare_image',
     async (info) => {
       await delay(1000)
       if (typeof overrideResponse === 'function') {
@@ -4646,6 +4587,7 @@ export const getDefaultMock = () => [
   getGetAtlasTilesByAtlasAtlasesAtlasUuidTilesGetMockHandler(),
   getCreateAtlasTileForAtlasAtlasesAtlasUuidTilesPostMockHandler(),
   getLinkAtlasTileToGridsquareAtlasTilesTileUuidGridsquaresGridsquareUuidPostMockHandler(),
+  getLinkAtlasTileToGridsquaresAtlasTilesTileUuidGridsquaresPostMockHandler(),
   getGetGridsquaresGridsquaresGetMockHandler(),
   getGetGridsquareGridsquaresGridsquareUuidGetMockHandler(),
   getUpdateGridsquareGridsquaresGridsquareUuidPutMockHandler(),
@@ -4670,12 +4612,12 @@ export const getDefaultMock = () => [
   getGetPredictionModelPredictionModelsNameGetMockHandler(),
   getUpdatePredictionModelPredictionModelsNamePutMockHandler(),
   getDeletePredictionModelPredictionModelsNameDeleteMockHandler(),
-  getGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGetMockHandler(),
-  getGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGetMockHandler(),
+  getGetGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGetMockHandler(),
+  getGetFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGetMockHandler(),
   getCreateQualityPredictionQualityPredictionsPostMockHandler(),
   getGetQualityMetricsQualityMetricsGetMockHandler(),
-  getGetGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGetMockHandler(),
-  getGetGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetMockHandler(),
+  getGetPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGetMockHandler(),
+  getGetLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetMockHandler(),
   getStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGetMockHandler(),
   getAcknowledgeInstructionAgentAgentIdSessionSessionIdInstructionsInstructionIdAckPostMockHandler(),
   getAgentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPostMockHandler(),
@@ -4687,4 +4629,12 @@ export const getDefaultMock = () => [
   getCloseManagedSessionDebugSessionsSessionIdCloseDeleteMockHandler(),
   getCreateTestInstructionDebugSessionSessionIdCreateInstructionPostMockHandler(),
   getCreateTestSessionDebugSessionsCreatePostMockHandler(),
+  getGetModelWeightsForGridGridGridUuidModelWeightsGetMockHandler(),
+  getGetFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGetMockHandler(),
+  getGetPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGetMockHandler(),
+  getGetOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGetMockHandler(),
+  getGetSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGetMockHandler(),
+  getGetSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGetMockHandler(),
+  getGetGridAtlasImageGridsGridUuidAtlasImageGetMockHandler(),
+  getGetGridsquareImageGridsquaresGridsquareUuidGridsquareImageGetMockHandler(),
 ]

@@ -3,17 +3,18 @@
  * Do not edit manually.
  * SmartEM Decisions Backend API
  * API for accessing and managing electron microscopy data
- * OpenAPI spec version: 0.1.dev334+g5e29cd2e4.d20251002
+ * OpenAPI spec version: 0.1.dev372+g0f036fa24
  */
-import type { AtlasTileUpdateRequestUuid } from './atlasTileUpdateRequestUuid'
-import type { AtlasTileUpdateRequestTileId } from './atlasTileUpdateRequestTileId'
+
+import type { AtlasTileUpdateRequestAtlasUuid } from './atlasTileUpdateRequestAtlasUuid'
+import type { AtlasTileUpdateRequestBaseFilename } from './atlasTileUpdateRequestBaseFilename'
+import type { AtlasTileUpdateRequestFileFormat } from './atlasTileUpdateRequestFileFormat'
 import type { AtlasTileUpdateRequestPositionX } from './atlasTileUpdateRequestPositionX'
 import type { AtlasTileUpdateRequestPositionY } from './atlasTileUpdateRequestPositionY'
 import type { AtlasTileUpdateRequestSizeX } from './atlasTileUpdateRequestSizeX'
 import type { AtlasTileUpdateRequestSizeY } from './atlasTileUpdateRequestSizeY'
-import type { AtlasTileUpdateRequestFileFormat } from './atlasTileUpdateRequestFileFormat'
-import type { AtlasTileUpdateRequestBaseFilename } from './atlasTileUpdateRequestBaseFilename'
-import type { AtlasTileUpdateRequestAtlasUuid } from './atlasTileUpdateRequestAtlasUuid'
+import type { AtlasTileUpdateRequestTileId } from './atlasTileUpdateRequestTileId'
+import type { AtlasTileUpdateRequestUuid } from './atlasTileUpdateRequestUuid'
 
 export interface AtlasTileUpdateRequest {
   uuid?: AtlasTileUpdateRequestUuid

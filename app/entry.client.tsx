@@ -1,6 +1,6 @@
 import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { RouterProvider } from 'react-router/dom'
+import { hydrateRoot } from 'react-dom/client'
+import { HydratedRouter } from 'react-router/dom'
 
 // Enable mocking if VITE_ENABLE_MOCKS is set
 if (import.meta.env.VITE_ENABLE_MOCKS === 'true') {
@@ -8,8 +8,9 @@ if (import.meta.env.VITE_ENABLE_MOCKS === 'true') {
   await enableMocking()
 }
 
-createRoot(document).render(
+hydrateRoot(
+  document,
   <StrictMode>
-    <RouterProvider />
+    <HydratedRouter />
   </StrictMode>
 )

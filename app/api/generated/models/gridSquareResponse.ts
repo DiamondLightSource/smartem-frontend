@@ -3,32 +3,33 @@
  * Do not edit manually.
  * SmartEM Decisions Backend API
  * API for accessing and managing electron microscopy data
- * OpenAPI spec version: 0.1.dev334+g5e29cd2e4.d20251002
+ * OpenAPI spec version: 0.1.dev372+g0f036fa24
  */
-import type { GridSquareResponseGridUuid } from './gridSquareResponseGridUuid'
-import type { GridSquareResponseStatus } from './gridSquareResponseStatus'
-import type { GridSquareResponseDataDir } from './gridSquareResponseDataDir'
+
+import type { GridSquareResponseAcquisitionDatetime } from './gridSquareResponseAcquisitionDatetime'
+import type { GridSquareResponseAppliedDefocus } from './gridSquareResponseAppliedDefocus'
 import type { GridSquareResponseAtlasNodeId } from './gridSquareResponseAtlasNodeId'
-import type { GridSquareResponseState } from './gridSquareResponseState'
-import type { GridSquareResponseRotation } from './gridSquareResponseRotation'
+import type { GridSquareResponseCenterX } from './gridSquareResponseCenterX'
+import type { GridSquareResponseCenterY } from './gridSquareResponseCenterY'
+import type { GridSquareResponseDataDir } from './gridSquareResponseDataDir'
+import type { GridSquareResponseDefocus } from './gridSquareResponseDefocus'
+import type { GridSquareResponseDetectorName } from './gridSquareResponseDetectorName'
+import type { GridSquareResponseGridUuid } from './gridSquareResponseGridUuid'
 import type { GridSquareResponseImagePath } from './gridSquareResponseImagePath'
+import type { GridSquareResponseMagnification } from './gridSquareResponseMagnification'
+import type { GridSquareResponsePhysicalX } from './gridSquareResponsePhysicalX'
+import type { GridSquareResponsePhysicalY } from './gridSquareResponsePhysicalY'
+import type { GridSquareResponsePixelSize } from './gridSquareResponsePixelSize'
+import type { GridSquareResponseRotation } from './gridSquareResponseRotation'
 import type { GridSquareResponseSelected } from './gridSquareResponseSelected'
-import type { GridSquareResponseUnusable } from './gridSquareResponseUnusable'
+import type { GridSquareResponseSizeHeight } from './gridSquareResponseSizeHeight'
+import type { GridSquareResponseSizeWidth } from './gridSquareResponseSizeWidth'
 import type { GridSquareResponseStagePositionX } from './gridSquareResponseStagePositionX'
 import type { GridSquareResponseStagePositionY } from './gridSquareResponseStagePositionY'
 import type { GridSquareResponseStagePositionZ } from './gridSquareResponseStagePositionZ'
-import type { GridSquareResponseCenterX } from './gridSquareResponseCenterX'
-import type { GridSquareResponseCenterY } from './gridSquareResponseCenterY'
-import type { GridSquareResponsePhysicalX } from './gridSquareResponsePhysicalX'
-import type { GridSquareResponsePhysicalY } from './gridSquareResponsePhysicalY'
-import type { GridSquareResponseSizeWidth } from './gridSquareResponseSizeWidth'
-import type { GridSquareResponseSizeHeight } from './gridSquareResponseSizeHeight'
-import type { GridSquareResponseAcquisitionDatetime } from './gridSquareResponseAcquisitionDatetime'
-import type { GridSquareResponseDefocus } from './gridSquareResponseDefocus'
-import type { GridSquareResponseMagnification } from './gridSquareResponseMagnification'
-import type { GridSquareResponsePixelSize } from './gridSquareResponsePixelSize'
-import type { GridSquareResponseDetectorName } from './gridSquareResponseDetectorName'
-import type { GridSquareResponseAppliedDefocus } from './gridSquareResponseAppliedDefocus'
+import type { GridSquareResponseState } from './gridSquareResponseState'
+import type { GridSquareResponseStatus } from './gridSquareResponseStatus'
+import type { GridSquareResponseUnusable } from './gridSquareResponseUnusable'
 
 export interface GridSquareResponse {
   uuid: string

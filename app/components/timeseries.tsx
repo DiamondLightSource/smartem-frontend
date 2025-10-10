@@ -1,19 +1,18 @@
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import {
   Avatar,
   Box,
   Grid,
-  Slider,
-  Switch,
   List,
   ListItem,
-  ListItemText,
   ListItemAvatar,
+  ListItemText,
   Skeleton,
+  Slider,
+  Switch,
 } from '@mui/material'
 import { LineChart } from '@mui/x-charts'
-
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 
 import React from 'react'
 
@@ -28,27 +27,22 @@ export const TimeSeriesChart = ({
   const [timeScale, setTimeScale] = React.useState(true)
 
   const average =
-    yData.length === 0
-      ? 0
-      : yData.reduce((a: number, b: number) => a + b, 0) / yData.length
+    yData.length === 0 ? 0 : yData.reduce((a: number, b: number) => a + b, 0) / yData.length
   const averageLastTenPercent =
     yData.length === 0
       ? 0
-      : yData
-          .slice(-(yData.length / 10))
-          .reduce((a: number, b: number) => a + b, 0) /
+      : yData.slice(-(yData.length / 10)).reduce((a: number, b: number) => a + b, 0) /
         (yData.length / 10)
   const sdev =
     yData.length === 0
       ? 0
       : Math.sqrt(
-          yData
-            .map((x: number) => Math.pow(x - average, 2))
-            .reduce((a: number, b: number) => a + b) / yData.length
+          yData.map((x: number) => (x - average) ** 2).reduce((a: number, b: number) => a + b) /
+            yData.length
         )
   const current = yData.length === 0 ? 0 : yData.slice(-1)[0]
 
-  const valueFormatter = (date, context) => {
+  const valueFormatter = (date: any, context: any) => {
     return timeScale
       ? context.location === 'tick'
         ? `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}.${(date.getMilliseconds() / 100).toPrecision(1)}`
@@ -90,9 +84,7 @@ export const TimeSeriesChart = ({
             hideLegend
             xAxis={[
               {
-                data: timeScale
-                  ? xData
-                  : Array.from({ length: xData.length }, (x, i) => i + 1),
+                data: timeScale ? xData : Array.from({ length: xData.length }, (x, i) => i + 1),
                 min: timeScale ? xData[axisRange[0]] : axisRange[0] + 1,
                 max: timeScale ? xData[axisRange[1]] : axisRange[1] + 1,
                 scaleType: timeScale ? 'time' : 'linear',
@@ -108,9 +100,7 @@ export const TimeSeriesChart = ({
             min={0}
             max={xData.length}
             value={axisRange}
-            onChange={(event: Event, newValue: number[]) =>
-              setAxisRange(newValue)
-            }
+            onChange={(event: Event, newValue: number[]) => setAxisRange(newValue)}
           />
         </Grid>
         <Grid size={2}>
@@ -132,11 +122,7 @@ export const TimeSeriesChart = ({
               />
               <ListItemAvatar>
                 <Avatar sx={{ bgcolor: '#b927d9' }}>
-                  {current > averageLastTenPercent ? (
-                    <ArrowUpwardIcon />
-                  ) : (
-                    <ArrowDownwardIcon />
-                  )}
+                  {current > averageLastTenPercent ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />}
                 </Avatar>
               </ListItemAvatar>
             </ListItem>
@@ -152,13 +138,7 @@ export const TimeSeriesChart = ({
                   color: sdev > 0.2 ? 'red' : sdev > 0.1 ? 'yellow' : 'green',
                   textAlign: 'center',
                 }}
-                primary={
-                  sdev > 0.2
-                    ? 'Highly uncertain'
-                    : sdev > 0.1
-                      ? 'Uncertain'
-                      : 'Confident'
-                }
+                primary={sdev > 0.2 ? 'Highly uncertain' : sdev > 0.1 ? 'Uncertain' : 'Confident'}
               />
             </ListItem>
             <ListItem style={{ backgroundColor: '#303030', margin: '2px' }}>

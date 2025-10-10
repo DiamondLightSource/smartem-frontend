@@ -3,21 +3,22 @@
  * Do not edit manually.
  * SmartEM Decisions Backend API
  * API for accessing and managing electron microscopy data
- * OpenAPI spec version: 0.1.dev334+g5e29cd2e4.d20251002
+ * OpenAPI spec version: 0.1.dev372+g0f036fa24
  */
-import type { FoilHoleResponseGridsquareId } from './foilHoleResponseGridsquareId'
-import type { FoilHoleStatus } from './foilHoleStatus'
+
 import type { FoilHoleResponseCenterX } from './foilHoleResponseCenterX'
 import type { FoilHoleResponseCenterY } from './foilHoleResponseCenterY'
+import type { FoilHoleResponseDiameter } from './foilHoleResponseDiameter'
+import type { FoilHoleResponseGridsquareId } from './foilHoleResponseGridsquareId'
 import type { FoilHoleResponseQuality } from './foilHoleResponseQuality'
 import type { FoilHoleResponseRotation } from './foilHoleResponseRotation'
-import type { FoilHoleResponseSizeWidth } from './foilHoleResponseSizeWidth'
 import type { FoilHoleResponseSizeHeight } from './foilHoleResponseSizeHeight'
+import type { FoilHoleResponseSizeWidth } from './foilHoleResponseSizeWidth'
 import type { FoilHoleResponseXLocation } from './foilHoleResponseXLocation'
-import type { FoilHoleResponseYLocation } from './foilHoleResponseYLocation'
 import type { FoilHoleResponseXStagePosition } from './foilHoleResponseXStagePosition'
+import type { FoilHoleResponseYLocation } from './foilHoleResponseYLocation'
 import type { FoilHoleResponseYStagePosition } from './foilHoleResponseYStagePosition'
-import type { FoilHoleResponseDiameter } from './foilHoleResponseDiameter'
+import type { FoilHoleStatus } from './foilHoleStatus'
 
 export interface FoilHoleResponse {
   uuid: string

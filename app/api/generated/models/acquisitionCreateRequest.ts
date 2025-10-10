@@ -3,20 +3,21 @@
  * Do not edit manually.
  * SmartEM Decisions Backend API
  * API for accessing and managing electron microscopy data
- * OpenAPI spec version: 0.1.dev334+g5e29cd2e4.d20251002
+ * OpenAPI spec version: 0.1.dev372+g0f036fa24
  */
-import type { AcquisitionCreateRequestName } from './acquisitionCreateRequestName'
-import type { AcquisitionCreateRequestStatus } from './acquisitionCreateRequestStatus'
-import type { AcquisitionCreateRequestStartTime } from './acquisitionCreateRequestStartTime'
-import type { AcquisitionCreateRequestEndTime } from './acquisitionCreateRequestEndTime'
-import type { AcquisitionCreateRequestPausedTime } from './acquisitionCreateRequestPausedTime'
-import type { AcquisitionCreateRequestStoragePath } from './acquisitionCreateRequestStoragePath'
+
 import type { AcquisitionCreateRequestAtlasPath } from './acquisitionCreateRequestAtlasPath'
 import type { AcquisitionCreateRequestClusteringMode } from './acquisitionCreateRequestClusteringMode'
 import type { AcquisitionCreateRequestClusteringRadius } from './acquisitionCreateRequestClusteringRadius'
-import type { AcquisitionCreateRequestInstrumentModel } from './acquisitionCreateRequestInstrumentModel'
-import type { AcquisitionCreateRequestInstrumentId } from './acquisitionCreateRequestInstrumentId'
 import type { AcquisitionCreateRequestComputerName } from './acquisitionCreateRequestComputerName'
+import type { AcquisitionCreateRequestEndTime } from './acquisitionCreateRequestEndTime'
+import type { AcquisitionCreateRequestInstrumentId } from './acquisitionCreateRequestInstrumentId'
+import type { AcquisitionCreateRequestInstrumentModel } from './acquisitionCreateRequestInstrumentModel'
+import type { AcquisitionCreateRequestName } from './acquisitionCreateRequestName'
+import type { AcquisitionCreateRequestPausedTime } from './acquisitionCreateRequestPausedTime'
+import type { AcquisitionCreateRequestStartTime } from './acquisitionCreateRequestStartTime'
+import type { AcquisitionCreateRequestStatus } from './acquisitionCreateRequestStatus'
+import type { AcquisitionCreateRequestStoragePath } from './acquisitionCreateRequestStoragePath'
 
 export interface AcquisitionCreateRequest {
   uuid: string

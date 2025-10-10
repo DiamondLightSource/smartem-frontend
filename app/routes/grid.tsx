@@ -1,39 +1,35 @@
-import type { Route } from './+types/product'
-
-import {
-  Box,
-  Container,
-  Collapse,
-  TableContainer,
-  IconButton,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  ThemeProvider,
-  CircularProgress,
-  TableSortLabel,
-  Alert,
-} from '@mui/material'
-import Paper from '@mui/material/Paper'
 import InsightsIcon from '@mui/icons-material/Insights'
 
-import React from 'react'
-import { useNavigate, Await } from 'react-router'
+import {
+  Alert,
+  Box,
+  CircularProgress,
+  Collapse,
+  Container,
+  IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableSortLabel,
+  ThemeProvider,
+} from '@mui/material'
+import Paper from '@mui/material/Paper'
 import { useQueries } from '@tanstack/react-query'
 
-import { Navbar } from '../components/navbar'
-import { theme } from '../components/theme'
+import React from 'react'
+import { useNavigate } from 'react-router'
 import {
-  useGetGridGridsquaresGridsGridUuidGridsquaresGet,
   getGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetQueryKey,
   getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet,
+  useGetGridGridsquaresGridsGridUuidGridsquaresGet,
 } from '../api/generated/default/default'
-import type {
-  GridSquareResponse,
-  FoilHoleResponse,
-} from '../api/generated/models'
+import type { FoilHoleResponse, GridSquareResponse } from '../api/generated/models'
+import { Navbar } from '../components/navbar'
+import { theme } from '../components/theme'
+import type { Route } from './+types/grid'
 
 type SquareDetails = {
   square: GridSquareResponse
@@ -49,11 +45,7 @@ type FullSquareDetails = {
   weightedPredictions: HolePrediction[] | null
 }
 
-const CollapsibleRow = ({
-  square,
-  holes,
-  weightedPredictions,
-}: FullSquareDetails) => {
+const CollapsibleRow = ({ square, holes, weightedPredictions }: FullSquareDetails) => {
   const [open, setOpen] = React.useState(false)
   const [sortOrderDescending, setSortOrderDescending] = React.useState(true)
   const navigate = useNavigate()
@@ -62,27 +54,19 @@ const CollapsibleRow = ({
   const holeWeights = new Map()
   if (weightedPredictions) {
     weightedPrediction =
-      weightedPredictions.reduce(
-        (a: number, b: HolePrediction) => a + b.prediction,
-        0
-      ) / weightedPredictions.length
-    weightedPredictions.map((elem) =>
-      holeWeights.set(elem.hole, elem.prediction)
-    )
+      weightedPredictions.reduce((a: number, b: HolePrediction) => a + b.prediction, 0) /
+      weightedPredictions.length
+    weightedPredictions.map((elem) => holeWeights.set(elem.hole, elem.prediction))
   }
 
   const holeWeightComparator = (a: FoilHoleResponse, b: FoilHoleResponse) => {
     if (sortOrderDescending) {
-      if (holeWeights.get(a.foilhole_id) < holeWeights.get(b.foilhole_id))
-        return 1
-      else if (holeWeights.get(a.foilhole_id) > holeWeights.get(b.foilhole_id))
-        return -1
+      if (holeWeights.get(a.foilhole_id) < holeWeights.get(b.foilhole_id)) return 1
+      else if (holeWeights.get(a.foilhole_id) > holeWeights.get(b.foilhole_id)) return -1
       return 0
     } else {
-      if (holeWeights.get(a.foilhole_id) < holeWeights.get(b.foilhole_id))
-        return -1
-      else if (holeWeights.get(a.foilhole_id) > holeWeights.get(b.foilhole_id))
-        return 1
+      if (holeWeights.get(a.foilhole_id) < holeWeights.get(b.foilhole_id)) return -1
+      else if (holeWeights.get(a.foilhole_id) > holeWeights.get(b.foilhole_id)) return 1
       return 0
     }
   }
@@ -133,9 +117,7 @@ const CollapsibleRow = ({
               <Table size="small">
                 <TableHead>
                   <TableRow>
-                    <TableCell style={{ backgroundColor: 'silver' }}>
-                      Hole Name
-                    </TableCell>
+                    <TableCell style={{ backgroundColor: 'silver' }}>Hole Name</TableCell>
                     <TableCell style={{ backgroundColor: 'silver' }}>
                       <TableSortLabel
                         active={true}
@@ -160,8 +142,7 @@ const CollapsibleRow = ({
                           </TableCell>
                         ) : (
                           <TableCell>
-                            {holeWeights.get(hole.foilhole_id) ??
-                              weightedPrediction}
+                            {holeWeights.get(hole.foilhole_id) ?? weightedPrediction}
                           </TableCell>
                         )}
                       </TableRow>
@@ -191,7 +172,9 @@ export default function Grid({ params }: Route.ComponentProps) {
   const foilHoleQueries = useQueries({
     queries:
       squares_data?.map((square) => ({
-        queryKey: getGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetQueryKey(square.uuid),
+        queryKey: getGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetQueryKey(
+          square.uuid
+        ),
         queryFn: () => getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet(square.uuid),
         enabled: !!square.image_path,
       })) || [],
@@ -206,8 +189,7 @@ export default function Grid({ params }: Route.ComponentProps) {
   }, [squares_data, foilHoleQueries])
 
   const isLoading = squaresLoading || foilHoleQueries.some((q) => q.isLoading)
-  const error =
-    squaresError || foilHoleQueries.find((q) => q.error)?.error
+  const error = squaresError || foilHoleQueries.find((q) => q.error)?.error
 
   console.log(squares)
 
@@ -227,11 +209,7 @@ export default function Grid({ params }: Route.ComponentProps) {
     <ThemeProvider theme={theme}>
       <Navbar />
       <Container content="center" style={{ width: '100%', paddingTop: '25px' }}>
-        <TableContainer
-          component={Paper}
-          style={{ width: '80%' }}
-          sx={{ maxHeight: 650 }}
-        >
+        <TableContainer component={Paper} style={{ width: '80%' }} sx={{ maxHeight: 650 }}>
           <Table stickyHeader>
             <TableHead>
               <TableRow>
@@ -239,13 +217,7 @@ export default function Grid({ params }: Route.ComponentProps) {
                 <TableCell>Grid Square Name</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell
-                  sortDirection={
-                    holeNumberOrder
-                      ? sortOrderDescending
-                        ? 'desc'
-                        : 'asc'
-                      : false
-                  }
+                  sortDirection={holeNumberOrder ? (sortOrderDescending ? 'desc' : 'asc') : false}
                 >
                   <TableSortLabel
                     active={holeNumberOrder}
@@ -261,48 +233,28 @@ export default function Grid({ params }: Route.ComponentProps) {
                 <TableCell>More Info</TableCell>
               </TableRow>
             </TableHead>
-            <React.Suspense
-              fallback={
-                <TableBody>
-                  {loaderData.squares.map(
-                    (square: SquareDetails, i: number) => {
-                      return (
-                        <CollapsibleRow
-                          square={square.square}
-                          holes={square.holes}
-                          weightedPredictions={null}
-                        />
-                      )
-                    }
-                  )}
-                </TableBody>
-              }
-            >
-              <Await resolve={loaderData.weightedPredictions}>
-                {(result) => {
-                  const mapResult: Map<string, HolePrediction[]> = new Map(
-                    result
-                  )
+            <TableBody>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={6}>Loading...</TableCell>
+                </TableRow>
+              ) : error ? (
+                <TableRow>
+                  <TableCell colSpan={6}>Error loading data</TableCell>
+                </TableRow>
+              ) : (
+                squares.sort(holeNumberComparator).map((square: SquareDetails) => {
                   return (
-                    <TableBody>
-                      {loaderData.squares
-                        .sort(holeNumberComparator)
-                        .map((square: SquareDetails) => {
-                          return (
-                            <CollapsibleRow
-                              square={square.square}
-                              holes={square.holes}
-                              weightedPredictions={
-                                mapResult.get(square.square.gridsquare_id) ?? []
-                              }
-                            />
-                          )
-                        })}
-                    </TableBody>
+                    <CollapsibleRow
+                      key={square.square.uuid}
+                      square={square.square}
+                      holes={square.holes}
+                      weightedPredictions={null}
+                    />
                   )
-                }}
-              </Await>
-            </React.Suspense>
+                })
+              )}
+            </TableBody>
           </Table>
         </TableContainer>
       </Container>
