@@ -3,9 +3,9 @@
  * Do not edit manually.
  * SmartEM Decisions Backend API
  * API for accessing and managing electron microscopy data
- * OpenAPI spec version: 0.1.dev334+g5e29cd2e4.d20251002
+ * OpenAPI spec version: 0.1.dev372+g0f036fa24
  */
-import { useMutation, useQuery } from '@tanstack/react-query'
+
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -20,7 +20,8 @@ import type {
   UseQueryOptions,
   UseQueryResult,
 } from '@tanstack/react-query'
-
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { customInstance } from '../../mutator'
 import type {
   AcquisitionCreateRequest,
   AcquisitionResponse,
@@ -40,27 +41,34 @@ import type {
   FoilHoleCreateRequest,
   FoilHoleResponse,
   FoilHoleUpdateRequest,
+  GetFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGet200,
+  GetFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGet200,
+  GetGridAtlasImageGridsGridUuidAtlasImageGetParams,
+  GetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetParams,
+  GetGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGet200,
+  GetModelWeightsForGridGridGridUuidModelWeightsGet200,
   GridCreateRequest,
   GridResponse,
+  GridSquare,
   GridSquareCreateRequest,
   GridSquarePositionRequest,
   GridSquareResponse,
   GridSquareUpdateRequest,
+  GridsquareRegisteredGridsquaresGridsquareUuidRegisteredPostParams,
   GridUpdateRequest,
   HTTPValidationError,
+  LatentRepresentationResponse,
   MicrographCreateRequest,
   MicrographResponse,
   MicrographUpdateRequest,
+  OverallQualityPrediction,
   QualityMetricsResponse,
   QualityPredictionCreateRequest,
   QualityPredictionModelCreateRequest,
-  QualityPredictionModelParameterResponse,
   QualityPredictionModelResponse,
   QualityPredictionModelUpdateRequest,
   QualityPredictionResponse,
 } from '.././models'
-
-import { customInstance } from '../../mutator'
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
@@ -72,10 +80,7 @@ export const getStatusStatusGet = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
-  return customInstance<unknown>(
-    { url: `/status`, method: 'GET', signal },
-    options
-  )
+  return customInstance<unknown>({ url: `/status`, method: 'GET', signal }, options)
 }
 
 export const getGetStatusStatusGetQueryKey = () => {
@@ -86,30 +91,17 @@ export const getGetStatusStatusGetQueryOptions = <
   TData = Awaited<ReturnType<typeof getStatusStatusGet>>,
   TError = unknown,
 >(options?: {
-  query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof getStatusStatusGet>>,
-      TError,
-      TData
-    >
-  >
+  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getStatusStatusGet>>, TError, TData>>
   request?: SecondParameter<typeof customInstance>
 }) => {
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
   const queryKey = queryOptions?.queryKey ?? getGetStatusStatusGetQueryKey()
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getStatusStatusGet>>
-  > = ({ signal }) => getStatusStatusGet(requestOptions, signal)
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getStatusStatusGet>>> = ({ signal }) =>
+    getStatusStatusGet(requestOptions, signal)
 
-  return {
-    queryKey,
-    queryFn,
-    staleTime: 300000,
-    retry: 1,
-    ...queryOptions,
-  } as UseQueryOptions<
+  return { queryKey, queryFn, staleTime: 300000, retry: 1, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getStatusStatusGet>>,
     TError,
     TData
@@ -126,13 +118,7 @@ export function useGetStatusStatusGet<
   TError = unknown,
 >(
   options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getStatusStatusGet>>,
-        TError,
-        TData
-      >
-    > &
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof getStatusStatusGet>>, TError, TData>> &
       Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getStatusStatusGet>>,
@@ -144,20 +130,14 @@ export function useGetStatusStatusGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetStatusStatusGet<
   TData = Awaited<ReturnType<typeof getStatusStatusGet>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getStatusStatusGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getStatusStatusGet>>, TError, TData>
     > &
       Pick<
         UndefinedInitialDataOptions<
@@ -170,27 +150,17 @@ export function useGetStatusStatusGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetStatusStatusGet<
   TData = Awaited<ReturnType<typeof getStatusStatusGet>>,
   TError = unknown,
 >(
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getStatusStatusGet>>,
-        TError,
-        TData
-      >
-    >
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getStatusStatusGet>>, TError, TData>>
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Status
  */
@@ -200,25 +170,16 @@ export function useGetStatusStatusGet<
   TError = unknown,
 >(
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getStatusStatusGet>>,
-        TError,
-        TData
-      >
-    >
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getStatusStatusGet>>, TError, TData>>
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getGetStatusStatusGetQueryOptions(options)
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -233,10 +194,7 @@ export const getHealthHealthGet = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
-  return customInstance<unknown>(
-    { url: `/health`, method: 'GET', signal },
-    options
-  )
+  return customInstance<unknown>({ url: `/health`, method: 'GET', signal }, options)
 }
 
 export const getGetHealthHealthGetQueryKey = () => {
@@ -247,30 +205,17 @@ export const getGetHealthHealthGetQueryOptions = <
   TData = Awaited<ReturnType<typeof getHealthHealthGet>>,
   TError = unknown,
 >(options?: {
-  query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof getHealthHealthGet>>,
-      TError,
-      TData
-    >
-  >
+  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getHealthHealthGet>>, TError, TData>>
   request?: SecondParameter<typeof customInstance>
 }) => {
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
   const queryKey = queryOptions?.queryKey ?? getGetHealthHealthGetQueryKey()
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getHealthHealthGet>>
-  > = ({ signal }) => getHealthHealthGet(requestOptions, signal)
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getHealthHealthGet>>> = ({ signal }) =>
+    getHealthHealthGet(requestOptions, signal)
 
-  return {
-    queryKey,
-    queryFn,
-    staleTime: 300000,
-    retry: 1,
-    ...queryOptions,
-  } as UseQueryOptions<
+  return { queryKey, queryFn, staleTime: 300000, retry: 1, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getHealthHealthGet>>,
     TError,
     TData
@@ -287,13 +232,7 @@ export function useGetHealthHealthGet<
   TError = unknown,
 >(
   options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getHealthHealthGet>>,
-        TError,
-        TData
-      >
-    > &
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof getHealthHealthGet>>, TError, TData>> &
       Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getHealthHealthGet>>,
@@ -305,20 +244,14 @@ export function useGetHealthHealthGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetHealthHealthGet<
   TData = Awaited<ReturnType<typeof getHealthHealthGet>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getHealthHealthGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getHealthHealthGet>>, TError, TData>
     > &
       Pick<
         UndefinedInitialDataOptions<
@@ -331,27 +264,17 @@ export function useGetHealthHealthGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetHealthHealthGet<
   TData = Awaited<ReturnType<typeof getHealthHealthGet>>,
   TError = unknown,
 >(
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getHealthHealthGet>>,
-        TError,
-        TData
-      >
-    >
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getHealthHealthGet>>, TError, TData>>
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Health
  */
@@ -361,25 +284,16 @@ export function useGetHealthHealthGet<
   TError = unknown,
 >(
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getHealthHealthGet>>,
-        TError,
-        TData
-      >
-    >
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getHealthHealthGet>>, TError, TData>>
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getGetHealthHealthGetQueryOptions(options)
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -409,30 +323,19 @@ export const getGetAcquisitionsAcquisitionsGetQueryOptions = <
   TError = unknown,
 >(options?: {
   query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof getAcquisitionsAcquisitionsGet>>,
-      TError,
-      TData
-    >
+    UseQueryOptions<Awaited<ReturnType<typeof getAcquisitionsAcquisitionsGet>>, TError, TData>
   >
   request?: SecondParameter<typeof customInstance>
 }) => {
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
-  const queryKey =
-    queryOptions?.queryKey ?? getGetAcquisitionsAcquisitionsGetQueryKey()
+  const queryKey = queryOptions?.queryKey ?? getGetAcquisitionsAcquisitionsGetQueryKey()
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getAcquisitionsAcquisitionsGet>>
-  > = ({ signal }) => getAcquisitionsAcquisitionsGet(requestOptions, signal)
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getAcquisitionsAcquisitionsGet>>> = ({
+    signal,
+  }) => getAcquisitionsAcquisitionsGet(requestOptions, signal)
 
-  return {
-    queryKey,
-    queryFn,
-    staleTime: 300000,
-    retry: 1,
-    ...queryOptions,
-  } as UseQueryOptions<
+  return { queryKey, queryFn, staleTime: 300000, retry: 1, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getAcquisitionsAcquisitionsGet>>,
     TError,
     TData
@@ -450,11 +353,7 @@ export function useGetAcquisitionsAcquisitionsGet<
 >(
   options: {
     query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getAcquisitionsAcquisitionsGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getAcquisitionsAcquisitionsGet>>, TError, TData>
     > &
       Pick<
         DefinedInitialDataOptions<
@@ -467,20 +366,14 @@ export function useGetAcquisitionsAcquisitionsGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetAcquisitionsAcquisitionsGet<
   TData = Awaited<ReturnType<typeof getAcquisitionsAcquisitionsGet>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getAcquisitionsAcquisitionsGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getAcquisitionsAcquisitionsGet>>, TError, TData>
     > &
       Pick<
         UndefinedInitialDataOptions<
@@ -493,27 +386,19 @@ export function useGetAcquisitionsAcquisitionsGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetAcquisitionsAcquisitionsGet<
   TData = Awaited<ReturnType<typeof getAcquisitionsAcquisitionsGet>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getAcquisitionsAcquisitionsGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getAcquisitionsAcquisitionsGet>>, TError, TData>
     >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Acquisitions
  */
@@ -524,24 +409,17 @@ export function useGetAcquisitionsAcquisitionsGet<
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getAcquisitionsAcquisitionsGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getAcquisitionsAcquisitionsGet>>, TError, TData>
     >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getGetAcquisitionsAcquisitionsGetQueryOptions(options)
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -588,9 +466,7 @@ export const getCreateAcquisitionAcquisitionsPostMutationOptions = <
 > => {
   const mutationKey = ['createAcquisitionAcquisitionsPost']
   const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
@@ -610,8 +486,7 @@ export const getCreateAcquisitionAcquisitionsPostMutationOptions = <
 export type CreateAcquisitionAcquisitionsPostMutationResult = NonNullable<
   Awaited<ReturnType<typeof createAcquisitionAcquisitionsPost>>
 >
-export type CreateAcquisitionAcquisitionsPostMutationBody =
-  AcquisitionCreateRequest
+export type CreateAcquisitionAcquisitionsPostMutationBody = AcquisitionCreateRequest
 export type CreateAcquisitionAcquisitionsPostMutationError = HTTPValidationError
 
 /**
@@ -637,8 +512,7 @@ export const useCreateAcquisitionAcquisitionsPost = <
   { data: AcquisitionCreateRequest },
   TContext
 > => {
-  const mutationOptions =
-    getCreateAcquisitionAcquisitionsPostMutationOptions(options)
+  const mutationOptions = getCreateAcquisitionAcquisitionsPostMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }
@@ -664,18 +538,14 @@ export const getGetAcquisitionAcquisitionsAcquisitionUuidGetQueryKey = (
 }
 
 export const getGetAcquisitionAcquisitionsAcquisitionUuidGetQueryOptions = <
-  TData = Awaited<
-    ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>
-  >,
+  TData = Awaited<ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>>,
   TError = HTTPValidationError,
 >(
   acquisitionUuid: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>
-        >,
+        Awaited<ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>>,
         TError,
         TData
       >
@@ -692,11 +562,7 @@ export const getGetAcquisitionAcquisitionsAcquisitionUuidGetQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>>
   > = ({ signal }) =>
-    getAcquisitionAcquisitionsAcquisitionUuidGet(
-      acquisitionUuid,
-      requestOptions,
-      signal
-    )
+    getAcquisitionAcquisitionsAcquisitionUuidGet(acquisitionUuid, requestOptions, signal)
 
   return {
     queryKey,
@@ -712,96 +578,70 @@ export const getGetAcquisitionAcquisitionsAcquisitionUuidGetQueryOptions = <
   > & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetAcquisitionAcquisitionsAcquisitionUuidGetQueryResult =
-  NonNullable<
-    Awaited<ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>>
-  >
-export type GetAcquisitionAcquisitionsAcquisitionUuidGetQueryError =
-  HTTPValidationError
+export type GetAcquisitionAcquisitionsAcquisitionUuidGetQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>>
+>
+export type GetAcquisitionAcquisitionsAcquisitionUuidGetQueryError = HTTPValidationError
 
 export function useGetAcquisitionAcquisitionsAcquisitionUuidGet<
-  TData = Awaited<
-    ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>
-  >,
+  TData = Awaited<ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>>,
   TError = HTTPValidationError,
 >(
   acquisitionUuid: string,
   options: {
     query: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>
-        >,
+        Awaited<ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>>,
         TError,
         TData
       >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<
-            ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>
-          >,
+          Awaited<ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>>,
           TError,
-          Awaited<
-            ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>
-          >
+          Awaited<ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>>
         >,
         'initialData'
       >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetAcquisitionAcquisitionsAcquisitionUuidGet<
-  TData = Awaited<
-    ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>
-  >,
+  TData = Awaited<ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>>,
   TError = HTTPValidationError,
 >(
   acquisitionUuid: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>
-        >,
+        Awaited<ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>>,
         TError,
         TData
       >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<
-            ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>
-          >,
+          Awaited<ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>>,
           TError,
-          Awaited<
-            ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>
-          >
+          Awaited<ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>>
         >,
         'initialData'
       >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetAcquisitionAcquisitionsAcquisitionUuidGet<
-  TData = Awaited<
-    ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>
-  >,
+  TData = Awaited<ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>>,
   TError = HTTPValidationError,
 >(
   acquisitionUuid: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>
-        >,
+        Awaited<ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>>,
         TError,
         TData
       >
@@ -809,26 +649,20 @@ export function useGetAcquisitionAcquisitionsAcquisitionUuidGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Acquisition
  */
 
 export function useGetAcquisitionAcquisitionsAcquisitionUuidGet<
-  TData = Awaited<
-    ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>
-  >,
+  TData = Awaited<ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>>,
   TError = HTTPValidationError,
 >(
   acquisitionUuid: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>
-        >,
+        Awaited<ReturnType<typeof getAcquisitionAcquisitionsAcquisitionUuidGet>>,
         TError,
         TData
       >
@@ -836,19 +670,15 @@ export function useGetAcquisitionAcquisitionsAcquisitionUuidGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
-  const queryOptions =
-    getGetAcquisitionAcquisitionsAcquisitionUuidGetQueryOptions(
-      acquisitionUuid,
-      options
-    )
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetAcquisitionAcquisitionsAcquisitionUuidGetQueryOptions(
+    acquisitionUuid,
+    options
+  )
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -875,58 +705,47 @@ export const updateAcquisitionAcquisitionsAcquisitionUuidPut = (
   )
 }
 
-export const getUpdateAcquisitionAcquisitionsAcquisitionUuidPutMutationOptions =
-  <TError = HTTPValidationError, TContext = unknown>(options?: {
-    mutation?: UseMutationOptions<
-      Awaited<
-        ReturnType<typeof updateAcquisitionAcquisitionsAcquisitionUuidPut>
-      >,
-      TError,
-      { acquisitionUuid: string; data: AcquisitionUpdateRequest },
-      TContext
-    >
-    request?: SecondParameter<typeof customInstance>
-  }): UseMutationOptions<
+export const getUpdateAcquisitionAcquisitionsAcquisitionUuidPutMutationOptions = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof updateAcquisitionAcquisitionsAcquisitionUuidPut>>,
     TError,
     { acquisitionUuid: string; data: AcquisitionUpdateRequest },
     TContext
-  > => {
-    const mutationKey = ['updateAcquisitionAcquisitionsAcquisitionUuidPut']
-    const { mutation: mutationOptions, request: requestOptions } = options
-      ? options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-        ? options
-        : { ...options, mutation: { ...options.mutation, mutationKey } }
-      : { mutation: { mutationKey }, request: undefined }
+  >
+  request?: SecondParameter<typeof customInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updateAcquisitionAcquisitionsAcquisitionUuidPut>>,
+  TError,
+  { acquisitionUuid: string; data: AcquisitionUpdateRequest },
+  TContext
+> => {
+  const mutationKey = ['updateAcquisitionAcquisitionsAcquisitionUuidPut']
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-    const mutationFn: MutationFunction<
-      Awaited<
-        ReturnType<typeof updateAcquisitionAcquisitionsAcquisitionUuidPut>
-      >,
-      { acquisitionUuid: string; data: AcquisitionUpdateRequest }
-    > = (props) => {
-      const { acquisitionUuid, data } = props ?? {}
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updateAcquisitionAcquisitionsAcquisitionUuidPut>>,
+    { acquisitionUuid: string; data: AcquisitionUpdateRequest }
+  > = (props) => {
+    const { acquisitionUuid, data } = props ?? {}
 
-      return updateAcquisitionAcquisitionsAcquisitionUuidPut(
-        acquisitionUuid,
-        data,
-        requestOptions
-      )
-    }
-
-    return { mutationFn, ...mutationOptions }
+    return updateAcquisitionAcquisitionsAcquisitionUuidPut(acquisitionUuid, data, requestOptions)
   }
 
-export type UpdateAcquisitionAcquisitionsAcquisitionUuidPutMutationResult =
-  NonNullable<
-    Awaited<ReturnType<typeof updateAcquisitionAcquisitionsAcquisitionUuidPut>>
-  >
-export type UpdateAcquisitionAcquisitionsAcquisitionUuidPutMutationBody =
-  AcquisitionUpdateRequest
-export type UpdateAcquisitionAcquisitionsAcquisitionUuidPutMutationError =
-  HTTPValidationError
+  return { mutationFn, ...mutationOptions }
+}
+
+export type UpdateAcquisitionAcquisitionsAcquisitionUuidPutMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updateAcquisitionAcquisitionsAcquisitionUuidPut>>
+>
+export type UpdateAcquisitionAcquisitionsAcquisitionUuidPutMutationBody = AcquisitionUpdateRequest
+export type UpdateAcquisitionAcquisitionsAcquisitionUuidPutMutationError = HTTPValidationError
 
 /**
  * @summary Update Acquisition
@@ -937,9 +756,7 @@ export const useUpdateAcquisitionAcquisitionsAcquisitionUuidPut = <
 >(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<
-        ReturnType<typeof updateAcquisitionAcquisitionsAcquisitionUuidPut>
-      >,
+      Awaited<ReturnType<typeof updateAcquisitionAcquisitionsAcquisitionUuidPut>>,
       TError,
       { acquisitionUuid: string; data: AcquisitionUpdateRequest },
       TContext
@@ -953,8 +770,7 @@ export const useUpdateAcquisitionAcquisitionsAcquisitionUuidPut = <
   { acquisitionUuid: string; data: AcquisitionUpdateRequest },
   TContext
 > => {
-  const mutationOptions =
-    getUpdateAcquisitionAcquisitionsAcquisitionUuidPutMutationOptions(options)
+  const mutationOptions = getUpdateAcquisitionAcquisitionsAcquisitionUuidPutMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }
@@ -972,60 +788,47 @@ export const deleteAcquisitionAcquisitionsAcquisitionUuidDelete = (
   )
 }
 
-export const getDeleteAcquisitionAcquisitionsAcquisitionUuidDeleteMutationOptions =
-  <TError = HTTPValidationError, TContext = unknown>(options?: {
-    mutation?: UseMutationOptions<
-      Awaited<
-        ReturnType<typeof deleteAcquisitionAcquisitionsAcquisitionUuidDelete>
-      >,
-      TError,
-      { acquisitionUuid: string },
-      TContext
-    >
-    request?: SecondParameter<typeof customInstance>
-  }): UseMutationOptions<
-    Awaited<
-      ReturnType<typeof deleteAcquisitionAcquisitionsAcquisitionUuidDelete>
-    >,
+export const getDeleteAcquisitionAcquisitionsAcquisitionUuidDeleteMutationOptions = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteAcquisitionAcquisitionsAcquisitionUuidDelete>>,
     TError,
     { acquisitionUuid: string },
     TContext
-  > => {
-    const mutationKey = ['deleteAcquisitionAcquisitionsAcquisitionUuidDelete']
-    const { mutation: mutationOptions, request: requestOptions } = options
-      ? options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-        ? options
-        : { ...options, mutation: { ...options.mutation, mutationKey } }
-      : { mutation: { mutationKey }, request: undefined }
+  >
+  request?: SecondParameter<typeof customInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteAcquisitionAcquisitionsAcquisitionUuidDelete>>,
+  TError,
+  { acquisitionUuid: string },
+  TContext
+> => {
+  const mutationKey = ['deleteAcquisitionAcquisitionsAcquisitionUuidDelete']
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-    const mutationFn: MutationFunction<
-      Awaited<
-        ReturnType<typeof deleteAcquisitionAcquisitionsAcquisitionUuidDelete>
-      >,
-      { acquisitionUuid: string }
-    > = (props) => {
-      const { acquisitionUuid } = props ?? {}
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteAcquisitionAcquisitionsAcquisitionUuidDelete>>,
+    { acquisitionUuid: string }
+  > = (props) => {
+    const { acquisitionUuid } = props ?? {}
 
-      return deleteAcquisitionAcquisitionsAcquisitionUuidDelete(
-        acquisitionUuid,
-        requestOptions
-      )
-    }
-
-    return { mutationFn, ...mutationOptions }
+    return deleteAcquisitionAcquisitionsAcquisitionUuidDelete(acquisitionUuid, requestOptions)
   }
 
-export type DeleteAcquisitionAcquisitionsAcquisitionUuidDeleteMutationResult =
-  NonNullable<
-    Awaited<
-      ReturnType<typeof deleteAcquisitionAcquisitionsAcquisitionUuidDelete>
-    >
-  >
+  return { mutationFn, ...mutationOptions }
+}
 
-export type DeleteAcquisitionAcquisitionsAcquisitionUuidDeleteMutationError =
-  HTTPValidationError
+export type DeleteAcquisitionAcquisitionsAcquisitionUuidDeleteMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteAcquisitionAcquisitionsAcquisitionUuidDelete>>
+>
+
+export type DeleteAcquisitionAcquisitionsAcquisitionUuidDeleteMutationError = HTTPValidationError
 
 /**
  * @summary Delete Acquisition
@@ -1036,9 +839,7 @@ export const useDeleteAcquisitionAcquisitionsAcquisitionUuidDelete = <
 >(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<
-        ReturnType<typeof deleteAcquisitionAcquisitionsAcquisitionUuidDelete>
-      >,
+      Awaited<ReturnType<typeof deleteAcquisitionAcquisitionsAcquisitionUuidDelete>>,
       TError,
       { acquisitionUuid: string },
       TContext
@@ -1047,17 +848,13 @@ export const useDeleteAcquisitionAcquisitionsAcquisitionUuidDelete = <
   },
   queryClient?: QueryClient
 ): UseMutationResult<
-  Awaited<
-    ReturnType<typeof deleteAcquisitionAcquisitionsAcquisitionUuidDelete>
-  >,
+  Awaited<ReturnType<typeof deleteAcquisitionAcquisitionsAcquisitionUuidDelete>>,
   TError,
   { acquisitionUuid: string },
   TContext
 > => {
   const mutationOptions =
-    getDeleteAcquisitionAcquisitionsAcquisitionUuidDeleteMutationOptions(
-      options
-    )
+    getDeleteAcquisitionAcquisitionsAcquisitionUuidDeleteMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }
@@ -1069,10 +866,7 @@ export const getGridsGridsGet = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
-  return customInstance<GridResponse[]>(
-    { url: `/grids`, method: 'GET', signal },
-    options
-  )
+  return customInstance<GridResponse[]>({ url: `/grids`, method: 'GET', signal }, options)
 }
 
 export const getGetGridsGridsGetQueryKey = () => {
@@ -1083,35 +877,24 @@ export const getGetGridsGridsGetQueryOptions = <
   TData = Awaited<ReturnType<typeof getGridsGridsGet>>,
   TError = unknown,
 >(options?: {
-  query?: Partial<
-    UseQueryOptions<Awaited<ReturnType<typeof getGridsGridsGet>>, TError, TData>
-  >
+  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getGridsGridsGet>>, TError, TData>>
   request?: SecondParameter<typeof customInstance>
 }) => {
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
   const queryKey = queryOptions?.queryKey ?? getGetGridsGridsGetQueryKey()
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getGridsGridsGet>>
-  > = ({ signal }) => getGridsGridsGet(requestOptions, signal)
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getGridsGridsGet>>> = ({ signal }) =>
+    getGridsGridsGet(requestOptions, signal)
 
-  return {
-    queryKey,
-    queryFn,
-    staleTime: 300000,
-    retry: 1,
-    ...queryOptions,
-  } as UseQueryOptions<
+  return { queryKey, queryFn, staleTime: 300000, retry: 1, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getGridsGridsGet>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetGridsGridsGetQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getGridsGridsGet>>
->
+export type GetGridsGridsGetQueryResult = NonNullable<Awaited<ReturnType<typeof getGridsGridsGet>>>
 export type GetGridsGridsGetQueryError = unknown
 
 export function useGetGridsGridsGet<
@@ -1119,13 +902,7 @@ export function useGetGridsGridsGet<
   TError = unknown,
 >(
   options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getGridsGridsGet>>,
-        TError,
-        TData
-      >
-    > &
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof getGridsGridsGet>>, TError, TData>> &
       Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getGridsGridsGet>>,
@@ -1137,21 +914,13 @@ export function useGetGridsGridsGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetGridsGridsGet<
   TData = Awaited<ReturnType<typeof getGridsGridsGet>>,
   TError = unknown,
 >(
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getGridsGridsGet>>,
-        TError,
-        TData
-      >
-    > &
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getGridsGridsGet>>, TError, TData>> &
       Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getGridsGridsGet>>,
@@ -1163,27 +932,17 @@ export function useGetGridsGridsGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetGridsGridsGet<
   TData = Awaited<ReturnType<typeof getGridsGridsGet>>,
   TError = unknown,
 >(
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getGridsGridsGet>>,
-        TError,
-        TData
-      >
-    >
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getGridsGridsGet>>, TError, TData>>
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Grids
  */
@@ -1193,25 +952,16 @@ export function useGetGridsGridsGet<
   TError = unknown,
 >(
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getGridsGridsGet>>,
-        TError,
-        TData
-      >
-    >
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getGridsGridsGet>>, TError, TData>>
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getGetGridsGridsGetQueryOptions(options)
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -1227,10 +977,7 @@ export const getGridGridsGridUuidGet = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
-  return customInstance<GridResponse>(
-    { url: `/grids/${gridUuid}`, method: 'GET', signal },
-    options
-  )
+  return customInstance<GridResponse>({ url: `/grids/${gridUuid}`, method: 'GET', signal }, options)
 }
 
 export const getGetGridGridsGridUuidGetQueryKey = (gridUuid?: string) => {
@@ -1244,23 +991,18 @@ export const getGetGridGridsGridUuidGetQueryOptions = <
   gridUuid: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getGridGridsGridUuidGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getGridGridsGridUuidGet>>, TError, TData>
     >
     request?: SecondParameter<typeof customInstance>
   }
 ) => {
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
-  const queryKey =
-    queryOptions?.queryKey ?? getGetGridGridsGridUuidGetQueryKey(gridUuid)
+  const queryKey = queryOptions?.queryKey ?? getGetGridGridsGridUuidGetQueryKey(gridUuid)
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getGridGridsGridUuidGet>>
-  > = ({ signal }) => getGridGridsGridUuidGet(gridUuid, requestOptions, signal)
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getGridGridsGridUuidGet>>> = ({
+    signal,
+  }) => getGridGridsGridUuidGet(gridUuid, requestOptions, signal)
 
   return {
     queryKey,
@@ -1269,11 +1011,9 @@ export const getGetGridGridsGridUuidGetQueryOptions = <
     staleTime: 300000,
     retry: 1,
     ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof getGridGridsGridUuidGet>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  } as UseQueryOptions<Awaited<ReturnType<typeof getGridGridsGridUuidGet>>, TError, TData> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 }
 
 export type GetGridGridsGridUuidGetQueryResult = NonNullable<
@@ -1288,11 +1028,7 @@ export function useGetGridGridsGridUuidGet<
   gridUuid: string,
   options: {
     query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getGridGridsGridUuidGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getGridGridsGridUuidGet>>, TError, TData>
     > &
       Pick<
         DefinedInitialDataOptions<
@@ -1305,9 +1041,7 @@ export function useGetGridGridsGridUuidGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetGridGridsGridUuidGet<
   TData = Awaited<ReturnType<typeof getGridGridsGridUuidGet>>,
   TError = HTTPValidationError,
@@ -1315,11 +1049,7 @@ export function useGetGridGridsGridUuidGet<
   gridUuid: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getGridGridsGridUuidGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getGridGridsGridUuidGet>>, TError, TData>
     > &
       Pick<
         UndefinedInitialDataOptions<
@@ -1332,9 +1062,7 @@ export function useGetGridGridsGridUuidGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetGridGridsGridUuidGet<
   TData = Awaited<ReturnType<typeof getGridGridsGridUuidGet>>,
   TError = HTTPValidationError,
@@ -1342,18 +1070,12 @@ export function useGetGridGridsGridUuidGet<
   gridUuid: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getGridGridsGridUuidGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getGridGridsGridUuidGet>>, TError, TData>
     >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Grid
  */
@@ -1365,24 +1087,17 @@ export function useGetGridGridsGridUuidGet<
   gridUuid: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getGridGridsGridUuidGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getGridGridsGridUuidGet>>, TError, TData>
     >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getGetGridGridsGridUuidGetQueryOptions(gridUuid, options)
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -1428,9 +1143,7 @@ export const getUpdateGridGridsGridUuidPutMutationOptions = <
 > => {
   const mutationKey = ['updateGridGridsGridUuidPut']
   const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
@@ -1456,10 +1169,7 @@ export type UpdateGridGridsGridUuidPutMutationError = HTTPValidationError
 /**
  * @summary Update Grid
  */
-export const useUpdateGridGridsGridUuidPut = <
-  TError = HTTPValidationError,
-  TContext = unknown,
->(
+export const useUpdateGridGridsGridUuidPut = <TError = HTTPValidationError, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof updateGridGridsGridUuidPut>>,
@@ -1488,10 +1198,7 @@ export const deleteGridGridsGridUuidDelete = (
   gridUuid: string,
   options?: SecondParameter<typeof customInstance>
 ) => {
-  return customInstance<void>(
-    { url: `/grids/${gridUuid}`, method: 'DELETE' },
-    options
-  )
+  return customInstance<void>({ url: `/grids/${gridUuid}`, method: 'DELETE' }, options)
 }
 
 export const getDeleteGridGridsGridUuidDeleteMutationOptions = <
@@ -1513,9 +1220,7 @@ export const getDeleteGridGridsGridUuidDeleteMutationOptions = <
 > => {
   const mutationKey = ['deleteGridGridsGridUuidDelete']
   const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
@@ -1541,10 +1246,7 @@ export type DeleteGridGridsGridUuidDeleteMutationError = HTTPValidationError
 /**
  * @summary Delete Grid
  */
-export const useDeleteGridGridsGridUuidDelete = <
-  TError = HTTPValidationError,
-  TContext = unknown,
->(
+export const useDeleteGridGridsGridUuidDelete = <TError = HTTPValidationError, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof deleteGridGridsGridUuidDelete>>,
@@ -1561,8 +1263,7 @@ export const useDeleteGridGridsGridUuidDelete = <
   { gridUuid: string },
   TContext
 > => {
-  const mutationOptions =
-    getDeleteGridGridsGridUuidDeleteMutationOptions(options)
+  const mutationOptions = getDeleteGridGridsGridUuidDeleteMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }
@@ -1581,179 +1282,117 @@ export const getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet = (
   )
 }
 
-export const getGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGetQueryKey =
-  (acquisitionUuid?: string) => {
-    return [`/acquisitions/${acquisitionUuid}/grids`] as const
-  }
+export const getGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGetQueryKey = (
+  acquisitionUuid?: string
+) => {
+  return [`/acquisitions/${acquisitionUuid}/grids`] as const
+}
 
-export const getGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGetQueryOptions =
-  <
-    TData = Awaited<
-      ReturnType<typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet>
-    >,
-    TError = HTTPValidationError,
-  >(
-    acquisitionUuid: string,
-    options?: {
-      query?: Partial<
-        UseQueryOptions<
-          Awaited<
-            ReturnType<
-              typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet
-            >
-          >,
-          TError,
-          TData
-        >
+export const getGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGetQueryOptions = <
+  TData = Awaited<ReturnType<typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet>>,
+  TError = HTTPValidationError,
+>(
+  acquisitionUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet>>,
+        TError,
+        TData
       >
-      request?: SecondParameter<typeof customInstance>
-    }
-  ) => {
-    const { query: queryOptions, request: requestOptions } = options ?? {}
-
-    const queryKey =
-      queryOptions?.queryKey ??
-      getGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGetQueryKey(
-        acquisitionUuid
-      )
-
-    const queryFn: QueryFunction<
-      Awaited<
-        ReturnType<
-          typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet
-        >
-      >
-    > = ({ signal }) =>
-      getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet(
-        acquisitionUuid,
-        requestOptions,
-        signal
-      )
-
-    return {
-      queryKey,
-      queryFn,
-      enabled: !!acquisitionUuid,
-      staleTime: 300000,
-      retry: 1,
-      ...queryOptions,
-    } as UseQueryOptions<
-      Awaited<
-        ReturnType<
-          typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet
-        >
-      >,
-      TError,
-      TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> }
-  }
-
-export type GetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGetQueryResult =
-  NonNullable<
-    Awaited<
-      ReturnType<typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet>
     >
-  >
-export type GetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGetQueryError =
-  HTTPValidationError
+    request?: SecondParameter<typeof customInstance>
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGetQueryKey(acquisitionUuid)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet>>
+  > = ({ signal }) =>
+    getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet(acquisitionUuid, requestOptions, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!acquisitionUuid,
+    staleTime: 300000,
+    retry: 1,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGetQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet>>
+>
+export type GetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGetQueryError = HTTPValidationError
 
 export function useGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet<
-  TData = Awaited<
-    ReturnType<typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet>
-  >,
+  TData = Awaited<ReturnType<typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet>>,
   TError = HTTPValidationError,
 >(
   acquisitionUuid: string,
   options: {
     query: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<
-            typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet
-          >
-        >,
+        Awaited<ReturnType<typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet>>,
         TError,
         TData
       >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<
-            ReturnType<
-              typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet
-            >
-          >,
+          Awaited<ReturnType<typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet>>,
           TError,
-          Awaited<
-            ReturnType<
-              typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet
-            >
-          >
+          Awaited<ReturnType<typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet>>
         >,
         'initialData'
       >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet<
-  TData = Awaited<
-    ReturnType<typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet>
-  >,
+  TData = Awaited<ReturnType<typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet>>,
   TError = HTTPValidationError,
 >(
   acquisitionUuid: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<
-            typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet
-          >
-        >,
+        Awaited<ReturnType<typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet>>,
         TError,
         TData
       >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<
-            ReturnType<
-              typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet
-            >
-          >,
+          Awaited<ReturnType<typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet>>,
           TError,
-          Awaited<
-            ReturnType<
-              typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet
-            >
-          >
+          Awaited<ReturnType<typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet>>
         >,
         'initialData'
       >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet<
-  TData = Awaited<
-    ReturnType<typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet>
-  >,
+  TData = Awaited<ReturnType<typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet>>,
   TError = HTTPValidationError,
 >(
   acquisitionUuid: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<
-            typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet
-          >
-        >,
+        Awaited<ReturnType<typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet>>,
         TError,
         TData
       >
@@ -1761,28 +1400,20 @@ export function useGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Acquisition Grids
  */
 
 export function useGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet<
-  TData = Awaited<
-    ReturnType<typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet>
-  >,
+  TData = Awaited<ReturnType<typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet>>,
   TError = HTTPValidationError,
 >(
   acquisitionUuid: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<
-            typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet
-          >
-        >,
+        Awaited<ReturnType<typeof getAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet>>,
         TError,
         TData
       >
@@ -1790,19 +1421,15 @@ export function useGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
-  const queryOptions =
-    getGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGetQueryOptions(
-      acquisitionUuid,
-      options
-    )
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGetQueryOptions(
+    acquisitionUuid,
+    options
+  )
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -1831,68 +1458,49 @@ export const createAcquisitionGridAcquisitionsAcquisitionUuidGridsPost = (
   )
 }
 
-export const getCreateAcquisitionGridAcquisitionsAcquisitionUuidGridsPostMutationOptions =
-  <TError = HTTPValidationError, TContext = unknown>(options?: {
-    mutation?: UseMutationOptions<
-      Awaited<
-        ReturnType<
-          typeof createAcquisitionGridAcquisitionsAcquisitionUuidGridsPost
-        >
-      >,
-      TError,
-      { acquisitionUuid: string; data: GridCreateRequest },
-      TContext
-    >
-    request?: SecondParameter<typeof customInstance>
-  }): UseMutationOptions<
-    Awaited<
-      ReturnType<
-        typeof createAcquisitionGridAcquisitionsAcquisitionUuidGridsPost
-      >
-    >,
+export const getCreateAcquisitionGridAcquisitionsAcquisitionUuidGridsPostMutationOptions = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createAcquisitionGridAcquisitionsAcquisitionUuidGridsPost>>,
     TError,
     { acquisitionUuid: string; data: GridCreateRequest },
     TContext
-  > => {
-    const mutationKey = [
-      'createAcquisitionGridAcquisitionsAcquisitionUuidGridsPost',
-    ]
-    const { mutation: mutationOptions, request: requestOptions } = options
-      ? options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-        ? options
-        : { ...options, mutation: { ...options.mutation, mutationKey } }
-      : { mutation: { mutationKey }, request: undefined }
+  >
+  request?: SecondParameter<typeof customInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createAcquisitionGridAcquisitionsAcquisitionUuidGridsPost>>,
+  TError,
+  { acquisitionUuid: string; data: GridCreateRequest },
+  TContext
+> => {
+  const mutationKey = ['createAcquisitionGridAcquisitionsAcquisitionUuidGridsPost']
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-    const mutationFn: MutationFunction<
-      Awaited<
-        ReturnType<
-          typeof createAcquisitionGridAcquisitionsAcquisitionUuidGridsPost
-        >
-      >,
-      { acquisitionUuid: string; data: GridCreateRequest }
-    > = (props) => {
-      const { acquisitionUuid, data } = props ?? {}
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createAcquisitionGridAcquisitionsAcquisitionUuidGridsPost>>,
+    { acquisitionUuid: string; data: GridCreateRequest }
+  > = (props) => {
+    const { acquisitionUuid, data } = props ?? {}
 
-      return createAcquisitionGridAcquisitionsAcquisitionUuidGridsPost(
-        acquisitionUuid,
-        data,
-        requestOptions
-      )
-    }
-
-    return { mutationFn, ...mutationOptions }
+    return createAcquisitionGridAcquisitionsAcquisitionUuidGridsPost(
+      acquisitionUuid,
+      data,
+      requestOptions
+    )
   }
 
-export type CreateAcquisitionGridAcquisitionsAcquisitionUuidGridsPostMutationResult =
-  NonNullable<
-    Awaited<
-      ReturnType<
-        typeof createAcquisitionGridAcquisitionsAcquisitionUuidGridsPost
-      >
-    >
-  >
+  return { mutationFn, ...mutationOptions }
+}
+
+export type CreateAcquisitionGridAcquisitionsAcquisitionUuidGridsPostMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createAcquisitionGridAcquisitionsAcquisitionUuidGridsPost>>
+>
 export type CreateAcquisitionGridAcquisitionsAcquisitionUuidGridsPostMutationBody =
   GridCreateRequest
 export type CreateAcquisitionGridAcquisitionsAcquisitionUuidGridsPostMutationError =
@@ -1907,11 +1515,7 @@ export const useCreateAcquisitionGridAcquisitionsAcquisitionUuidGridsPost = <
 >(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<
-        ReturnType<
-          typeof createAcquisitionGridAcquisitionsAcquisitionUuidGridsPost
-        >
-      >,
+      Awaited<ReturnType<typeof createAcquisitionGridAcquisitionsAcquisitionUuidGridsPost>>,
       TError,
       { acquisitionUuid: string; data: GridCreateRequest },
       TContext
@@ -1920,17 +1524,13 @@ export const useCreateAcquisitionGridAcquisitionsAcquisitionUuidGridsPost = <
   },
   queryClient?: QueryClient
 ): UseMutationResult<
-  Awaited<
-    ReturnType<typeof createAcquisitionGridAcquisitionsAcquisitionUuidGridsPost>
-  >,
+  Awaited<ReturnType<typeof createAcquisitionGridAcquisitionsAcquisitionUuidGridsPost>>,
   TError,
   { acquisitionUuid: string; data: GridCreateRequest },
   TContext
 > => {
   const mutationOptions =
-    getCreateAcquisitionGridAcquisitionsAcquisitionUuidGridsPostMutationOptions(
-      options
-    )
+    getCreateAcquisitionGridAcquisitionsAcquisitionUuidGridsPostMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }
@@ -1968,9 +1568,7 @@ export const getGridRegisteredGridsGridUuidRegisteredPostMutationOptions = <
 > => {
   const mutationKey = ['gridRegisteredGridsGridUuidRegisteredPost']
   const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
@@ -1987,13 +1585,11 @@ export const getGridRegisteredGridsGridUuidRegisteredPostMutationOptions = <
   return { mutationFn, ...mutationOptions }
 }
 
-export type GridRegisteredGridsGridUuidRegisteredPostMutationResult =
-  NonNullable<
-    Awaited<ReturnType<typeof gridRegisteredGridsGridUuidRegisteredPost>>
-  >
+export type GridRegisteredGridsGridUuidRegisteredPostMutationResult = NonNullable<
+  Awaited<ReturnType<typeof gridRegisteredGridsGridUuidRegisteredPost>>
+>
 
-export type GridRegisteredGridsGridUuidRegisteredPostMutationError =
-  HTTPValidationError
+export type GridRegisteredGridsGridUuidRegisteredPostMutationError = HTTPValidationError
 
 /**
  * @summary Grid Registered
@@ -2018,8 +1614,7 @@ export const useGridRegisteredGridsGridUuidRegisteredPost = <
   { gridUuid: string },
   TContext
 > => {
-  const mutationOptions =
-    getGridRegisteredGridsGridUuidRegisteredPostMutationOptions(options)
+  const mutationOptions = getGridRegisteredGridsGridUuidRegisteredPostMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }
@@ -2031,10 +1626,7 @@ export const getAtlasesAtlasesGet = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
-  return customInstance<AtlasResponse[]>(
-    { url: `/atlases`, method: 'GET', signal },
-    options
-  )
+  return customInstance<AtlasResponse[]>({ url: `/atlases`, method: 'GET', signal }, options)
 }
 
 export const getGetAtlasesAtlasesGetQueryKey = () => {
@@ -2045,30 +1637,17 @@ export const getGetAtlasesAtlasesGetQueryOptions = <
   TData = Awaited<ReturnType<typeof getAtlasesAtlasesGet>>,
   TError = unknown,
 >(options?: {
-  query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof getAtlasesAtlasesGet>>,
-      TError,
-      TData
-    >
-  >
+  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getAtlasesAtlasesGet>>, TError, TData>>
   request?: SecondParameter<typeof customInstance>
 }) => {
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
   const queryKey = queryOptions?.queryKey ?? getGetAtlasesAtlasesGetQueryKey()
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getAtlasesAtlasesGet>>
-  > = ({ signal }) => getAtlasesAtlasesGet(requestOptions, signal)
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getAtlasesAtlasesGet>>> = ({ signal }) =>
+    getAtlasesAtlasesGet(requestOptions, signal)
 
-  return {
-    queryKey,
-    queryFn,
-    staleTime: 300000,
-    retry: 1,
-    ...queryOptions,
-  } as UseQueryOptions<
+  return { queryKey, queryFn, staleTime: 300000, retry: 1, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getAtlasesAtlasesGet>>,
     TError,
     TData
@@ -2086,11 +1665,7 @@ export function useGetAtlasesAtlasesGet<
 >(
   options: {
     query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getAtlasesAtlasesGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getAtlasesAtlasesGet>>, TError, TData>
     > &
       Pick<
         DefinedInitialDataOptions<
@@ -2103,20 +1678,14 @@ export function useGetAtlasesAtlasesGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetAtlasesAtlasesGet<
   TData = Awaited<ReturnType<typeof getAtlasesAtlasesGet>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getAtlasesAtlasesGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getAtlasesAtlasesGet>>, TError, TData>
     > &
       Pick<
         UndefinedInitialDataOptions<
@@ -2129,27 +1698,19 @@ export function useGetAtlasesAtlasesGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetAtlasesAtlasesGet<
   TData = Awaited<ReturnType<typeof getAtlasesAtlasesGet>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getAtlasesAtlasesGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getAtlasesAtlasesGet>>, TError, TData>
     >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Atlases
  */
@@ -2160,24 +1721,17 @@ export function useGetAtlasesAtlasesGet<
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getAtlasesAtlasesGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getAtlasesAtlasesGet>>, TError, TData>
     >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getGetAtlasesAtlasesGetQueryOptions(options)
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -2210,24 +1764,18 @@ export const getGetAtlasAtlasesAtlasUuidGetQueryOptions = <
   atlasUuid: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getAtlasAtlasesAtlasUuidGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getAtlasAtlasesAtlasUuidGet>>, TError, TData>
     >
     request?: SecondParameter<typeof customInstance>
   }
 ) => {
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
-  const queryKey =
-    queryOptions?.queryKey ?? getGetAtlasAtlasesAtlasUuidGetQueryKey(atlasUuid)
+  const queryKey = queryOptions?.queryKey ?? getGetAtlasAtlasesAtlasUuidGetQueryKey(atlasUuid)
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getAtlasAtlasesAtlasUuidGet>>
-  > = ({ signal }) =>
-    getAtlasAtlasesAtlasUuidGet(atlasUuid, requestOptions, signal)
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getAtlasAtlasesAtlasUuidGet>>> = ({
+    signal,
+  }) => getAtlasAtlasesAtlasUuidGet(atlasUuid, requestOptions, signal)
 
   return {
     queryKey,
@@ -2236,11 +1784,9 @@ export const getGetAtlasAtlasesAtlasUuidGetQueryOptions = <
     staleTime: 300000,
     retry: 1,
     ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof getAtlasAtlasesAtlasUuidGet>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  } as UseQueryOptions<Awaited<ReturnType<typeof getAtlasAtlasesAtlasUuidGet>>, TError, TData> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 }
 
 export type GetAtlasAtlasesAtlasUuidGetQueryResult = NonNullable<
@@ -2255,11 +1801,7 @@ export function useGetAtlasAtlasesAtlasUuidGet<
   atlasUuid: string,
   options: {
     query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getAtlasAtlasesAtlasUuidGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getAtlasAtlasesAtlasUuidGet>>, TError, TData>
     > &
       Pick<
         DefinedInitialDataOptions<
@@ -2272,9 +1814,7 @@ export function useGetAtlasAtlasesAtlasUuidGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetAtlasAtlasesAtlasUuidGet<
   TData = Awaited<ReturnType<typeof getAtlasAtlasesAtlasUuidGet>>,
   TError = HTTPValidationError,
@@ -2282,11 +1822,7 @@ export function useGetAtlasAtlasesAtlasUuidGet<
   atlasUuid: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getAtlasAtlasesAtlasUuidGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getAtlasAtlasesAtlasUuidGet>>, TError, TData>
     > &
       Pick<
         UndefinedInitialDataOptions<
@@ -2299,9 +1835,7 @@ export function useGetAtlasAtlasesAtlasUuidGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetAtlasAtlasesAtlasUuidGet<
   TData = Awaited<ReturnType<typeof getAtlasAtlasesAtlasUuidGet>>,
   TError = HTTPValidationError,
@@ -2309,18 +1843,12 @@ export function useGetAtlasAtlasesAtlasUuidGet<
   atlasUuid: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getAtlasAtlasesAtlasUuidGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getAtlasAtlasesAtlasUuidGet>>, TError, TData>
     >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Atlas
  */
@@ -2332,27 +1860,17 @@ export function useGetAtlasAtlasesAtlasUuidGet<
   atlasUuid: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getAtlasAtlasesAtlasUuidGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getAtlasAtlasesAtlasUuidGet>>, TError, TData>
     >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
-  const queryOptions = getGetAtlasAtlasesAtlasUuidGetQueryOptions(
-    atlasUuid,
-    options
-  )
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetAtlasAtlasesAtlasUuidGetQueryOptions(atlasUuid, options)
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -2398,9 +1916,7 @@ export const getUpdateAtlasAtlasesAtlasUuidPutMutationOptions = <
 > => {
   const mutationKey = ['updateAtlasAtlasesAtlasUuidPut']
   const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
@@ -2426,10 +1942,7 @@ export type UpdateAtlasAtlasesAtlasUuidPutMutationError = HTTPValidationError
 /**
  * @summary Update Atlas
  */
-export const useUpdateAtlasAtlasesAtlasUuidPut = <
-  TError = HTTPValidationError,
-  TContext = unknown,
->(
+export const useUpdateAtlasAtlasesAtlasUuidPut = <TError = HTTPValidationError, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof updateAtlasAtlasesAtlasUuidPut>>,
@@ -2446,8 +1959,7 @@ export const useUpdateAtlasAtlasesAtlasUuidPut = <
   { atlasUuid: string; data: AtlasUpdateRequest },
   TContext
 > => {
-  const mutationOptions =
-    getUpdateAtlasAtlasesAtlasUuidPutMutationOptions(options)
+  const mutationOptions = getUpdateAtlasAtlasesAtlasUuidPutMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }
@@ -2459,10 +1971,7 @@ export const deleteAtlasAtlasesAtlasUuidDelete = (
   atlasUuid: string,
   options?: SecondParameter<typeof customInstance>
 ) => {
-  return customInstance<void>(
-    { url: `/atlases/${atlasUuid}`, method: 'DELETE' },
-    options
-  )
+  return customInstance<void>({ url: `/atlases/${atlasUuid}`, method: 'DELETE' }, options)
 }
 
 export const getDeleteAtlasAtlasesAtlasUuidDeleteMutationOptions = <
@@ -2484,9 +1993,7 @@ export const getDeleteAtlasAtlasesAtlasUuidDeleteMutationOptions = <
 > => {
   const mutationKey = ['deleteAtlasAtlasesAtlasUuidDelete']
   const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
@@ -2532,8 +2039,7 @@ export const useDeleteAtlasAtlasesAtlasUuidDelete = <
   { atlasUuid: string },
   TContext
 > => {
-  const mutationOptions =
-    getDeleteAtlasAtlasesAtlasUuidDeleteMutationOptions(options)
+  const mutationOptions = getDeleteAtlasAtlasesAtlasUuidDeleteMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }
@@ -2552,9 +2058,7 @@ export const getGridAtlasGridsGridUuidAtlasGet = (
   )
 }
 
-export const getGetGridAtlasGridsGridUuidAtlasGetQueryKey = (
-  gridUuid?: string
-) => {
+export const getGetGridAtlasGridsGridUuidAtlasGetQueryKey = (gridUuid?: string) => {
   return [`/grids/${gridUuid}/atlas`] as const
 }
 
@@ -2565,25 +2069,18 @@ export const getGetGridAtlasGridsGridUuidAtlasGetQueryOptions = <
   gridUuid: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getGridAtlasGridsGridUuidAtlasGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getGridAtlasGridsGridUuidAtlasGet>>, TError, TData>
     >
     request?: SecondParameter<typeof customInstance>
   }
 ) => {
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
-  const queryKey =
-    queryOptions?.queryKey ??
-    getGetGridAtlasGridsGridUuidAtlasGetQueryKey(gridUuid)
+  const queryKey = queryOptions?.queryKey ?? getGetGridAtlasGridsGridUuidAtlasGetQueryKey(gridUuid)
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getGridAtlasGridsGridUuidAtlasGet>>
-  > = ({ signal }) =>
-    getGridAtlasGridsGridUuidAtlasGet(gridUuid, requestOptions, signal)
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getGridAtlasGridsGridUuidAtlasGet>>> = ({
+    signal,
+  }) => getGridAtlasGridsGridUuidAtlasGet(gridUuid, requestOptions, signal)
 
   return {
     queryKey,
@@ -2611,11 +2108,7 @@ export function useGetGridAtlasGridsGridUuidAtlasGet<
   gridUuid: string,
   options: {
     query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getGridAtlasGridsGridUuidAtlasGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getGridAtlasGridsGridUuidAtlasGet>>, TError, TData>
     > &
       Pick<
         DefinedInitialDataOptions<
@@ -2628,9 +2121,7 @@ export function useGetGridAtlasGridsGridUuidAtlasGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetGridAtlasGridsGridUuidAtlasGet<
   TData = Awaited<ReturnType<typeof getGridAtlasGridsGridUuidAtlasGet>>,
   TError = HTTPValidationError,
@@ -2638,11 +2129,7 @@ export function useGetGridAtlasGridsGridUuidAtlasGet<
   gridUuid: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getGridAtlasGridsGridUuidAtlasGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getGridAtlasGridsGridUuidAtlasGet>>, TError, TData>
     > &
       Pick<
         UndefinedInitialDataOptions<
@@ -2655,9 +2142,7 @@ export function useGetGridAtlasGridsGridUuidAtlasGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetGridAtlasGridsGridUuidAtlasGet<
   TData = Awaited<ReturnType<typeof getGridAtlasGridsGridUuidAtlasGet>>,
   TError = HTTPValidationError,
@@ -2665,18 +2150,12 @@ export function useGetGridAtlasGridsGridUuidAtlasGet<
   gridUuid: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getGridAtlasGridsGridUuidAtlasGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getGridAtlasGridsGridUuidAtlasGet>>, TError, TData>
     >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Grid Atlas
  */
@@ -2688,27 +2167,17 @@ export function useGetGridAtlasGridsGridUuidAtlasGet<
   gridUuid: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getGridAtlasGridsGridUuidAtlasGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getGridAtlasGridsGridUuidAtlasGet>>, TError, TData>
     >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
-  const queryOptions = getGetGridAtlasGridsGridUuidAtlasGetQueryOptions(
-    gridUuid,
-    options
-  )
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetGridAtlasGridsGridUuidAtlasGetQueryOptions(gridUuid, options)
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -2756,9 +2225,7 @@ export const getCreateGridAtlasGridsGridUuidAtlasPostMutationOptions = <
 > => {
   const mutationKey = ['createGridAtlasGridsGridUuidAtlasPost']
   const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
@@ -2778,10 +2245,8 @@ export const getCreateGridAtlasGridsGridUuidAtlasPostMutationOptions = <
 export type CreateGridAtlasGridsGridUuidAtlasPostMutationResult = NonNullable<
   Awaited<ReturnType<typeof createGridAtlasGridsGridUuidAtlasPost>>
 >
-export type CreateGridAtlasGridsGridUuidAtlasPostMutationBody =
-  AtlasCreateRequest
-export type CreateGridAtlasGridsGridUuidAtlasPostMutationError =
-  HTTPValidationError
+export type CreateGridAtlasGridsGridUuidAtlasPostMutationBody = AtlasCreateRequest
+export type CreateGridAtlasGridsGridUuidAtlasPostMutationError = HTTPValidationError
 
 /**
  * @summary Create Grid Atlas
@@ -2806,8 +2271,7 @@ export const useCreateGridAtlasGridsGridUuidAtlasPost = <
   { gridUuid: string; data: AtlasCreateRequest },
   TContext
 > => {
-  const mutationOptions =
-    getCreateGridAtlasGridsGridUuidAtlasPostMutationOptions(options)
+  const mutationOptions = getCreateGridAtlasGridsGridUuidAtlasPostMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }
@@ -2834,30 +2298,19 @@ export const getGetAtlasTilesAtlasTilesGetQueryOptions = <
   TError = unknown,
 >(options?: {
   query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof getAtlasTilesAtlasTilesGet>>,
-      TError,
-      TData
-    >
+    UseQueryOptions<Awaited<ReturnType<typeof getAtlasTilesAtlasTilesGet>>, TError, TData>
   >
   request?: SecondParameter<typeof customInstance>
 }) => {
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
-  const queryKey =
-    queryOptions?.queryKey ?? getGetAtlasTilesAtlasTilesGetQueryKey()
+  const queryKey = queryOptions?.queryKey ?? getGetAtlasTilesAtlasTilesGetQueryKey()
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getAtlasTilesAtlasTilesGet>>
-  > = ({ signal }) => getAtlasTilesAtlasTilesGet(requestOptions, signal)
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getAtlasTilesAtlasTilesGet>>> = ({
+    signal,
+  }) => getAtlasTilesAtlasTilesGet(requestOptions, signal)
 
-  return {
-    queryKey,
-    queryFn,
-    staleTime: 300000,
-    retry: 1,
-    ...queryOptions,
-  } as UseQueryOptions<
+  return { queryKey, queryFn, staleTime: 300000, retry: 1, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getAtlasTilesAtlasTilesGet>>,
     TError,
     TData
@@ -2875,11 +2328,7 @@ export function useGetAtlasTilesAtlasTilesGet<
 >(
   options: {
     query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getAtlasTilesAtlasTilesGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getAtlasTilesAtlasTilesGet>>, TError, TData>
     > &
       Pick<
         DefinedInitialDataOptions<
@@ -2892,20 +2341,14 @@ export function useGetAtlasTilesAtlasTilesGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetAtlasTilesAtlasTilesGet<
   TData = Awaited<ReturnType<typeof getAtlasTilesAtlasTilesGet>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getAtlasTilesAtlasTilesGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getAtlasTilesAtlasTilesGet>>, TError, TData>
     > &
       Pick<
         UndefinedInitialDataOptions<
@@ -2918,27 +2361,19 @@ export function useGetAtlasTilesAtlasTilesGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetAtlasTilesAtlasTilesGet<
   TData = Awaited<ReturnType<typeof getAtlasTilesAtlasTilesGet>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getAtlasTilesAtlasTilesGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getAtlasTilesAtlasTilesGet>>, TError, TData>
     >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Atlas Tiles
  */
@@ -2949,24 +2384,17 @@ export function useGetAtlasTilesAtlasTilesGet<
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getAtlasTilesAtlasTilesGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getAtlasTilesAtlasTilesGet>>, TError, TData>
     >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getGetAtlasTilesAtlasTilesGetQueryOptions(options)
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -2988,9 +2416,7 @@ export const getAtlasTileAtlasTilesTileUuidGet = (
   )
 }
 
-export const getGetAtlasTileAtlasTilesTileUuidGetQueryKey = (
-  tileUuid?: string
-) => {
+export const getGetAtlasTileAtlasTilesTileUuidGetQueryKey = (tileUuid?: string) => {
   return [`/atlas-tiles/${tileUuid}`] as const
 }
 
@@ -3001,25 +2427,18 @@ export const getGetAtlasTileAtlasTilesTileUuidGetQueryOptions = <
   tileUuid: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getAtlasTileAtlasTilesTileUuidGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getAtlasTileAtlasTilesTileUuidGet>>, TError, TData>
     >
     request?: SecondParameter<typeof customInstance>
   }
 ) => {
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
-  const queryKey =
-    queryOptions?.queryKey ??
-    getGetAtlasTileAtlasTilesTileUuidGetQueryKey(tileUuid)
+  const queryKey = queryOptions?.queryKey ?? getGetAtlasTileAtlasTilesTileUuidGetQueryKey(tileUuid)
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getAtlasTileAtlasTilesTileUuidGet>>
-  > = ({ signal }) =>
-    getAtlasTileAtlasTilesTileUuidGet(tileUuid, requestOptions, signal)
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getAtlasTileAtlasTilesTileUuidGet>>> = ({
+    signal,
+  }) => getAtlasTileAtlasTilesTileUuidGet(tileUuid, requestOptions, signal)
 
   return {
     queryKey,
@@ -3047,11 +2466,7 @@ export function useGetAtlasTileAtlasTilesTileUuidGet<
   tileUuid: string,
   options: {
     query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getAtlasTileAtlasTilesTileUuidGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getAtlasTileAtlasTilesTileUuidGet>>, TError, TData>
     > &
       Pick<
         DefinedInitialDataOptions<
@@ -3064,9 +2479,7 @@ export function useGetAtlasTileAtlasTilesTileUuidGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetAtlasTileAtlasTilesTileUuidGet<
   TData = Awaited<ReturnType<typeof getAtlasTileAtlasTilesTileUuidGet>>,
   TError = HTTPValidationError,
@@ -3074,11 +2487,7 @@ export function useGetAtlasTileAtlasTilesTileUuidGet<
   tileUuid: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getAtlasTileAtlasTilesTileUuidGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getAtlasTileAtlasTilesTileUuidGet>>, TError, TData>
     > &
       Pick<
         UndefinedInitialDataOptions<
@@ -3091,9 +2500,7 @@ export function useGetAtlasTileAtlasTilesTileUuidGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetAtlasTileAtlasTilesTileUuidGet<
   TData = Awaited<ReturnType<typeof getAtlasTileAtlasTilesTileUuidGet>>,
   TError = HTTPValidationError,
@@ -3101,18 +2508,12 @@ export function useGetAtlasTileAtlasTilesTileUuidGet<
   tileUuid: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getAtlasTileAtlasTilesTileUuidGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getAtlasTileAtlasTilesTileUuidGet>>, TError, TData>
     >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Atlas Tile
  */
@@ -3124,27 +2525,17 @@ export function useGetAtlasTileAtlasTilesTileUuidGet<
   tileUuid: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getAtlasTileAtlasTilesTileUuidGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getAtlasTileAtlasTilesTileUuidGet>>, TError, TData>
     >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
-  const queryOptions = getGetAtlasTileAtlasTilesTileUuidGetQueryOptions(
-    tileUuid,
-    options
-  )
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetAtlasTileAtlasTilesTileUuidGetQueryOptions(tileUuid, options)
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -3190,9 +2581,7 @@ export const getUpdateAtlasTileAtlasTilesTileUuidPutMutationOptions = <
 > => {
   const mutationKey = ['updateAtlasTileAtlasTilesTileUuidPut']
   const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
@@ -3212,10 +2601,8 @@ export const getUpdateAtlasTileAtlasTilesTileUuidPutMutationOptions = <
 export type UpdateAtlasTileAtlasTilesTileUuidPutMutationResult = NonNullable<
   Awaited<ReturnType<typeof updateAtlasTileAtlasTilesTileUuidPut>>
 >
-export type UpdateAtlasTileAtlasTilesTileUuidPutMutationBody =
-  AtlasTileUpdateRequest
-export type UpdateAtlasTileAtlasTilesTileUuidPutMutationError =
-  HTTPValidationError
+export type UpdateAtlasTileAtlasTilesTileUuidPutMutationBody = AtlasTileUpdateRequest
+export type UpdateAtlasTileAtlasTilesTileUuidPutMutationError = HTTPValidationError
 
 /**
  * @summary Update Atlas Tile
@@ -3240,8 +2627,7 @@ export const useUpdateAtlasTileAtlasTilesTileUuidPut = <
   { tileUuid: string; data: AtlasTileUpdateRequest },
   TContext
 > => {
-  const mutationOptions =
-    getUpdateAtlasTileAtlasTilesTileUuidPutMutationOptions(options)
+  const mutationOptions = getUpdateAtlasTileAtlasTilesTileUuidPutMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }
@@ -3253,10 +2639,7 @@ export const deleteAtlasTileAtlasTilesTileUuidDelete = (
   tileUuid: string,
   options?: SecondParameter<typeof customInstance>
 ) => {
-  return customInstance<void>(
-    { url: `/atlas-tiles/${tileUuid}`, method: 'DELETE' },
-    options
-  )
+  return customInstance<void>({ url: `/atlas-tiles/${tileUuid}`, method: 'DELETE' }, options)
 }
 
 export const getDeleteAtlasTileAtlasTilesTileUuidDeleteMutationOptions = <
@@ -3278,9 +2661,7 @@ export const getDeleteAtlasTileAtlasTilesTileUuidDeleteMutationOptions = <
 > => {
   const mutationKey = ['deleteAtlasTileAtlasTilesTileUuidDelete']
   const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
@@ -3301,8 +2682,7 @@ export type DeleteAtlasTileAtlasTilesTileUuidDeleteMutationResult = NonNullable<
   Awaited<ReturnType<typeof deleteAtlasTileAtlasTilesTileUuidDelete>>
 >
 
-export type DeleteAtlasTileAtlasTilesTileUuidDeleteMutationError =
-  HTTPValidationError
+export type DeleteAtlasTileAtlasTilesTileUuidDeleteMutationError = HTTPValidationError
 
 /**
  * @summary Delete Atlas Tile
@@ -3327,8 +2707,7 @@ export const useDeleteAtlasTileAtlasTilesTileUuidDelete = <
   { tileUuid: string },
   TContext
 > => {
-  const mutationOptions =
-    getDeleteAtlasTileAtlasTilesTileUuidDeleteMutationOptions(options)
+  const mutationOptions = getDeleteAtlasTileAtlasTilesTileUuidDeleteMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }
@@ -3347,25 +2726,19 @@ export const getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet = (
   )
 }
 
-export const getGetAtlasTilesByAtlasAtlasesAtlasUuidTilesGetQueryKey = (
-  atlasUuid?: string
-) => {
+export const getGetAtlasTilesByAtlasAtlasesAtlasUuidTilesGetQueryKey = (atlasUuid?: string) => {
   return [`/atlases/${atlasUuid}/tiles`] as const
 }
 
 export const getGetAtlasTilesByAtlasAtlasesAtlasUuidTilesGetQueryOptions = <
-  TData = Awaited<
-    ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>
-  >,
+  TData = Awaited<ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>>,
   TError = HTTPValidationError,
 >(
   atlasUuid: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>
-        >,
+        Awaited<ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>>,
         TError,
         TData
       >
@@ -3376,17 +2749,12 @@ export const getGetAtlasTilesByAtlasAtlasesAtlasUuidTilesGetQueryOptions = <
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
   const queryKey =
-    queryOptions?.queryKey ??
-    getGetAtlasTilesByAtlasAtlasesAtlasUuidTilesGetQueryKey(atlasUuid)
+    queryOptions?.queryKey ?? getGetAtlasTilesByAtlasAtlasesAtlasUuidTilesGetQueryKey(atlasUuid)
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>>
   > = ({ signal }) =>
-    getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet(
-      atlasUuid,
-      requestOptions,
-      signal
-    )
+    getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet(atlasUuid, requestOptions, signal)
 
   return {
     queryKey,
@@ -3402,96 +2770,70 @@ export const getGetAtlasTilesByAtlasAtlasesAtlasUuidTilesGetQueryOptions = <
   > & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetAtlasTilesByAtlasAtlasesAtlasUuidTilesGetQueryResult =
-  NonNullable<
-    Awaited<ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>>
-  >
-export type GetAtlasTilesByAtlasAtlasesAtlasUuidTilesGetQueryError =
-  HTTPValidationError
+export type GetAtlasTilesByAtlasAtlasesAtlasUuidTilesGetQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>>
+>
+export type GetAtlasTilesByAtlasAtlasesAtlasUuidTilesGetQueryError = HTTPValidationError
 
 export function useGetAtlasTilesByAtlasAtlasesAtlasUuidTilesGet<
-  TData = Awaited<
-    ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>
-  >,
+  TData = Awaited<ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>>,
   TError = HTTPValidationError,
 >(
   atlasUuid: string,
   options: {
     query: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>
-        >,
+        Awaited<ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>>,
         TError,
         TData
       >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<
-            ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>
-          >,
+          Awaited<ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>>,
           TError,
-          Awaited<
-            ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>
-          >
+          Awaited<ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>>
         >,
         'initialData'
       >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetAtlasTilesByAtlasAtlasesAtlasUuidTilesGet<
-  TData = Awaited<
-    ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>
-  >,
+  TData = Awaited<ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>>,
   TError = HTTPValidationError,
 >(
   atlasUuid: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>
-        >,
+        Awaited<ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>>,
         TError,
         TData
       >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<
-            ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>
-          >,
+          Awaited<ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>>,
           TError,
-          Awaited<
-            ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>
-          >
+          Awaited<ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>>
         >,
         'initialData'
       >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetAtlasTilesByAtlasAtlasesAtlasUuidTilesGet<
-  TData = Awaited<
-    ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>
-  >,
+  TData = Awaited<ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>>,
   TError = HTTPValidationError,
 >(
   atlasUuid: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>
-        >,
+        Awaited<ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>>,
         TError,
         TData
       >
@@ -3499,26 +2841,20 @@ export function useGetAtlasTilesByAtlasAtlasesAtlasUuidTilesGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Atlas Tiles By Atlas
  */
 
 export function useGetAtlasTilesByAtlasAtlasesAtlasUuidTilesGet<
-  TData = Awaited<
-    ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>
-  >,
+  TData = Awaited<ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>>,
   TError = HTTPValidationError,
 >(
   atlasUuid: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>
-        >,
+        Awaited<ReturnType<typeof getAtlasTilesByAtlasAtlasesAtlasUuidTilesGet>>,
         TError,
         TData
       >
@@ -3526,19 +2862,15 @@ export function useGetAtlasTilesByAtlasAtlasesAtlasUuidTilesGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
-  const queryOptions =
-    getGetAtlasTilesByAtlasAtlasesAtlasUuidTilesGetQueryOptions(
-      atlasUuid,
-      options
-    )
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetAtlasTilesByAtlasAtlasesAtlasUuidTilesGetQueryOptions(
+    atlasUuid,
+    options
+  )
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -3567,60 +2899,47 @@ export const createAtlasTileForAtlasAtlasesAtlasUuidTilesPost = (
   )
 }
 
-export const getCreateAtlasTileForAtlasAtlasesAtlasUuidTilesPostMutationOptions =
-  <TError = HTTPValidationError, TContext = unknown>(options?: {
-    mutation?: UseMutationOptions<
-      Awaited<
-        ReturnType<typeof createAtlasTileForAtlasAtlasesAtlasUuidTilesPost>
-      >,
-      TError,
-      { atlasUuid: string; data: AtlasTileCreateRequest },
-      TContext
-    >
-    request?: SecondParameter<typeof customInstance>
-  }): UseMutationOptions<
-    Awaited<
-      ReturnType<typeof createAtlasTileForAtlasAtlasesAtlasUuidTilesPost>
-    >,
+export const getCreateAtlasTileForAtlasAtlasesAtlasUuidTilesPostMutationOptions = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createAtlasTileForAtlasAtlasesAtlasUuidTilesPost>>,
     TError,
     { atlasUuid: string; data: AtlasTileCreateRequest },
     TContext
-  > => {
-    const mutationKey = ['createAtlasTileForAtlasAtlasesAtlasUuidTilesPost']
-    const { mutation: mutationOptions, request: requestOptions } = options
-      ? options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-        ? options
-        : { ...options, mutation: { ...options.mutation, mutationKey } }
-      : { mutation: { mutationKey }, request: undefined }
+  >
+  request?: SecondParameter<typeof customInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createAtlasTileForAtlasAtlasesAtlasUuidTilesPost>>,
+  TError,
+  { atlasUuid: string; data: AtlasTileCreateRequest },
+  TContext
+> => {
+  const mutationKey = ['createAtlasTileForAtlasAtlasesAtlasUuidTilesPost']
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-    const mutationFn: MutationFunction<
-      Awaited<
-        ReturnType<typeof createAtlasTileForAtlasAtlasesAtlasUuidTilesPost>
-      >,
-      { atlasUuid: string; data: AtlasTileCreateRequest }
-    > = (props) => {
-      const { atlasUuid, data } = props ?? {}
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createAtlasTileForAtlasAtlasesAtlasUuidTilesPost>>,
+    { atlasUuid: string; data: AtlasTileCreateRequest }
+  > = (props) => {
+    const { atlasUuid, data } = props ?? {}
 
-      return createAtlasTileForAtlasAtlasesAtlasUuidTilesPost(
-        atlasUuid,
-        data,
-        requestOptions
-      )
-    }
-
-    return { mutationFn, ...mutationOptions }
+    return createAtlasTileForAtlasAtlasesAtlasUuidTilesPost(atlasUuid, data, requestOptions)
   }
 
-export type CreateAtlasTileForAtlasAtlasesAtlasUuidTilesPostMutationResult =
-  NonNullable<
-    Awaited<ReturnType<typeof createAtlasTileForAtlasAtlasesAtlasUuidTilesPost>>
-  >
-export type CreateAtlasTileForAtlasAtlasesAtlasUuidTilesPostMutationBody =
-  AtlasTileCreateRequest
-export type CreateAtlasTileForAtlasAtlasesAtlasUuidTilesPostMutationError =
-  HTTPValidationError
+  return { mutationFn, ...mutationOptions }
+}
+
+export type CreateAtlasTileForAtlasAtlasesAtlasUuidTilesPostMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createAtlasTileForAtlasAtlasesAtlasUuidTilesPost>>
+>
+export type CreateAtlasTileForAtlasAtlasesAtlasUuidTilesPostMutationBody = AtlasTileCreateRequest
+export type CreateAtlasTileForAtlasAtlasesAtlasUuidTilesPostMutationError = HTTPValidationError
 
 /**
  * @summary Create Atlas Tile For Atlas
@@ -3631,9 +2950,7 @@ export const useCreateAtlasTileForAtlasAtlasesAtlasUuidTilesPost = <
 >(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<
-        ReturnType<typeof createAtlasTileForAtlasAtlasesAtlasUuidTilesPost>
-      >,
+      Awaited<ReturnType<typeof createAtlasTileForAtlasAtlasesAtlasUuidTilesPost>>,
       TError,
       { atlasUuid: string; data: AtlasTileCreateRequest },
       TContext
@@ -3656,79 +2973,56 @@ export const useCreateAtlasTileForAtlasAtlasesAtlasUuidTilesPost = <
  * Connect a grid square to a tile with its position information
  * @summary Link Atlas Tile To Gridsquare
  */
-export const linkAtlasTileToGridsquareAtlasTilesTileUuidGridsquaresGridsquareUuidPost =
-  (
-    tileUuid: string,
-    gridsquareUuid: string,
-    gridSquarePositionRequest: GridSquarePositionRequest,
-    options?: SecondParameter<typeof customInstance>,
-    signal?: AbortSignal
-  ) => {
-    return customInstance<AtlasTileGridSquarePositionResponse>(
-      {
-        url: `/atlas-tiles/${tileUuid}/gridsquares/${gridsquareUuid}`,
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        data: gridSquarePositionRequest,
-        signal,
-      },
-      options
-    )
-  }
+export const linkAtlasTileToGridsquareAtlasTilesTileUuidGridsquaresGridsquareUuidPost = (
+  tileUuid: string,
+  gridsquareUuid: string,
+  gridSquarePositionRequest: GridSquarePositionRequest,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<AtlasTileGridSquarePositionResponse>(
+    {
+      url: `/atlas-tiles/${tileUuid}/gridsquares/${gridsquareUuid}`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: gridSquarePositionRequest,
+      signal,
+    },
+    options
+  )
+}
 
 export const getLinkAtlasTileToGridsquareAtlasTilesTileUuidGridsquaresGridsquareUuidPostMutationOptions =
   <TError = HTTPValidationError, TContext = unknown>(options?: {
     mutation?: UseMutationOptions<
       Awaited<
-        ReturnType<
-          typeof linkAtlasTileToGridsquareAtlasTilesTileUuidGridsquaresGridsquareUuidPost
-        >
+        ReturnType<typeof linkAtlasTileToGridsquareAtlasTilesTileUuidGridsquaresGridsquareUuidPost>
       >,
       TError,
-      {
-        tileUuid: string
-        gridsquareUuid: string
-        data: GridSquarePositionRequest
-      },
+      { tileUuid: string; gridsquareUuid: string; data: GridSquarePositionRequest },
       TContext
     >
     request?: SecondParameter<typeof customInstance>
   }): UseMutationOptions<
     Awaited<
-      ReturnType<
-        typeof linkAtlasTileToGridsquareAtlasTilesTileUuidGridsquaresGridsquareUuidPost
-      >
+      ReturnType<typeof linkAtlasTileToGridsquareAtlasTilesTileUuidGridsquaresGridsquareUuidPost>
     >,
     TError,
-    {
-      tileUuid: string
-      gridsquareUuid: string
-      data: GridSquarePositionRequest
-    },
+    { tileUuid: string; gridsquareUuid: string; data: GridSquarePositionRequest },
     TContext
   > => {
-    const mutationKey = [
-      'linkAtlasTileToGridsquareAtlasTilesTileUuidGridsquaresGridsquareUuidPost',
-    ]
+    const mutationKey = ['linkAtlasTileToGridsquareAtlasTilesTileUuidGridsquaresGridsquareUuidPost']
     const { mutation: mutationOptions, request: requestOptions } = options
-      ? options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
+      ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
         ? options
         : { ...options, mutation: { ...options.mutation, mutationKey } }
       : { mutation: { mutationKey }, request: undefined }
 
     const mutationFn: MutationFunction<
       Awaited<
-        ReturnType<
-          typeof linkAtlasTileToGridsquareAtlasTilesTileUuidGridsquaresGridsquareUuidPost
-        >
+        ReturnType<typeof linkAtlasTileToGridsquareAtlasTilesTileUuidGridsquaresGridsquareUuidPost>
       >,
-      {
-        tileUuid: string
-        gridsquareUuid: string
-        data: GridSquarePositionRequest
-      }
+      { tileUuid: string; gridsquareUuid: string; data: GridSquarePositionRequest }
     > = (props) => {
       const { tileUuid, gridsquareUuid, data } = props ?? {}
 
@@ -3746,9 +3040,7 @@ export const getLinkAtlasTileToGridsquareAtlasTilesTileUuidGridsquaresGridsquare
 export type LinkAtlasTileToGridsquareAtlasTilesTileUuidGridsquaresGridsquareUuidPostMutationResult =
   NonNullable<
     Awaited<
-      ReturnType<
-        typeof linkAtlasTileToGridsquareAtlasTilesTileUuidGridsquaresGridsquareUuidPost
-      >
+      ReturnType<typeof linkAtlasTileToGridsquareAtlasTilesTileUuidGridsquaresGridsquareUuidPost>
     >
   >
 export type LinkAtlasTileToGridsquareAtlasTilesTileUuidGridsquaresGridsquareUuidPostMutationBody =
@@ -3759,47 +3051,135 @@ export type LinkAtlasTileToGridsquareAtlasTilesTileUuidGridsquaresGridsquareUuid
 /**
  * @summary Link Atlas Tile To Gridsquare
  */
-export const useLinkAtlasTileToGridsquareAtlasTilesTileUuidGridsquaresGridsquareUuidPost =
-  <TError = HTTPValidationError, TContext = unknown>(
-    options?: {
-      mutation?: UseMutationOptions<
-        Awaited<
-          ReturnType<
-            typeof linkAtlasTileToGridsquareAtlasTilesTileUuidGridsquaresGridsquareUuidPost
-          >
-        >,
-        TError,
-        {
-          tileUuid: string
-          gridsquareUuid: string
-          data: GridSquarePositionRequest
-        },
-        TContext
-      >
-      request?: SecondParameter<typeof customInstance>
-    },
-    queryClient?: QueryClient
-  ): UseMutationResult<
-    Awaited<
-      ReturnType<
-        typeof linkAtlasTileToGridsquareAtlasTilesTileUuidGridsquaresGridsquareUuidPost
-      >
-    >,
-    TError,
-    {
-      tileUuid: string
-      gridsquareUuid: string
-      data: GridSquarePositionRequest
-    },
-    TContext
-  > => {
-    const mutationOptions =
-      getLinkAtlasTileToGridsquareAtlasTilesTileUuidGridsquaresGridsquareUuidPostMutationOptions(
-        options
-      )
+export const useLinkAtlasTileToGridsquareAtlasTilesTileUuidGridsquaresGridsquareUuidPost = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<typeof linkAtlasTileToGridsquareAtlasTilesTileUuidGridsquaresGridsquareUuidPost>
+      >,
+      TError,
+      { tileUuid: string; gridsquareUuid: string; data: GridSquarePositionRequest },
+      TContext
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseMutationResult<
+  Awaited<
+    ReturnType<typeof linkAtlasTileToGridsquareAtlasTilesTileUuidGridsquaresGridsquareUuidPost>
+  >,
+  TError,
+  { tileUuid: string; gridsquareUuid: string; data: GridSquarePositionRequest },
+  TContext
+> => {
+  const mutationOptions =
+    getLinkAtlasTileToGridsquareAtlasTilesTileUuidGridsquaresGridsquareUuidPostMutationOptions(
+      options
+    )
 
-    return useMutation(mutationOptions, queryClient)
+  return useMutation(mutationOptions, queryClient)
+}
+/**
+ * Connect mutliple grid squares to a tile with its position information
+ * @summary Link Atlas Tile To Gridsquares
+ */
+export const linkAtlasTileToGridsquaresAtlasTilesTileUuidGridsquaresPost = (
+  tileUuid: string,
+  gridSquarePositionRequest: GridSquarePositionRequest[],
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<AtlasTileGridSquarePositionResponse[]>(
+    {
+      url: `/atlas-tiles/${tileUuid}/gridsquares`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: gridSquarePositionRequest,
+      signal,
+    },
+    options
+  )
+}
+
+export const getLinkAtlasTileToGridsquaresAtlasTilesTileUuidGridsquaresPostMutationOptions = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof linkAtlasTileToGridsquaresAtlasTilesTileUuidGridsquaresPost>>,
+    TError,
+    { tileUuid: string; data: GridSquarePositionRequest[] },
+    TContext
+  >
+  request?: SecondParameter<typeof customInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof linkAtlasTileToGridsquaresAtlasTilesTileUuidGridsquaresPost>>,
+  TError,
+  { tileUuid: string; data: GridSquarePositionRequest[] },
+  TContext
+> => {
+  const mutationKey = ['linkAtlasTileToGridsquaresAtlasTilesTileUuidGridsquaresPost']
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof linkAtlasTileToGridsquaresAtlasTilesTileUuidGridsquaresPost>>,
+    { tileUuid: string; data: GridSquarePositionRequest[] }
+  > = (props) => {
+    const { tileUuid, data } = props ?? {}
+
+    return linkAtlasTileToGridsquaresAtlasTilesTileUuidGridsquaresPost(
+      tileUuid,
+      data,
+      requestOptions
+    )
   }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type LinkAtlasTileToGridsquaresAtlasTilesTileUuidGridsquaresPostMutationResult = NonNullable<
+  Awaited<ReturnType<typeof linkAtlasTileToGridsquaresAtlasTilesTileUuidGridsquaresPost>>
+>
+export type LinkAtlasTileToGridsquaresAtlasTilesTileUuidGridsquaresPostMutationBody =
+  GridSquarePositionRequest[]
+export type LinkAtlasTileToGridsquaresAtlasTilesTileUuidGridsquaresPostMutationError =
+  HTTPValidationError
+
+/**
+ * @summary Link Atlas Tile To Gridsquares
+ */
+export const useLinkAtlasTileToGridsquaresAtlasTilesTileUuidGridsquaresPost = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof linkAtlasTileToGridsquaresAtlasTilesTileUuidGridsquaresPost>>,
+      TError,
+      { tileUuid: string; data: GridSquarePositionRequest[] },
+      TContext
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseMutationResult<
+  Awaited<ReturnType<typeof linkAtlasTileToGridsquaresAtlasTilesTileUuidGridsquaresPost>>,
+  TError,
+  { tileUuid: string; data: GridSquarePositionRequest[] },
+  TContext
+> => {
+  const mutationOptions =
+    getLinkAtlasTileToGridsquaresAtlasTilesTileUuidGridsquaresPostMutationOptions(options)
+
+  return useMutation(mutationOptions, queryClient)
+}
 /**
  * Get all grid squares
  * @summary Get Gridsquares
@@ -3823,30 +3203,19 @@ export const getGetGridsquaresGridsquaresGetQueryOptions = <
   TError = unknown,
 >(options?: {
   query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof getGridsquaresGridsquaresGet>>,
-      TError,
-      TData
-    >
+    UseQueryOptions<Awaited<ReturnType<typeof getGridsquaresGridsquaresGet>>, TError, TData>
   >
   request?: SecondParameter<typeof customInstance>
 }) => {
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
-  const queryKey =
-    queryOptions?.queryKey ?? getGetGridsquaresGridsquaresGetQueryKey()
+  const queryKey = queryOptions?.queryKey ?? getGetGridsquaresGridsquaresGetQueryKey()
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getGridsquaresGridsquaresGet>>
-  > = ({ signal }) => getGridsquaresGridsquaresGet(requestOptions, signal)
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getGridsquaresGridsquaresGet>>> = ({
+    signal,
+  }) => getGridsquaresGridsquaresGet(requestOptions, signal)
 
-  return {
-    queryKey,
-    queryFn,
-    staleTime: 300000,
-    retry: 1,
-    ...queryOptions,
-  } as UseQueryOptions<
+  return { queryKey, queryFn, staleTime: 300000, retry: 1, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getGridsquaresGridsquaresGet>>,
     TError,
     TData
@@ -3864,11 +3233,7 @@ export function useGetGridsquaresGridsquaresGet<
 >(
   options: {
     query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getGridsquaresGridsquaresGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getGridsquaresGridsquaresGet>>, TError, TData>
     > &
       Pick<
         DefinedInitialDataOptions<
@@ -3881,20 +3246,14 @@ export function useGetGridsquaresGridsquaresGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetGridsquaresGridsquaresGet<
   TData = Awaited<ReturnType<typeof getGridsquaresGridsquaresGet>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getGridsquaresGridsquaresGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getGridsquaresGridsquaresGet>>, TError, TData>
     > &
       Pick<
         UndefinedInitialDataOptions<
@@ -3907,27 +3266,19 @@ export function useGetGridsquaresGridsquaresGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetGridsquaresGridsquaresGet<
   TData = Awaited<ReturnType<typeof getGridsquaresGridsquaresGet>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getGridsquaresGridsquaresGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getGridsquaresGridsquaresGet>>, TError, TData>
     >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Gridsquares
  */
@@ -3938,24 +3289,17 @@ export function useGetGridsquaresGridsquaresGet<
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getGridsquaresGridsquaresGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getGridsquaresGridsquaresGet>>, TError, TData>
     >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getGetGridsquaresGridsquaresGetQueryOptions(options)
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -3977,9 +3321,7 @@ export const getGridsquareGridsquaresGridsquareUuidGet = (
   )
 }
 
-export const getGetGridsquareGridsquaresGridsquareUuidGetQueryKey = (
-  gridsquareUuid?: string
-) => {
+export const getGetGridsquareGridsquaresGridsquareUuidGetQueryKey = (gridsquareUuid?: string) => {
   return [`/gridsquares/${gridsquareUuid}`] as const
 }
 
@@ -4002,17 +3344,12 @@ export const getGetGridsquareGridsquaresGridsquareUuidGetQueryOptions = <
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
   const queryKey =
-    queryOptions?.queryKey ??
-    getGetGridsquareGridsquaresGridsquareUuidGetQueryKey(gridsquareUuid)
+    queryOptions?.queryKey ?? getGetGridsquareGridsquaresGridsquareUuidGetQueryKey(gridsquareUuid)
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof getGridsquareGridsquaresGridsquareUuidGet>>
   > = ({ signal }) =>
-    getGridsquareGridsquaresGridsquareUuidGet(
-      gridsquareUuid,
-      requestOptions,
-      signal
-    )
+    getGridsquareGridsquaresGridsquareUuidGet(gridsquareUuid, requestOptions, signal)
 
   return {
     queryKey,
@@ -4031,8 +3368,7 @@ export const getGetGridsquareGridsquaresGridsquareUuidGetQueryOptions = <
 export type GetGridsquareGridsquaresGridsquareUuidGetQueryResult = NonNullable<
   Awaited<ReturnType<typeof getGridsquareGridsquaresGridsquareUuidGet>>
 >
-export type GetGridsquareGridsquaresGridsquareUuidGetQueryError =
-  HTTPValidationError
+export type GetGridsquareGridsquaresGridsquareUuidGetQueryError = HTTPValidationError
 
 export function useGetGridsquareGridsquaresGridsquareUuidGet<
   TData = Awaited<ReturnType<typeof getGridsquareGridsquaresGridsquareUuidGet>>,
@@ -4058,9 +3394,7 @@ export function useGetGridsquareGridsquaresGridsquareUuidGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetGridsquareGridsquaresGridsquareUuidGet<
   TData = Awaited<ReturnType<typeof getGridsquareGridsquaresGridsquareUuidGet>>,
   TError = HTTPValidationError,
@@ -4085,9 +3419,7 @@ export function useGetGridsquareGridsquaresGridsquareUuidGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetGridsquareGridsquaresGridsquareUuidGet<
   TData = Awaited<ReturnType<typeof getGridsquareGridsquaresGridsquareUuidGet>>,
   TError = HTTPValidationError,
@@ -4104,9 +3436,7 @@ export function useGetGridsquareGridsquaresGridsquareUuidGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Gridsquare
  */
@@ -4127,18 +3457,15 @@ export function useGetGridsquareGridsquaresGridsquareUuidGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getGetGridsquareGridsquaresGridsquareUuidGetQueryOptions(
     gridsquareUuid,
     options
   )
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -4184,9 +3511,7 @@ export const getUpdateGridsquareGridsquaresGridsquareUuidPutMutationOptions = <
 > => {
   const mutationKey = ['updateGridsquareGridsquaresGridsquareUuidPut']
   const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
@@ -4197,24 +3522,17 @@ export const getUpdateGridsquareGridsquaresGridsquareUuidPutMutationOptions = <
   > = (props) => {
     const { gridsquareUuid, data } = props ?? {}
 
-    return updateGridsquareGridsquaresGridsquareUuidPut(
-      gridsquareUuid,
-      data,
-      requestOptions
-    )
+    return updateGridsquareGridsquaresGridsquareUuidPut(gridsquareUuid, data, requestOptions)
   }
 
   return { mutationFn, ...mutationOptions }
 }
 
-export type UpdateGridsquareGridsquaresGridsquareUuidPutMutationResult =
-  NonNullable<
-    Awaited<ReturnType<typeof updateGridsquareGridsquaresGridsquareUuidPut>>
-  >
-export type UpdateGridsquareGridsquaresGridsquareUuidPutMutationBody =
-  GridSquareUpdateRequest
-export type UpdateGridsquareGridsquaresGridsquareUuidPutMutationError =
-  HTTPValidationError
+export type UpdateGridsquareGridsquaresGridsquareUuidPutMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updateGridsquareGridsquaresGridsquareUuidPut>>
+>
+export type UpdateGridsquareGridsquaresGridsquareUuidPutMutationBody = GridSquareUpdateRequest
+export type UpdateGridsquareGridsquaresGridsquareUuidPutMutationError = HTTPValidationError
 
 /**
  * @summary Update Gridsquare
@@ -4239,8 +3557,7 @@ export const useUpdateGridsquareGridsquaresGridsquareUuidPut = <
   { gridsquareUuid: string; data: GridSquareUpdateRequest },
   TContext
 > => {
-  const mutationOptions =
-    getUpdateGridsquareGridsquaresGridsquareUuidPutMutationOptions(options)
+  const mutationOptions = getUpdateGridsquareGridsquaresGridsquareUuidPutMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }
@@ -4252,62 +3569,50 @@ export const deleteGridsquareGridsquaresGridsquareUuidDelete = (
   gridsquareUuid: string,
   options?: SecondParameter<typeof customInstance>
 ) => {
-  return customInstance<void>(
-    { url: `/gridsquares/${gridsquareUuid}`, method: 'DELETE' },
-    options
-  )
+  return customInstance<void>({ url: `/gridsquares/${gridsquareUuid}`, method: 'DELETE' }, options)
 }
 
-export const getDeleteGridsquareGridsquaresGridsquareUuidDeleteMutationOptions =
-  <TError = HTTPValidationError, TContext = unknown>(options?: {
-    mutation?: UseMutationOptions<
-      Awaited<
-        ReturnType<typeof deleteGridsquareGridsquaresGridsquareUuidDelete>
-      >,
-      TError,
-      { gridsquareUuid: string },
-      TContext
-    >
-    request?: SecondParameter<typeof customInstance>
-  }): UseMutationOptions<
+export const getDeleteGridsquareGridsquaresGridsquareUuidDeleteMutationOptions = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof deleteGridsquareGridsquaresGridsquareUuidDelete>>,
     TError,
     { gridsquareUuid: string },
     TContext
-  > => {
-    const mutationKey = ['deleteGridsquareGridsquaresGridsquareUuidDelete']
-    const { mutation: mutationOptions, request: requestOptions } = options
-      ? options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-        ? options
-        : { ...options, mutation: { ...options.mutation, mutationKey } }
-      : { mutation: { mutationKey }, request: undefined }
+  >
+  request?: SecondParameter<typeof customInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteGridsquareGridsquaresGridsquareUuidDelete>>,
+  TError,
+  { gridsquareUuid: string },
+  TContext
+> => {
+  const mutationKey = ['deleteGridsquareGridsquaresGridsquareUuidDelete']
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-    const mutationFn: MutationFunction<
-      Awaited<
-        ReturnType<typeof deleteGridsquareGridsquaresGridsquareUuidDelete>
-      >,
-      { gridsquareUuid: string }
-    > = (props) => {
-      const { gridsquareUuid } = props ?? {}
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteGridsquareGridsquaresGridsquareUuidDelete>>,
+    { gridsquareUuid: string }
+  > = (props) => {
+    const { gridsquareUuid } = props ?? {}
 
-      return deleteGridsquareGridsquaresGridsquareUuidDelete(
-        gridsquareUuid,
-        requestOptions
-      )
-    }
-
-    return { mutationFn, ...mutationOptions }
+    return deleteGridsquareGridsquaresGridsquareUuidDelete(gridsquareUuid, requestOptions)
   }
 
-export type DeleteGridsquareGridsquaresGridsquareUuidDeleteMutationResult =
-  NonNullable<
-    Awaited<ReturnType<typeof deleteGridsquareGridsquaresGridsquareUuidDelete>>
-  >
+  return { mutationFn, ...mutationOptions }
+}
 
-export type DeleteGridsquareGridsquaresGridsquareUuidDeleteMutationError =
-  HTTPValidationError
+export type DeleteGridsquareGridsquaresGridsquareUuidDeleteMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteGridsquareGridsquaresGridsquareUuidDelete>>
+>
+
+export type DeleteGridsquareGridsquaresGridsquareUuidDeleteMutationError = HTTPValidationError
 
 /**
  * @summary Delete Gridsquare
@@ -4318,9 +3623,7 @@ export const useDeleteGridsquareGridsquaresGridsquareUuidDelete = <
 >(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<
-        ReturnType<typeof deleteGridsquareGridsquaresGridsquareUuidDelete>
-      >,
+      Awaited<ReturnType<typeof deleteGridsquareGridsquaresGridsquareUuidDelete>>,
       TError,
       { gridsquareUuid: string },
       TContext
@@ -4334,8 +3637,7 @@ export const useDeleteGridsquareGridsquaresGridsquareUuidDelete = <
   { gridsquareUuid: string },
   TContext
 > => {
-  const mutationOptions =
-    getDeleteGridsquareGridsquaresGridsquareUuidDeleteMutationOptions(options)
+  const mutationOptions = getDeleteGridsquareGridsquaresGridsquareUuidDeleteMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }
@@ -4354,25 +3656,19 @@ export const getGridGridsquaresGridsGridUuidGridsquaresGet = (
   )
 }
 
-export const getGetGridGridsquaresGridsGridUuidGridsquaresGetQueryKey = (
-  gridUuid?: string
-) => {
+export const getGetGridGridsquaresGridsGridUuidGridsquaresGetQueryKey = (gridUuid?: string) => {
   return [`/grids/${gridUuid}/gridsquares`] as const
 }
 
 export const getGetGridGridsquaresGridsGridUuidGridsquaresGetQueryOptions = <
-  TData = Awaited<
-    ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>
-  >,
+  TData = Awaited<ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>>,
   TError = HTTPValidationError,
 >(
   gridUuid: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>
-        >,
+        Awaited<ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>>,
         TError,
         TData
       >
@@ -4383,17 +3679,12 @@ export const getGetGridGridsquaresGridsGridUuidGridsquaresGetQueryOptions = <
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
   const queryKey =
-    queryOptions?.queryKey ??
-    getGetGridGridsquaresGridsGridUuidGridsquaresGetQueryKey(gridUuid)
+    queryOptions?.queryKey ?? getGetGridGridsquaresGridsGridUuidGridsquaresGetQueryKey(gridUuid)
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>>
   > = ({ signal }) =>
-    getGridGridsquaresGridsGridUuidGridsquaresGet(
-      gridUuid,
-      requestOptions,
-      signal
-    )
+    getGridGridsquaresGridsGridUuidGridsquaresGet(gridUuid, requestOptions, signal)
 
   return {
     queryKey,
@@ -4409,96 +3700,70 @@ export const getGetGridGridsquaresGridsGridUuidGridsquaresGetQueryOptions = <
   > & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetGridGridsquaresGridsGridUuidGridsquaresGetQueryResult =
-  NonNullable<
-    Awaited<ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>>
-  >
-export type GetGridGridsquaresGridsGridUuidGridsquaresGetQueryError =
-  HTTPValidationError
+export type GetGridGridsquaresGridsGridUuidGridsquaresGetQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>>
+>
+export type GetGridGridsquaresGridsGridUuidGridsquaresGetQueryError = HTTPValidationError
 
 export function useGetGridGridsquaresGridsGridUuidGridsquaresGet<
-  TData = Awaited<
-    ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>
-  >,
+  TData = Awaited<ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>>,
   TError = HTTPValidationError,
 >(
   gridUuid: string,
   options: {
     query: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>
-        >,
+        Awaited<ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>>,
         TError,
         TData
       >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<
-            ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>
-          >,
+          Awaited<ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>>,
           TError,
-          Awaited<
-            ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>
-          >
+          Awaited<ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>>
         >,
         'initialData'
       >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetGridGridsquaresGridsGridUuidGridsquaresGet<
-  TData = Awaited<
-    ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>
-  >,
+  TData = Awaited<ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>>,
   TError = HTTPValidationError,
 >(
   gridUuid: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>
-        >,
+        Awaited<ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>>,
         TError,
         TData
       >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<
-            ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>
-          >,
+          Awaited<ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>>,
           TError,
-          Awaited<
-            ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>
-          >
+          Awaited<ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>>
         >,
         'initialData'
       >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetGridGridsquaresGridsGridUuidGridsquaresGet<
-  TData = Awaited<
-    ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>
-  >,
+  TData = Awaited<ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>>,
   TError = HTTPValidationError,
 >(
   gridUuid: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>
-        >,
+        Awaited<ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>>,
         TError,
         TData
       >
@@ -4506,26 +3771,20 @@ export function useGetGridGridsquaresGridsGridUuidGridsquaresGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Grid Gridsquares
  */
 
 export function useGetGridGridsquaresGridsGridUuidGridsquaresGet<
-  TData = Awaited<
-    ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>
-  >,
+  TData = Awaited<ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>>,
   TError = HTTPValidationError,
 >(
   gridUuid: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>
-        >,
+        Awaited<ReturnType<typeof getGridGridsquaresGridsGridUuidGridsquaresGet>>,
         TError,
         TData
       >
@@ -4533,19 +3792,15 @@ export function useGetGridGridsquaresGridsGridUuidGridsquaresGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
-  const queryOptions =
-    getGetGridGridsquaresGridsGridUuidGridsquaresGetQueryOptions(
-      gridUuid,
-      options
-    )
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetGridGridsquaresGridsGridUuidGridsquaresGetQueryOptions(
+    gridUuid,
+    options
+  )
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -4574,60 +3829,47 @@ export const createGridGridsquareGridsGridUuidGridsquaresPost = (
   )
 }
 
-export const getCreateGridGridsquareGridsGridUuidGridsquaresPostMutationOptions =
-  <TError = HTTPValidationError, TContext = unknown>(options?: {
-    mutation?: UseMutationOptions<
-      Awaited<
-        ReturnType<typeof createGridGridsquareGridsGridUuidGridsquaresPost>
-      >,
-      TError,
-      { gridUuid: string; data: GridSquareCreateRequest },
-      TContext
-    >
-    request?: SecondParameter<typeof customInstance>
-  }): UseMutationOptions<
-    Awaited<
-      ReturnType<typeof createGridGridsquareGridsGridUuidGridsquaresPost>
-    >,
+export const getCreateGridGridsquareGridsGridUuidGridsquaresPostMutationOptions = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createGridGridsquareGridsGridUuidGridsquaresPost>>,
     TError,
     { gridUuid: string; data: GridSquareCreateRequest },
     TContext
-  > => {
-    const mutationKey = ['createGridGridsquareGridsGridUuidGridsquaresPost']
-    const { mutation: mutationOptions, request: requestOptions } = options
-      ? options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-        ? options
-        : { ...options, mutation: { ...options.mutation, mutationKey } }
-      : { mutation: { mutationKey }, request: undefined }
+  >
+  request?: SecondParameter<typeof customInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createGridGridsquareGridsGridUuidGridsquaresPost>>,
+  TError,
+  { gridUuid: string; data: GridSquareCreateRequest },
+  TContext
+> => {
+  const mutationKey = ['createGridGridsquareGridsGridUuidGridsquaresPost']
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-    const mutationFn: MutationFunction<
-      Awaited<
-        ReturnType<typeof createGridGridsquareGridsGridUuidGridsquaresPost>
-      >,
-      { gridUuid: string; data: GridSquareCreateRequest }
-    > = (props) => {
-      const { gridUuid, data } = props ?? {}
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createGridGridsquareGridsGridUuidGridsquaresPost>>,
+    { gridUuid: string; data: GridSquareCreateRequest }
+  > = (props) => {
+    const { gridUuid, data } = props ?? {}
 
-      return createGridGridsquareGridsGridUuidGridsquaresPost(
-        gridUuid,
-        data,
-        requestOptions
-      )
-    }
-
-    return { mutationFn, ...mutationOptions }
+    return createGridGridsquareGridsGridUuidGridsquaresPost(gridUuid, data, requestOptions)
   }
 
-export type CreateGridGridsquareGridsGridUuidGridsquaresPostMutationResult =
-  NonNullable<
-    Awaited<ReturnType<typeof createGridGridsquareGridsGridUuidGridsquaresPost>>
-  >
-export type CreateGridGridsquareGridsGridUuidGridsquaresPostMutationBody =
-  GridSquareCreateRequest
-export type CreateGridGridsquareGridsGridUuidGridsquaresPostMutationError =
-  HTTPValidationError
+  return { mutationFn, ...mutationOptions }
+}
+
+export type CreateGridGridsquareGridsGridUuidGridsquaresPostMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createGridGridsquareGridsGridUuidGridsquaresPost>>
+>
+export type CreateGridGridsquareGridsGridUuidGridsquaresPostMutationBody = GridSquareCreateRequest
+export type CreateGridGridsquareGridsGridUuidGridsquaresPostMutationError = HTTPValidationError
 
 /**
  * @summary Create Grid Gridsquare
@@ -4638,9 +3880,7 @@ export const useCreateGridGridsquareGridsGridUuidGridsquaresPost = <
 >(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<
-        ReturnType<typeof createGridGridsquareGridsGridUuidGridsquaresPost>
-      >,
+      Awaited<ReturnType<typeof createGridGridsquareGridsGridUuidGridsquaresPost>>,
       TError,
       { gridUuid: string; data: GridSquareCreateRequest },
       TContext
@@ -4665,80 +3905,68 @@ export const useCreateGridGridsquareGridsGridUuidGridsquaresPost = <
  */
 export const gridsquareRegisteredGridsquaresGridsquareUuidRegisteredPost = (
   gridsquareUuid: string,
+  params?: GridsquareRegisteredGridsquaresGridsquareUuidRegisteredPostParams,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
   return customInstance<boolean>(
-    {
-      url: `/gridsquares/${gridsquareUuid}/registered`,
-      method: 'POST',
-      signal,
-    },
+    { url: `/gridsquares/${gridsquareUuid}/registered`, method: 'POST', params, signal },
     options
   )
 }
 
-export const getGridsquareRegisteredGridsquaresGridsquareUuidRegisteredPostMutationOptions =
-  <TError = HTTPValidationError, TContext = unknown>(options?: {
-    mutation?: UseMutationOptions<
-      Awaited<
-        ReturnType<
-          typeof gridsquareRegisteredGridsquaresGridsquareUuidRegisteredPost
-        >
-      >,
-      TError,
-      { gridsquareUuid: string },
-      TContext
-    >
-    request?: SecondParameter<typeof customInstance>
-  }): UseMutationOptions<
-    Awaited<
-      ReturnType<
-        typeof gridsquareRegisteredGridsquaresGridsquareUuidRegisteredPost
-      >
-    >,
+export const getGridsquareRegisteredGridsquaresGridsquareUuidRegisteredPostMutationOptions = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof gridsquareRegisteredGridsquaresGridsquareUuidRegisteredPost>>,
     TError,
-    { gridsquareUuid: string },
+    {
+      gridsquareUuid: string
+      params?: GridsquareRegisteredGridsquaresGridsquareUuidRegisteredPostParams
+    },
     TContext
-  > => {
-    const mutationKey = [
-      'gridsquareRegisteredGridsquaresGridsquareUuidRegisteredPost',
-    ]
-    const { mutation: mutationOptions, request: requestOptions } = options
-      ? options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-        ? options
-        : { ...options, mutation: { ...options.mutation, mutationKey } }
-      : { mutation: { mutationKey }, request: undefined }
+  >
+  request?: SecondParameter<typeof customInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof gridsquareRegisteredGridsquaresGridsquareUuidRegisteredPost>>,
+  TError,
+  {
+    gridsquareUuid: string
+    params?: GridsquareRegisteredGridsquaresGridsquareUuidRegisteredPostParams
+  },
+  TContext
+> => {
+  const mutationKey = ['gridsquareRegisteredGridsquaresGridsquareUuidRegisteredPost']
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-    const mutationFn: MutationFunction<
-      Awaited<
-        ReturnType<
-          typeof gridsquareRegisteredGridsquaresGridsquareUuidRegisteredPost
-        >
-      >,
-      { gridsquareUuid: string }
-    > = (props) => {
-      const { gridsquareUuid } = props ?? {}
-
-      return gridsquareRegisteredGridsquaresGridsquareUuidRegisteredPost(
-        gridsquareUuid,
-        requestOptions
-      )
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof gridsquareRegisteredGridsquaresGridsquareUuidRegisteredPost>>,
+    {
+      gridsquareUuid: string
+      params?: GridsquareRegisteredGridsquaresGridsquareUuidRegisteredPostParams
     }
+  > = (props) => {
+    const { gridsquareUuid, params } = props ?? {}
 
-    return { mutationFn, ...mutationOptions }
+    return gridsquareRegisteredGridsquaresGridsquareUuidRegisteredPost(
+      gridsquareUuid,
+      params,
+      requestOptions
+    )
   }
 
-export type GridsquareRegisteredGridsquaresGridsquareUuidRegisteredPostMutationResult =
-  NonNullable<
-    Awaited<
-      ReturnType<
-        typeof gridsquareRegisteredGridsquaresGridsquareUuidRegisteredPost
-      >
-    >
-  >
+  return { mutationFn, ...mutationOptions }
+}
+
+export type GridsquareRegisteredGridsquaresGridsquareUuidRegisteredPostMutationResult = NonNullable<
+  Awaited<ReturnType<typeof gridsquareRegisteredGridsquaresGridsquareUuidRegisteredPost>>
+>
 
 export type GridsquareRegisteredGridsquaresGridsquareUuidRegisteredPostMutationError =
   HTTPValidationError
@@ -4752,32 +3980,28 @@ export const useGridsquareRegisteredGridsquaresGridsquareUuidRegisteredPost = <
 >(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<
-        ReturnType<
-          typeof gridsquareRegisteredGridsquaresGridsquareUuidRegisteredPost
-        >
-      >,
+      Awaited<ReturnType<typeof gridsquareRegisteredGridsquaresGridsquareUuidRegisteredPost>>,
       TError,
-      { gridsquareUuid: string },
+      {
+        gridsquareUuid: string
+        params?: GridsquareRegisteredGridsquaresGridsquareUuidRegisteredPostParams
+      },
       TContext
     >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
 ): UseMutationResult<
-  Awaited<
-    ReturnType<
-      typeof gridsquareRegisteredGridsquaresGridsquareUuidRegisteredPost
-    >
-  >,
+  Awaited<ReturnType<typeof gridsquareRegisteredGridsquaresGridsquareUuidRegisteredPost>>,
   TError,
-  { gridsquareUuid: string },
+  {
+    gridsquareUuid: string
+    params?: GridsquareRegisteredGridsquaresGridsquareUuidRegisteredPostParams
+  },
   TContext
 > => {
   const mutationOptions =
-    getGridsquareRegisteredGridsquaresGridsquareUuidRegisteredPostMutationOptions(
-      options
-    )
+    getGridsquareRegisteredGridsquaresGridsquareUuidRegisteredPostMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }
@@ -4789,10 +4013,7 @@ export const getFoilholesFoilholesGet = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
-  return customInstance<FoilHoleResponse[]>(
-    { url: `/foilholes`, method: 'GET', signal },
-    options
-  )
+  return customInstance<FoilHoleResponse[]>({ url: `/foilholes`, method: 'GET', signal }, options)
 }
 
 export const getGetFoilholesFoilholesGetQueryKey = () => {
@@ -4804,30 +4025,19 @@ export const getGetFoilholesFoilholesGetQueryOptions = <
   TError = unknown,
 >(options?: {
   query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof getFoilholesFoilholesGet>>,
-      TError,
-      TData
-    >
+    UseQueryOptions<Awaited<ReturnType<typeof getFoilholesFoilholesGet>>, TError, TData>
   >
   request?: SecondParameter<typeof customInstance>
 }) => {
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
-  const queryKey =
-    queryOptions?.queryKey ?? getGetFoilholesFoilholesGetQueryKey()
+  const queryKey = queryOptions?.queryKey ?? getGetFoilholesFoilholesGetQueryKey()
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getFoilholesFoilholesGet>>
-  > = ({ signal }) => getFoilholesFoilholesGet(requestOptions, signal)
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getFoilholesFoilholesGet>>> = ({
+    signal,
+  }) => getFoilholesFoilholesGet(requestOptions, signal)
 
-  return {
-    queryKey,
-    queryFn,
-    staleTime: 300000,
-    retry: 1,
-    ...queryOptions,
-  } as UseQueryOptions<
+  return { queryKey, queryFn, staleTime: 300000, retry: 1, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getFoilholesFoilholesGet>>,
     TError,
     TData
@@ -4845,11 +4055,7 @@ export function useGetFoilholesFoilholesGet<
 >(
   options: {
     query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getFoilholesFoilholesGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getFoilholesFoilholesGet>>, TError, TData>
     > &
       Pick<
         DefinedInitialDataOptions<
@@ -4862,20 +4068,14 @@ export function useGetFoilholesFoilholesGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetFoilholesFoilholesGet<
   TData = Awaited<ReturnType<typeof getFoilholesFoilholesGet>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getFoilholesFoilholesGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getFoilholesFoilholesGet>>, TError, TData>
     > &
       Pick<
         UndefinedInitialDataOptions<
@@ -4888,27 +4088,19 @@ export function useGetFoilholesFoilholesGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetFoilholesFoilholesGet<
   TData = Awaited<ReturnType<typeof getFoilholesFoilholesGet>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getFoilholesFoilholesGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getFoilholesFoilholesGet>>, TError, TData>
     >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Foilholes
  */
@@ -4919,24 +4111,17 @@ export function useGetFoilholesFoilholesGet<
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getFoilholesFoilholesGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getFoilholesFoilholesGet>>, TError, TData>
     >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getGetFoilholesFoilholesGetQueryOptions(options)
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -4958,9 +4143,7 @@ export const getFoilholeFoilholesFoilholeUuidGet = (
   )
 }
 
-export const getGetFoilholeFoilholesFoilholeUuidGetQueryKey = (
-  foilholeUuid?: string
-) => {
+export const getGetFoilholeFoilholesFoilholeUuidGetQueryKey = (foilholeUuid?: string) => {
   return [`/foilholes/${foilholeUuid}`] as const
 }
 
@@ -4983,13 +4166,11 @@ export const getGetFoilholeFoilholesFoilholeUuidGetQueryOptions = <
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
   const queryKey =
-    queryOptions?.queryKey ??
-    getGetFoilholeFoilholesFoilholeUuidGetQueryKey(foilholeUuid)
+    queryOptions?.queryKey ?? getGetFoilholeFoilholesFoilholeUuidGetQueryKey(foilholeUuid)
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getFoilholeFoilholesFoilholeUuidGet>>
-  > = ({ signal }) =>
-    getFoilholeFoilholesFoilholeUuidGet(foilholeUuid, requestOptions, signal)
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getFoilholeFoilholesFoilholeUuidGet>>> = ({
+    signal,
+  }) => getFoilholeFoilholesFoilholeUuidGet(foilholeUuid, requestOptions, signal)
 
   return {
     queryKey,
@@ -5034,9 +4215,7 @@ export function useGetFoilholeFoilholesFoilholeUuidGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetFoilholeFoilholesFoilholeUuidGet<
   TData = Awaited<ReturnType<typeof getFoilholeFoilholesFoilholeUuidGet>>,
   TError = HTTPValidationError,
@@ -5061,9 +4240,7 @@ export function useGetFoilholeFoilholesFoilholeUuidGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetFoilholeFoilholesFoilholeUuidGet<
   TData = Awaited<ReturnType<typeof getFoilholeFoilholesFoilholeUuidGet>>,
   TError = HTTPValidationError,
@@ -5080,9 +4257,7 @@ export function useGetFoilholeFoilholesFoilholeUuidGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Foilhole
  */
@@ -5103,18 +4278,12 @@ export function useGetFoilholeFoilholesFoilholeUuidGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
-  const queryOptions = getGetFoilholeFoilholesFoilholeUuidGetQueryOptions(
-    foilholeUuid,
-    options
-  )
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetFoilholeFoilholesFoilholeUuidGetQueryOptions(foilholeUuid, options)
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -5160,9 +4329,7 @@ export const getUpdateFoilholeFoilholesFoilholeUuidPutMutationOptions = <
 > => {
   const mutationKey = ['updateFoilholeFoilholesFoilholeUuidPut']
   const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
@@ -5173,11 +4340,7 @@ export const getUpdateFoilholeFoilholesFoilholeUuidPutMutationOptions = <
   > = (props) => {
     const { foilholeUuid, data } = props ?? {}
 
-    return updateFoilholeFoilholesFoilholeUuidPut(
-      foilholeUuid,
-      data,
-      requestOptions
-    )
+    return updateFoilholeFoilholesFoilholeUuidPut(foilholeUuid, data, requestOptions)
   }
 
   return { mutationFn, ...mutationOptions }
@@ -5186,10 +4349,8 @@ export const getUpdateFoilholeFoilholesFoilholeUuidPutMutationOptions = <
 export type UpdateFoilholeFoilholesFoilholeUuidPutMutationResult = NonNullable<
   Awaited<ReturnType<typeof updateFoilholeFoilholesFoilholeUuidPut>>
 >
-export type UpdateFoilholeFoilholesFoilholeUuidPutMutationBody =
-  FoilHoleUpdateRequest
-export type UpdateFoilholeFoilholesFoilholeUuidPutMutationError =
-  HTTPValidationError
+export type UpdateFoilholeFoilholesFoilholeUuidPutMutationBody = FoilHoleUpdateRequest
+export type UpdateFoilholeFoilholesFoilholeUuidPutMutationError = HTTPValidationError
 
 /**
  * @summary Update Foilhole
@@ -5214,8 +4375,7 @@ export const useUpdateFoilholeFoilholesFoilholeUuidPut = <
   { foilholeUuid: string; data: FoilHoleUpdateRequest },
   TContext
 > => {
-  const mutationOptions =
-    getUpdateFoilholeFoilholesFoilholeUuidPutMutationOptions(options)
+  const mutationOptions = getUpdateFoilholeFoilholesFoilholeUuidPutMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }
@@ -5227,10 +4387,7 @@ export const deleteFoilholeFoilholesFoilholeUuidDelete = (
   foilholeUuid: string,
   options?: SecondParameter<typeof customInstance>
 ) => {
-  return customInstance<void>(
-    { url: `/foilholes/${foilholeUuid}`, method: 'DELETE' },
-    options
-  )
+  return customInstance<void>({ url: `/foilholes/${foilholeUuid}`, method: 'DELETE' }, options)
 }
 
 export const getDeleteFoilholeFoilholesFoilholeUuidDeleteMutationOptions = <
@@ -5252,9 +4409,7 @@ export const getDeleteFoilholeFoilholesFoilholeUuidDeleteMutationOptions = <
 > => {
   const mutationKey = ['deleteFoilholeFoilholesFoilholeUuidDelete']
   const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
@@ -5265,22 +4420,17 @@ export const getDeleteFoilholeFoilholesFoilholeUuidDeleteMutationOptions = <
   > = (props) => {
     const { foilholeUuid } = props ?? {}
 
-    return deleteFoilholeFoilholesFoilholeUuidDelete(
-      foilholeUuid,
-      requestOptions
-    )
+    return deleteFoilholeFoilholesFoilholeUuidDelete(foilholeUuid, requestOptions)
   }
 
   return { mutationFn, ...mutationOptions }
 }
 
-export type DeleteFoilholeFoilholesFoilholeUuidDeleteMutationResult =
-  NonNullable<
-    Awaited<ReturnType<typeof deleteFoilholeFoilholesFoilholeUuidDelete>>
-  >
+export type DeleteFoilholeFoilholesFoilholeUuidDeleteMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteFoilholeFoilholesFoilholeUuidDelete>>
+>
 
-export type DeleteFoilholeFoilholesFoilholeUuidDeleteMutationError =
-  HTTPValidationError
+export type DeleteFoilholeFoilholesFoilholeUuidDeleteMutationError = HTTPValidationError
 
 /**
  * @summary Delete Foilhole
@@ -5305,8 +4455,7 @@ export const useDeleteFoilholeFoilholesFoilholeUuidDelete = <
   { foilholeUuid: string },
   TContext
 > => {
-  const mutationOptions =
-    getDeleteFoilholeFoilholesFoilholeUuidDeleteMutationOptions(options)
+  const mutationOptions = getDeleteFoilholeFoilholesFoilholeUuidDeleteMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }
@@ -5316,198 +4465,138 @@ export const useDeleteFoilholeFoilholesFoilholeUuidDelete = <
  */
 export const getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet = (
   gridsquareUuid: string,
+  params?: GetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetParams,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
   return customInstance<FoilHoleResponse[]>(
-    { url: `/gridsquares/${gridsquareUuid}/foilholes`, method: 'GET', signal },
+    { url: `/gridsquares/${gridsquareUuid}/foilholes`, method: 'GET', params, signal },
     options
   )
 }
 
-export const getGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetQueryKey =
-  (gridsquareUuid?: string) => {
-    return [`/gridsquares/${gridsquareUuid}/foilholes`] as const
-  }
+export const getGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetQueryKey = (
+  gridsquareUuid?: string,
+  params?: GetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetParams
+) => {
+  return [`/gridsquares/${gridsquareUuid}/foilholes`, ...(params ? [params] : [])] as const
+}
 
-export const getGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetQueryOptions =
-  <
-    TData = Awaited<
-      ReturnType<
-        typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet
-      >
-    >,
-    TError = HTTPValidationError,
-  >(
-    gridsquareUuid: string,
-    options?: {
-      query?: Partial<
-        UseQueryOptions<
-          Awaited<
-            ReturnType<
-              typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet
-            >
-          >,
-          TError,
-          TData
-        >
-      >
-      request?: SecondParameter<typeof customInstance>
-    }
-  ) => {
-    const { query: queryOptions, request: requestOptions } = options ?? {}
-
-    const queryKey =
-      queryOptions?.queryKey ??
-      getGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetQueryKey(
-        gridsquareUuid
-      )
-
-    const queryFn: QueryFunction<
-      Awaited<
-        ReturnType<
-          typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet
-        >
-      >
-    > = ({ signal }) =>
-      getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet(
-        gridsquareUuid,
-        requestOptions,
-        signal
-      )
-
-    return {
-      queryKey,
-      queryFn,
-      enabled: !!gridsquareUuid,
-      staleTime: 300000,
-      retry: 1,
-      ...queryOptions,
-    } as UseQueryOptions<
-      Awaited<
-        ReturnType<
-          typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet
-        >
-      >,
-      TError,
-      TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> }
-  }
-
-export type GetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetQueryResult =
-  NonNullable<
-    Awaited<
-      ReturnType<
-        typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet
+export const getGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetQueryOptions = <
+  TData = Awaited<ReturnType<typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet>>,
+  TError = HTTPValidationError,
+>(
+  gridsquareUuid: string,
+  params?: GetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet>>,
+        TError,
+        TData
       >
     >
-  >
+    request?: SecondParameter<typeof customInstance>
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetQueryKey(gridsquareUuid, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet>>
+  > = ({ signal }) =>
+    getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet(
+      gridsquareUuid,
+      params,
+      requestOptions,
+      signal
+    )
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!gridsquareUuid,
+    staleTime: 300000,
+    retry: 1,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet>>
+>
 export type GetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetQueryError =
   HTTPValidationError
 
 export function useGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet<
-  TData = Awaited<
-    ReturnType<
-      typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet
-    >
-  >,
+  TData = Awaited<ReturnType<typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet>>,
   TError = HTTPValidationError,
 >(
   gridsquareUuid: string,
+  params: undefined | GetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetParams,
   options: {
     query: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<
-            typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet
-          >
-        >,
+        Awaited<ReturnType<typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet>>,
         TError,
         TData
       >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<
-            ReturnType<
-              typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet
-            >
-          >,
+          Awaited<ReturnType<typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet>>,
           TError,
-          Awaited<
-            ReturnType<
-              typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet
-            >
-          >
+          Awaited<ReturnType<typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet>>
         >,
         'initialData'
       >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet<
-  TData = Awaited<
-    ReturnType<
-      typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet
-    >
-  >,
+  TData = Awaited<ReturnType<typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet>>,
   TError = HTTPValidationError,
 >(
   gridsquareUuid: string,
+  params?: GetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<
-            typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet
-          >
-        >,
+        Awaited<ReturnType<typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet>>,
         TError,
         TData
       >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<
-            ReturnType<
-              typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet
-            >
-          >,
+          Awaited<ReturnType<typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet>>,
           TError,
-          Awaited<
-            ReturnType<
-              typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet
-            >
-          >
+          Awaited<ReturnType<typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet>>
         >,
         'initialData'
       >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet<
-  TData = Awaited<
-    ReturnType<
-      typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet
-    >
-  >,
+  TData = Awaited<ReturnType<typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet>>,
   TError = HTTPValidationError,
 >(
   gridsquareUuid: string,
+  params?: GetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<
-            typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet
-          >
-        >,
+        Awaited<ReturnType<typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet>>,
         TError,
         TData
       >
@@ -5515,30 +4604,21 @@ export function useGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Gridsquare Foilholes
  */
 
 export function useGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet<
-  TData = Awaited<
-    ReturnType<
-      typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet
-    >
-  >,
+  TData = Awaited<ReturnType<typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet>>,
   TError = HTTPValidationError,
 >(
   gridsquareUuid: string,
+  params?: GetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<
-            typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet
-          >
-        >,
+        Awaited<ReturnType<typeof getGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet>>,
         TError,
         TData
       >
@@ -5546,19 +4626,16 @@ export function useGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
-  const queryOptions =
-    getGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetQueryOptions(
-      gridsquareUuid,
-      options
-    )
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetQueryOptions(
+    gridsquareUuid,
+    params,
+    options
+  )
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -5571,11 +4648,11 @@ export function useGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet<
  */
 export const createGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPost = (
   gridsquareUuid: string,
-  foilHoleCreateRequest: FoilHoleCreateRequest,
+  foilHoleCreateRequest: FoilHoleCreateRequest[],
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
-  return customInstance<FoilHoleResponse>(
+  return customInstance<FoilHoleResponse[]>(
     {
       url: `/gridsquares/${gridsquareUuid}/foilholes`,
       method: 'POST',
@@ -5587,109 +4664,83 @@ export const createGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPost = (
   )
 }
 
-export const getCreateGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPostMutationOptions =
-  <TError = HTTPValidationError, TContext = unknown>(options?: {
-    mutation?: UseMutationOptions<
-      Awaited<
-        ReturnType<
-          typeof createGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPost
-        >
-      >,
-      TError,
-      { gridsquareUuid: string; data: FoilHoleCreateRequest },
-      TContext
-    >
-    request?: SecondParameter<typeof customInstance>
-  }): UseMutationOptions<
-    Awaited<
-      ReturnType<
-        typeof createGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPost
-      >
-    >,
+export const getCreateGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPostMutationOptions = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPost>>,
     TError,
-    { gridsquareUuid: string; data: FoilHoleCreateRequest },
+    { gridsquareUuid: string; data: FoilHoleCreateRequest[] },
     TContext
-  > => {
-    const mutationKey = [
-      'createGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPost',
-    ]
-    const { mutation: mutationOptions, request: requestOptions } = options
-      ? options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-        ? options
-        : { ...options, mutation: { ...options.mutation, mutationKey } }
-      : { mutation: { mutationKey }, request: undefined }
+  >
+  request?: SecondParameter<typeof customInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPost>>,
+  TError,
+  { gridsquareUuid: string; data: FoilHoleCreateRequest[] },
+  TContext
+> => {
+  const mutationKey = ['createGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPost']
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-    const mutationFn: MutationFunction<
-      Awaited<
-        ReturnType<
-          typeof createGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPost
-        >
-      >,
-      { gridsquareUuid: string; data: FoilHoleCreateRequest }
-    > = (props) => {
-      const { gridsquareUuid, data } = props ?? {}
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPost>>,
+    { gridsquareUuid: string; data: FoilHoleCreateRequest[] }
+  > = (props) => {
+    const { gridsquareUuid, data } = props ?? {}
 
-      return createGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPost(
-        gridsquareUuid,
-        data,
-        requestOptions
-      )
-    }
-
-    return { mutationFn, ...mutationOptions }
+    return createGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPost(
+      gridsquareUuid,
+      data,
+      requestOptions
+    )
   }
+
+  return { mutationFn, ...mutationOptions }
+}
 
 export type CreateGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPostMutationResult =
   NonNullable<
-    Awaited<
-      ReturnType<
-        typeof createGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPost
-      >
-    >
+    Awaited<ReturnType<typeof createGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPost>>
   >
 export type CreateGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPostMutationBody =
-  FoilHoleCreateRequest
+  FoilHoleCreateRequest[]
 export type CreateGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPostMutationError =
   HTTPValidationError
 
 /**
  * @summary Create Gridsquare Foilhole
  */
-export const useCreateGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPost =
-  <TError = HTTPValidationError, TContext = unknown>(
-    options?: {
-      mutation?: UseMutationOptions<
-        Awaited<
-          ReturnType<
-            typeof createGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPost
-          >
-        >,
-        TError,
-        { gridsquareUuid: string; data: FoilHoleCreateRequest },
-        TContext
-      >
-      request?: SecondParameter<typeof customInstance>
-    },
-    queryClient?: QueryClient
-  ): UseMutationResult<
-    Awaited<
-      ReturnType<
-        typeof createGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPost
-      >
-    >,
-    TError,
-    { gridsquareUuid: string; data: FoilHoleCreateRequest },
-    TContext
-  > => {
-    const mutationOptions =
-      getCreateGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPostMutationOptions(
-        options
-      )
+export const useCreateGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPost = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof createGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPost>>,
+      TError,
+      { gridsquareUuid: string; data: FoilHoleCreateRequest[] },
+      TContext
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseMutationResult<
+  Awaited<ReturnType<typeof createGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPost>>,
+  TError,
+  { gridsquareUuid: string; data: FoilHoleCreateRequest[] },
+  TContext
+> => {
+  const mutationOptions =
+    getCreateGridsquareFoilholeGridsquaresGridsquareUuidFoilholesPostMutationOptions(options)
 
-    return useMutation(mutationOptions, queryClient)
-  }
+  return useMutation(mutationOptions, queryClient)
+}
 /**
  * Get all micrographs
  * @summary Get Micrographs
@@ -5713,30 +4764,19 @@ export const getGetMicrographsMicrographsGetQueryOptions = <
   TError = unknown,
 >(options?: {
   query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof getMicrographsMicrographsGet>>,
-      TError,
-      TData
-    >
+    UseQueryOptions<Awaited<ReturnType<typeof getMicrographsMicrographsGet>>, TError, TData>
   >
   request?: SecondParameter<typeof customInstance>
 }) => {
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
-  const queryKey =
-    queryOptions?.queryKey ?? getGetMicrographsMicrographsGetQueryKey()
+  const queryKey = queryOptions?.queryKey ?? getGetMicrographsMicrographsGetQueryKey()
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getMicrographsMicrographsGet>>
-  > = ({ signal }) => getMicrographsMicrographsGet(requestOptions, signal)
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getMicrographsMicrographsGet>>> = ({
+    signal,
+  }) => getMicrographsMicrographsGet(requestOptions, signal)
 
-  return {
-    queryKey,
-    queryFn,
-    staleTime: 300000,
-    retry: 1,
-    ...queryOptions,
-  } as UseQueryOptions<
+  return { queryKey, queryFn, staleTime: 300000, retry: 1, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getMicrographsMicrographsGet>>,
     TError,
     TData
@@ -5754,11 +4794,7 @@ export function useGetMicrographsMicrographsGet<
 >(
   options: {
     query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getMicrographsMicrographsGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getMicrographsMicrographsGet>>, TError, TData>
     > &
       Pick<
         DefinedInitialDataOptions<
@@ -5771,20 +4807,14 @@ export function useGetMicrographsMicrographsGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetMicrographsMicrographsGet<
   TData = Awaited<ReturnType<typeof getMicrographsMicrographsGet>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getMicrographsMicrographsGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getMicrographsMicrographsGet>>, TError, TData>
     > &
       Pick<
         UndefinedInitialDataOptions<
@@ -5797,27 +4827,19 @@ export function useGetMicrographsMicrographsGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetMicrographsMicrographsGet<
   TData = Awaited<ReturnType<typeof getMicrographsMicrographsGet>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getMicrographsMicrographsGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getMicrographsMicrographsGet>>, TError, TData>
     >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Micrographs
  */
@@ -5828,24 +4850,17 @@ export function useGetMicrographsMicrographsGet<
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getMicrographsMicrographsGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getMicrographsMicrographsGet>>, TError, TData>
     >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getGetMicrographsMicrographsGetQueryOptions(options)
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -5867,9 +4882,7 @@ export const getMicrographMicrographsMicrographUuidGet = (
   )
 }
 
-export const getGetMicrographMicrographsMicrographUuidGetQueryKey = (
-  micrographUuid?: string
-) => {
+export const getGetMicrographMicrographsMicrographUuidGetQueryKey = (micrographUuid?: string) => {
   return [`/micrographs/${micrographUuid}`] as const
 }
 
@@ -5892,17 +4905,12 @@ export const getGetMicrographMicrographsMicrographUuidGetQueryOptions = <
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
   const queryKey =
-    queryOptions?.queryKey ??
-    getGetMicrographMicrographsMicrographUuidGetQueryKey(micrographUuid)
+    queryOptions?.queryKey ?? getGetMicrographMicrographsMicrographUuidGetQueryKey(micrographUuid)
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof getMicrographMicrographsMicrographUuidGet>>
   > = ({ signal }) =>
-    getMicrographMicrographsMicrographUuidGet(
-      micrographUuid,
-      requestOptions,
-      signal
-    )
+    getMicrographMicrographsMicrographUuidGet(micrographUuid, requestOptions, signal)
 
   return {
     queryKey,
@@ -5921,8 +4929,7 @@ export const getGetMicrographMicrographsMicrographUuidGetQueryOptions = <
 export type GetMicrographMicrographsMicrographUuidGetQueryResult = NonNullable<
   Awaited<ReturnType<typeof getMicrographMicrographsMicrographUuidGet>>
 >
-export type GetMicrographMicrographsMicrographUuidGetQueryError =
-  HTTPValidationError
+export type GetMicrographMicrographsMicrographUuidGetQueryError = HTTPValidationError
 
 export function useGetMicrographMicrographsMicrographUuidGet<
   TData = Awaited<ReturnType<typeof getMicrographMicrographsMicrographUuidGet>>,
@@ -5948,9 +4955,7 @@ export function useGetMicrographMicrographsMicrographUuidGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetMicrographMicrographsMicrographUuidGet<
   TData = Awaited<ReturnType<typeof getMicrographMicrographsMicrographUuidGet>>,
   TError = HTTPValidationError,
@@ -5975,9 +4980,7 @@ export function useGetMicrographMicrographsMicrographUuidGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetMicrographMicrographsMicrographUuidGet<
   TData = Awaited<ReturnType<typeof getMicrographMicrographsMicrographUuidGet>>,
   TError = HTTPValidationError,
@@ -5994,9 +4997,7 @@ export function useGetMicrographMicrographsMicrographUuidGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Micrograph
  */
@@ -6017,18 +5018,15 @@ export function useGetMicrographMicrographsMicrographUuidGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getGetMicrographMicrographsMicrographUuidGetQueryOptions(
     micrographUuid,
     options
   )
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -6074,9 +5072,7 @@ export const getUpdateMicrographMicrographsMicrographUuidPutMutationOptions = <
 > => {
   const mutationKey = ['updateMicrographMicrographsMicrographUuidPut']
   const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
@@ -6087,24 +5083,17 @@ export const getUpdateMicrographMicrographsMicrographUuidPutMutationOptions = <
   > = (props) => {
     const { micrographUuid, data } = props ?? {}
 
-    return updateMicrographMicrographsMicrographUuidPut(
-      micrographUuid,
-      data,
-      requestOptions
-    )
+    return updateMicrographMicrographsMicrographUuidPut(micrographUuid, data, requestOptions)
   }
 
   return { mutationFn, ...mutationOptions }
 }
 
-export type UpdateMicrographMicrographsMicrographUuidPutMutationResult =
-  NonNullable<
-    Awaited<ReturnType<typeof updateMicrographMicrographsMicrographUuidPut>>
-  >
-export type UpdateMicrographMicrographsMicrographUuidPutMutationBody =
-  MicrographUpdateRequest
-export type UpdateMicrographMicrographsMicrographUuidPutMutationError =
-  HTTPValidationError
+export type UpdateMicrographMicrographsMicrographUuidPutMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updateMicrographMicrographsMicrographUuidPut>>
+>
+export type UpdateMicrographMicrographsMicrographUuidPutMutationBody = MicrographUpdateRequest
+export type UpdateMicrographMicrographsMicrographUuidPutMutationError = HTTPValidationError
 
 /**
  * @summary Update Micrograph
@@ -6129,8 +5118,7 @@ export const useUpdateMicrographMicrographsMicrographUuidPut = <
   { micrographUuid: string; data: MicrographUpdateRequest },
   TContext
 > => {
-  const mutationOptions =
-    getUpdateMicrographMicrographsMicrographUuidPutMutationOptions(options)
+  const mutationOptions = getUpdateMicrographMicrographsMicrographUuidPutMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }
@@ -6142,62 +5130,50 @@ export const deleteMicrographMicrographsMicrographUuidDelete = (
   micrographUuid: string,
   options?: SecondParameter<typeof customInstance>
 ) => {
-  return customInstance<void>(
-    { url: `/micrographs/${micrographUuid}`, method: 'DELETE' },
-    options
-  )
+  return customInstance<void>({ url: `/micrographs/${micrographUuid}`, method: 'DELETE' }, options)
 }
 
-export const getDeleteMicrographMicrographsMicrographUuidDeleteMutationOptions =
-  <TError = HTTPValidationError, TContext = unknown>(options?: {
-    mutation?: UseMutationOptions<
-      Awaited<
-        ReturnType<typeof deleteMicrographMicrographsMicrographUuidDelete>
-      >,
-      TError,
-      { micrographUuid: string },
-      TContext
-    >
-    request?: SecondParameter<typeof customInstance>
-  }): UseMutationOptions<
+export const getDeleteMicrographMicrographsMicrographUuidDeleteMutationOptions = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof deleteMicrographMicrographsMicrographUuidDelete>>,
     TError,
     { micrographUuid: string },
     TContext
-  > => {
-    const mutationKey = ['deleteMicrographMicrographsMicrographUuidDelete']
-    const { mutation: mutationOptions, request: requestOptions } = options
-      ? options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-        ? options
-        : { ...options, mutation: { ...options.mutation, mutationKey } }
-      : { mutation: { mutationKey }, request: undefined }
+  >
+  request?: SecondParameter<typeof customInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteMicrographMicrographsMicrographUuidDelete>>,
+  TError,
+  { micrographUuid: string },
+  TContext
+> => {
+  const mutationKey = ['deleteMicrographMicrographsMicrographUuidDelete']
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-    const mutationFn: MutationFunction<
-      Awaited<
-        ReturnType<typeof deleteMicrographMicrographsMicrographUuidDelete>
-      >,
-      { micrographUuid: string }
-    > = (props) => {
-      const { micrographUuid } = props ?? {}
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteMicrographMicrographsMicrographUuidDelete>>,
+    { micrographUuid: string }
+  > = (props) => {
+    const { micrographUuid } = props ?? {}
 
-      return deleteMicrographMicrographsMicrographUuidDelete(
-        micrographUuid,
-        requestOptions
-      )
-    }
-
-    return { mutationFn, ...mutationOptions }
+    return deleteMicrographMicrographsMicrographUuidDelete(micrographUuid, requestOptions)
   }
 
-export type DeleteMicrographMicrographsMicrographUuidDeleteMutationResult =
-  NonNullable<
-    Awaited<ReturnType<typeof deleteMicrographMicrographsMicrographUuidDelete>>
-  >
+  return { mutationFn, ...mutationOptions }
+}
 
-export type DeleteMicrographMicrographsMicrographUuidDeleteMutationError =
-  HTTPValidationError
+export type DeleteMicrographMicrographsMicrographUuidDeleteMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteMicrographMicrographsMicrographUuidDelete>>
+>
+
+export type DeleteMicrographMicrographsMicrographUuidDeleteMutationError = HTTPValidationError
 
 /**
  * @summary Delete Micrograph
@@ -6208,9 +5184,7 @@ export const useDeleteMicrographMicrographsMicrographUuidDelete = <
 >(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<
-        ReturnType<typeof deleteMicrographMicrographsMicrographUuidDelete>
-      >,
+      Awaited<ReturnType<typeof deleteMicrographMicrographsMicrographUuidDelete>>,
       TError,
       { micrographUuid: string },
       TContext
@@ -6224,8 +5198,7 @@ export const useDeleteMicrographMicrographsMicrographUuidDelete = <
   { micrographUuid: string },
   TContext
 > => {
-  const mutationOptions =
-    getDeleteMicrographMicrographsMicrographUuidDeleteMutationOptions(options)
+  const mutationOptions = getDeleteMicrographMicrographsMicrographUuidDeleteMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }
@@ -6244,183 +5217,118 @@ export const getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet = (
   )
 }
 
-export const getGetFoilholeMicrographsFoilholesFoilholeUuidMicrographsGetQueryKey =
-  (foilholeUuid?: string) => {
-    return [`/foilholes/${foilholeUuid}/micrographs`] as const
-  }
+export const getGetFoilholeMicrographsFoilholesFoilholeUuidMicrographsGetQueryKey = (
+  foilholeUuid?: string
+) => {
+  return [`/foilholes/${foilholeUuid}/micrographs`] as const
+}
 
-export const getGetFoilholeMicrographsFoilholesFoilholeUuidMicrographsGetQueryOptions =
-  <
-    TData = Awaited<
-      ReturnType<
-        typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet
-      >
-    >,
-    TError = HTTPValidationError,
-  >(
-    foilholeUuid: string,
-    options?: {
-      query?: Partial<
-        UseQueryOptions<
-          Awaited<
-            ReturnType<
-              typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet
-            >
-          >,
-          TError,
-          TData
-        >
-      >
-      request?: SecondParameter<typeof customInstance>
-    }
-  ) => {
-    const { query: queryOptions, request: requestOptions } = options ?? {}
-
-    const queryKey =
-      queryOptions?.queryKey ??
-      getGetFoilholeMicrographsFoilholesFoilholeUuidMicrographsGetQueryKey(
-        foilholeUuid
-      )
-
-    const queryFn: QueryFunction<
-      Awaited<
-        ReturnType<
-          typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet
-        >
-      >
-    > = ({ signal }) =>
-      getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet(
-        foilholeUuid,
-        requestOptions,
-        signal
-      )
-
-    return {
-      queryKey,
-      queryFn,
-      enabled: !!foilholeUuid,
-      staleTime: 300000,
-      retry: 1,
-      ...queryOptions,
-    } as UseQueryOptions<
-      Awaited<
-        ReturnType<
-          typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet
-        >
-      >,
-      TError,
-      TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> }
-  }
-
-export type GetFoilholeMicrographsFoilholesFoilholeUuidMicrographsGetQueryResult =
-  NonNullable<
-    Awaited<
-      ReturnType<
-        typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet
+export const getGetFoilholeMicrographsFoilholesFoilholeUuidMicrographsGetQueryOptions = <
+  TData = Awaited<ReturnType<typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet>>,
+  TError = HTTPValidationError,
+>(
+  foilholeUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet>>,
+        TError,
+        TData
       >
     >
-  >
+    request?: SecondParameter<typeof customInstance>
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetFoilholeMicrographsFoilholesFoilholeUuidMicrographsGetQueryKey(foilholeUuid)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet>>
+  > = ({ signal }) =>
+    getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet(foilholeUuid, requestOptions, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!foilholeUuid,
+    staleTime: 300000,
+    retry: 1,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetFoilholeMicrographsFoilholesFoilholeUuidMicrographsGetQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet>>
+>
 export type GetFoilholeMicrographsFoilholesFoilholeUuidMicrographsGetQueryError =
   HTTPValidationError
 
 export function useGetFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet<
-  TData = Awaited<
-    ReturnType<typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet>
-  >,
+  TData = Awaited<ReturnType<typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet>>,
   TError = HTTPValidationError,
 >(
   foilholeUuid: string,
   options: {
     query: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<
-            typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet
-          >
-        >,
+        Awaited<ReturnType<typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet>>,
         TError,
         TData
       >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<
-            ReturnType<
-              typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet
-            >
-          >,
+          Awaited<ReturnType<typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet>>,
           TError,
-          Awaited<
-            ReturnType<
-              typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet
-            >
-          >
+          Awaited<ReturnType<typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet>>
         >,
         'initialData'
       >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet<
-  TData = Awaited<
-    ReturnType<typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet>
-  >,
+  TData = Awaited<ReturnType<typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet>>,
   TError = HTTPValidationError,
 >(
   foilholeUuid: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<
-            typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet
-          >
-        >,
+        Awaited<ReturnType<typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet>>,
         TError,
         TData
       >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<
-            ReturnType<
-              typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet
-            >
-          >,
+          Awaited<ReturnType<typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet>>,
           TError,
-          Awaited<
-            ReturnType<
-              typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet
-            >
-          >
+          Awaited<ReturnType<typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet>>
         >,
         'initialData'
       >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet<
-  TData = Awaited<
-    ReturnType<typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet>
-  >,
+  TData = Awaited<ReturnType<typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet>>,
   TError = HTTPValidationError,
 >(
   foilholeUuid: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<
-            typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet
-          >
-        >,
+        Awaited<ReturnType<typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet>>,
         TError,
         TData
       >
@@ -6428,28 +5336,20 @@ export function useGetFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Foilhole Micrographs
  */
 
 export function useGetFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet<
-  TData = Awaited<
-    ReturnType<typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet>
-  >,
+  TData = Awaited<ReturnType<typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet>>,
   TError = HTTPValidationError,
 >(
   foilholeUuid: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<
-            typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet
-          >
-        >,
+        Awaited<ReturnType<typeof getFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet>>,
         TError,
         TData
       >
@@ -6457,19 +5357,15 @@ export function useGetFoilholeMicrographsFoilholesFoilholeUuidMicrographsGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
-  const queryOptions =
-    getGetFoilholeMicrographsFoilholesFoilholeUuidMicrographsGetQueryOptions(
-      foilholeUuid,
-      options
-    )
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetFoilholeMicrographsFoilholesFoilholeUuidMicrographsGetQueryOptions(
+    foilholeUuid,
+    options
+  )
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -6498,67 +5394,49 @@ export const createFoilholeMicrographFoilholesFoilholeUuidMicrographsPost = (
   )
 }
 
-export const getCreateFoilholeMicrographFoilholesFoilholeUuidMicrographsPostMutationOptions =
-  <TError = HTTPValidationError, TContext = unknown>(options?: {
-    mutation?: UseMutationOptions<
-      Awaited<
-        ReturnType<
-          typeof createFoilholeMicrographFoilholesFoilholeUuidMicrographsPost
-        >
-      >,
-      TError,
-      { foilholeUuid: string; data: MicrographCreateRequest },
-      TContext
-    >
-    request?: SecondParameter<typeof customInstance>
-  }): UseMutationOptions<
-    Awaited<
-      ReturnType<
-        typeof createFoilholeMicrographFoilholesFoilholeUuidMicrographsPost
-      >
-    >,
+export const getCreateFoilholeMicrographFoilholesFoilholeUuidMicrographsPostMutationOptions = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createFoilholeMicrographFoilholesFoilholeUuidMicrographsPost>>,
     TError,
     { foilholeUuid: string; data: MicrographCreateRequest },
     TContext
-  > => {
-    const mutationKey = [
-      'createFoilholeMicrographFoilholesFoilholeUuidMicrographsPost',
-    ]
-    const { mutation: mutationOptions, request: requestOptions } = options
-      ? options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-        ? options
-        : { ...options, mutation: { ...options.mutation, mutationKey } }
-      : { mutation: { mutationKey }, request: undefined }
+  >
+  request?: SecondParameter<typeof customInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createFoilholeMicrographFoilholesFoilholeUuidMicrographsPost>>,
+  TError,
+  { foilholeUuid: string; data: MicrographCreateRequest },
+  TContext
+> => {
+  const mutationKey = ['createFoilholeMicrographFoilholesFoilholeUuidMicrographsPost']
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-    const mutationFn: MutationFunction<
-      Awaited<
-        ReturnType<
-          typeof createFoilholeMicrographFoilholesFoilholeUuidMicrographsPost
-        >
-      >,
-      { foilholeUuid: string; data: MicrographCreateRequest }
-    > = (props) => {
-      const { foilholeUuid, data } = props ?? {}
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createFoilholeMicrographFoilholesFoilholeUuidMicrographsPost>>,
+    { foilholeUuid: string; data: MicrographCreateRequest }
+  > = (props) => {
+    const { foilholeUuid, data } = props ?? {}
 
-      return createFoilholeMicrographFoilholesFoilholeUuidMicrographsPost(
-        foilholeUuid,
-        data,
-        requestOptions
-      )
-    }
-
-    return { mutationFn, ...mutationOptions }
+    return createFoilholeMicrographFoilholesFoilholeUuidMicrographsPost(
+      foilholeUuid,
+      data,
+      requestOptions
+    )
   }
+
+  return { mutationFn, ...mutationOptions }
+}
 
 export type CreateFoilholeMicrographFoilholesFoilholeUuidMicrographsPostMutationResult =
   NonNullable<
-    Awaited<
-      ReturnType<
-        typeof createFoilholeMicrographFoilholesFoilholeUuidMicrographsPost
-      >
-    >
+    Awaited<ReturnType<typeof createFoilholeMicrographFoilholesFoilholeUuidMicrographsPost>>
   >
 export type CreateFoilholeMicrographFoilholesFoilholeUuidMicrographsPostMutationBody =
   MicrographCreateRequest
@@ -6574,11 +5452,7 @@ export const useCreateFoilholeMicrographFoilholesFoilholeUuidMicrographsPost = <
 >(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<
-        ReturnType<
-          typeof createFoilholeMicrographFoilholesFoilholeUuidMicrographsPost
-        >
-      >,
+      Awaited<ReturnType<typeof createFoilholeMicrographFoilholesFoilholeUuidMicrographsPost>>,
       TError,
       { foilholeUuid: string; data: MicrographCreateRequest },
       TContext
@@ -6587,19 +5461,13 @@ export const useCreateFoilholeMicrographFoilholesFoilholeUuidMicrographsPost = <
   },
   queryClient?: QueryClient
 ): UseMutationResult<
-  Awaited<
-    ReturnType<
-      typeof createFoilholeMicrographFoilholesFoilholeUuidMicrographsPost
-    >
-  >,
+  Awaited<ReturnType<typeof createFoilholeMicrographFoilholesFoilholeUuidMicrographsPost>>,
   TError,
   { foilholeUuid: string; data: MicrographCreateRequest },
   TContext
 > => {
   const mutationOptions =
-    getCreateFoilholeMicrographFoilholesFoilholeUuidMicrographsPostMutationOptions(
-      options
-    )
+    getCreateFoilholeMicrographFoilholesFoilholeUuidMicrographsPostMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }
@@ -6635,22 +5503,13 @@ export const getGetPredictionModelsPredictionModelsGetQueryOptions = <
 }) => {
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
-  const queryKey =
-    queryOptions?.queryKey ??
-    getGetPredictionModelsPredictionModelsGetQueryKey()
+  const queryKey = queryOptions?.queryKey ?? getGetPredictionModelsPredictionModelsGetQueryKey()
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof getPredictionModelsPredictionModelsGet>>
-  > = ({ signal }) =>
-    getPredictionModelsPredictionModelsGet(requestOptions, signal)
+  > = ({ signal }) => getPredictionModelsPredictionModelsGet(requestOptions, signal)
 
-  return {
-    queryKey,
-    queryFn,
-    staleTime: 300000,
-    retry: 1,
-    ...queryOptions,
-  } as UseQueryOptions<
+  return { queryKey, queryFn, staleTime: 300000, retry: 1, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getPredictionModelsPredictionModelsGet>>,
     TError,
     TData
@@ -6685,9 +5544,7 @@ export function useGetPredictionModelsPredictionModelsGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetPredictionModelsPredictionModelsGet<
   TData = Awaited<ReturnType<typeof getPredictionModelsPredictionModelsGet>>,
   TError = unknown,
@@ -6711,9 +5568,7 @@ export function useGetPredictionModelsPredictionModelsGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetPredictionModelsPredictionModelsGet<
   TData = Awaited<ReturnType<typeof getPredictionModelsPredictionModelsGet>>,
   TError = unknown,
@@ -6729,9 +5584,7 @@ export function useGetPredictionModelsPredictionModelsGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Prediction Models
  */
@@ -6751,16 +5604,12 @@ export function useGetPredictionModelsPredictionModelsGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
-  const queryOptions =
-    getGetPredictionModelsPredictionModelsGetQueryOptions(options)
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetPredictionModelsPredictionModelsGetQueryOptions(options)
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -6806,9 +5655,7 @@ export const getCreatePredictionModelPredictionModelsPostMutationOptions = <
 > => {
   const mutationKey = ['createPredictionModelPredictionModelsPost']
   const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
@@ -6825,14 +5672,12 @@ export const getCreatePredictionModelPredictionModelsPostMutationOptions = <
   return { mutationFn, ...mutationOptions }
 }
 
-export type CreatePredictionModelPredictionModelsPostMutationResult =
-  NonNullable<
-    Awaited<ReturnType<typeof createPredictionModelPredictionModelsPost>>
-  >
+export type CreatePredictionModelPredictionModelsPostMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createPredictionModelPredictionModelsPost>>
+>
 export type CreatePredictionModelPredictionModelsPostMutationBody =
   QualityPredictionModelCreateRequest
-export type CreatePredictionModelPredictionModelsPostMutationError =
-  HTTPValidationError
+export type CreatePredictionModelPredictionModelsPostMutationError = HTTPValidationError
 
 /**
  * @summary Create Prediction Model
@@ -6857,8 +5702,7 @@ export const useCreatePredictionModelPredictionModelsPost = <
   { data: QualityPredictionModelCreateRequest },
   TContext
 > => {
-  const mutationOptions =
-    getCreatePredictionModelPredictionModelsPostMutationOptions(options)
+  const mutationOptions = getCreatePredictionModelPredictionModelsPostMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }
@@ -6876,9 +5720,7 @@ export const getPredictionModelPredictionModelsNameGet = (
   )
 }
 
-export const getGetPredictionModelPredictionModelsNameGetQueryKey = (
-  name?: string
-) => {
+export const getGetPredictionModelPredictionModelsNameGetQueryKey = (name?: string) => {
   return [`/prediction_models/${name}`] as const
 }
 
@@ -6901,13 +5743,11 @@ export const getGetPredictionModelPredictionModelsNameGetQueryOptions = <
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
   const queryKey =
-    queryOptions?.queryKey ??
-    getGetPredictionModelPredictionModelsNameGetQueryKey(name)
+    queryOptions?.queryKey ?? getGetPredictionModelPredictionModelsNameGetQueryKey(name)
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof getPredictionModelPredictionModelsNameGet>>
-  > = ({ signal }) =>
-    getPredictionModelPredictionModelsNameGet(name, requestOptions, signal)
+  > = ({ signal }) => getPredictionModelPredictionModelsNameGet(name, requestOptions, signal)
 
   return {
     queryKey,
@@ -6926,8 +5766,7 @@ export const getGetPredictionModelPredictionModelsNameGetQueryOptions = <
 export type GetPredictionModelPredictionModelsNameGetQueryResult = NonNullable<
   Awaited<ReturnType<typeof getPredictionModelPredictionModelsNameGet>>
 >
-export type GetPredictionModelPredictionModelsNameGetQueryError =
-  HTTPValidationError
+export type GetPredictionModelPredictionModelsNameGetQueryError = HTTPValidationError
 
 export function useGetPredictionModelPredictionModelsNameGet<
   TData = Awaited<ReturnType<typeof getPredictionModelPredictionModelsNameGet>>,
@@ -6953,9 +5792,7 @@ export function useGetPredictionModelPredictionModelsNameGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetPredictionModelPredictionModelsNameGet<
   TData = Awaited<ReturnType<typeof getPredictionModelPredictionModelsNameGet>>,
   TError = HTTPValidationError,
@@ -6980,9 +5817,7 @@ export function useGetPredictionModelPredictionModelsNameGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetPredictionModelPredictionModelsNameGet<
   TData = Awaited<ReturnType<typeof getPredictionModelPredictionModelsNameGet>>,
   TError = HTTPValidationError,
@@ -6999,9 +5834,7 @@ export function useGetPredictionModelPredictionModelsNameGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Prediction Model
  */
@@ -7022,18 +5855,12 @@ export function useGetPredictionModelPredictionModelsNameGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
-  const queryOptions = getGetPredictionModelPredictionModelsNameGetQueryOptions(
-    name,
-    options
-  )
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetPredictionModelPredictionModelsNameGetQueryOptions(name, options)
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -7078,9 +5905,7 @@ export const getUpdatePredictionModelPredictionModelsNamePutMutationOptions = <
 > => {
   const mutationKey = ['updatePredictionModelPredictionModelsNamePut']
   const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
@@ -7091,24 +5916,18 @@ export const getUpdatePredictionModelPredictionModelsNamePutMutationOptions = <
   > = (props) => {
     const { name, data } = props ?? {}
 
-    return updatePredictionModelPredictionModelsNamePut(
-      name,
-      data,
-      requestOptions
-    )
+    return updatePredictionModelPredictionModelsNamePut(name, data, requestOptions)
   }
 
   return { mutationFn, ...mutationOptions }
 }
 
-export type UpdatePredictionModelPredictionModelsNamePutMutationResult =
-  NonNullable<
-    Awaited<ReturnType<typeof updatePredictionModelPredictionModelsNamePut>>
-  >
+export type UpdatePredictionModelPredictionModelsNamePutMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updatePredictionModelPredictionModelsNamePut>>
+>
 export type UpdatePredictionModelPredictionModelsNamePutMutationBody =
   QualityPredictionModelUpdateRequest
-export type UpdatePredictionModelPredictionModelsNamePutMutationError =
-  HTTPValidationError
+export type UpdatePredictionModelPredictionModelsNamePutMutationError = HTTPValidationError
 
 /**
  * @summary Update Prediction Model
@@ -7133,8 +5952,7 @@ export const useUpdatePredictionModelPredictionModelsNamePut = <
   { name: string; data: QualityPredictionModelUpdateRequest },
   TContext
 > => {
-  const mutationOptions =
-    getUpdatePredictionModelPredictionModelsNamePutMutationOptions(options)
+  const mutationOptions = getUpdatePredictionModelPredictionModelsNamePutMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }
@@ -7145,62 +5963,50 @@ export const deletePredictionModelPredictionModelsNameDelete = (
   name: string,
   options?: SecondParameter<typeof customInstance>
 ) => {
-  return customInstance<void>(
-    { url: `/prediction_models/${name}`, method: 'DELETE' },
-    options
-  )
+  return customInstance<void>({ url: `/prediction_models/${name}`, method: 'DELETE' }, options)
 }
 
-export const getDeletePredictionModelPredictionModelsNameDeleteMutationOptions =
-  <TError = HTTPValidationError, TContext = unknown>(options?: {
-    mutation?: UseMutationOptions<
-      Awaited<
-        ReturnType<typeof deletePredictionModelPredictionModelsNameDelete>
-      >,
-      TError,
-      { name: string },
-      TContext
-    >
-    request?: SecondParameter<typeof customInstance>
-  }): UseMutationOptions<
+export const getDeletePredictionModelPredictionModelsNameDeleteMutationOptions = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof deletePredictionModelPredictionModelsNameDelete>>,
     TError,
     { name: string },
     TContext
-  > => {
-    const mutationKey = ['deletePredictionModelPredictionModelsNameDelete']
-    const { mutation: mutationOptions, request: requestOptions } = options
-      ? options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-        ? options
-        : { ...options, mutation: { ...options.mutation, mutationKey } }
-      : { mutation: { mutationKey }, request: undefined }
+  >
+  request?: SecondParameter<typeof customInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deletePredictionModelPredictionModelsNameDelete>>,
+  TError,
+  { name: string },
+  TContext
+> => {
+  const mutationKey = ['deletePredictionModelPredictionModelsNameDelete']
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-    const mutationFn: MutationFunction<
-      Awaited<
-        ReturnType<typeof deletePredictionModelPredictionModelsNameDelete>
-      >,
-      { name: string }
-    > = (props) => {
-      const { name } = props ?? {}
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deletePredictionModelPredictionModelsNameDelete>>,
+    { name: string }
+  > = (props) => {
+    const { name } = props ?? {}
 
-      return deletePredictionModelPredictionModelsNameDelete(
-        name,
-        requestOptions
-      )
-    }
-
-    return { mutationFn, ...mutationOptions }
+    return deletePredictionModelPredictionModelsNameDelete(name, requestOptions)
   }
 
-export type DeletePredictionModelPredictionModelsNameDeleteMutationResult =
-  NonNullable<
-    Awaited<ReturnType<typeof deletePredictionModelPredictionModelsNameDelete>>
-  >
+  return { mutationFn, ...mutationOptions }
+}
 
-export type DeletePredictionModelPredictionModelsNameDeleteMutationError =
-  HTTPValidationError
+export type DeletePredictionModelPredictionModelsNameDeleteMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deletePredictionModelPredictionModelsNameDelete>>
+>
+
+export type DeletePredictionModelPredictionModelsNameDeleteMutationError = HTTPValidationError
 
 /**
  * @summary Delete Prediction Model
@@ -7211,9 +6017,7 @@ export const useDeletePredictionModelPredictionModelsNameDelete = <
 >(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<
-        ReturnType<typeof deletePredictionModelPredictionModelsNameDelete>
-      >,
+      Awaited<ReturnType<typeof deletePredictionModelPredictionModelsNameDelete>>,
       TError,
       { name: string },
       TContext
@@ -7227,40 +6031,36 @@ export const useDeletePredictionModelPredictionModelsNameDelete = <
   { name: string },
   TContext
 > => {
-  const mutationOptions =
-    getDeletePredictionModelPredictionModelsNameDeleteMutationOptions(options)
+  const mutationOptions = getDeletePredictionModelPredictionModelsNameDeleteMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }
 /**
- * @summary Get Gridsquare Quality Predictions
+ * Get time ordered predictions for all models that provide them for this square
+ * @summary Get Gridsquare Quality Prediction Time Series
  */
-export const getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet =
+export const getGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGet =
   (
     gridsquareUuid: string,
     options?: SecondParameter<typeof customInstance>,
     signal?: AbortSignal
   ) => {
-    return customInstance<QualityPredictionResponse[]>(
-      {
-        url: `/gridsquares/${gridsquareUuid}/quality_predictions`,
-        method: 'GET',
-        signal,
-      },
+    return customInstance<GetGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGet200>(
+      { url: `/gridsquares/${gridsquareUuid}/quality_predictions`, method: 'GET', signal },
       options
     )
   }
 
-export const getGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGetQueryKey =
+export const getGetGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGetQueryKey =
   (gridsquareUuid?: string) => {
     return [`/gridsquares/${gridsquareUuid}/quality_predictions`] as const
   }
 
-export const getGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGetQueryOptions =
+export const getGetGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGetQueryOptions =
   <
     TData = Awaited<
       ReturnType<
-        typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+        typeof getGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGet
       >
     >,
     TError = HTTPValidationError,
@@ -7271,7 +6071,7 @@ export const getGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityP
         UseQueryOptions<
           Awaited<
             ReturnType<
-              typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+              typeof getGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGet
             >
           >,
           TError,
@@ -7285,18 +6085,18 @@ export const getGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityP
 
     const queryKey =
       queryOptions?.queryKey ??
-      getGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGetQueryKey(
+      getGetGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGetQueryKey(
         gridsquareUuid
       )
 
     const queryFn: QueryFunction<
       Awaited<
         ReturnType<
-          typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+          typeof getGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGet
         >
       >
     > = ({ signal }) =>
-      getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet(
+      getGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGet(
         gridsquareUuid,
         requestOptions,
         signal
@@ -7312,7 +6112,7 @@ export const getGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityP
     } as UseQueryOptions<
       Awaited<
         ReturnType<
-          typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+          typeof getGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGet
         >
       >,
       TError,
@@ -7320,21 +6120,21 @@ export const getGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityP
     > & { queryKey: DataTag<QueryKey, TData, TError> }
   }
 
-export type GetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGetQueryResult =
+export type GetGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGetQueryResult =
   NonNullable<
     Awaited<
       ReturnType<
-        typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+        typeof getGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGet
       >
     >
   >
-export type GetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGetQueryError =
+export type GetGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGetQueryError =
   HTTPValidationError
 
-export function useGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet<
+export function useGetGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGet<
   TData = Awaited<
     ReturnType<
-      typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+      typeof getGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGet
     >
   >,
   TError = HTTPValidationError,
@@ -7345,7 +6145,7 @@ export function useGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQuali
       UseQueryOptions<
         Awaited<
           ReturnType<
-            typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+            typeof getGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGet
           >
         >,
         TError,
@@ -7356,13 +6156,13 @@ export function useGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQuali
         DefinedInitialDataOptions<
           Awaited<
             ReturnType<
-              typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+              typeof getGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGet
             >
           >,
           TError,
           Awaited<
             ReturnType<
-              typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+              typeof getGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGet
             >
           >
         >,
@@ -7371,13 +6171,11 @@ export function useGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQuali
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
-export function useGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet<
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGet<
   TData = Awaited<
     ReturnType<
-      typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+      typeof getGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGet
     >
   >,
   TError = HTTPValidationError,
@@ -7388,7 +6186,7 @@ export function useGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQuali
       UseQueryOptions<
         Awaited<
           ReturnType<
-            typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+            typeof getGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGet
           >
         >,
         TError,
@@ -7399,13 +6197,13 @@ export function useGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQuali
         UndefinedInitialDataOptions<
           Awaited<
             ReturnType<
-              typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+              typeof getGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGet
             >
           >,
           TError,
           Awaited<
             ReturnType<
-              typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+              typeof getGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGet
             >
           >
         >,
@@ -7414,13 +6212,11 @@ export function useGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQuali
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
-export function useGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet<
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGet<
   TData = Awaited<
     ReturnType<
-      typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+      typeof getGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGet
     >
   >,
   TError = HTTPValidationError,
@@ -7431,7 +6227,7 @@ export function useGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQuali
       UseQueryOptions<
         Awaited<
           ReturnType<
-            typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+            typeof getGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGet
           >
         >,
         TError,
@@ -7441,17 +6237,15 @@ export function useGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQuali
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Get Gridsquare Quality Predictions
+ * @summary Get Gridsquare Quality Prediction Time Series
  */
 
-export function useGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet<
+export function useGetGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGet<
   TData = Awaited<
     ReturnType<
-      typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+      typeof getGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGet
     >
   >,
   TError = HTTPValidationError,
@@ -7462,7 +6256,7 @@ export function useGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQuali
       UseQueryOptions<
         Awaited<
           ReturnType<
-            typeof getGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGet
+            typeof getGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGet
           >
         >,
         TError,
@@ -7472,19 +6266,16 @@ export function useGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQuali
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions =
-    getGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQualityPredictionsGetQueryOptions(
+    getGetGridsquareQualityPredictionTimeSeriesGridsquaresGridsquareUuidQualityPredictionsGetQueryOptions(
       gridsquareUuid,
       options
     )
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -7492,36 +6283,31 @@ export function useGetGridsquareQualityPredictionsGridsquaresGridsquareUuidQuali
 }
 
 /**
- * @summary Get Gridsquare Foilhole Quality Predictions
+ * Get time ordered predictions for all models that provide them for this square
+ * @summary Get Foilhole Quality Prediction Time Series For Gridsquare
  */
-export const getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet =
+export const getFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGet =
   (
     gridsquareUuid: string,
     options?: SecondParameter<typeof customInstance>,
     signal?: AbortSignal
   ) => {
-    return customInstance<QualityPredictionResponse[]>(
-      {
-        url: `/gridsquares/${gridsquareUuid}/foilhole_quality_predictions`,
-        method: 'GET',
-        signal,
-      },
+    return customInstance<GetFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGet200>(
+      { url: `/gridsquares/${gridsquareUuid}/foilhole_quality_predictions`, method: 'GET', signal },
       options
     )
   }
 
-export const getGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGetQueryKey =
+export const getGetFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGetQueryKey =
   (gridsquareUuid?: string) => {
-    return [
-      `/gridsquares/${gridsquareUuid}/foilhole_quality_predictions`,
-    ] as const
+    return [`/gridsquares/${gridsquareUuid}/foilhole_quality_predictions`] as const
   }
 
-export const getGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGetQueryOptions =
+export const getGetFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGetQueryOptions =
   <
     TData = Awaited<
       ReturnType<
-        typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+        typeof getFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
       >
     >,
     TError = HTTPValidationError,
@@ -7532,7 +6318,7 @@ export const getGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuid
         UseQueryOptions<
           Awaited<
             ReturnType<
-              typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+              typeof getFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
             >
           >,
           TError,
@@ -7546,18 +6332,18 @@ export const getGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuid
 
     const queryKey =
       queryOptions?.queryKey ??
-      getGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGetQueryKey(
+      getGetFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGetQueryKey(
         gridsquareUuid
       )
 
     const queryFn: QueryFunction<
       Awaited<
         ReturnType<
-          typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+          typeof getFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
         >
       >
     > = ({ signal }) =>
-      getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet(
+      getFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGet(
         gridsquareUuid,
         requestOptions,
         signal
@@ -7573,7 +6359,7 @@ export const getGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuid
     } as UseQueryOptions<
       Awaited<
         ReturnType<
-          typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+          typeof getFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
         >
       >,
       TError,
@@ -7581,21 +6367,21 @@ export const getGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuid
     > & { queryKey: DataTag<QueryKey, TData, TError> }
   }
 
-export type GetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGetQueryResult =
+export type GetFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGetQueryResult =
   NonNullable<
     Awaited<
       ReturnType<
-        typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+        typeof getFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
       >
     >
   >
-export type GetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGetQueryError =
+export type GetFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGetQueryError =
   HTTPValidationError
 
-export function useGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet<
+export function useGetFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGet<
   TData = Awaited<
     ReturnType<
-      typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+      typeof getFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
     >
   >,
   TError = HTTPValidationError,
@@ -7606,7 +6392,7 @@ export function useGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareU
       UseQueryOptions<
         Awaited<
           ReturnType<
-            typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+            typeof getFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
           >
         >,
         TError,
@@ -7617,13 +6403,13 @@ export function useGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareU
         DefinedInitialDataOptions<
           Awaited<
             ReturnType<
-              typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+              typeof getFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
             >
           >,
           TError,
           Awaited<
             ReturnType<
-              typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+              typeof getFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
             >
           >
         >,
@@ -7632,13 +6418,11 @@ export function useGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareU
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
-export function useGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet<
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGet<
   TData = Awaited<
     ReturnType<
-      typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+      typeof getFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
     >
   >,
   TError = HTTPValidationError,
@@ -7649,7 +6433,7 @@ export function useGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareU
       UseQueryOptions<
         Awaited<
           ReturnType<
-            typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+            typeof getFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
           >
         >,
         TError,
@@ -7660,13 +6444,13 @@ export function useGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareU
         UndefinedInitialDataOptions<
           Awaited<
             ReturnType<
-              typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+              typeof getFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
             >
           >,
           TError,
           Awaited<
             ReturnType<
-              typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+              typeof getFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
             >
           >
         >,
@@ -7675,13 +6459,11 @@ export function useGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareU
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
-export function useGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet<
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGet<
   TData = Awaited<
     ReturnType<
-      typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+      typeof getFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
     >
   >,
   TError = HTTPValidationError,
@@ -7692,7 +6474,7 @@ export function useGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareU
       UseQueryOptions<
         Awaited<
           ReturnType<
-            typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+            typeof getFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
           >
         >,
         TError,
@@ -7702,17 +6484,15 @@ export function useGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareU
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Get Gridsquare Foilhole Quality Predictions
+ * @summary Get Foilhole Quality Prediction Time Series For Gridsquare
  */
 
-export function useGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet<
+export function useGetFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGet<
   TData = Awaited<
     ReturnType<
-      typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+      typeof getFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
     >
   >,
   TError = HTTPValidationError,
@@ -7723,7 +6503,7 @@ export function useGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareU
       UseQueryOptions<
         Awaited<
           ReturnType<
-            typeof getGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+            typeof getFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
           >
         >,
         TError,
@@ -7733,19 +6513,16 @@ export function useGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareU
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions =
-    getGetGridsquareFoilholeQualityPredictionsGridsquaresGridsquareUuidFoilholeQualityPredictionsGetQueryOptions(
+    getGetFoilholeQualityPredictionTimeSeriesForGridsquareGridsquaresGridsquareUuidFoilholeQualityPredictionsGetQueryOptions(
       gridsquareUuid,
       options
     )
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -7791,9 +6568,7 @@ export const getCreateQualityPredictionQualityPredictionsPostMutationOptions = <
 > => {
   const mutationKey = ['createQualityPredictionQualityPredictionsPost']
   const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
@@ -7810,14 +6585,12 @@ export const getCreateQualityPredictionQualityPredictionsPostMutationOptions = <
   return { mutationFn, ...mutationOptions }
 }
 
-export type CreateQualityPredictionQualityPredictionsPostMutationResult =
-  NonNullable<
-    Awaited<ReturnType<typeof createQualityPredictionQualityPredictionsPost>>
-  >
+export type CreateQualityPredictionQualityPredictionsPostMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createQualityPredictionQualityPredictionsPost>>
+>
 export type CreateQualityPredictionQualityPredictionsPostMutationBody =
   QualityPredictionCreateRequest
-export type CreateQualityPredictionQualityPredictionsPostMutationError =
-  HTTPValidationError
+export type CreateQualityPredictionQualityPredictionsPostMutationError = HTTPValidationError
 
 /**
  * @summary Create Quality Prediction
@@ -7842,8 +6615,7 @@ export const useCreateQualityPredictionQualityPredictionsPost = <
   { data: QualityPredictionCreateRequest },
   TContext
 > => {
-  const mutationOptions =
-    getCreateQualityPredictionQualityPredictionsPostMutationOptions(options)
+  const mutationOptions = getCreateQualityPredictionQualityPredictionsPostMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }
@@ -7869,30 +6641,19 @@ export const getGetQualityMetricsQualityMetricsGetQueryOptions = <
   TError = unknown,
 >(options?: {
   query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>,
-      TError,
-      TData
-    >
+    UseQueryOptions<Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>, TError, TData>
   >
   request?: SecondParameter<typeof customInstance>
 }) => {
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
-  const queryKey =
-    queryOptions?.queryKey ?? getGetQualityMetricsQualityMetricsGetQueryKey()
+  const queryKey = queryOptions?.queryKey ?? getGetQualityMetricsQualityMetricsGetQueryKey()
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>
-  > = ({ signal }) => getQualityMetricsQualityMetricsGet(requestOptions, signal)
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>> = ({
+    signal,
+  }) => getQualityMetricsQualityMetricsGet(requestOptions, signal)
 
-  return {
-    queryKey,
-    queryFn,
-    staleTime: 300000,
-    retry: 1,
-    ...queryOptions,
-  } as UseQueryOptions<
+  return { queryKey, queryFn, staleTime: 300000, retry: 1, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>,
     TError,
     TData
@@ -7910,11 +6671,7 @@ export function useGetQualityMetricsQualityMetricsGet<
 >(
   options: {
     query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>, TError, TData>
     > &
       Pick<
         DefinedInitialDataOptions<
@@ -7927,20 +6684,14 @@ export function useGetQualityMetricsQualityMetricsGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetQualityMetricsQualityMetricsGet<
   TData = Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>, TError, TData>
     > &
       Pick<
         UndefinedInitialDataOptions<
@@ -7953,27 +6704,19 @@ export function useGetQualityMetricsQualityMetricsGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetQualityMetricsQualityMetricsGet<
   TData = Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>, TError, TData>
     >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Quality Metrics
  */
@@ -7984,25 +6727,17 @@ export function useGetQualityMetricsQualityMetricsGet<
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getQualityMetricsQualityMetricsGet>>, TError, TData>
     >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
-  const queryOptions =
-    getGetQualityMetricsQualityMetricsGetQueryOptions(options)
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetQualityMetricsQualityMetricsGetQueryOptions(options)
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -8010,37 +6745,34 @@ export function useGetQualityMetricsQualityMetricsGet<
 }
 
 /**
- * @summary Get Grid Predictions
+ * @summary Get Prediction For Grid
  */
-export const getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet =
-  (
-    predictionModelName: string,
-    gridUuid: string,
-    options?: SecondParameter<typeof customInstance>,
-    signal?: AbortSignal
-  ) => {
-    return customInstance<QualityPredictionResponse[]>(
-      {
-        url: `/prediction_model/${predictionModelName}/grid/${gridUuid}/prediction`,
-        method: 'GET',
-        signal,
-      },
-      options
-    )
-  }
+export const getPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGet = (
+  predictionModelName: string,
+  gridUuid: string,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<QualityPredictionResponse[]>(
+    {
+      url: `/prediction_model/${predictionModelName}/grid/${gridUuid}/prediction`,
+      method: 'GET',
+      signal,
+    },
+    options
+  )
+}
 
-export const getGetGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGetQueryKey =
+export const getGetPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGetQueryKey =
   (predictionModelName?: string, gridUuid?: string) => {
-    return [
-      `/prediction_model/${predictionModelName}/grid/${gridUuid}/prediction`,
-    ] as const
+    return [`/prediction_model/${predictionModelName}/grid/${gridUuid}/prediction`] as const
   }
 
-export const getGetGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGetQueryOptions =
+export const getGetPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGetQueryOptions =
   <
     TData = Awaited<
       ReturnType<
-        typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+        typeof getPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGet
       >
     >,
     TError = HTTPValidationError,
@@ -8052,7 +6784,7 @@ export const getGetGridPredictionsPredictionModelPredictionModelNameGridGridUuid
         UseQueryOptions<
           Awaited<
             ReturnType<
-              typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+              typeof getPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGet
             >
           >,
           TError,
@@ -8066,7 +6798,7 @@ export const getGetGridPredictionsPredictionModelPredictionModelNameGridGridUuid
 
     const queryKey =
       queryOptions?.queryKey ??
-      getGetGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGetQueryKey(
+      getGetPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGetQueryKey(
         predictionModelName,
         gridUuid
       )
@@ -8074,11 +6806,11 @@ export const getGetGridPredictionsPredictionModelPredictionModelNameGridGridUuid
     const queryFn: QueryFunction<
       Awaited<
         ReturnType<
-          typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+          typeof getPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGet
         >
       >
     > = ({ signal }) =>
-      getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet(
+      getPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGet(
         predictionModelName,
         gridUuid,
         requestOptions,
@@ -8095,7 +6827,7 @@ export const getGetGridPredictionsPredictionModelPredictionModelNameGridGridUuid
     } as UseQueryOptions<
       Awaited<
         ReturnType<
-          typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+          typeof getPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGet
         >
       >,
       TError,
@@ -8103,21 +6835,21 @@ export const getGetGridPredictionsPredictionModelPredictionModelNameGridGridUuid
     > & { queryKey: DataTag<QueryKey, TData, TError> }
   }
 
-export type GetGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGetQueryResult =
+export type GetPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGetQueryResult =
   NonNullable<
     Awaited<
       ReturnType<
-        typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+        typeof getPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGet
       >
     >
   >
-export type GetGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGetQueryError =
+export type GetPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGetQueryError =
   HTTPValidationError
 
-export function useGetGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet<
+export function useGetPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGet<
   TData = Awaited<
     ReturnType<
-      typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+      typeof getPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGet
     >
   >,
   TError = HTTPValidationError,
@@ -8129,7 +6861,7 @@ export function useGetGridPredictionsPredictionModelPredictionModelNameGridGridU
       UseQueryOptions<
         Awaited<
           ReturnType<
-            typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+            typeof getPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGet
           >
         >,
         TError,
@@ -8140,13 +6872,13 @@ export function useGetGridPredictionsPredictionModelPredictionModelNameGridGridU
         DefinedInitialDataOptions<
           Awaited<
             ReturnType<
-              typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+              typeof getPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGet
             >
           >,
           TError,
           Awaited<
             ReturnType<
-              typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+              typeof getPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGet
             >
           >
         >,
@@ -8155,13 +6887,11 @@ export function useGetGridPredictionsPredictionModelPredictionModelNameGridGridU
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
-export function useGetGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet<
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGet<
   TData = Awaited<
     ReturnType<
-      typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+      typeof getPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGet
     >
   >,
   TError = HTTPValidationError,
@@ -8173,7 +6903,7 @@ export function useGetGridPredictionsPredictionModelPredictionModelNameGridGridU
       UseQueryOptions<
         Awaited<
           ReturnType<
-            typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+            typeof getPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGet
           >
         >,
         TError,
@@ -8184,13 +6914,13 @@ export function useGetGridPredictionsPredictionModelPredictionModelNameGridGridU
         UndefinedInitialDataOptions<
           Awaited<
             ReturnType<
-              typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+              typeof getPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGet
             >
           >,
           TError,
           Awaited<
             ReturnType<
-              typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+              typeof getPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGet
             >
           >
         >,
@@ -8199,13 +6929,11 @@ export function useGetGridPredictionsPredictionModelPredictionModelNameGridGridU
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
-export function useGetGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet<
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGet<
   TData = Awaited<
     ReturnType<
-      typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+      typeof getPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGet
     >
   >,
   TError = HTTPValidationError,
@@ -8217,7 +6945,7 @@ export function useGetGridPredictionsPredictionModelPredictionModelNameGridGridU
       UseQueryOptions<
         Awaited<
           ReturnType<
-            typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+            typeof getPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGet
           >
         >,
         TError,
@@ -8227,17 +6955,15 @@ export function useGetGridPredictionsPredictionModelPredictionModelNameGridGridU
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Get Grid Predictions
+ * @summary Get Prediction For Grid
  */
 
-export function useGetGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet<
+export function useGetPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGet<
   TData = Awaited<
     ReturnType<
-      typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+      typeof getPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGet
     >
   >,
   TError = HTTPValidationError,
@@ -8249,7 +6975,7 @@ export function useGetGridPredictionsPredictionModelPredictionModelNameGridGridU
       UseQueryOptions<
         Awaited<
           ReturnType<
-            typeof getGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGet
+            typeof getPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGet
           >
         >,
         TError,
@@ -8259,20 +6985,17 @@ export function useGetGridPredictionsPredictionModelPredictionModelNameGridGridU
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions =
-    getGetGridPredictionsPredictionModelPredictionModelNameGridGridUuidPredictionGetQueryOptions(
+    getGetPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGetQueryOptions(
       predictionModelName,
       gridUuid,
       options
     )
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -8280,37 +7003,36 @@ export function useGetGridPredictionsPredictionModelPredictionModelNameGridGridU
 }
 
 /**
- * @summary Get Grid Latent Representation
+ * @summary Get Latent Rep
  */
-export const getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet =
-  (
-    predictionModelName: string,
-    gridUuid: string,
-    options?: SecondParameter<typeof customInstance>,
-    signal?: AbortSignal
-  ) => {
-    return customInstance<QualityPredictionModelParameterResponse[]>(
-      {
-        url: `/prediction_model/${predictionModelName}/grid/${gridUuid}/latent_representation`,
-        method: 'GET',
-        signal,
-      },
-      options
-    )
-  }
+export const getLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet = (
+  predictionModelName: string,
+  gridUuid: string,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<LatentRepresentationResponse[]>(
+    {
+      url: `/prediction_model/${predictionModelName}/grid/${gridUuid}/latent_representation`,
+      method: 'GET',
+      signal,
+    },
+    options
+  )
+}
 
-export const getGetGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetQueryKey =
+export const getGetLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetQueryKey =
   (predictionModelName?: string, gridUuid?: string) => {
     return [
       `/prediction_model/${predictionModelName}/grid/${gridUuid}/latent_representation`,
     ] as const
   }
 
-export const getGetGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetQueryOptions =
+export const getGetLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetQueryOptions =
   <
     TData = Awaited<
       ReturnType<
-        typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+        typeof getLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
       >
     >,
     TError = HTTPValidationError,
@@ -8322,7 +7044,7 @@ export const getGetGridLatentRepresentationPredictionModelPredictionModelNameGri
         UseQueryOptions<
           Awaited<
             ReturnType<
-              typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+              typeof getLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
             >
           >,
           TError,
@@ -8336,7 +7058,7 @@ export const getGetGridLatentRepresentationPredictionModelPredictionModelNameGri
 
     const queryKey =
       queryOptions?.queryKey ??
-      getGetGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetQueryKey(
+      getGetLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetQueryKey(
         predictionModelName,
         gridUuid
       )
@@ -8344,11 +7066,11 @@ export const getGetGridLatentRepresentationPredictionModelPredictionModelNameGri
     const queryFn: QueryFunction<
       Awaited<
         ReturnType<
-          typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+          typeof getLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
         >
       >
     > = ({ signal }) =>
-      getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet(
+      getLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet(
         predictionModelName,
         gridUuid,
         requestOptions,
@@ -8365,7 +7087,7 @@ export const getGetGridLatentRepresentationPredictionModelPredictionModelNameGri
     } as UseQueryOptions<
       Awaited<
         ReturnType<
-          typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+          typeof getLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
         >
       >,
       TError,
@@ -8373,21 +7095,21 @@ export const getGetGridLatentRepresentationPredictionModelPredictionModelNameGri
     > & { queryKey: DataTag<QueryKey, TData, TError> }
   }
 
-export type GetGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetQueryResult =
+export type GetLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetQueryResult =
   NonNullable<
     Awaited<
       ReturnType<
-        typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+        typeof getLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
       >
     >
   >
-export type GetGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetQueryError =
+export type GetLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetQueryError =
   HTTPValidationError
 
-export function useGetGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet<
+export function useGetLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet<
   TData = Awaited<
     ReturnType<
-      typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+      typeof getLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
     >
   >,
   TError = HTTPValidationError,
@@ -8399,7 +7121,7 @@ export function useGetGridLatentRepresentationPredictionModelPredictionModelName
       UseQueryOptions<
         Awaited<
           ReturnType<
-            typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+            typeof getLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
           >
         >,
         TError,
@@ -8410,13 +7132,13 @@ export function useGetGridLatentRepresentationPredictionModelPredictionModelName
         DefinedInitialDataOptions<
           Awaited<
             ReturnType<
-              typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+              typeof getLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
             >
           >,
           TError,
           Awaited<
             ReturnType<
-              typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+              typeof getLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
             >
           >
         >,
@@ -8425,13 +7147,11 @@ export function useGetGridLatentRepresentationPredictionModelPredictionModelName
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
-export function useGetGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet<
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet<
   TData = Awaited<
     ReturnType<
-      typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+      typeof getLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
     >
   >,
   TError = HTTPValidationError,
@@ -8443,7 +7163,7 @@ export function useGetGridLatentRepresentationPredictionModelPredictionModelName
       UseQueryOptions<
         Awaited<
           ReturnType<
-            typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+            typeof getLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
           >
         >,
         TError,
@@ -8454,13 +7174,13 @@ export function useGetGridLatentRepresentationPredictionModelPredictionModelName
         UndefinedInitialDataOptions<
           Awaited<
             ReturnType<
-              typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+              typeof getLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
             >
           >,
           TError,
           Awaited<
             ReturnType<
-              typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+              typeof getLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
             >
           >
         >,
@@ -8469,13 +7189,11 @@ export function useGetGridLatentRepresentationPredictionModelPredictionModelName
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
-export function useGetGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet<
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet<
   TData = Awaited<
     ReturnType<
-      typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+      typeof getLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
     >
   >,
   TError = HTTPValidationError,
@@ -8487,7 +7205,7 @@ export function useGetGridLatentRepresentationPredictionModelPredictionModelName
       UseQueryOptions<
         Awaited<
           ReturnType<
-            typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+            typeof getLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
           >
         >,
         TError,
@@ -8497,17 +7215,15 @@ export function useGetGridLatentRepresentationPredictionModelPredictionModelName
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Get Grid Latent Representation
+ * @summary Get Latent Rep
  */
 
-export function useGetGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet<
+export function useGetLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet<
   TData = Awaited<
     ReturnType<
-      typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+      typeof getLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
     >
   >,
   TError = HTTPValidationError,
@@ -8519,7 +7235,7 @@ export function useGetGridLatentRepresentationPredictionModelPredictionModelName
       UseQueryOptions<
         Awaited<
           ReturnType<
-            typeof getGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
+            typeof getLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet
           >
         >,
         TError,
@@ -8529,20 +7245,17 @@ export function useGetGridLatentRepresentationPredictionModelPredictionModelName
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions =
-    getGetGridLatentRepresentationPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetQueryOptions(
+    getGetLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetQueryOptions(
       predictionModelName,
       gridUuid,
       options
     )
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -8553,113 +7266,89 @@ export function useGetGridLatentRepresentationPredictionModelPredictionModelName
  * SSE endpoint for streaming instructions to agents for a specific session
  * @summary Stream Instructions
  */
-export const streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet =
-  (
-    agentId: string,
-    sessionId: string,
-    options?: SecondParameter<typeof customInstance>,
-    signal?: AbortSignal
-  ) => {
-    return customInstance<unknown>(
-      {
-        url: `/agent/${agentId}/session/${sessionId}/instructions/stream`,
-        method: 'GET',
-        signal,
-      },
-      options
+export const streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet = (
+  agentId: string,
+  sessionId: string,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<unknown>(
+    { url: `/agent/${agentId}/session/${sessionId}/instructions/stream`, method: 'GET', signal },
+    options
+  )
+}
+
+export const getStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGetQueryKey = (
+  agentId?: string,
+  sessionId?: string
+) => {
+  return [`/agent/${agentId}/session/${sessionId}/instructions/stream`] as const
+}
+
+export const getStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGetQueryOptions = <
+  TData = Awaited<
+    ReturnType<typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet>
+  >,
+  TError = HTTPValidationError,
+>(
+  agentId: string,
+  sessionId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet>
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGetQueryKey(
+      agentId,
+      sessionId
     )
-  }
 
-export const getStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGetQueryKey =
-  (agentId?: string, sessionId?: string) => {
-    return [
-      `/agent/${agentId}/session/${sessionId}/instructions/stream`,
-    ] as const
-  }
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet>>
+  > = ({ signal }) =>
+    streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet(
+      agentId,
+      sessionId,
+      requestOptions,
+      signal
+    )
 
-export const getStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGetQueryOptions =
-  <
-    TData = Awaited<
-      ReturnType<
-        typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
-      >
-    >,
-    TError = HTTPValidationError,
-  >(
-    agentId: string,
-    sessionId: string,
-    options?: {
-      query?: Partial<
-        UseQueryOptions<
-          Awaited<
-            ReturnType<
-              typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
-            >
-          >,
-          TError,
-          TData
-        >
-      >
-      request?: SecondParameter<typeof customInstance>
-    }
-  ) => {
-    const { query: queryOptions, request: requestOptions } = options ?? {}
-
-    const queryKey =
-      queryOptions?.queryKey ??
-      getStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGetQueryKey(
-        agentId,
-        sessionId
-      )
-
-    const queryFn: QueryFunction<
-      Awaited<
-        ReturnType<
-          typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
-        >
-      >
-    > = ({ signal }) =>
-      streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet(
-        agentId,
-        sessionId,
-        requestOptions,
-        signal
-      )
-
-    return {
-      queryKey,
-      queryFn,
-      enabled: !!(agentId && sessionId),
-      staleTime: 300000,
-      retry: 1,
-      ...queryOptions,
-    } as UseQueryOptions<
-      Awaited<
-        ReturnType<
-          typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
-        >
-      >,
-      TError,
-      TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> }
-  }
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!(agentId && sessionId),
+    staleTime: 300000,
+    retry: 1,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
 
 export type StreamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGetQueryResult =
   NonNullable<
-    Awaited<
-      ReturnType<
-        typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
-      >
-    >
+    Awaited<ReturnType<typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet>>
   >
 export type StreamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGetQueryError =
   HTTPValidationError
 
 export function useStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet<
   TData = Awaited<
-    ReturnType<
-      typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
-    >
+    ReturnType<typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet>
   >,
   TError = HTTPValidationError,
 >(
@@ -8669,9 +7358,7 @@ export function useStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStr
     query: Partial<
       UseQueryOptions<
         Awaited<
-          ReturnType<
-            typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
-          >
+          ReturnType<typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet>
         >,
         TError,
         TData
@@ -8680,15 +7367,11 @@ export function useStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStr
       Pick<
         DefinedInitialDataOptions<
           Awaited<
-            ReturnType<
-              typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
-            >
+            ReturnType<typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet>
           >,
           TError,
           Awaited<
-            ReturnType<
-              typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
-            >
+            ReturnType<typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet>
           >
         >,
         'initialData'
@@ -8696,14 +7379,10 @@ export function useStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStr
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet<
   TData = Awaited<
-    ReturnType<
-      typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
-    >
+    ReturnType<typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet>
   >,
   TError = HTTPValidationError,
 >(
@@ -8713,9 +7392,7 @@ export function useStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStr
     query?: Partial<
       UseQueryOptions<
         Awaited<
-          ReturnType<
-            typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
-          >
+          ReturnType<typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet>
         >,
         TError,
         TData
@@ -8724,15 +7401,11 @@ export function useStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStr
       Pick<
         UndefinedInitialDataOptions<
           Awaited<
-            ReturnType<
-              typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
-            >
+            ReturnType<typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet>
           >,
           TError,
           Awaited<
-            ReturnType<
-              typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
-            >
+            ReturnType<typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet>
           >
         >,
         'initialData'
@@ -8740,14 +7413,10 @@ export function useStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStr
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet<
   TData = Awaited<
-    ReturnType<
-      typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
-    >
+    ReturnType<typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet>
   >,
   TError = HTTPValidationError,
 >(
@@ -8757,9 +7426,7 @@ export function useStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStr
     query?: Partial<
       UseQueryOptions<
         Awaited<
-          ReturnType<
-            typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
-          >
+          ReturnType<typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet>
         >,
         TError,
         TData
@@ -8768,18 +7435,14 @@ export function useStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStr
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Stream Instructions
  */
 
 export function useStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet<
   TData = Awaited<
-    ReturnType<
-      typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
-    >
+    ReturnType<typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet>
   >,
   TError = HTTPValidationError,
 >(
@@ -8789,9 +7452,7 @@ export function useStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStr
     query?: Partial<
       UseQueryOptions<
         Awaited<
-          ReturnType<
-            typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet
-          >
+          ReturnType<typeof streamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGet>
         >,
         TError,
         TData
@@ -8800,9 +7461,7 @@ export function useStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStr
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions =
     getStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStreamGetQueryOptions(
       agentId,
@@ -8810,10 +7469,9 @@ export function useStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStr
       options
     )
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -8824,26 +7482,25 @@ export function useStreamInstructionsAgentAgentIdSessionSessionIdInstructionsStr
  * HTTP endpoint for instruction acknowledgements with database persistence
  * @summary Acknowledge Instruction
  */
-export const acknowledgeInstructionAgentAgentIdSessionSessionIdInstructionsInstructionIdAckPost =
-  (
-    agentId: string,
-    sessionId: string,
-    instructionId: string,
-    agentInstructionAcknowledgement: AgentInstructionAcknowledgement,
-    options?: SecondParameter<typeof customInstance>,
-    signal?: AbortSignal
-  ) => {
-    return customInstance<AgentInstructionAcknowledgementResponse>(
-      {
-        url: `/agent/${agentId}/session/${sessionId}/instructions/${instructionId}/ack`,
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        data: agentInstructionAcknowledgement,
-        signal,
-      },
-      options
-    )
-  }
+export const acknowledgeInstructionAgentAgentIdSessionSessionIdInstructionsInstructionIdAckPost = (
+  agentId: string,
+  sessionId: string,
+  instructionId: string,
+  agentInstructionAcknowledgement: AgentInstructionAcknowledgement,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<AgentInstructionAcknowledgementResponse>(
+    {
+      url: `/agent/${agentId}/session/${sessionId}/instructions/${instructionId}/ack`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: agentInstructionAcknowledgement,
+      signal,
+    },
+    options
+  )
+}
 
 export const getAcknowledgeInstructionAgentAgentIdSessionSessionIdInstructionsInstructionIdAckPostMutationOptions =
   <TError = HTTPValidationError, TContext = unknown>(options?: {
@@ -8882,9 +7539,7 @@ export const getAcknowledgeInstructionAgentAgentIdSessionSessionIdInstructionsIn
       'acknowledgeInstructionAgentAgentIdSessionSessionIdInstructionsInstructionIdAckPost',
     ]
     const { mutation: mutationOptions, request: requestOptions } = options
-      ? options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
+      ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
         ? options
         : { ...options, mutation: { ...options.mutation, mutationKey } }
       : { mutation: { mutationKey }, request: undefined }
@@ -8994,73 +7649,54 @@ export const agentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPost = (
   signal?: AbortSignal
 ) => {
   return customInstance<unknown>(
-    {
-      url: `/agent/${agentId}/session/${sessionId}/heartbeat`,
-      method: 'POST',
-      signal,
-    },
+    { url: `/agent/${agentId}/session/${sessionId}/heartbeat`, method: 'POST', signal },
     options
   )
 }
 
-export const getAgentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPostMutationOptions =
-  <TError = HTTPValidationError, TContext = unknown>(options?: {
-    mutation?: UseMutationOptions<
-      Awaited<
-        ReturnType<
-          typeof agentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPost
-        >
-      >,
-      TError,
-      { agentId: string; sessionId: string },
-      TContext
-    >
-    request?: SecondParameter<typeof customInstance>
-  }): UseMutationOptions<
-    Awaited<
-      ReturnType<typeof agentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPost>
-    >,
+export const getAgentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPostMutationOptions = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof agentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPost>>,
     TError,
     { agentId: string; sessionId: string },
     TContext
-  > => {
-    const mutationKey = [
-      'agentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPost',
-    ]
-    const { mutation: mutationOptions, request: requestOptions } = options
-      ? options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-        ? options
-        : { ...options, mutation: { ...options.mutation, mutationKey } }
-      : { mutation: { mutationKey }, request: undefined }
+  >
+  request?: SecondParameter<typeof customInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof agentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPost>>,
+  TError,
+  { agentId: string; sessionId: string },
+  TContext
+> => {
+  const mutationKey = ['agentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPost']
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-    const mutationFn: MutationFunction<
-      Awaited<
-        ReturnType<
-          typeof agentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPost
-        >
-      >,
-      { agentId: string; sessionId: string }
-    > = (props) => {
-      const { agentId, sessionId } = props ?? {}
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof agentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPost>>,
+    { agentId: string; sessionId: string }
+  > = (props) => {
+    const { agentId, sessionId } = props ?? {}
 
-      return agentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPost(
-        agentId,
-        sessionId,
-        requestOptions
-      )
-    }
-
-    return { mutationFn, ...mutationOptions }
+    return agentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPost(
+      agentId,
+      sessionId,
+      requestOptions
+    )
   }
 
-export type AgentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPostMutationResult =
-  NonNullable<
-    Awaited<
-      ReturnType<typeof agentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPost>
-    >
-  >
+  return { mutationFn, ...mutationOptions }
+}
+
+export type AgentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPostMutationResult = NonNullable<
+  Awaited<ReturnType<typeof agentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPost>>
+>
 
 export type AgentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPostMutationError =
   HTTPValidationError
@@ -9074,11 +7710,7 @@ export const useAgentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPost = <
 >(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<
-        ReturnType<
-          typeof agentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPost
-        >
-      >,
+      Awaited<ReturnType<typeof agentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPost>>,
       TError,
       { agentId: string; sessionId: string },
       TContext
@@ -9087,17 +7719,13 @@ export const useAgentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPost = <
   },
   queryClient?: QueryClient
 ): UseMutationResult<
-  Awaited<
-    ReturnType<typeof agentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPost>
-  >,
+  Awaited<ReturnType<typeof agentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPost>>,
   TError,
   { agentId: string; sessionId: string },
   TContext
 > => {
   const mutationOptions =
-    getAgentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPostMutationOptions(
-      options
-    )
+    getAgentHeartbeatAgentAgentIdSessionSessionIdHeartbeatPostMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }
@@ -9120,9 +7748,7 @@ export const getGetActiveConnectionsDebugAgentConnectionsGetQueryKey = () => {
 }
 
 export const getGetActiveConnectionsDebugAgentConnectionsGetQueryOptions = <
-  TData = Awaited<
-    ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>
-  >,
+  TData = Awaited<ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>>,
   TError = unknown,
 >(options?: {
   query?: Partial<
@@ -9137,113 +7763,80 @@ export const getGetActiveConnectionsDebugAgentConnectionsGetQueryOptions = <
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
   const queryKey =
-    queryOptions?.queryKey ??
-    getGetActiveConnectionsDebugAgentConnectionsGetQueryKey()
+    queryOptions?.queryKey ?? getGetActiveConnectionsDebugAgentConnectionsGetQueryKey()
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>>
-  > = ({ signal }) =>
-    getActiveConnectionsDebugAgentConnectionsGet(requestOptions, signal)
+  > = ({ signal }) => getActiveConnectionsDebugAgentConnectionsGet(requestOptions, signal)
 
-  return {
-    queryKey,
-    queryFn,
-    staleTime: 300000,
-    retry: 1,
-    ...queryOptions,
-  } as UseQueryOptions<
+  return { queryKey, queryFn, staleTime: 300000, retry: 1, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetActiveConnectionsDebugAgentConnectionsGetQueryResult =
-  NonNullable<
-    Awaited<ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>>
-  >
+export type GetActiveConnectionsDebugAgentConnectionsGetQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>>
+>
 export type GetActiveConnectionsDebugAgentConnectionsGetQueryError = unknown
 
 export function useGetActiveConnectionsDebugAgentConnectionsGet<
-  TData = Awaited<
-    ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>
-  >,
+  TData = Awaited<ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>>,
   TError = unknown,
 >(
   options: {
     query: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>
-        >,
+        Awaited<ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>>,
         TError,
         TData
       >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<
-            ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>
-          >,
+          Awaited<ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>>,
           TError,
-          Awaited<
-            ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>
-          >
+          Awaited<ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>>
         >,
         'initialData'
       >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetActiveConnectionsDebugAgentConnectionsGet<
-  TData = Awaited<
-    ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>
-  >,
+  TData = Awaited<ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>
-        >,
+        Awaited<ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>>,
         TError,
         TData
       >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<
-            ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>
-          >,
+          Awaited<ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>>,
           TError,
-          Awaited<
-            ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>
-          >
+          Awaited<ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>>
         >,
         'initialData'
       >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetActiveConnectionsDebugAgentConnectionsGet<
-  TData = Awaited<
-    ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>
-  >,
+  TData = Awaited<ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>
-        >,
+        Awaited<ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>>,
         TError,
         TData
       >
@@ -9251,25 +7844,19 @@ export function useGetActiveConnectionsDebugAgentConnectionsGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Active Connections
  */
 
 export function useGetActiveConnectionsDebugAgentConnectionsGet<
-  TData = Awaited<
-    ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>
-  >,
+  TData = Awaited<ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>
-        >,
+        Awaited<ReturnType<typeof getActiveConnectionsDebugAgentConnectionsGet>>,
         TError,
         TData
       >
@@ -9277,16 +7864,12 @@ export function useGetActiveConnectionsDebugAgentConnectionsGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
-  const queryOptions =
-    getGetActiveConnectionsDebugAgentConnectionsGetQueryOptions(options)
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetActiveConnectionsDebugAgentConnectionsGetQueryOptions(options)
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -9308,189 +7891,118 @@ export const getSessionInstructionsDebugSessionSessionIdInstructionsGet = (
   )
 }
 
-export const getGetSessionInstructionsDebugSessionSessionIdInstructionsGetQueryKey =
-  (sessionId?: string) => {
-    return [`/debug/session/${sessionId}/instructions`] as const
-  }
+export const getGetSessionInstructionsDebugSessionSessionIdInstructionsGetQueryKey = (
+  sessionId?: string
+) => {
+  return [`/debug/session/${sessionId}/instructions`] as const
+}
 
-export const getGetSessionInstructionsDebugSessionSessionIdInstructionsGetQueryOptions =
-  <
-    TData = Awaited<
-      ReturnType<
-        typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
-      >
-    >,
-    TError = HTTPValidationError,
-  >(
-    sessionId: string,
-    options?: {
-      query?: Partial<
-        UseQueryOptions<
-          Awaited<
-            ReturnType<
-              typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
-            >
-          >,
-          TError,
-          TData
-        >
-      >
-      request?: SecondParameter<typeof customInstance>
-    }
-  ) => {
-    const { query: queryOptions, request: requestOptions } = options ?? {}
-
-    const queryKey =
-      queryOptions?.queryKey ??
-      getGetSessionInstructionsDebugSessionSessionIdInstructionsGetQueryKey(
-        sessionId
-      )
-
-    const queryFn: QueryFunction<
-      Awaited<
-        ReturnType<
-          typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
-        >
-      >
-    > = ({ signal }) =>
-      getSessionInstructionsDebugSessionSessionIdInstructionsGet(
-        sessionId,
-        requestOptions,
-        signal
-      )
-
-    return {
-      queryKey,
-      queryFn,
-      enabled: !!sessionId,
-      staleTime: 300000,
-      retry: 1,
-      ...queryOptions,
-    } as UseQueryOptions<
-      Awaited<
-        ReturnType<
-          typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
-        >
-      >,
-      TError,
-      TData
-    > & { queryKey: DataTag<QueryKey, TData, TError> }
-  }
-
-export type GetSessionInstructionsDebugSessionSessionIdInstructionsGetQueryResult =
-  NonNullable<
-    Awaited<
-      ReturnType<
-        typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
+export const getGetSessionInstructionsDebugSessionSessionIdInstructionsGetQueryOptions = <
+  TData = Awaited<ReturnType<typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet>>,
+  TError = HTTPValidationError,
+>(
+  sessionId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet>>,
+        TError,
+        TData
       >
     >
-  >
+    request?: SecondParameter<typeof customInstance>
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetSessionInstructionsDebugSessionSessionIdInstructionsGetQueryKey(sessionId)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet>>
+  > = ({ signal }) =>
+    getSessionInstructionsDebugSessionSessionIdInstructionsGet(sessionId, requestOptions, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!sessionId,
+    staleTime: 300000,
+    retry: 1,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetSessionInstructionsDebugSessionSessionIdInstructionsGetQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet>>
+>
 export type GetSessionInstructionsDebugSessionSessionIdInstructionsGetQueryError =
   HTTPValidationError
 
 export function useGetSessionInstructionsDebugSessionSessionIdInstructionsGet<
-  TData = Awaited<
-    ReturnType<
-      typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
-    >
-  >,
+  TData = Awaited<ReturnType<typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet>>,
   TError = HTTPValidationError,
 >(
   sessionId: string,
   options: {
     query: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<
-            typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
-          >
-        >,
+        Awaited<ReturnType<typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet>>,
         TError,
         TData
       >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<
-            ReturnType<
-              typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
-            >
-          >,
+          Awaited<ReturnType<typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet>>,
           TError,
-          Awaited<
-            ReturnType<
-              typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
-            >
-          >
+          Awaited<ReturnType<typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet>>
         >,
         'initialData'
       >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetSessionInstructionsDebugSessionSessionIdInstructionsGet<
-  TData = Awaited<
-    ReturnType<
-      typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
-    >
-  >,
+  TData = Awaited<ReturnType<typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet>>,
   TError = HTTPValidationError,
 >(
   sessionId: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<
-            typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
-          >
-        >,
+        Awaited<ReturnType<typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet>>,
         TError,
         TData
       >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<
-            ReturnType<
-              typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
-            >
-          >,
+          Awaited<ReturnType<typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet>>,
           TError,
-          Awaited<
-            ReturnType<
-              typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
-            >
-          >
+          Awaited<ReturnType<typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet>>
         >,
         'initialData'
       >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetSessionInstructionsDebugSessionSessionIdInstructionsGet<
-  TData = Awaited<
-    ReturnType<
-      typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
-    >
-  >,
+  TData = Awaited<ReturnType<typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet>>,
   TError = HTTPValidationError,
 >(
   sessionId: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<
-            typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
-          >
-        >,
+        Awaited<ReturnType<typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet>>,
         TError,
         TData
       >
@@ -9498,30 +8010,20 @@ export function useGetSessionInstructionsDebugSessionSessionIdInstructionsGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Session Instructions
  */
 
 export function useGetSessionInstructionsDebugSessionSessionIdInstructionsGet<
-  TData = Awaited<
-    ReturnType<
-      typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
-    >
-  >,
+  TData = Awaited<ReturnType<typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet>>,
   TError = HTTPValidationError,
 >(
   sessionId: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<
-          ReturnType<
-            typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet
-          >
-        >,
+        Awaited<ReturnType<typeof getSessionInstructionsDebugSessionSessionIdInstructionsGet>>,
         TError,
         TData
       >
@@ -9529,19 +8031,15 @@ export function useGetSessionInstructionsDebugSessionSessionIdInstructionsGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
-  const queryOptions =
-    getGetSessionInstructionsDebugSessionSessionIdInstructionsGetQueryOptions(
-      sessionId,
-      options
-    )
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetSessionInstructionsDebugSessionSessionIdInstructionsGetQueryOptions(
+    sessionId,
+    options
+  )
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -9556,10 +8054,7 @@ export const getActiveSessionsDebugSessionsGet = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
-  return customInstance<unknown>(
-    { url: `/debug/sessions`, method: 'GET', signal },
-    options
-  )
+  return customInstance<unknown>({ url: `/debug/sessions`, method: 'GET', signal }, options)
 }
 
 export const getGetActiveSessionsDebugSessionsGetQueryKey = () => {
@@ -9571,30 +8066,19 @@ export const getGetActiveSessionsDebugSessionsGetQueryOptions = <
   TError = unknown,
 >(options?: {
   query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>,
-      TError,
-      TData
-    >
+    UseQueryOptions<Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>, TError, TData>
   >
   request?: SecondParameter<typeof customInstance>
 }) => {
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
-  const queryKey =
-    queryOptions?.queryKey ?? getGetActiveSessionsDebugSessionsGetQueryKey()
+  const queryKey = queryOptions?.queryKey ?? getGetActiveSessionsDebugSessionsGetQueryKey()
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>
-  > = ({ signal }) => getActiveSessionsDebugSessionsGet(requestOptions, signal)
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>> = ({
+    signal,
+  }) => getActiveSessionsDebugSessionsGet(requestOptions, signal)
 
-  return {
-    queryKey,
-    queryFn,
-    staleTime: 300000,
-    retry: 1,
-    ...queryOptions,
-  } as UseQueryOptions<
+  return { queryKey, queryFn, staleTime: 300000, retry: 1, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>,
     TError,
     TData
@@ -9612,11 +8096,7 @@ export function useGetActiveSessionsDebugSessionsGet<
 >(
   options: {
     query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>, TError, TData>
     > &
       Pick<
         DefinedInitialDataOptions<
@@ -9629,20 +8109,14 @@ export function useGetActiveSessionsDebugSessionsGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetActiveSessionsDebugSessionsGet<
   TData = Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>, TError, TData>
     > &
       Pick<
         UndefinedInitialDataOptions<
@@ -9655,27 +8129,19 @@ export function useGetActiveSessionsDebugSessionsGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetActiveSessionsDebugSessionsGet<
   TData = Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>, TError, TData>
     >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Active Sessions
  */
@@ -9686,24 +8152,17 @@ export function useGetActiveSessionsDebugSessionsGet<
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>,
-        TError,
-        TData
-      >
+      UseQueryOptions<Awaited<ReturnType<typeof getActiveSessionsDebugSessionsGet>>, TError, TData>
     >
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getGetActiveSessionsDebugSessionsGetQueryOptions(options)
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -9718,10 +8177,7 @@ export const getConnectionStatsDebugConnectionStatsGet = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal
 ) => {
-  return customInstance<unknown>(
-    { url: `/debug/connection-stats`, method: 'GET', signal },
-    options
-  )
+  return customInstance<unknown>({ url: `/debug/connection-stats`, method: 'GET', signal }, options)
 }
 
 export const getGetConnectionStatsDebugConnectionStatsGetQueryKey = () => {
@@ -9743,22 +8199,13 @@ export const getGetConnectionStatsDebugConnectionStatsGetQueryOptions = <
 }) => {
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
-  const queryKey =
-    queryOptions?.queryKey ??
-    getGetConnectionStatsDebugConnectionStatsGetQueryKey()
+  const queryKey = queryOptions?.queryKey ?? getGetConnectionStatsDebugConnectionStatsGetQueryKey()
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof getConnectionStatsDebugConnectionStatsGet>>
-  > = ({ signal }) =>
-    getConnectionStatsDebugConnectionStatsGet(requestOptions, signal)
+  > = ({ signal }) => getConnectionStatsDebugConnectionStatsGet(requestOptions, signal)
 
-  return {
-    queryKey,
-    queryFn,
-    staleTime: 300000,
-    retry: 1,
-    ...queryOptions,
-  } as UseQueryOptions<
+  return { queryKey, queryFn, staleTime: 300000, retry: 1, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getConnectionStatsDebugConnectionStatsGet>>,
     TError,
     TData
@@ -9793,9 +8240,7 @@ export function useGetConnectionStatsDebugConnectionStatsGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetConnectionStatsDebugConnectionStatsGet<
   TData = Awaited<ReturnType<typeof getConnectionStatsDebugConnectionStatsGet>>,
   TError = unknown,
@@ -9819,9 +8264,7 @@ export function useGetConnectionStatsDebugConnectionStatsGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetConnectionStatsDebugConnectionStatsGet<
   TData = Awaited<ReturnType<typeof getConnectionStatsDebugConnectionStatsGet>>,
   TError = unknown,
@@ -9837,9 +8280,7 @@ export function useGetConnectionStatsDebugConnectionStatsGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Connection Stats
  */
@@ -9859,16 +8300,12 @@ export function useGetConnectionStatsDebugConnectionStatsGet<
     request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-} {
-  const queryOptions =
-    getGetConnectionStatsDebugConnectionStatsGetQueryOptions(options)
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetConnectionStatsDebugConnectionStatsGetQueryOptions(options)
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
 
   query.queryKey = queryOptions.queryKey
 
@@ -9896,61 +8333,48 @@ export const createManagedSessionDebugSessionsCreateManagedPost = (
   )
 }
 
-export const getCreateManagedSessionDebugSessionsCreateManagedPostMutationOptions =
-  <TError = HTTPValidationError, TContext = unknown>(options?: {
-    mutation?: UseMutationOptions<
-      Awaited<
-        ReturnType<typeof createManagedSessionDebugSessionsCreateManagedPost>
-      >,
-      TError,
-      { data: CreateManagedSessionDebugSessionsCreateManagedPostBody },
-      TContext
-    >
-    request?: SecondParameter<typeof customInstance>
-  }): UseMutationOptions<
-    Awaited<
-      ReturnType<typeof createManagedSessionDebugSessionsCreateManagedPost>
-    >,
+export const getCreateManagedSessionDebugSessionsCreateManagedPostMutationOptions = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createManagedSessionDebugSessionsCreateManagedPost>>,
     TError,
     { data: CreateManagedSessionDebugSessionsCreateManagedPostBody },
     TContext
-  > => {
-    const mutationKey = ['createManagedSessionDebugSessionsCreateManagedPost']
-    const { mutation: mutationOptions, request: requestOptions } = options
-      ? options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-        ? options
-        : { ...options, mutation: { ...options.mutation, mutationKey } }
-      : { mutation: { mutationKey }, request: undefined }
+  >
+  request?: SecondParameter<typeof customInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createManagedSessionDebugSessionsCreateManagedPost>>,
+  TError,
+  { data: CreateManagedSessionDebugSessionsCreateManagedPostBody },
+  TContext
+> => {
+  const mutationKey = ['createManagedSessionDebugSessionsCreateManagedPost']
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-    const mutationFn: MutationFunction<
-      Awaited<
-        ReturnType<typeof createManagedSessionDebugSessionsCreateManagedPost>
-      >,
-      { data: CreateManagedSessionDebugSessionsCreateManagedPostBody }
-    > = (props) => {
-      const { data } = props ?? {}
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createManagedSessionDebugSessionsCreateManagedPost>>,
+    { data: CreateManagedSessionDebugSessionsCreateManagedPostBody }
+  > = (props) => {
+    const { data } = props ?? {}
 
-      return createManagedSessionDebugSessionsCreateManagedPost(
-        data,
-        requestOptions
-      )
-    }
-
-    return { mutationFn, ...mutationOptions }
+    return createManagedSessionDebugSessionsCreateManagedPost(data, requestOptions)
   }
 
-export type CreateManagedSessionDebugSessionsCreateManagedPostMutationResult =
-  NonNullable<
-    Awaited<
-      ReturnType<typeof createManagedSessionDebugSessionsCreateManagedPost>
-    >
-  >
+  return { mutationFn, ...mutationOptions }
+}
+
+export type CreateManagedSessionDebugSessionsCreateManagedPostMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createManagedSessionDebugSessionsCreateManagedPost>>
+>
 export type CreateManagedSessionDebugSessionsCreateManagedPostMutationBody =
   CreateManagedSessionDebugSessionsCreateManagedPostBody
-export type CreateManagedSessionDebugSessionsCreateManagedPostMutationError =
-  HTTPValidationError
+export type CreateManagedSessionDebugSessionsCreateManagedPostMutationError = HTTPValidationError
 
 /**
  * @summary Create Managed Session
@@ -9961,9 +8385,7 @@ export const useCreateManagedSessionDebugSessionsCreateManagedPost = <
 >(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<
-        ReturnType<typeof createManagedSessionDebugSessionsCreateManagedPost>
-      >,
+      Awaited<ReturnType<typeof createManagedSessionDebugSessionsCreateManagedPost>>,
       TError,
       { data: CreateManagedSessionDebugSessionsCreateManagedPostBody },
       TContext
@@ -9972,17 +8394,13 @@ export const useCreateManagedSessionDebugSessionsCreateManagedPost = <
   },
   queryClient?: QueryClient
 ): UseMutationResult<
-  Awaited<
-    ReturnType<typeof createManagedSessionDebugSessionsCreateManagedPost>
-  >,
+  Awaited<ReturnType<typeof createManagedSessionDebugSessionsCreateManagedPost>>,
   TError,
   { data: CreateManagedSessionDebugSessionsCreateManagedPostBody },
   TContext
 > => {
   const mutationOptions =
-    getCreateManagedSessionDebugSessionsCreateManagedPostMutationOptions(
-      options
-    )
+    getCreateManagedSessionDebugSessionsCreateManagedPostMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }
@@ -10000,60 +8418,47 @@ export const closeManagedSessionDebugSessionsSessionIdCloseDelete = (
   )
 }
 
-export const getCloseManagedSessionDebugSessionsSessionIdCloseDeleteMutationOptions =
-  <TError = HTTPValidationError, TContext = unknown>(options?: {
-    mutation?: UseMutationOptions<
-      Awaited<
-        ReturnType<typeof closeManagedSessionDebugSessionsSessionIdCloseDelete>
-      >,
-      TError,
-      { sessionId: string },
-      TContext
-    >
-    request?: SecondParameter<typeof customInstance>
-  }): UseMutationOptions<
-    Awaited<
-      ReturnType<typeof closeManagedSessionDebugSessionsSessionIdCloseDelete>
-    >,
+export const getCloseManagedSessionDebugSessionsSessionIdCloseDeleteMutationOptions = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof closeManagedSessionDebugSessionsSessionIdCloseDelete>>,
     TError,
     { sessionId: string },
     TContext
-  > => {
-    const mutationKey = ['closeManagedSessionDebugSessionsSessionIdCloseDelete']
-    const { mutation: mutationOptions, request: requestOptions } = options
-      ? options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-        ? options
-        : { ...options, mutation: { ...options.mutation, mutationKey } }
-      : { mutation: { mutationKey }, request: undefined }
+  >
+  request?: SecondParameter<typeof customInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof closeManagedSessionDebugSessionsSessionIdCloseDelete>>,
+  TError,
+  { sessionId: string },
+  TContext
+> => {
+  const mutationKey = ['closeManagedSessionDebugSessionsSessionIdCloseDelete']
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-    const mutationFn: MutationFunction<
-      Awaited<
-        ReturnType<typeof closeManagedSessionDebugSessionsSessionIdCloseDelete>
-      >,
-      { sessionId: string }
-    > = (props) => {
-      const { sessionId } = props ?? {}
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof closeManagedSessionDebugSessionsSessionIdCloseDelete>>,
+    { sessionId: string }
+  > = (props) => {
+    const { sessionId } = props ?? {}
 
-      return closeManagedSessionDebugSessionsSessionIdCloseDelete(
-        sessionId,
-        requestOptions
-      )
-    }
-
-    return { mutationFn, ...mutationOptions }
+    return closeManagedSessionDebugSessionsSessionIdCloseDelete(sessionId, requestOptions)
   }
 
-export type CloseManagedSessionDebugSessionsSessionIdCloseDeleteMutationResult =
-  NonNullable<
-    Awaited<
-      ReturnType<typeof closeManagedSessionDebugSessionsSessionIdCloseDelete>
-    >
-  >
+  return { mutationFn, ...mutationOptions }
+}
 
-export type CloseManagedSessionDebugSessionsSessionIdCloseDeleteMutationError =
-  HTTPValidationError
+export type CloseManagedSessionDebugSessionsSessionIdCloseDeleteMutationResult = NonNullable<
+  Awaited<ReturnType<typeof closeManagedSessionDebugSessionsSessionIdCloseDelete>>
+>
+
+export type CloseManagedSessionDebugSessionsSessionIdCloseDeleteMutationError = HTTPValidationError
 
 /**
  * @summary Close Managed Session
@@ -10064,9 +8469,7 @@ export const useCloseManagedSessionDebugSessionsSessionIdCloseDelete = <
 >(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<
-        ReturnType<typeof closeManagedSessionDebugSessionsSessionIdCloseDelete>
-      >,
+      Awaited<ReturnType<typeof closeManagedSessionDebugSessionsSessionIdCloseDelete>>,
       TError,
       { sessionId: string },
       TContext
@@ -10075,17 +8478,13 @@ export const useCloseManagedSessionDebugSessionsSessionIdCloseDelete = <
   },
   queryClient?: QueryClient
 ): UseMutationResult<
-  Awaited<
-    ReturnType<typeof closeManagedSessionDebugSessionsSessionIdCloseDelete>
-  >,
+  Awaited<ReturnType<typeof closeManagedSessionDebugSessionsSessionIdCloseDelete>>,
   TError,
   { sessionId: string },
   TContext
 > => {
   const mutationOptions =
-    getCloseManagedSessionDebugSessionsSessionIdCloseDeleteMutationOptions(
-      options
-    )
+    getCloseManagedSessionDebugSessionsSessionIdCloseDeleteMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }
@@ -10111,76 +8510,52 @@ export const createTestInstructionDebugSessionSessionIdCreateInstructionPost = (
   )
 }
 
-export const getCreateTestInstructionDebugSessionSessionIdCreateInstructionPostMutationOptions =
-  <TError = HTTPValidationError, TContext = unknown>(options?: {
-    mutation?: UseMutationOptions<
-      Awaited<
-        ReturnType<
-          typeof createTestInstructionDebugSessionSessionIdCreateInstructionPost
-        >
-      >,
-      TError,
-      {
-        sessionId: string
-        data: CreateTestInstructionDebugSessionSessionIdCreateInstructionPostBody
-      },
-      TContext
-    >
-    request?: SecondParameter<typeof customInstance>
-  }): UseMutationOptions<
-    Awaited<
-      ReturnType<
-        typeof createTestInstructionDebugSessionSessionIdCreateInstructionPost
-      >
-    >,
+export const getCreateTestInstructionDebugSessionSessionIdCreateInstructionPostMutationOptions = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createTestInstructionDebugSessionSessionIdCreateInstructionPost>>,
     TError,
     {
       sessionId: string
       data: CreateTestInstructionDebugSessionSessionIdCreateInstructionPostBody
     },
     TContext
-  > => {
-    const mutationKey = [
-      'createTestInstructionDebugSessionSessionIdCreateInstructionPost',
-    ]
-    const { mutation: mutationOptions, request: requestOptions } = options
-      ? options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-        ? options
-        : { ...options, mutation: { ...options.mutation, mutationKey } }
-      : { mutation: { mutationKey }, request: undefined }
+  >
+  request?: SecondParameter<typeof customInstance>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createTestInstructionDebugSessionSessionIdCreateInstructionPost>>,
+  TError,
+  { sessionId: string; data: CreateTestInstructionDebugSessionSessionIdCreateInstructionPostBody },
+  TContext
+> => {
+  const mutationKey = ['createTestInstructionDebugSessionSessionIdCreateInstructionPost']
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
 
-    const mutationFn: MutationFunction<
-      Awaited<
-        ReturnType<
-          typeof createTestInstructionDebugSessionSessionIdCreateInstructionPost
-        >
-      >,
-      {
-        sessionId: string
-        data: CreateTestInstructionDebugSessionSessionIdCreateInstructionPostBody
-      }
-    > = (props) => {
-      const { sessionId, data } = props ?? {}
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createTestInstructionDebugSessionSessionIdCreateInstructionPost>>,
+    { sessionId: string; data: CreateTestInstructionDebugSessionSessionIdCreateInstructionPostBody }
+  > = (props) => {
+    const { sessionId, data } = props ?? {}
 
-      return createTestInstructionDebugSessionSessionIdCreateInstructionPost(
-        sessionId,
-        data,
-        requestOptions
-      )
-    }
-
-    return { mutationFn, ...mutationOptions }
+    return createTestInstructionDebugSessionSessionIdCreateInstructionPost(
+      sessionId,
+      data,
+      requestOptions
+    )
   }
+
+  return { mutationFn, ...mutationOptions }
+}
 
 export type CreateTestInstructionDebugSessionSessionIdCreateInstructionPostMutationResult =
   NonNullable<
-    Awaited<
-      ReturnType<
-        typeof createTestInstructionDebugSessionSessionIdCreateInstructionPost
-      >
-    >
+    Awaited<ReturnType<typeof createTestInstructionDebugSessionSessionIdCreateInstructionPost>>
   >
 export type CreateTestInstructionDebugSessionSessionIdCreateInstructionPostMutationBody =
   CreateTestInstructionDebugSessionSessionIdCreateInstructionPostBody
@@ -10190,45 +8565,34 @@ export type CreateTestInstructionDebugSessionSessionIdCreateInstructionPostMutat
 /**
  * @summary Create Test Instruction
  */
-export const useCreateTestInstructionDebugSessionSessionIdCreateInstructionPost =
-  <TError = HTTPValidationError, TContext = unknown>(
-    options?: {
-      mutation?: UseMutationOptions<
-        Awaited<
-          ReturnType<
-            typeof createTestInstructionDebugSessionSessionIdCreateInstructionPost
-          >
-        >,
-        TError,
-        {
-          sessionId: string
-          data: CreateTestInstructionDebugSessionSessionIdCreateInstructionPostBody
-        },
-        TContext
-      >
-      request?: SecondParameter<typeof customInstance>
-    },
-    queryClient?: QueryClient
-  ): UseMutationResult<
-    Awaited<
-      ReturnType<
-        typeof createTestInstructionDebugSessionSessionIdCreateInstructionPost
-      >
-    >,
-    TError,
-    {
-      sessionId: string
-      data: CreateTestInstructionDebugSessionSessionIdCreateInstructionPostBody
-    },
-    TContext
-  > => {
-    const mutationOptions =
-      getCreateTestInstructionDebugSessionSessionIdCreateInstructionPostMutationOptions(
-        options
-      )
+export const useCreateTestInstructionDebugSessionSessionIdCreateInstructionPost = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof createTestInstructionDebugSessionSessionIdCreateInstructionPost>>,
+      TError,
+      {
+        sessionId: string
+        data: CreateTestInstructionDebugSessionSessionIdCreateInstructionPostBody
+      },
+      TContext
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseMutationResult<
+  Awaited<ReturnType<typeof createTestInstructionDebugSessionSessionIdCreateInstructionPost>>,
+  TError,
+  { sessionId: string; data: CreateTestInstructionDebugSessionSessionIdCreateInstructionPostBody },
+  TContext
+> => {
+  const mutationOptions =
+    getCreateTestInstructionDebugSessionSessionIdCreateInstructionPostMutationOptions(options)
 
-    return useMutation(mutationOptions, queryClient)
-  }
+  return useMutation(mutationOptions, queryClient)
+}
 /**
  * Debug endpoint to create test sessions
  * @summary Create Test Session
@@ -10269,9 +8633,7 @@ export const getCreateTestSessionDebugSessionsCreatePostMutationOptions = <
 > => {
   const mutationKey = ['createTestSessionDebugSessionsCreatePost']
   const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
@@ -10288,14 +8650,12 @@ export const getCreateTestSessionDebugSessionsCreatePostMutationOptions = <
   return { mutationFn, ...mutationOptions }
 }
 
-export type CreateTestSessionDebugSessionsCreatePostMutationResult =
-  NonNullable<
-    Awaited<ReturnType<typeof createTestSessionDebugSessionsCreatePost>>
-  >
+export type CreateTestSessionDebugSessionsCreatePostMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createTestSessionDebugSessionsCreatePost>>
+>
 export type CreateTestSessionDebugSessionsCreatePostMutationBody =
   CreateTestSessionDebugSessionsCreatePostBody
-export type CreateTestSessionDebugSessionsCreatePostMutationError =
-  HTTPValidationError
+export type CreateTestSessionDebugSessionsCreatePostMutationError = HTTPValidationError
 
 /**
  * @summary Create Test Session
@@ -10320,8 +8680,1814 @@ export const useCreateTestSessionDebugSessionsCreatePost = <
   { data: CreateTestSessionDebugSessionsCreatePostBody },
   TContext
 > => {
-  const mutationOptions =
-    getCreateTestSessionDebugSessionsCreatePostMutationOptions(options)
+  const mutationOptions = getCreateTestSessionDebugSessionsCreatePostMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
+}
+/**
+ * Get time series of model weights for grid
+ * @summary Get Model Weights For Grid
+ */
+export const getModelWeightsForGridGridGridUuidModelWeightsGet = (
+  gridUuid: string,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<GetModelWeightsForGridGridGridUuidModelWeightsGet200>(
+    { url: `/grid/${gridUuid}/model_weights`, method: 'GET', signal },
+    options
+  )
+}
+
+export const getGetModelWeightsForGridGridGridUuidModelWeightsGetQueryKey = (gridUuid?: string) => {
+  return [`/grid/${gridUuid}/model_weights`] as const
+}
+
+export const getGetModelWeightsForGridGridGridUuidModelWeightsGetQueryOptions = <
+  TData = Awaited<ReturnType<typeof getModelWeightsForGridGridGridUuidModelWeightsGet>>,
+  TError = HTTPValidationError,
+>(
+  gridUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getModelWeightsForGridGridGridUuidModelWeightsGet>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetModelWeightsForGridGridGridUuidModelWeightsGetQueryKey(gridUuid)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getModelWeightsForGridGridGridUuidModelWeightsGet>>
+  > = ({ signal }) =>
+    getModelWeightsForGridGridGridUuidModelWeightsGet(gridUuid, requestOptions, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!gridUuid,
+    staleTime: 300000,
+    retry: 1,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getModelWeightsForGridGridGridUuidModelWeightsGet>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetModelWeightsForGridGridGridUuidModelWeightsGetQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getModelWeightsForGridGridGridUuidModelWeightsGet>>
+>
+export type GetModelWeightsForGridGridGridUuidModelWeightsGetQueryError = HTTPValidationError
+
+export function useGetModelWeightsForGridGridGridUuidModelWeightsGet<
+  TData = Awaited<ReturnType<typeof getModelWeightsForGridGridGridUuidModelWeightsGet>>,
+  TError = HTTPValidationError,
+>(
+  gridUuid: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getModelWeightsForGridGridGridUuidModelWeightsGet>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getModelWeightsForGridGridGridUuidModelWeightsGet>>,
+          TError,
+          Awaited<ReturnType<typeof getModelWeightsForGridGridGridUuidModelWeightsGet>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetModelWeightsForGridGridGridUuidModelWeightsGet<
+  TData = Awaited<ReturnType<typeof getModelWeightsForGridGridGridUuidModelWeightsGet>>,
+  TError = HTTPValidationError,
+>(
+  gridUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getModelWeightsForGridGridGridUuidModelWeightsGet>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getModelWeightsForGridGridGridUuidModelWeightsGet>>,
+          TError,
+          Awaited<ReturnType<typeof getModelWeightsForGridGridGridUuidModelWeightsGet>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetModelWeightsForGridGridGridUuidModelWeightsGet<
+  TData = Awaited<ReturnType<typeof getModelWeightsForGridGridGridUuidModelWeightsGet>>,
+  TError = HTTPValidationError,
+>(
+  gridUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getModelWeightsForGridGridGridUuidModelWeightsGet>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get Model Weights For Grid
+ */
+
+export function useGetModelWeightsForGridGridGridUuidModelWeightsGet<
+  TData = Awaited<ReturnType<typeof getModelWeightsForGridGridGridUuidModelWeightsGet>>,
+  TError = HTTPValidationError,
+>(
+  gridUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getModelWeightsForGridGridGridUuidModelWeightsGet>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetModelWeightsForGridGridGridUuidModelWeightsGetQueryOptions(
+    gridUuid,
+    options
+  )
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * Get time ordered predictions for all models that provide them for this square
+ * @summary Get Foilhole Quality Prediction Time Series For Gridsquare For Metric
+ */
+export const getFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGet =
+  (
+    metricName: string,
+    gridsquareUuid: string,
+    options?: SecondParameter<typeof customInstance>,
+    signal?: AbortSignal
+  ) => {
+    return customInstance<GetFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGet200>(
+      {
+        url: `/quality_metric/${metricName}/gridsquares/${gridsquareUuid}/foilhole_quality_predictions`,
+        method: 'GET',
+        signal,
+      },
+      options
+    )
+  }
+
+export const getGetFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGetQueryKey =
+  (metricName?: string, gridsquareUuid?: string) => {
+    return [
+      `/quality_metric/${metricName}/gridsquares/${gridsquareUuid}/foilhole_quality_predictions`,
+    ] as const
+  }
+
+export const getGetFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGetQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<
+        typeof getFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+      >
+    >,
+    TError = HTTPValidationError,
+  >(
+    metricName: string,
+    gridsquareUuid: string,
+    options?: {
+      query?: Partial<
+        UseQueryOptions<
+          Awaited<
+            ReturnType<
+              typeof getFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+            >
+          >,
+          TError,
+          TData
+        >
+      >
+      request?: SecondParameter<typeof customInstance>
+    }
+  ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {}
+
+    const queryKey =
+      queryOptions?.queryKey ??
+      getGetFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGetQueryKey(
+        metricName,
+        gridsquareUuid
+      )
+
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof getFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+        >
+      >
+    > = ({ signal }) =>
+      getFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGet(
+        metricName,
+        gridsquareUuid,
+        requestOptions,
+        signal
+      )
+
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!(metricName && gridsquareUuid),
+      staleTime: 300000,
+      retry: 1,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof getFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+        >
+      >,
+      TError,
+      TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> }
+  }
+
+export type GetFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGetQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof getFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+      >
+    >
+  >
+export type GetFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGetQueryError =
+  HTTPValidationError
+
+export function useGetFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  metricName: string,
+  gridsquareUuid: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<
+            ReturnType<
+              typeof getFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+            >
+          >,
+          TError,
+          Awaited<
+            ReturnType<
+              typeof getFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+            >
+          >
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  metricName: string,
+  gridsquareUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<
+            ReturnType<
+              typeof getFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+            >
+          >,
+          TError,
+          Awaited<
+            ReturnType<
+              typeof getFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+            >
+          >
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  metricName: string,
+  gridsquareUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get Foilhole Quality Prediction Time Series For Gridsquare For Metric
+ */
+
+export function useGetFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  metricName: string,
+  gridsquareUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions =
+    getGetFoilholeQualityPredictionTimeSeriesForGridsquareForMetricQualityMetricMetricNameGridsquaresGridsquareUuidFoilholeQualityPredictionsGetQueryOptions(
+      metricName,
+      gridsquareUuid,
+      options
+    )
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Get Prediction For Gridsquare
+ */
+export const getPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGet =
+  (
+    predictionModelName: string,
+    gridsquareUuid: string,
+    options?: SecondParameter<typeof customInstance>,
+    signal?: AbortSignal
+  ) => {
+    return customInstance<QualityPredictionResponse[]>(
+      {
+        url: `/prediction_model/${predictionModelName}/gridsquare/${gridsquareUuid}/prediction`,
+        method: 'GET',
+        signal,
+      },
+      options
+    )
+  }
+
+export const getGetPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGetQueryKey =
+  (predictionModelName?: string, gridsquareUuid?: string) => {
+    return [
+      `/prediction_model/${predictionModelName}/gridsquare/${gridsquareUuid}/prediction`,
+    ] as const
+  }
+
+export const getGetPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGetQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<
+        typeof getPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGet
+      >
+    >,
+    TError = HTTPValidationError,
+  >(
+    predictionModelName: string,
+    gridsquareUuid: string,
+    options?: {
+      query?: Partial<
+        UseQueryOptions<
+          Awaited<
+            ReturnType<
+              typeof getPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGet
+            >
+          >,
+          TError,
+          TData
+        >
+      >
+      request?: SecondParameter<typeof customInstance>
+    }
+  ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {}
+
+    const queryKey =
+      queryOptions?.queryKey ??
+      getGetPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGetQueryKey(
+        predictionModelName,
+        gridsquareUuid
+      )
+
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof getPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGet
+        >
+      >
+    > = ({ signal }) =>
+      getPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGet(
+        predictionModelName,
+        gridsquareUuid,
+        requestOptions,
+        signal
+      )
+
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!(predictionModelName && gridsquareUuid),
+      staleTime: 300000,
+      retry: 1,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof getPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGet
+        >
+      >,
+      TError,
+      TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> }
+  }
+
+export type GetPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGetQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof getPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGet
+      >
+    >
+  >
+export type GetPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGetQueryError =
+  HTTPValidationError
+
+export function useGetPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  predictionModelName: string,
+  gridsquareUuid: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<
+            ReturnType<
+              typeof getPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGet
+            >
+          >,
+          TError,
+          Awaited<
+            ReturnType<
+              typeof getPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGet
+            >
+          >
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  predictionModelName: string,
+  gridsquareUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<
+            ReturnType<
+              typeof getPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGet
+            >
+          >,
+          TError,
+          Awaited<
+            ReturnType<
+              typeof getPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGet
+            >
+          >
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  predictionModelName: string,
+  gridsquareUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get Prediction For Gridsquare
+ */
+
+export function useGetPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  predictionModelName: string,
+  gridsquareUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions =
+    getGetPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGetQueryOptions(
+      predictionModelName,
+      gridsquareUuid,
+      options
+    )
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Get Overall Prediction For Gridsquare
+ */
+export const getOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGet = (
+  gridsquareUuid: string,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<OverallQualityPrediction[]>(
+    { url: `/gridsquare/${gridsquareUuid}/overall_prediction`, method: 'GET', signal },
+    options
+  )
+}
+
+export const getGetOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGetQueryKey =
+  (gridsquareUuid?: string) => {
+    return [`/gridsquare/${gridsquareUuid}/overall_prediction`] as const
+  }
+
+export const getGetOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGetQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<
+        typeof getOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGet
+      >
+    >,
+    TError = HTTPValidationError,
+  >(
+    gridsquareUuid: string,
+    options?: {
+      query?: Partial<
+        UseQueryOptions<
+          Awaited<
+            ReturnType<
+              typeof getOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGet
+            >
+          >,
+          TError,
+          TData
+        >
+      >
+      request?: SecondParameter<typeof customInstance>
+    }
+  ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {}
+
+    const queryKey =
+      queryOptions?.queryKey ??
+      getGetOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGetQueryKey(
+        gridsquareUuid
+      )
+
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof getOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGet
+        >
+      >
+    > = ({ signal }) =>
+      getOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGet(
+        gridsquareUuid,
+        requestOptions,
+        signal
+      )
+
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!gridsquareUuid,
+      staleTime: 300000,
+      retry: 1,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof getOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGet
+        >
+      >,
+      TError,
+      TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> }
+  }
+
+export type GetOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGetQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof getOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGet
+      >
+    >
+  >
+export type GetOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGetQueryError =
+  HTTPValidationError
+
+export function useGetOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGet<
+  TData = Awaited<
+    ReturnType<typeof getOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGet>
+  >,
+  TError = HTTPValidationError,
+>(
+  gridsquareUuid: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<
+            ReturnType<
+              typeof getOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGet
+            >
+          >,
+          TError,
+          Awaited<
+            ReturnType<
+              typeof getOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGet
+            >
+          >
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGet<
+  TData = Awaited<
+    ReturnType<typeof getOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGet>
+  >,
+  TError = HTTPValidationError,
+>(
+  gridsquareUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<
+            ReturnType<
+              typeof getOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGet
+            >
+          >,
+          TError,
+          Awaited<
+            ReturnType<
+              typeof getOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGet
+            >
+          >
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGet<
+  TData = Awaited<
+    ReturnType<typeof getOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGet>
+  >,
+  TError = HTTPValidationError,
+>(
+  gridsquareUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get Overall Prediction For Gridsquare
+ */
+
+export function useGetOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGet<
+  TData = Awaited<
+    ReturnType<typeof getOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGet>
+  >,
+  TError = HTTPValidationError,
+>(
+  gridsquareUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions =
+    getGetOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGetQueryOptions(
+      gridsquareUuid,
+      options
+    )
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Get Suggested Square Collections
+ */
+export const getSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGet =
+  (
+    gridUuid: string,
+    predictionModelName: string,
+    latentRepModelName: string,
+    options?: SecondParameter<typeof customInstance>,
+    signal?: AbortSignal
+  ) => {
+    return customInstance<GridSquare[]>(
+      {
+        url: `/grid/${gridUuid}/prediction_model/${predictionModelName}/latent_rep/${latentRepModelName}/suggested_squares`,
+        method: 'GET',
+        signal,
+      },
+      options
+    )
+  }
+
+export const getGetSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGetQueryKey =
+  (gridUuid?: string, predictionModelName?: string, latentRepModelName?: string) => {
+    return [
+      `/grid/${gridUuid}/prediction_model/${predictionModelName}/latent_rep/${latentRepModelName}/suggested_squares`,
+    ] as const
+  }
+
+export const getGetSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGetQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<
+        typeof getSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGet
+      >
+    >,
+    TError = HTTPValidationError,
+  >(
+    gridUuid: string,
+    predictionModelName: string,
+    latentRepModelName: string,
+    options?: {
+      query?: Partial<
+        UseQueryOptions<
+          Awaited<
+            ReturnType<
+              typeof getSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGet
+            >
+          >,
+          TError,
+          TData
+        >
+      >
+      request?: SecondParameter<typeof customInstance>
+    }
+  ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {}
+
+    const queryKey =
+      queryOptions?.queryKey ??
+      getGetSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGetQueryKey(
+        gridUuid,
+        predictionModelName,
+        latentRepModelName
+      )
+
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof getSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGet
+        >
+      >
+    > = ({ signal }) =>
+      getSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGet(
+        gridUuid,
+        predictionModelName,
+        latentRepModelName,
+        requestOptions,
+        signal
+      )
+
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!(gridUuid && predictionModelName && latentRepModelName),
+      staleTime: 300000,
+      retry: 1,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof getSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGet
+        >
+      >,
+      TError,
+      TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> }
+  }
+
+export type GetSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGetQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof getSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGet
+      >
+    >
+  >
+export type GetSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGetQueryError =
+  HTTPValidationError
+
+export function useGetSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  gridUuid: string,
+  predictionModelName: string,
+  latentRepModelName: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<
+            ReturnType<
+              typeof getSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGet
+            >
+          >,
+          TError,
+          Awaited<
+            ReturnType<
+              typeof getSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGet
+            >
+          >
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  gridUuid: string,
+  predictionModelName: string,
+  latentRepModelName: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<
+            ReturnType<
+              typeof getSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGet
+            >
+          >,
+          TError,
+          Awaited<
+            ReturnType<
+              typeof getSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGet
+            >
+          >
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  gridUuid: string,
+  predictionModelName: string,
+  latentRepModelName: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get Suggested Square Collections
+ */
+
+export function useGetSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  gridUuid: string,
+  predictionModelName: string,
+  latentRepModelName: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions =
+    getGetSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGetQueryOptions(
+      gridUuid,
+      predictionModelName,
+      latentRepModelName,
+      options
+    )
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * @summary Get Square Latent Rep
+ */
+export const getSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGet =
+  (
+    predictionModelName: string,
+    gridsquareUuid: string,
+    options?: SecondParameter<typeof customInstance>,
+    signal?: AbortSignal
+  ) => {
+    return customInstance<LatentRepresentationResponse[]>(
+      {
+        url: `/prediction_model/${predictionModelName}/gridsquare/${gridsquareUuid}/latent_representation`,
+        method: 'GET',
+        signal,
+      },
+      options
+    )
+  }
+
+export const getGetSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGetQueryKey =
+  (predictionModelName?: string, gridsquareUuid?: string) => {
+    return [
+      `/prediction_model/${predictionModelName}/gridsquare/${gridsquareUuid}/latent_representation`,
+    ] as const
+  }
+
+export const getGetSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGetQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<
+        typeof getSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGet
+      >
+    >,
+    TError = HTTPValidationError,
+  >(
+    predictionModelName: string,
+    gridsquareUuid: string,
+    options?: {
+      query?: Partial<
+        UseQueryOptions<
+          Awaited<
+            ReturnType<
+              typeof getSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGet
+            >
+          >,
+          TError,
+          TData
+        >
+      >
+      request?: SecondParameter<typeof customInstance>
+    }
+  ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {}
+
+    const queryKey =
+      queryOptions?.queryKey ??
+      getGetSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGetQueryKey(
+        predictionModelName,
+        gridsquareUuid
+      )
+
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof getSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGet
+        >
+      >
+    > = ({ signal }) =>
+      getSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGet(
+        predictionModelName,
+        gridsquareUuid,
+        requestOptions,
+        signal
+      )
+
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!(predictionModelName && gridsquareUuid),
+      staleTime: 300000,
+      retry: 1,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof getSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGet
+        >
+      >,
+      TError,
+      TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> }
+  }
+
+export type GetSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGetQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof getSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGet
+      >
+    >
+  >
+export type GetSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGetQueryError =
+  HTTPValidationError
+
+export function useGetSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  predictionModelName: string,
+  gridsquareUuid: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<
+            ReturnType<
+              typeof getSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGet
+            >
+          >,
+          TError,
+          Awaited<
+            ReturnType<
+              typeof getSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGet
+            >
+          >
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  predictionModelName: string,
+  gridsquareUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<
+            ReturnType<
+              typeof getSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGet
+            >
+          >,
+          TError,
+          Awaited<
+            ReturnType<
+              typeof getSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGet
+            >
+          >
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  predictionModelName: string,
+  gridsquareUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get Square Latent Rep
+ */
+
+export function useGetSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  predictionModelName: string,
+  gridsquareUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions =
+    getGetSquareLatentRepPredictionModelPredictionModelNameGridsquareGridsquareUuidLatentRepresentationGetQueryOptions(
+      predictionModelName,
+      gridsquareUuid,
+      options
+    )
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * Get a single grid by ID
+ * @summary Get Grid Atlas Image
+ */
+export const getGridAtlasImageGridsGridUuidAtlasImageGet = (
+  gridUuid: string,
+  params?: GetGridAtlasImageGridsGridUuidAtlasImageGetParams,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<unknown>(
+    { url: `/grids/${gridUuid}/atlas_image`, method: 'GET', params, signal },
+    options
+  )
+}
+
+export const getGetGridAtlasImageGridsGridUuidAtlasImageGetQueryKey = (
+  gridUuid?: string,
+  params?: GetGridAtlasImageGridsGridUuidAtlasImageGetParams
+) => {
+  return [`/grids/${gridUuid}/atlas_image`, ...(params ? [params] : [])] as const
+}
+
+export const getGetGridAtlasImageGridsGridUuidAtlasImageGetQueryOptions = <
+  TData = Awaited<ReturnType<typeof getGridAtlasImageGridsGridUuidAtlasImageGet>>,
+  TError = HTTPValidationError,
+>(
+  gridUuid: string,
+  params?: GetGridAtlasImageGridsGridUuidAtlasImageGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getGridAtlasImageGridsGridUuidAtlasImageGet>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetGridAtlasImageGridsGridUuidAtlasImageGetQueryKey(gridUuid, params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getGridAtlasImageGridsGridUuidAtlasImageGet>>
+  > = ({ signal }) =>
+    getGridAtlasImageGridsGridUuidAtlasImageGet(gridUuid, params, requestOptions, signal)
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!gridUuid,
+    staleTime: 300000,
+    retry: 1,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getGridAtlasImageGridsGridUuidAtlasImageGet>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetGridAtlasImageGridsGridUuidAtlasImageGetQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getGridAtlasImageGridsGridUuidAtlasImageGet>>
+>
+export type GetGridAtlasImageGridsGridUuidAtlasImageGetQueryError = HTTPValidationError
+
+export function useGetGridAtlasImageGridsGridUuidAtlasImageGet<
+  TData = Awaited<ReturnType<typeof getGridAtlasImageGridsGridUuidAtlasImageGet>>,
+  TError = HTTPValidationError,
+>(
+  gridUuid: string,
+  params: undefined | GetGridAtlasImageGridsGridUuidAtlasImageGetParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getGridAtlasImageGridsGridUuidAtlasImageGet>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getGridAtlasImageGridsGridUuidAtlasImageGet>>,
+          TError,
+          Awaited<ReturnType<typeof getGridAtlasImageGridsGridUuidAtlasImageGet>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetGridAtlasImageGridsGridUuidAtlasImageGet<
+  TData = Awaited<ReturnType<typeof getGridAtlasImageGridsGridUuidAtlasImageGet>>,
+  TError = HTTPValidationError,
+>(
+  gridUuid: string,
+  params?: GetGridAtlasImageGridsGridUuidAtlasImageGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getGridAtlasImageGridsGridUuidAtlasImageGet>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getGridAtlasImageGridsGridUuidAtlasImageGet>>,
+          TError,
+          Awaited<ReturnType<typeof getGridAtlasImageGridsGridUuidAtlasImageGet>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetGridAtlasImageGridsGridUuidAtlasImageGet<
+  TData = Awaited<ReturnType<typeof getGridAtlasImageGridsGridUuidAtlasImageGet>>,
+  TError = HTTPValidationError,
+>(
+  gridUuid: string,
+  params?: GetGridAtlasImageGridsGridUuidAtlasImageGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getGridAtlasImageGridsGridUuidAtlasImageGet>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get Grid Atlas Image
+ */
+
+export function useGetGridAtlasImageGridsGridUuidAtlasImageGet<
+  TData = Awaited<ReturnType<typeof getGridAtlasImageGridsGridUuidAtlasImageGet>>,
+  TError = HTTPValidationError,
+>(
+  gridUuid: string,
+  params?: GetGridAtlasImageGridsGridUuidAtlasImageGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getGridAtlasImageGridsGridUuidAtlasImageGet>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetGridAtlasImageGridsGridUuidAtlasImageGetQueryOptions(
+    gridUuid,
+    params,
+    options
+  )
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
+/**
+ * Get a single grid square by ID
+ * @summary Get Gridsquare Image
+ */
+export const getGridsquareImageGridsquaresGridsquareUuidGridsquareImageGet = (
+  gridsquareUuid: string,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<unknown>(
+    { url: `/gridsquares/${gridsquareUuid}/gridsquare_image`, method: 'GET', signal },
+    options
+  )
+}
+
+export const getGetGridsquareImageGridsquaresGridsquareUuidGridsquareImageGetQueryKey = (
+  gridsquareUuid?: string
+) => {
+  return [`/gridsquares/${gridsquareUuid}/gridsquare_image`] as const
+}
+
+export const getGetGridsquareImageGridsquaresGridsquareUuidGridsquareImageGetQueryOptions = <
+  TData = Awaited<ReturnType<typeof getGridsquareImageGridsquaresGridsquareUuidGridsquareImageGet>>,
+  TError = HTTPValidationError,
+>(
+  gridsquareUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getGridsquareImageGridsquaresGridsquareUuidGridsquareImageGet>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetGridsquareImageGridsquaresGridsquareUuidGridsquareImageGetQueryKey(gridsquareUuid)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getGridsquareImageGridsquaresGridsquareUuidGridsquareImageGet>>
+  > = ({ signal }) =>
+    getGridsquareImageGridsquaresGridsquareUuidGridsquareImageGet(
+      gridsquareUuid,
+      requestOptions,
+      signal
+    )
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!gridsquareUuid,
+    staleTime: 300000,
+    retry: 1,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getGridsquareImageGridsquaresGridsquareUuidGridsquareImageGet>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetGridsquareImageGridsquaresGridsquareUuidGridsquareImageGetQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getGridsquareImageGridsquaresGridsquareUuidGridsquareImageGet>>
+>
+export type GetGridsquareImageGridsquaresGridsquareUuidGridsquareImageGetQueryError =
+  HTTPValidationError
+
+export function useGetGridsquareImageGridsquaresGridsquareUuidGridsquareImageGet<
+  TData = Awaited<ReturnType<typeof getGridsquareImageGridsquaresGridsquareUuidGridsquareImageGet>>,
+  TError = HTTPValidationError,
+>(
+  gridsquareUuid: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getGridsquareImageGridsquaresGridsquareUuidGridsquareImageGet>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getGridsquareImageGridsquaresGridsquareUuidGridsquareImageGet>>,
+          TError,
+          Awaited<ReturnType<typeof getGridsquareImageGridsquaresGridsquareUuidGridsquareImageGet>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetGridsquareImageGridsquaresGridsquareUuidGridsquareImageGet<
+  TData = Awaited<ReturnType<typeof getGridsquareImageGridsquaresGridsquareUuidGridsquareImageGet>>,
+  TError = HTTPValidationError,
+>(
+  gridsquareUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getGridsquareImageGridsquaresGridsquareUuidGridsquareImageGet>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getGridsquareImageGridsquaresGridsquareUuidGridsquareImageGet>>,
+          TError,
+          Awaited<ReturnType<typeof getGridsquareImageGridsquaresGridsquareUuidGridsquareImageGet>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetGridsquareImageGridsquaresGridsquareUuidGridsquareImageGet<
+  TData = Awaited<ReturnType<typeof getGridsquareImageGridsquaresGridsquareUuidGridsquareImageGet>>,
+  TError = HTTPValidationError,
+>(
+  gridsquareUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getGridsquareImageGridsquaresGridsquareUuidGridsquareImageGet>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get Gridsquare Image
+ */
+
+export function useGetGridsquareImageGridsquaresGridsquareUuidGridsquareImageGet<
+  TData = Awaited<ReturnType<typeof getGridsquareImageGridsquaresGridsquareUuidGridsquareImageGet>>,
+  TError = HTTPValidationError,
+>(
+  gridsquareUuid: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getGridsquareImageGridsquaresGridsquareUuidGridsquareImageGet>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customInstance>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetGridsquareImageGridsquaresGridsquareUuidGridsquareImageGetQueryOptions(
+    gridsquareUuid,
+    options
+  )
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>
+  }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
 }

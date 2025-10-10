@@ -3,34 +3,35 @@
  * Do not edit manually.
  * SmartEM Decisions Backend API
  * API for accessing and managing electron microscopy data
- * OpenAPI spec version: 0.1.dev334+g5e29cd2e4.d20251002
+ * OpenAPI spec version: 0.1.dev372+g0f036fa24
  */
-import type { GridSquareUpdateRequestUuid } from './gridSquareUpdateRequestUuid'
+
+import type { GridSquareUpdateRequestAcquisitionDatetime } from './gridSquareUpdateRequestAcquisitionDatetime'
+import type { GridSquareUpdateRequestAppliedDefocus } from './gridSquareUpdateRequestAppliedDefocus'
+import type { GridSquareUpdateRequestAtlasNodeId } from './gridSquareUpdateRequestAtlasNodeId'
+import type { GridSquareUpdateRequestCenterX } from './gridSquareUpdateRequestCenterX'
+import type { GridSquareUpdateRequestCenterY } from './gridSquareUpdateRequestCenterY'
+import type { GridSquareUpdateRequestDataDir } from './gridSquareUpdateRequestDataDir'
+import type { GridSquareUpdateRequestDefocus } from './gridSquareUpdateRequestDefocus'
+import type { GridSquareUpdateRequestDetectorName } from './gridSquareUpdateRequestDetectorName'
 import type { GridSquareUpdateRequestGridsquareId } from './gridSquareUpdateRequestGridsquareId'
 import type { GridSquareUpdateRequestGridUuid } from './gridSquareUpdateRequestGridUuid'
-import type { GridSquareUpdateRequestDataDir } from './gridSquareUpdateRequestDataDir'
-import type { GridSquareUpdateRequestAtlasNodeId } from './gridSquareUpdateRequestAtlasNodeId'
-import type { GridSquareUpdateRequestState } from './gridSquareUpdateRequestState'
-import type { GridSquareUpdateRequestRotation } from './gridSquareUpdateRequestRotation'
 import type { GridSquareUpdateRequestImagePath } from './gridSquareUpdateRequestImagePath'
+import type { GridSquareUpdateRequestMagnification } from './gridSquareUpdateRequestMagnification'
+import type { GridSquareUpdateRequestPhysicalX } from './gridSquareUpdateRequestPhysicalX'
+import type { GridSquareUpdateRequestPhysicalY } from './gridSquareUpdateRequestPhysicalY'
+import type { GridSquareUpdateRequestPixelSize } from './gridSquareUpdateRequestPixelSize'
+import type { GridSquareUpdateRequestRotation } from './gridSquareUpdateRequestRotation'
 import type { GridSquareUpdateRequestSelected } from './gridSquareUpdateRequestSelected'
-import type { GridSquareUpdateRequestUnusable } from './gridSquareUpdateRequestUnusable'
+import type { GridSquareUpdateRequestSizeHeight } from './gridSquareUpdateRequestSizeHeight'
+import type { GridSquareUpdateRequestSizeWidth } from './gridSquareUpdateRequestSizeWidth'
 import type { GridSquareUpdateRequestStagePositionX } from './gridSquareUpdateRequestStagePositionX'
 import type { GridSquareUpdateRequestStagePositionY } from './gridSquareUpdateRequestStagePositionY'
 import type { GridSquareUpdateRequestStagePositionZ } from './gridSquareUpdateRequestStagePositionZ'
-import type { GridSquareUpdateRequestCenterX } from './gridSquareUpdateRequestCenterX'
-import type { GridSquareUpdateRequestCenterY } from './gridSquareUpdateRequestCenterY'
-import type { GridSquareUpdateRequestPhysicalX } from './gridSquareUpdateRequestPhysicalX'
-import type { GridSquareUpdateRequestPhysicalY } from './gridSquareUpdateRequestPhysicalY'
-import type { GridSquareUpdateRequestSizeWidth } from './gridSquareUpdateRequestSizeWidth'
-import type { GridSquareUpdateRequestSizeHeight } from './gridSquareUpdateRequestSizeHeight'
-import type { GridSquareUpdateRequestAcquisitionDatetime } from './gridSquareUpdateRequestAcquisitionDatetime'
-import type { GridSquareUpdateRequestDefocus } from './gridSquareUpdateRequestDefocus'
-import type { GridSquareUpdateRequestMagnification } from './gridSquareUpdateRequestMagnification'
-import type { GridSquareUpdateRequestPixelSize } from './gridSquareUpdateRequestPixelSize'
-import type { GridSquareUpdateRequestDetectorName } from './gridSquareUpdateRequestDetectorName'
-import type { GridSquareUpdateRequestAppliedDefocus } from './gridSquareUpdateRequestAppliedDefocus'
+import type { GridSquareUpdateRequestState } from './gridSquareUpdateRequestState'
 import type { GridSquareUpdateRequestStatus } from './gridSquareUpdateRequestStatus'
+import type { GridSquareUpdateRequestUnusable } from './gridSquareUpdateRequestUnusable'
+import type { GridSquareUpdateRequestUuid } from './gridSquareUpdateRequestUuid'
 
 export interface GridSquareUpdateRequest {
   uuid?: GridSquareUpdateRequestUuid

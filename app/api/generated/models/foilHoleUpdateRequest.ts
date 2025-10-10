@@ -3,24 +3,25 @@
  * Do not edit manually.
  * SmartEM Decisions Backend API
  * API for accessing and managing electron microscopy data
- * OpenAPI spec version: 0.1.dev334+g5e29cd2e4.d20251002
+ * OpenAPI spec version: 0.1.dev372+g0f036fa24
  */
-import type { FoilHoleUpdateRequestUuid } from './foilHoleUpdateRequestUuid'
+
+import type { FoilHoleUpdateRequestCenterX } from './foilHoleUpdateRequestCenterX'
+import type { FoilHoleUpdateRequestCenterY } from './foilHoleUpdateRequestCenterY'
+import type { FoilHoleUpdateRequestDiameter } from './foilHoleUpdateRequestDiameter'
 import type { FoilHoleUpdateRequestFoilholeId } from './foilHoleUpdateRequestFoilholeId'
 import type { FoilHoleUpdateRequestGridsquareId } from './foilHoleUpdateRequestGridsquareId'
 import type { FoilHoleUpdateRequestGridsquareUuid } from './foilHoleUpdateRequestGridsquareUuid'
-import type { FoilHoleUpdateRequestCenterX } from './foilHoleUpdateRequestCenterX'
-import type { FoilHoleUpdateRequestCenterY } from './foilHoleUpdateRequestCenterY'
 import type { FoilHoleUpdateRequestQuality } from './foilHoleUpdateRequestQuality'
 import type { FoilHoleUpdateRequestRotation } from './foilHoleUpdateRequestRotation'
-import type { FoilHoleUpdateRequestSizeWidth } from './foilHoleUpdateRequestSizeWidth'
 import type { FoilHoleUpdateRequestSizeHeight } from './foilHoleUpdateRequestSizeHeight'
-import type { FoilHoleUpdateRequestXLocation } from './foilHoleUpdateRequestXLocation'
-import type { FoilHoleUpdateRequestYLocation } from './foilHoleUpdateRequestYLocation'
-import type { FoilHoleUpdateRequestXStagePosition } from './foilHoleUpdateRequestXStagePosition'
-import type { FoilHoleUpdateRequestYStagePosition } from './foilHoleUpdateRequestYStagePosition'
-import type { FoilHoleUpdateRequestDiameter } from './foilHoleUpdateRequestDiameter'
+import type { FoilHoleUpdateRequestSizeWidth } from './foilHoleUpdateRequestSizeWidth'
 import type { FoilHoleUpdateRequestStatus } from './foilHoleUpdateRequestStatus'
+import type { FoilHoleUpdateRequestUuid } from './foilHoleUpdateRequestUuid'
+import type { FoilHoleUpdateRequestXLocation } from './foilHoleUpdateRequestXLocation'
+import type { FoilHoleUpdateRequestXStagePosition } from './foilHoleUpdateRequestXStagePosition'
+import type { FoilHoleUpdateRequestYLocation } from './foilHoleUpdateRequestYLocation'
+import type { FoilHoleUpdateRequestYStagePosition } from './foilHoleUpdateRequestYStagePosition'
 
 export interface FoilHoleUpdateRequest {
   uuid?: FoilHoleUpdateRequestUuid

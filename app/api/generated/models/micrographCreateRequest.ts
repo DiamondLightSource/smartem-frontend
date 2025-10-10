@@ -3,29 +3,30 @@
  * Do not edit manually.
  * SmartEM Decisions Backend API
  * API for accessing and managing electron microscopy data
- * OpenAPI spec version: 0.1.dev334+g5e29cd2e4.d20251002
+ * OpenAPI spec version: 0.1.dev372+g0f036fa24
  */
-import type { MicrographCreateRequestFoilholeUuid } from './micrographCreateRequestFoilholeUuid'
-import type { MicrographCreateRequestLocationId } from './micrographCreateRequestLocationId'
-import type { MicrographCreateRequestHighResPath } from './micrographCreateRequestHighResPath'
-import type { MicrographCreateRequestManifestFile } from './micrographCreateRequestManifestFile'
+
 import type { MicrographCreateRequestAcquisitionDatetime } from './micrographCreateRequestAcquisitionDatetime'
+import type { MicrographCreateRequestAverageMotion } from './micrographCreateRequestAverageMotion'
+import type { MicrographCreateRequestBinningX } from './micrographCreateRequestBinningX'
+import type { MicrographCreateRequestBinningY } from './micrographCreateRequestBinningY'
+import type { MicrographCreateRequestCtfMaxResolutionEstimate } from './micrographCreateRequestCtfMaxResolutionEstimate'
 import type { MicrographCreateRequestDefocus } from './micrographCreateRequestDefocus'
 import type { MicrographCreateRequestDetectorName } from './micrographCreateRequestDetectorName'
 import type { MicrographCreateRequestEnergyFilter } from './micrographCreateRequestEnergyFilter'
-import type { MicrographCreateRequestPhasePlate } from './micrographCreateRequestPhasePlate'
+import type { MicrographCreateRequestFoilholeUuid } from './micrographCreateRequestFoilholeUuid'
+import type { MicrographCreateRequestHighResPath } from './micrographCreateRequestHighResPath'
 import type { MicrographCreateRequestImageSizeX } from './micrographCreateRequestImageSizeX'
 import type { MicrographCreateRequestImageSizeY } from './micrographCreateRequestImageSizeY'
-import type { MicrographCreateRequestBinningX } from './micrographCreateRequestBinningX'
-import type { MicrographCreateRequestBinningY } from './micrographCreateRequestBinningY'
-import type { MicrographCreateRequestTotalMotion } from './micrographCreateRequestTotalMotion'
-import type { MicrographCreateRequestAverageMotion } from './micrographCreateRequestAverageMotion'
-import type { MicrographCreateRequestCtfMaxResolutionEstimate } from './micrographCreateRequestCtfMaxResolutionEstimate'
-import type { MicrographCreateRequestNumberOfParticlesSelected } from './micrographCreateRequestNumberOfParticlesSelected'
-import type { MicrographCreateRequestNumberOfParticlesRejected } from './micrographCreateRequestNumberOfParticlesRejected'
-import type { MicrographCreateRequestSelectionDistribution } from './micrographCreateRequestSelectionDistribution'
+import type { MicrographCreateRequestLocationId } from './micrographCreateRequestLocationId'
+import type { MicrographCreateRequestManifestFile } from './micrographCreateRequestManifestFile'
 import type { MicrographCreateRequestNumberOfParticlesPicked } from './micrographCreateRequestNumberOfParticlesPicked'
+import type { MicrographCreateRequestNumberOfParticlesRejected } from './micrographCreateRequestNumberOfParticlesRejected'
+import type { MicrographCreateRequestNumberOfParticlesSelected } from './micrographCreateRequestNumberOfParticlesSelected'
+import type { MicrographCreateRequestPhasePlate } from './micrographCreateRequestPhasePlate'
 import type { MicrographCreateRequestPickDistribution } from './micrographCreateRequestPickDistribution'
+import type { MicrographCreateRequestSelectionDistribution } from './micrographCreateRequestSelectionDistribution'
+import type { MicrographCreateRequestTotalMotion } from './micrographCreateRequestTotalMotion'
 import type { MicrographStatus } from './micrographStatus'
 
 export interface MicrographCreateRequest {

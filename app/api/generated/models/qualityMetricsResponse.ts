@@ -3,11 +3,11 @@
  * Do not edit manually.
  * SmartEM Decisions Backend API
  * API for accessing and managing electron microscopy data
- * OpenAPI spec version: 0.1.dev334+g5e29cd2e4.d20251002
+ * OpenAPI spec version: 0.1.dev372+g0f036fa24
  */
 import type { QualityMetricsResponseAverageQuality } from './qualityMetricsResponseAverageQuality'
-import type { QualityMetricsResponseMinQuality } from './qualityMetricsResponseMinQuality'
 import type { QualityMetricsResponseMaxQuality } from './qualityMetricsResponseMaxQuality'
+import type { QualityMetricsResponseMinQuality } from './qualityMetricsResponseMinQuality'
 
 export interface QualityMetricsResponse {
   total_predictions: number

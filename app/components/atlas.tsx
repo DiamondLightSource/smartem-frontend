@@ -1,36 +1,29 @@
-import type { Route } from './+types/product'
-
+import CloseIcon from '@mui/icons-material/Close'
 import {
   Card,
-  Container,
-  Tooltip,
-  ThemeProvider,
-  CardContent,
   CardActions,
+  CardContent,
+  Container,
   IconButton,
+  ThemeProvider,
+  Tooltip,
 } from '@mui/material'
 
-import CloseIcon from '@mui/icons-material/Close'
-
-import type { components } from '../schema'
-
 import React from 'react'
-
-import { theme } from '../components/theme'
+import type { GridSquareResponse } from '../api/generated/models/gridSquareResponse'
 
 import { apiUrl } from '../api/mutator'
+import { theme } from '../components/theme'
 
-type GridSquare = components['schemas']['GridSquareResponse']
+type GridSquare = GridSquareResponse
 
-export async function loader({ params }: Route.LoaderArgs) {
-  const gridsquares = await fetch(
-    `${apiUrl()}/grids/${params.gridId}/gridsquares`
-  )
-  const squares = await gridsquares.json()
-  return { squares }
-}
-
-export default function Atlas({ params, onClose }) {
+export default function Atlas({
+  params,
+  onClose,
+}: {
+  params: { gridId: string }
+  onClose: () => void
+}) {
   // const [maxWidth, setMaxWidth] = React.useState(0);
   // const [squareNameMap, setSquareNameMap] = React.useState<Map<string, string>>()
   const [selectedSquare, setSelectedSquare] = React.useState('')
@@ -49,9 +42,7 @@ export default function Atlas({ params, onClose }) {
 
   React.useEffect(() => {
     const loadData = async () => {
-      const gridsquares = await fetch(
-        `${apiUrl()}/grids/${params.gridId}/gridsquares`
-      )
+      const gridsquares = await fetch(`${apiUrl()}/grids/${params.gridId}/gridsquares`)
       const squares = await gridsquares.json()
       setSquares(squares)
       return squares
@@ -61,11 +52,7 @@ export default function Atlas({ params, onClose }) {
 
   return (
     <ThemeProvider theme={theme}>
-      <Container
-        maxWidth="sm"
-        content="center"
-        style={{ width: '100%', paddingTop: '50px' }}
-      >
+      <Container maxWidth="sm" content="center" style={{ width: '100%', paddingTop: '50px' }}>
         <Card variant="outlined">
           <CardActions>
             <IconButton onClick={onClose}>
@@ -81,34 +68,27 @@ export default function Atlas({ params, onClose }) {
               }}
             >
               <img src={`${apiUrl()}/grids/${params.gridId}/atlas_image`} />
-              <svg
-                viewBox="0 0 4005 4005"
-                style={{ position: 'absolute', top: 0, left: 0 }}
-              >
+              <svg viewBox="0 0 4005 4005" style={{ position: 'absolute', top: 0, left: 0 }}>
                 {squares.map((gridSquare: GridSquare) => (
                   <Tooltip title={gridSquare.gridsquare_id}>
                     <circle
                       key={gridSquare.uuid}
-                      cx={gridSquare.center_x}
-                      cy={gridSquare.center_y}
+                      cx={gridSquare.center_x ?? 0}
+                      cy={gridSquare.center_y ?? 0}
                       r={gridSquare.size_width ? gridSquare.size_width / 2 : 0}
                       fillOpacity={0.5}
                       fill={'purple'}
                       strokeWidth={
                         gridSquare.uuid === selectedSquare
-                          ? 0.25 * gridSquare.size_width
-                          : 0.1 * gridSquare.size_width
+                          ? 0.25 * (gridSquare.size_width ?? 0)
+                          : 0.1 * (gridSquare.size_width ?? 0)
                       }
                       onClick={() => handleSelectionClick(gridSquare.uuid)}
                       onMouseOver={() =>
-                        !selectionFrozen
-                          ? setSelectedSquare(gridSquare.uuid)
-                          : {}
+                        !selectionFrozen ? setSelectedSquare(gridSquare.uuid) : {}
                       }
                       strokeOpacity={1}
-                      stroke={
-                        gridSquare.uuid === selectedSquare ? 'orange' : 'gray'
-                      }
+                      stroke={gridSquare.uuid === selectedSquare ? 'orange' : 'gray'}
                     />
                   </Tooltip>
                 ))}

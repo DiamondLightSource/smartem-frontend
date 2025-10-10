@@ -1,5 +1,7 @@
-import type { Route } from './+types/product'
-
+import AddIcon from '@mui/icons-material/Add'
+import CloseIcon from '@mui/icons-material/Close'
+import InsightsIcon from '@mui/icons-material/Insights'
+import type { SelectChangeEvent } from '@mui/material'
 import {
   Card,
   CardActions,
@@ -9,33 +11,30 @@ import {
   IconButton,
   InputLabel,
   MenuItem,
-  Tooltip,
-  ThemeProvider,
   Select,
   Stack,
   Switch,
+  ThemeProvider,
+  Tooltip,
 } from '@mui/material'
-import type { SelectChangeEvent } from '@mui/material'
-import { ScatterChart } from '@mui/x-charts/ScatterChart'
 import type { ScatterItemIdentifier } from '@mui/x-charts/models'
-import AddIcon from '@mui/icons-material/Add'
-import CloseIcon from '@mui/icons-material/Close'
-
-import type { components } from '../schema'
+import { ScatterChart } from '@mui/x-charts/ScatterChart'
 
 import React from 'react'
-
+import { useNavigate, useParams } from 'react-router'
+import type { FoilHoleResponse } from '../api/generated/models/foilHoleResponse'
+import type { LatentRepresentationResponse } from '../api/generated/models/latentRepresentationResponse'
+import type { QualityPredictionModelResponse } from '../api/generated/models/qualityPredictionModelResponse'
+import type { QualityPredictionResponse } from '../api/generated/models/qualityPredictionResponse'
+import { apiUrl } from '../api/mutator'
 import { Navbar } from '../components/navbar'
 import { theme } from '../components/theme'
+import type { Route } from './+types/squareLR'
 
-import { apiUrl } from '../api/mutator'
-import { useParams, useNavigate } from 'react-router'
-import InsightsIcon from '@mui/icons-material/Insights'
-
-type FoilHole = components['schemas']['FoilHoleResponse']
-type PredictionModel = components['schemas']['QualityPredictionModelResponse']
-type Prediction = components['schemas']['QualityPredictionResponse']
-type LatentRep = components['schemas']['LatentRepresentationResponse']
+type FoilHole = FoilHoleResponse
+type PredictionModel = QualityPredictionModelResponse
+type Prediction = QualityPredictionResponse
+type LatentRep = LatentRepresentationResponse
 
 type Coords = {
   x: number
@@ -110,8 +109,7 @@ export default function GridSquareLR() {
   const [predictionMax, setPredictionMax] = React.useState(1)
   const [latentRep, setLatentRep] = React.useState<Map<string, Coords>>()
   const [showLatentSpace, setShowLatentSpace] = React.useState(false)
-  const [showUnselectedInLatentSpace, setShowUnselectedInLatentSpace] =
-    React.useState(true)
+  const [showUnselectedInLatentSpace, setShowUnselectedInLatentSpace] = React.useState(true)
   const [selectionFrozen, setSelectionFrozen] = React.useState(false)
 
   const colourPalette = [
@@ -129,13 +127,14 @@ export default function GridSquareLR() {
 
   const handleChange = async (event: SelectChangeEvent) => {
     setPredictionModel(event.target.value)
-    const preds = await getPredictions(event.target.value, params.squareId)
+    const squareId = params.squareId ?? ''
+    const preds = await getPredictions(event.target.value, squareId)
     setPredictions(preds)
     if (event.target.value === 'overall') {
-      const preds = await getOverallPredictions(params.squareId)
+      const preds = await getOverallPredictions(squareId)
       setPredictions(preds)
     } else {
-      const preds = await getPredictions(event.target.value, params.squareId)
+      const preds = await getPredictions(event.target.value, squareId)
       setPredictions(preds)
     }
   }
@@ -148,7 +147,7 @@ export default function GridSquareLR() {
     setRepModel(event.target.value)
     const latentRepValues: Map<string, Coords> = await getLatentRep(
       event.target.value,
-      params.squareId
+      params.squareId ?? ''
     )
     setLatentRep(latentRepValues)
   }
@@ -168,9 +167,7 @@ export default function GridSquareLR() {
         return elem.size_width
       })
       setHoleNameMap(
-        new Map<string, string>(
-          holes.map((elem: FoilHole) => [elem.uuid, elem.foilhole_id])
-        )
+        new Map<string, string>(holes.map((elem: FoilHole) => [elem.uuid, elem.foilhole_id]))
       )
     }
   }, [holes])
@@ -190,11 +187,7 @@ export default function GridSquareLR() {
     <ThemeProvider theme={theme}>
       <Navbar />
       <Stack direction="row" spacing={2}>
-        <Container
-          maxWidth="lg"
-          content="center"
-          style={{ width: '100%', paddingTop: '50px' }}
-        >
+        <Container maxWidth="lg" content="center" style={{ width: '100%', paddingTop: '50px' }}>
           <Card variant="outlined">
             <div
               style={{
@@ -203,13 +196,8 @@ export default function GridSquareLR() {
                 position: 'relative',
               }}
             >
-              <img
-                src={`${url}/gridsquares/${params.squareId}/gridsquare_image`}
-              />
-              <svg
-                viewBox="0 0 2880 2046"
-                style={{ position: 'absolute', top: 0, left: 0 }}
-              >
+              <img src={`${url}/gridsquares/${params.squareId}/gridsquare_image`} />
+              <svg viewBox="0 0 2880 2046" style={{ position: 'absolute', top: 0, left: 0 }}>
                 {holes.map((foilHole: FoilHole) => (
                   <Tooltip
                     title={
@@ -220,26 +208,25 @@ export default function GridSquareLR() {
                   >
                     <circle
                       key={foilHole.uuid}
-                      cx={foilHole.x_location}
-                      cy={foilHole.y_location}
+                      cx={foilHole.x_location ?? 0}
+                      cy={foilHole.y_location ?? 0}
                       r={
-                        predictions?.get(foilHole.uuid)
+                        predictions?.get(foilHole.uuid) !== undefined
                           ? (((1.5 *
-                              foilHole.diameter *
-                              (predictions.get(foilHole.uuid) -
-                                predictionMin)) /
+                              (foilHole.diameter ?? 0) *
+                              ((predictions.get(foilHole.uuid) ?? 0) - predictionMin)) /
                               (predictionMax - predictionMin)) *
                               maxWidth) /
                             2
-                          : foilHole.diameter / 2
+                          : (foilHole.diameter ?? 0) / 2
                       }
                       fillOpacity={0.5}
                       fill={
                         latentRep
-                          ? colourPalette[latentRep.get(foilHole.uuid).index]
+                          ? colourPalette[latentRep.get(foilHole.uuid)?.index ?? 0]
                           : showPredictions
-                            ? predictions?.get(foilHole.uuid)
-                              ? predictions.get(foilHole.uuid) >= 0.5
+                            ? predictions?.get(foilHole.uuid) !== undefined
+                              ? (predictions.get(foilHole.uuid) ?? 0) >= 0.5
                                 ? 'green'
                                 : 'red'
                               : 'dark gray'
@@ -247,40 +234,33 @@ export default function GridSquareLR() {
                       }
                       strokeWidth={
                         foilHole.uuid === selectedHole
-                          ? 0.25 * foilHole.diameter
-                          : 0.1 * foilHole.diameter
+                          ? 0.25 * (foilHole.diameter ?? 0)
+                          : 0.1 * (foilHole.diameter ?? 0)
                       }
                       strokeOpacity={1}
                       stroke={
                         foilHole.uuid === selectedHole
                           ? 'orange'
                           : showPredictions
-                            ? predictions?.get(foilHole.uuid)
-                              ? predictions.get(foilHole.uuid) >= 0.5
+                            ? predictions?.get(foilHole.uuid) !== undefined
+                              ? (predictions.get(foilHole.uuid) ?? 0) >= 0.5
                                 ? 'green'
                                 : 'red'
                               : 'gray'
                             : 'gray'
                       }
                       onClick={() => handleSelectionClick(foilHole.uuid)}
-                      onMouseOver={() =>
-                        !selectionFrozen ? setSelectedHole(foilHole.uuid) : {}
-                      }
+                      onMouseOver={() => (!selectionFrozen ? setSelectedHole(foilHole.uuid) : {})}
                     />
                   </Tooltip>
                 ))}
               </svg>
             </div>
             <CardActions>
-              <Switch
-                checked={showPredictions}
-                onChange={handlePredictionChange}
-              />
+              <Switch checked={showPredictions} onChange={handlePredictionChange} />
               {showPredictions ? (
                 <FormControl fullWidth>
-                  <InputLabel id="model-select-label">
-                    Prediction Model
-                  </InputLabel>
+                  <InputLabel id="model-select-label">Prediction Model</InputLabel>
                   <Select
                     labelId="model-select-label"
                     id="model-select"
@@ -320,11 +300,7 @@ export default function GridSquareLR() {
             </CardActions>
           </Card>
         </Container>
-        <Container
-          maxWidth="sm"
-          content="center"
-          style={{ width: '100%', paddingTop: '50px' }}
-        >
+        <Container maxWidth="sm" content="center" style={{ width: '100%', paddingTop: '50px' }}>
           {showLatentSpace ? (
             <Card variant="outlined">
               {latentRep ? (
@@ -338,16 +314,13 @@ export default function GridSquareLR() {
                     markerSize:
                       k[0] == selectedHole || showUnselectedInLatentSpace
                         ? predictions
-                          ? (7 * (predictions?.get(k[0]) + 1)) / 2
+                          ? (7 * ((predictions?.get(k[0]) ?? 0) + 1)) / 2
                           : 5
                         : 0,
-                    color:
-                      k[0] == selectedHole
-                        ? 'white'
-                        : colourPalette[k[1].index],
+                    color: k[0] == selectedHole ? 'white' : colourPalette[k[1].index],
                     valueFormatter: (v) => {
                       if (!selectionFrozen) setSelectedHole(k[0])
-                      return `${holeNameMap?.get(v?.id)}: ${k[1].index}`
+                      return `${holeNameMap?.get(String(v?.id ?? '')) ?? ''}: ${String(k[1].index)}`
                     },
                   }))}
                   yAxis={[{ position: 'none' }]}
@@ -370,9 +343,7 @@ export default function GridSquareLR() {
                   <Checkbox defaultChecked />
                 </Tooltip>
                 <FormControl fullWidth>
-                  <InputLabel id="rep-model-select-label">
-                    Prediction Model
-                  </InputLabel>
+                  <InputLabel id="rep-model-select-label">Prediction Model</InputLabel>
                   <Select
                     labelId="rep-model-select-label"
                     id="model-select"

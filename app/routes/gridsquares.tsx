@@ -1,26 +1,23 @@
-import type { Route } from './+types/product'
-
 import {
-  Card,
-  CardMedia,
-  Container,
-  ThemeProvider,
-  Checkbox,
-  CardHeader,
-  CardActionArea,
-  Grid,
-  Pagination,
-  CircularProgress,
   Alert,
   Box,
+  Card,
+  CardActionArea,
+  CardHeader,
+  CardMedia,
+  Checkbox,
+  CircularProgress,
+  Container,
+  Grid,
+  Pagination,
+  ThemeProvider,
 } from '@mui/material'
-
 import React from 'react'
-
-import { Navbar } from '../components/navbar'
-import { theme } from '../components/theme'
 import { useGetGridGridsquaresGridsGridUuidGridsquaresGet } from '../api/generated/default/default'
 import type { GridSquareResponse } from '../api/generated/models'
+import { Navbar } from '../components/navbar'
+import { theme } from '../components/theme'
+import type { Route } from './+types/gridsquares'
 
 export default function GridSquareGallery({ params }: Route.ComponentProps) {
   const {
@@ -30,30 +27,18 @@ export default function GridSquareGallery({ params }: Route.ComponentProps) {
   } = useGetGridGridsquaresGridsGridUuidGridsquaresGet(params.gridId)
 
   const [pageIndex, setPageIndex] = React.useState(0)
-  const [numPages, setNumPages] = React.useState(
-    Math.ceil((squares?.length || 0) / 9)
-  )
+  const [numPages, setNumPages] = React.useState(Math.ceil((squares?.length || 0) / 9))
   const [showCollectedOnly, setShowCollectedOnly] = React.useState(false)
-  const [filteredSquares, setFilteredSquares] = React.useState<
-    GridSquareResponse[]
-  >([])
+  const [filteredSquares, setFilteredSquares] = React.useState<GridSquareResponse[]>([])
 
-  const handlePageChange = (
-    event: React.ChangeEvent<unknown>,
-    value: number
-  ) => {
+  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPageIndex(value - 1)
   }
 
-  const sizeComparator = (
-    gs01: GridSquareResponse,
-    gs02: GridSquareResponse
-  ) => {
+  const sizeComparator = (gs01: GridSquareResponse, gs02: GridSquareResponse) => {
     if (gs01.size_height === null || gs01.size_width === null) return 1
     else if (gs02.size_height === null || gs02.size_width === null) return -1
-    return (
-      gs02.size_width * gs02.size_height - gs01.size_width * gs01.size_height
-    )
+    return gs02.size_width * gs02.size_height - gs01.size_width * gs01.size_height
   }
 
   React.useEffect(() => {
@@ -93,9 +78,7 @@ export default function GridSquareGallery({ params }: Route.ComponentProps) {
             <CircularProgress />
           </Box>
         ) : error ? (
-          <Alert severity="error">
-            Error loading grid squares: {error.message}
-          </Alert>
+          <Alert severity="error">Error loading grid squares: {String(error)}</Alert>
         ) : (
           <>
             <Pagination
@@ -118,9 +101,7 @@ export default function GridSquareGallery({ params }: Route.ComponentProps) {
                         variant="outlined"
                         sx={{
                           maxWidth: 256,
-                          backgroundColor: square.image_path
-                            ? '#5C9EAD'
-                            : '#b927d9',
+                          backgroundColor: square.image_path ? '#5C9EAD' : '#b927d9',
                         }}
                       >
                         <CardActionArea>

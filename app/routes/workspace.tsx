@@ -1,28 +1,16 @@
-import type { Route } from './+types/product'
-
-import {
-  Container,
-  ThemeProvider,
-  Paper,
-  IconButton,
-  Menu,
-  MenuItem,
-  Stack,
-} from '@mui/material'
-
 import AddIcon from '@mui/icons-material/Add'
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUp from '@mui/icons-material/KeyboardArrowUp'
-
+import { Container, IconButton, Menu, MenuItem, Paper, Stack, ThemeProvider } from '@mui/material'
 import React from 'react'
-
-import { Navbar } from '../components/navbar'
-import Atlas from '../components/atlas'
-import { theme } from '../components/theme'
 import { useParams } from 'react-router'
+import Atlas from '../components/atlas'
+import { Navbar } from '../components/navbar'
+import { theme } from '../components/theme'
+import type { Route } from './+types/workspace'
 
 export default function Workspace() {
-  const params = useParams()
+  const params = useParams<{ gridId: string }>()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const [atlasView, setAtlasView] = React.useState(false)
   const open = Boolean(anchorEl)
@@ -67,11 +55,8 @@ export default function Workspace() {
             <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
               <MenuItem onClick={addAtlasCard}>Atlas</MenuItem>
             </Menu>
-            {atlasView ? (
-              <Atlas
-                params={params}
-                onClose={() => setAtlasView(false)}
-              ></Atlas>
+            {atlasView && params.gridId ? (
+              <Atlas params={{ gridId: params.gridId }} onClose={() => setAtlasView(false)}></Atlas>
             ) : (
               <></>
             )}
