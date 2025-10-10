@@ -7,7 +7,6 @@ import { useParams } from 'react-router'
 import Atlas from '../components/atlas'
 import { Navbar } from '../components/navbar'
 import { theme } from '../components/theme'
-import type { Route } from './+types/workspace'
 
 export default function Workspace() {
   const params = useParams<{ gridId: string }>()
@@ -55,10 +54,8 @@ export default function Workspace() {
             <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
               <MenuItem onClick={addAtlasCard}>Atlas</MenuItem>
             </Menu>
-            {atlasView && params.gridId ? (
+            {atlasView && params.gridId && (
               <Atlas params={{ gridId: params.gridId }} onClose={() => setAtlasView(false)}></Atlas>
-            ) : (
-              <></>
             )}
           </Stack>
         </Paper>

@@ -10,15 +10,12 @@ import {
   ThemeProvider,
 } from '@mui/material'
 import Avatar from 'boring-avatars'
-import { useNavigate } from 'react-router'
 import { useGetPredictionModelsPredictionModelsGet } from '../api/generated/default/default'
 import type { QualityPredictionModelResponse } from '../api/generated/models'
 import { Navbar } from '../components/navbar'
 import { theme } from '../components/theme'
-import type { Route } from './+types/predictionModels'
 
 export default function PredictionModels() {
-  const navigate = useNavigate()
   const { data: models, isLoading, error } = useGetPredictionModelsPredictionModelsGet()
 
   return (

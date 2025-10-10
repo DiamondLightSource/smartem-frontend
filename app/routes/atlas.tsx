@@ -38,7 +38,6 @@ import { apiUrl } from '../api/mutator'
 
 import { Navbar } from '../components/navbar'
 import { theme } from '../components/theme'
-import type { Route } from './+types/atlas'
 
 type GridSquare = GridSquareResponse
 type PredictionModel = QualityPredictionModelResponse
@@ -83,7 +82,7 @@ const getSuggestion = async (gridId: string) => {
     `${apiUrl()}/grid/${gridId}/prediction_model/resnet-atlas/latent_rep/dae-atlas/suggested_squares`
   )
   const suggestionResult = await suggestionResponse.json()
-  const suggestedIds = Array.from(suggestionResult, (s: any) => s.uuid)
+  const suggestedIds = Array.from(suggestionResult, (s: { uuid: string }) => s.uuid)
   return suggestedIds
 }
 
@@ -98,7 +97,8 @@ export default function Atlas() {
 
   React.useEffect(() => {
     const fetchData = async () => {
-      const squaresData = await getGridGridsquaresGridsGridUuidGridsquaresGet(params.gridId!)
+      if (!params.gridId) return
+      const squaresData = await getGridGridsquaresGridsGridUuidGridsquaresGet(params.gridId)
       const modelsData = await getPredictionModelsPredictionModelsGet()
       setSquares(squaresData)
       setModels(modelsData)
@@ -160,7 +160,7 @@ export default function Atlas() {
     }
   }
 
-  const handleSuggestionRequest = async () => {
+  const _handleSuggestionRequest = async () => {
     const suggestions = await getSuggestion(gridId ?? '')
     setSuggestions(suggestions)
   }
@@ -179,8 +179,8 @@ export default function Atlas() {
 
   React.useEffect(() => {
     if (predictions) {
-      setPredictionMin(Math.min(...Array.from(predictions).map((k, v) => k[1])))
-      setPredictionMax(Math.max(...Array.from(predictions).map((k, v) => k[1])))
+      setPredictionMin(Math.min(...Array.from(predictions).map((k, _v) => k[1])))
+      setPredictionMax(Math.max(...Array.from(predictions).map((k, _v) => k[1])))
     }
   }, [predictions])
 
@@ -334,17 +334,17 @@ export default function Atlas() {
                 <ScatterChart
                   sx={{ backgroundColor: 'black' }}
                   height={500}
-                  series={Array.from(latentRep).map((k, v) => ({
+                  series={Array.from(latentRep).map((k, _v) => ({
                     label: k[0],
                     id: k[0],
                     data: [{ x: k[1].x, y: k[1].y, id: k[0] }],
                     markerSize:
-                      k[0] == selectedSquare || showUnselectedInLatentSpace
+                      k[0] === selectedSquare || showUnselectedInLatentSpace
                         ? predictions
                           ? (7 * ((predictions?.get(k[0]) ?? 0) + 1)) / 2
                           : 5
                         : 0,
-                    color: k[0] == selectedSquare ? 'white' : colourPalette[k[1].index],
+                    color: k[0] === selectedSquare ? 'white' : colourPalette[k[1].index],
                     valueFormatter: (v) => {
                       if (!selectionFrozen) setSelectedSquare(k[0])
                       return `${squareNameMap?.get(String(v?.id ?? '')) ?? ''}: ${String(k[1].index)}`
@@ -353,7 +353,7 @@ export default function Atlas() {
                   yAxis={[{ position: 'none' }]}
                   xAxis={[{ position: 'none' }]}
                   hideLegend={true}
-                  onItemClick={(_: any, d: ScatterItemIdentifier) =>
+                  onItemClick={(_event: React.MouseEvent, d: ScatterItemIdentifier) =>
                     handleSelectionClick(d.seriesId.toString())
                   }
                 />

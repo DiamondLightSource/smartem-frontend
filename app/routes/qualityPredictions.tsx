@@ -1,13 +1,10 @@
-import { BarChart as BarChartIcon, Science, Timeline } from '@mui/icons-material'
 import type { SelectChangeEvent } from '@mui/material'
 import {
   Box,
   Card,
   CardContent,
-  Container,
   FormControl,
   Grid,
-  IconButton,
   InputLabel,
   MenuItem,
   Select,
@@ -18,14 +15,11 @@ import {
 import { BarChart, LineChart } from '@mui/x-charts'
 import { bin } from 'd3-array'
 import React from 'react'
-import { Await, useNavigate, useParams } from 'react-router'
+import { useParams } from 'react-router'
 import type { QualityPrediction } from '../api/generated/models/qualityPrediction'
-import type { QualityPredictionModelWeight } from '../api/generated/models/qualityPredictionModelWeight'
 import { apiUrl } from '../api/mutator'
 import { Navbar } from '../components/navbar'
 import { theme } from '../components/theme'
-import { TimeSeriesChart } from '../components/timeseries'
-import type { Route } from './+types/qualityPredictions'
 
 const GridSquarePredictionCharts = ({ predictions }: { predictions: QualityPrediction[] }) => {
   return (
@@ -61,12 +55,12 @@ const FoilHolePredictionCharts = ({
   predictions: Map<string, QualityPrediction[]>
 }) => {
   const mostRecentTimestamp = Math.max(
-    ...Object.entries(predictions).map(([key, value]) => {
+    ...Object.entries(predictions).map(([, value]) => {
       return Date.parse(value.slice(-1)[0].timestamp)
     })
   )
   const leastRecentTimestamp = Math.min(
-    ...Object.entries(predictions).map(([key, value]) => {
+    ...Object.entries(predictions).map(([, value]) => {
       return Date.parse(value[0].timestamp)
     })
   )
@@ -93,7 +87,7 @@ const FoilHolePredictionCharts = ({
             {
               scaleType: 'band',
               data: histGenerator(
-                Object.entries(predictions).map(([key, value]) => {
+                Object.entries(predictions).map(([, value]) => {
                   return value.slice(-1)[0].value
                 })
               ).map((b) => {
@@ -104,7 +98,7 @@ const FoilHolePredictionCharts = ({
           series={[
             {
               data: histGenerator(
-                Object.entries(predictions).map(([key, value]) => {
+                Object.entries(predictions).map(([, value]) => {
                   return getMostRecentBefore(value).value
                 })
               ).map((b) => {
@@ -118,22 +112,23 @@ const FoilHolePredictionCharts = ({
           min={leastRecentTimestamp}
           max={mostRecentTimestamp}
           value={selectedTime}
-          onChange={(event: Event, newValue: number | number[]) =>
+          onChange={(_event: Event, newValue: number | number[]) =>
             setSelectedTime(typeof newValue === 'number' ? newValue : newValue[0])
           }
         />
       </Stack>
     </Box>
-  ) : (
-    <></>
-  )
+  ) : null
 }
 
 export default function QualityPredictionsForSquare() {
   const params = useParams()
-  const navigate = useNavigate()
-  const [squarePredictions, setSquarePredictions] = React.useState<Record<string, QualityPrediction[]>>({})
-  const [holePredictions, setHolePredictions] = React.useState<Record<string, Record<string, QualityPrediction[]>>>({})
+  const [squarePredictions, setSquarePredictions] = React.useState<
+    Record<string, QualityPrediction[]>
+  >({})
+  const [holePredictions, setHolePredictions] = React.useState<
+    Record<string, Record<string, QualityPrediction[]>>
+  >({})
   const [metrics, setMetrics] = React.useState<{ name: string }[]>([])
 
   React.useEffect(() => {
@@ -153,17 +148,19 @@ export default function QualityPredictionsForSquare() {
       setMetrics(metricsData)
     }
     fetchData()
-  }, [params.squareId, params.gridId])
+  }, [params.squareId])
 
   const mostRecentsMean = (fhPredictions: Map<string, QualityPrediction[]>) => {
-    const mostRecents = Object.entries(fhPredictions).map(([key, el]) => {
+    const mostRecents = Object.entries(fhPredictions).map(([, el]) => {
       return el.slice(-1)[0].value
     })
     return mostRecents.reduce((a: number, b: number) => a + b, 0) / mostRecents.length
   }
 
   const [metricName, setMetricName] = React.useState('')
-  const [predictionsPerMetric, setPredictionsPerMetric] = React.useState<Record<string, Record<string, QualityPrediction[]>>>({})
+  const [predictionsPerMetric, setPredictionsPerMetric] = React.useState<
+    Record<string, Record<string, QualityPrediction[]>>
+  >({})
 
   const handleChange = async (event: SelectChangeEvent) => {
     setMetricName(event.target.value)
@@ -179,9 +176,7 @@ export default function QualityPredictionsForSquare() {
       <Navbar />
       <Stack content="center" style={{ width: '100%', paddingTop: '50px' }}>
         <FormControl fullWidth style={{ color: 'black', backgroundColor: '#b927d9' }}>
-          <InputLabel id="metric-select-label">
-            Metric
-          </InputLabel>
+          <InputLabel id="metric-select-label">Metric</InputLabel>
           <Select
             labelId="metric-select-label"
             id="metric-select"
@@ -219,13 +214,10 @@ export default function QualityPredictionsForSquare() {
                 <Card>
                   <CardContent style={{ backgroundColor: '#b927d9' }}>Model: {key}</CardContent>
                   <CardContent style={{ backgroundColor: '#b927d9' }}>
-                    {mostRecentsMean(new Map(Object.entries(value))).toLocaleString(
-                      undefined,
-                      {
-                        maximumSignificantDigits: 3,
-                        minimumSignificantDigits: 3,
-                      }
-                    )}
+                    {mostRecentsMean(new Map(Object.entries(value))).toLocaleString(undefined, {
+                      maximumSignificantDigits: 3,
+                      minimumSignificantDigits: 3,
+                    })}
                   </CardContent>
                   <CardContent style={{ backgroundColor: '#b927d9' }}>
                     <FoilHolePredictionCharts predictions={new Map(Object.entries(value))} />
@@ -240,13 +232,10 @@ export default function QualityPredictionsForSquare() {
                 <Card>
                   <CardContent style={{ backgroundColor: '#b927d9' }}>Model: {key}</CardContent>
                   <CardContent style={{ backgroundColor: '#b927d9' }}>
-                    {mostRecentsMean(new Map(Object.entries(value))).toLocaleString(
-                      undefined,
-                      {
-                        maximumSignificantDigits: 3,
-                        minimumSignificantDigits: 3,
-                      }
-                    )}
+                    {mostRecentsMean(new Map(Object.entries(value))).toLocaleString(undefined, {
+                      maximumSignificantDigits: 3,
+                      minimumSignificantDigits: 3,
+                    })}
                   </CardContent>
                   <CardContent style={{ backgroundColor: '#b927d9' }}>
                     <FoilHolePredictionCharts predictions={new Map(Object.entries(value))} />

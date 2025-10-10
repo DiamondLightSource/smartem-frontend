@@ -1,11 +1,8 @@
-import GridOnIcon from '@mui/icons-material/GridOn'
-
 import {
   Alert,
   Box,
   CircularProgress,
   Container,
-  IconButton,
   Table,
   TableBody,
   TableCell,
@@ -30,7 +27,7 @@ export default function Acquisition({ params }: Route.ComponentProps) {
     error,
   } = useGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet(params.acqId)
 
-  const handleClick = (event: React.MouseEvent<unknown>, gridId: string) => {
+  const handleClick = (_event: React.MouseEvent<unknown>, gridId: string) => {
     navigate(`./grids/${gridId}/atlas`, { relative: 'path' })
   }
 

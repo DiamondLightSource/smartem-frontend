@@ -1,5 +1,5 @@
+import type { AxiosError, AxiosRequestConfig } from 'axios'
 import Axios from 'axios'
-import type { AxiosRequestConfig, AxiosError } from 'axios'
 
 export const apiUrl = () => {
   // In development, use the Vite proxy to avoid CORS issues
@@ -48,7 +48,7 @@ export const customInstance = <T>(
     cancelToken: source.token,
   }).then(({ data }) => data)
 
-  // @ts-ignore
+  // @ts-expect-error
   promise.cancel = () => {
     source.cancel('Query was cancelled')
   }

@@ -33,7 +33,7 @@ export default function Home() {
   const { data: acquisitions, isLoading, error } = useGetAcquisitionsAcquisitionsGet()
   const navigate = useNavigate()
 
-  const handleClick = (event: React.MouseEvent<unknown>, acquisitionId: string) => {
+  const handleClick = (_event: React.MouseEvent<unknown>, acquisitionId: string) => {
     navigate(`/acquisitions/${acquisitionId}`)
   }
 

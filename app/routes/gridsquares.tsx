@@ -31,7 +31,7 @@ export default function GridSquareGallery({ params }: Route.ComponentProps) {
   const [showCollectedOnly, setShowCollectedOnly] = React.useState(false)
   const [filteredSquares, setFilteredSquares] = React.useState<GridSquareResponse[]>([])
 
-  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+  const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
     setPageIndex(value - 1)
   }
 
@@ -53,7 +53,7 @@ export default function GridSquareGallery({ params }: Route.ComponentProps) {
           : squares.sort(sizeComparator)
       )
     }
-  }, [showCollectedOnly, squares])
+  }, [showCollectedOnly, squares, sizeComparator])
 
   React.useEffect(() => {
     setNumPages(Math.ceil(filteredSquares.length / 9))

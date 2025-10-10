@@ -1,6 +1,6 @@
+import { Alert, Button, Snackbar } from '@mui/material'
 import { useEffect, useState } from 'react'
-import { Snackbar, Alert, Button } from '@mui/material'
-import { logApiVersion, checkApiVersion } from '../api/version-check'
+import { checkApiVersion, logApiVersion } from '../api/version-check'
 
 export function ApiVersionCheck() {
   const [versionMismatch, setVersionMismatch] = useState(false)
@@ -45,16 +45,10 @@ export function ApiVersionCheck() {
           </Button>
         }
       >
-        API version mismatch: client expects{' '}
-        {versionInfo?.clientVersion?.slice(0, 20)}
-        {versionInfo?.clientVersion && versionInfo.clientVersion.length > 20
-          ? '...'
-          : ''}{' '}
-        but server is{' '}
-        {versionInfo?.serverVersion?.slice(0, 20)}
-        {versionInfo?.serverVersion && versionInfo.serverVersion.length > 20
-          ? '...'
-          : ''}
+        API version mismatch: client expects {versionInfo?.clientVersion?.slice(0, 20)}
+        {versionInfo?.clientVersion && versionInfo.clientVersion.length > 20 ? '...' : ''} but
+        server is {versionInfo?.serverVersion?.slice(0, 20)}
+        {versionInfo?.serverVersion && versionInfo.serverVersion.length > 20 ? '...' : ''}
       </Alert>
     </Snackbar>
   )

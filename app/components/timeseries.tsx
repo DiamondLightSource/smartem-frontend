@@ -84,7 +84,7 @@ export const TimeSeriesChart = ({
             hideLegend
             xAxis={[
               {
-                data: timeScale ? xData : Array.from({ length: xData.length }, (x, i) => i + 1),
+                data: timeScale ? xData : Array.from({ length: xData.length }, (_x, i) => i + 1),
                 min: timeScale ? xData[axisRange[0]] : axisRange[0] + 1,
                 max: timeScale ? xData[axisRange[1]] : axisRange[1] + 1,
                 scaleType: timeScale ? 'time' : 'linear',
@@ -100,7 +100,7 @@ export const TimeSeriesChart = ({
             min={0}
             max={xData.length}
             value={axisRange}
-            onChange={(event: Event, newValue: number[]) => setAxisRange(newValue)}
+            onChange={(_event: Event, newValue: number[]) => setAxisRange(newValue)}
           />
         </Grid>
         <Grid size={2}>
@@ -145,7 +145,7 @@ export const TimeSeriesChart = ({
               <ListItemText primary={'Time scale'} />
               <Switch
                 defaultChecked={true}
-                onChange={(event) => {
+                onChange={(_event) => {
                   setTimeScale(!timeScale)
                 }}
               />
