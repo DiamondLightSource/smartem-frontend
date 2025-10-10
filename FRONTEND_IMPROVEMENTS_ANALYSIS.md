@@ -46,6 +46,7 @@ app/
 ### Recommended Improvements
 
 #### 1.1 Adopt Feature-Based Structure
+
 **Effort:** Medium | **Priority:** High | **Impact:** High
 
 Reorganize code by domain features:
@@ -74,6 +75,7 @@ app/
 ```
 
 **Benefits:**
+
 - Better code discoverability
 - Easier to understand feature scope
 - Reduced coupling between features
@@ -81,12 +83,14 @@ app/
 - Clearer ownership boundaries
 
 #### 1.2 Split Large Route Components
+
 **Effort:** Medium | **Priority:** High | **Impact:** High
 
 Break down large route files (atlas.tsx, squareLR.tsx, grid.tsx) into smaller, focused components:
 
 **Current:** `app/routes/atlas.tsx` (432 lines)
 **Proposed:**
+
 ```
 app/features/atlas/
 ├── routes/
@@ -104,12 +108,14 @@ app/features/atlas/
 ```
 
 **Benefits:**
+
 - Improved testability
 - Better code reuse
 - Easier to understand and maintain
 - Clearer separation of concerns
 
 #### 1.3 Create Proper Barrel Exports
+
 **Effort:** Low | **Priority:** Medium | **Impact:** Medium
 
 Add index.ts files for cleaner imports:
@@ -124,6 +130,7 @@ import { AtlasRoute } from '~/features/atlas'
 ```
 
 **Benefits:**
+
 - Cleaner import statements
 - Better encapsulation
 - Easier refactoring
@@ -135,6 +142,7 @@ import { AtlasRoute } from '~/features/atlas'
 ### Current State
 
 **Strengths:**
+
 - TypeScript strict mode enabled (`tsconfig.json`: `"strict": true`)
 - Auto-generated types from OpenAPI spec
 - Comprehensive API type coverage
@@ -150,9 +158,11 @@ import { AtlasRoute } from '~/features/atlas'
 ### Recommended Improvements
 
 #### 2.1 Remove All Type Suppressions
+
 **Effort:** Low | **Priority:** High | **Impact:** Medium
 
 Current issues in `/home/vredchenko/dev/DLS/smartem-frontend/app/api/mutator.ts`:
+
 ```typescript
 // @ts-ignore
 promise.cancel = () => {
@@ -161,6 +171,7 @@ promise.cancel = () => {
 ```
 
 **Solution:**
+
 ```typescript
 type CancellablePromise<T> = Promise<T> & {
   cancel: () => void
@@ -186,14 +197,17 @@ export const customInstance = <T>(
 ```
 
 **Benefits:**
+
 - Full type safety
 - Better IDE autocomplete
 - Catch errors at compile time
 
 #### 2.2 Consolidate Types into Domain Files
+
 **Effort:** Medium | **Priority:** Medium | **Impact:** Medium
 
 **Current:** Types scattered across route files
+
 ```typescript
 // In atlas.tsx
 type GridSquare = GridSquareResponse
@@ -202,6 +216,7 @@ type Coords = { x: number; y: number; index: number }
 ```
 
 **Proposed:**
+
 ```typescript
 // app/features/atlas/types.ts
 export type GridSquare = GridSquareResponse
@@ -215,11 +230,13 @@ export type AtlasViewState = {
 ```
 
 **Benefits:**
+
 - Single source of truth for types
 - Easier to share types across files
 - Better type documentation
 
 #### 2.3 Use Consistent Type Import Syntax
+
 **Effort:** Low | **Priority:** Low | **Impact:** Low
 
 Standardize on `import type` for all type-only imports:
@@ -235,14 +252,17 @@ import type { SelectChangeEvent } from '@mui/material'
 ```
 
 **Benefits:**
+
 - Clearer intent
 - Better tree-shaking
 - Faster compilation
 
 #### 2.4 Enable Additional TypeScript Strict Checks
+
 **Effort:** Low | **Priority:** Medium | **Impact:** Medium
 
 Update `tsconfig.json`:
+
 ```json
 {
   "compilerOptions": {
@@ -255,6 +275,7 @@ Update `tsconfig.json`:
 ```
 
 **Benefits:**
+
 - Catch more potential runtime errors
 - Better null/undefined handling
 - Stronger type guarantees
@@ -266,6 +287,7 @@ Update `tsconfig.json`:
 ### Current State
 
 **Good Practices:**
+
 - Using React 19 features
 - Functional components throughout
 - React.StrictMode enabled
@@ -285,29 +307,35 @@ Update `tsconfig.json`:
 ### Recommended Improvements
 
 #### 3.1 Remove React Namespace from Hooks
+
 **Effort:** Low | **Priority:** Medium | **Impact:** Low
 
 **Current:**
+
 ```typescript
 import React from 'react'
 const [state, setState] = React.useState(false)
 ```
 
 **Proposed:**
+
 ```typescript
 import { useState } from 'react'
 const [state, setState] = useState(false)
 ```
 
 **Benefits:**
+
 - Cleaner code
 - Modern React conventions
 - Smaller bundle (tree-shaking)
 
 #### 3.2 Extract Custom Hooks
+
 **Effort:** Medium | **Priority:** High | **Impact:** High
 
 **Current:** Business logic in components
+
 ```typescript
 // In atlas.tsx (432 lines)
 export default function Atlas({ loaderData, params }: Route.ComponentProps) {
@@ -324,6 +352,7 @@ export default function Atlas({ loaderData, params }: Route.ComponentProps) {
 ```
 
 **Proposed:**
+
 ```typescript
 // app/features/atlas/hooks/usePredictions.ts
 export function usePredictions(gridId: string) {
@@ -331,16 +360,19 @@ export function usePredictions(gridId: string) {
   const [model, setModel] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  const loadPredictions = useCallback(async (modelName: string) => {
-    setIsLoading(true)
-    setModel(modelName)
-    try {
-      const preds = await getPredictions(modelName, gridId)
-      setPredictions(preds)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [gridId])
+  const loadPredictions = useCallback(
+    async (modelName: string) => {
+      setIsLoading(true)
+      setModel(modelName)
+      try {
+        const preds = await getPredictions(modelName, gridId)
+        setPredictions(preds)
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [gridId]
+  )
 
   return { predictions, model, isLoading, loadPredictions }
 }
@@ -354,15 +386,18 @@ export default function Atlas({ loaderData, params }: Route.ComponentProps) {
 ```
 
 **Benefits:**
+
 - Testable business logic
 - Reusable across components
 - Easier to understand component purpose
 - Better separation of concerns
 
 #### 3.3 Create Shared UI Component Abstractions
+
 **Effort:** Medium | **Priority:** High | **Impact:** High
 
 **Pattern identified:** Repeated loading/error/data pattern
+
 ```typescript
 // Appears in multiple routes
 {isLoading ? (
@@ -377,6 +412,7 @@ export default function Atlas({ loaderData, params }: Route.ComponentProps) {
 ```
 
 **Proposed:**
+
 ```typescript
 // app/shared/components/QueryStateHandler.tsx
 export function QueryStateHandler<T>({
@@ -406,40 +442,47 @@ export function QueryStateHandler<T>({
 ```
 
 **Benefits:**
+
 - DRY principle
 - Consistent UX
 - Easier to update loading/error states globally
 
 #### 3.4 Replace Inline Styles with Styled Components or Theme
+
 **Effort:** High | **Priority:** Medium | **Impact:** Medium
 
 **Current:** 78 instances of inline styles
+
 ```typescript
 <Container style={{ width: '100%', paddingTop: '50px' }}>
 <IconButton style={{ display: 'flex', marginLeft: 'auto' }}>
 ```
 
 **Proposed Option 1 - MUI sx prop:**
+
 ```typescript
 <Container sx={{ width: 1, pt: 6.25 }}>
 <IconButton sx={{ display: 'flex', ml: 'auto' }}>
 ```
 
 **Proposed Option 2 - styled components:**
+
 ```typescript
 const StyledContainer = styled(Container)(({ theme }) => ({
   width: '100%',
-  paddingTop: theme.spacing(6.25)
+  paddingTop: theme.spacing(6.25),
 }))
 ```
 
 **Benefits:**
+
 - Theme-aware styling
 - Type-safe style props
 - Better performance (no style recalculation)
 - Easier to maintain
 
 #### 3.5 Implement Compound Components Pattern
+
 **Effort:** Medium | **Priority:** Medium | **Impact:** Medium
 
 For complex components like Atlas viewer:
@@ -467,17 +510,20 @@ export const AtlasViewer = {
 ```
 
 **Benefits:**
+
 - Better component composition
 - Clearer component hierarchy
 - More flexible layouts
 - Self-documenting API
 
 #### 3.6 Add Error Boundaries per Feature
+
 **Effort:** Low | **Priority:** Medium | **Impact:** Medium
 
 **Current:** Only root error boundary
 
 **Proposed:**
+
 ```typescript
 // app/shared/components/ErrorBoundary.tsx
 export class FeatureErrorBoundary extends Component<Props, State> {
@@ -504,6 +550,7 @@ export class FeatureErrorBoundary extends Component<Props, State> {
 ```
 
 **Benefits:**
+
 - Graceful degradation
 - Better error isolation
 - Improved UX
@@ -516,12 +563,14 @@ export class FeatureErrorBoundary extends Component<Props, State> {
 ### Current State
 
 **Configuration Files:**
+
 - `vite.config.ts` - Minimal config (18 lines)
 - `react-router.config.ts` - Very basic (7 lines)
 - `tsconfig.json` - Good strict settings
 - `orval.config.ts` - Well configured
 
 **Strengths:**
+
 - Modern Vite setup
 - Fast HMR
 - Good proxy configuration
@@ -538,6 +587,7 @@ export class FeatureErrorBoundary extends Component<Props, State> {
 ### Recommended Improvements
 
 #### 4.1 Add Bundle Analysis
+
 **Effort:** Low | **Priority:** Medium | **Impact:** Medium
 
 ```typescript
@@ -549,17 +599,19 @@ export default defineConfig(({ mode }) => ({
     tailwindcss(),
     reactRouter(),
     tsconfigPaths(),
-    mode === 'analyze' && visualizer({
-      open: true,
-      filename: 'bundle-analysis.html',
-      gzipSize: true,
-      brotliSize: true
-    })
+    mode === 'analyze' &&
+      visualizer({
+        open: true,
+        filename: 'bundle-analysis.html',
+        gzipSize: true,
+        brotliSize: true,
+      }),
   ].filter(Boolean),
 }))
 ```
 
 Add script to `package.json`:
+
 ```json
 {
   "scripts": {
@@ -569,11 +621,13 @@ Add script to `package.json`:
 ```
 
 **Benefits:**
+
 - Identify large dependencies
 - Optimize bundle size
 - Find code splitting opportunities
 
 #### 4.2 Add Environment Variable Validation
+
 **Effort:** Low | **Priority:** High | **Impact:** Medium
 
 ```typescript
@@ -584,11 +638,11 @@ const envSchema = z.object({
   VITE_API_ENDPOINT: z.string().url().optional(),
   VITE_ENABLE_MOCKS: z
     .string()
-    .transform(val => val === 'true')
+    .transform((val) => val === 'true')
     .optional(),
   MODE: z.enum(['development', 'production', 'test']),
   DEV: z.boolean(),
-  PROD: z.boolean()
+  PROD: z.boolean(),
 })
 
 export const env = envSchema.parse({
@@ -596,7 +650,7 @@ export const env = envSchema.parse({
   VITE_ENABLE_MOCKS: import.meta.env.VITE_ENABLE_MOCKS,
   MODE: import.meta.env.MODE,
   DEV: import.meta.env.DEV,
-  PROD: import.meta.env.PROD
+  PROD: import.meta.env.PROD,
 })
 
 // Usage
@@ -605,11 +659,13 @@ const apiUrl = env.VITE_API_ENDPOINT || 'http://localhost:8000'
 ```
 
 **Benefits:**
+
 - Type-safe environment variables
 - Fail fast on misconfiguration
 - Clear documentation of required env vars
 
 #### 4.3 Optimize Build Configuration
+
 **Effort:** Medium | **Priority:** Medium | **Impact:** Medium
 
 ```typescript
@@ -623,8 +679,8 @@ export default defineConfig({
     terserOptions: {
       compress: {
         drop_console: true, // Remove console.logs in production
-        drop_debugger: true
-      }
+        drop_debugger: true,
+      },
     },
     rollupOptions: {
       output: {
@@ -632,12 +688,12 @@ export default defineConfig({
           'vendor-react': ['react', 'react-dom', 'react-router'],
           'vendor-mui': ['@mui/material', '@mui/icons-material'],
           'vendor-query': ['@tanstack/react-query'],
-          'vendor-charts': ['@mui/x-charts', 'd3-array']
-        }
-      }
+          'vendor-charts': ['@mui/x-charts', 'd3-array'],
+        },
+      },
     },
     sourcemap: true,
-    chunkSizeWarningLimit: 1000
+    chunkSizeWarningLimit: 1000,
   },
 
   server: {
@@ -653,12 +709,14 @@ export default defineConfig({
 ```
 
 **Benefits:**
+
 - Better caching
 - Faster initial load
 - Smaller bundle sizes
 - Better debugging
 
 #### 4.4 Add Performance Budgets
+
 **Effort:** Low | **Priority:** Low | **Impact:** Low
 
 ```json
@@ -673,6 +731,7 @@ export default defineConfig({
 ```
 
 **Benefits:**
+
 - Prevent bundle bloat
 - Maintain performance standards
 - Early warning system
@@ -684,6 +743,7 @@ export default defineConfig({
 ### Current State
 
 **Issues:**
+
 - **NO testing framework configured** (no vitest, jest, or playwright)
 - **NO test files** found in the codebase
 - **NO test scripts** in package.json
@@ -695,9 +755,11 @@ This is the **most critical gap** in the codebase.
 ### Recommended Improvements
 
 #### 5.1 Set Up Vitest for Unit/Integration Tests
+
 **Effort:** Medium | **Priority:** CRITICAL | **Impact:** High
 
 **Install dependencies:**
+
 ```json
 {
   "devDependencies": {
@@ -712,6 +774,7 @@ This is the **most critical gap** in the codebase.
 ```
 
 **Create config:**
+
 ```typescript
 // vitest.config.ts
 import { defineConfig } from 'vitest/config'
@@ -727,23 +790,20 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'json'],
-      exclude: [
-        'app/api/generated/**',
-        '**/*.config.{ts,js}',
-        '**/types.ts'
-      ],
+      exclude: ['app/api/generated/**', '**/*.config.{ts,js}', '**/types.ts'],
       thresholds: {
         lines: 70,
         functions: 70,
         branches: 70,
-        statements: 70
-      }
-    }
-  }
+        statements: 70,
+      },
+    },
+  },
 })
 ```
 
 **Add scripts:**
+
 ```json
 {
   "scripts": {
@@ -755,12 +815,14 @@ export default defineConfig({
 ```
 
 **Benefits:**
+
 - Catch bugs early
 - Safer refactoring
 - Documentation through tests
 - Better code quality
 
 #### 5.2 Create Test Structure
+
 **Effort:** Low | **Priority:** High | **Impact:** Medium
 
 ```
@@ -785,9 +847,11 @@ app/
 ```
 
 #### 5.3 Write Tests for Critical Paths
+
 **Effort:** High | **Priority:** High | **Impact:** High
 
 **Example hook test:**
+
 ```typescript
 // app/features/atlas/hooks/__tests__/usePredictions.test.ts
 import { renderHook, waitFor } from '@testing-library/react'
@@ -797,7 +861,7 @@ import { usePredictions } from '../usePredictions'
 describe('usePredictions', () => {
   it('should load predictions when model changes', async () => {
     const { result } = renderHook(() => usePredictions('grid-123'), {
-      wrapper: createQueryWrapper()
+      wrapper: createQueryWrapper(),
     })
 
     expect(result.current.predictions).toBeUndefined()
@@ -813,6 +877,7 @@ describe('usePredictions', () => {
 ```
 
 **Example component test:**
+
 ```typescript
 // app/shared/components/__tests__/QueryStateHandler.test.tsx
 import { render, screen } from '@testing-library/react'
@@ -841,12 +906,14 @@ describe('QueryStateHandler', () => {
 ```
 
 **Priority test coverage:**
+
 1. Custom hooks (100% coverage goal)
 2. Shared components (90% coverage goal)
 3. API utilities (80% coverage goal)
 4. Route components (60% coverage goal - mainly integration tests)
 
 #### 5.4 Add E2E Testing with Playwright
+
 **Effort:** Medium | **Priority:** Medium | **Impact:** High
 
 ```typescript
@@ -871,6 +938,7 @@ export default defineConfig({
 ```
 
 **Example E2E test:**
+
 ```typescript
 // e2e/acquisition-flow.spec.ts
 import { test, expect } from '@playwright/test'
@@ -891,6 +959,7 @@ test('user can view and select acquisition', async ({ page }) => {
 ```
 
 **Benefits:**
+
 - Catch UI regressions
 - Test user workflows
 - Confidence in deployments
@@ -902,10 +971,12 @@ test('user can view and select acquisition', async ({ page }) => {
 ### Current State
 
 **Configured:**
+
 - Prettier (`.prettierrc`) - Basic configuration
 - TypeScript (strict mode enabled)
 
 **Missing:**
+
 - ESLint
 - Husky (git hooks)
 - lint-staged
@@ -915,6 +986,7 @@ test('user can view and select acquisition', async ({ page }) => {
 ### Recommended Improvements
 
 #### 6.1 Add ESLint Configuration
+
 **Effort:** Low | **Priority:** High | **Impact:** Medium
 
 ```javascript
@@ -933,26 +1005,29 @@ export default [
     files: ['**/*.{ts,tsx}'],
     plugins: {
       '@typescript-eslint': typescript,
-      'react': react,
+      react: react,
       'react-hooks': reactHooks,
       'jsx-a11y': jsxA11y,
-      'import': importPlugin
+      import: importPlugin,
     },
     languageOptions: {
       parser: tsParser,
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
-        ecmaFeatures: { jsx: true }
-      }
+        ecmaFeatures: { jsx: true },
+      },
     },
     rules: {
       // TypeScript
       '@typescript-eslint/no-explicit-any': 'error',
-      '@typescript-eslint/no-unused-vars': ['error', {
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_'
-      }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
+      ],
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/consistent-type-imports': 'error',
 
@@ -967,25 +1042,29 @@ export default [
       'jsx-a11y/aria-props': 'error',
 
       // Imports
-      'import/order': ['error', {
-        groups: [
-          'builtin',
-          'external',
-          'internal',
-          'parent',
-          'sibling',
-          'index'
-        ],
-        'newlines-between': 'always',
-        alphabetize: { order: 'asc' }
-      }],
-      'import/no-duplicates': 'error'
-    }
-  }
+      'import/order': [
+        'error',
+        {
+          groups: [
+            'builtin',
+            'external',
+            'internal',
+            'parent',
+            'sibling',
+            'index',
+          ],
+          'newlines-between': 'always',
+          alphabetize: { order: 'asc' },
+        },
+      ],
+      'import/no-duplicates': 'error',
+    },
+  },
 ]
 ```
 
 **Add scripts:**
+
 ```json
 {
   "scripts": {
@@ -996,12 +1075,14 @@ export default [
 ```
 
 **Benefits:**
+
 - Catch common errors
 - Enforce code style
 - Improve code quality
 - Better team consistency
 
 #### 6.2 Set Up Git Hooks with Husky
+
 **Effort:** Low | **Priority:** Medium | **Impact:** High
 
 ```bash
@@ -1013,11 +1094,7 @@ npx husky init
 // package.json
 {
   "lint-staged": {
-    "*.{ts,tsx}": [
-      "eslint --fix",
-      "prettier --write",
-      "vitest related --run"
-    ],
+    "*.{ts,tsx}": ["eslint --fix", "prettier --write", "vitest related --run"],
     "*.{json,md,css}": "prettier --write"
   }
 }
@@ -1038,21 +1115,35 @@ npx --no -- commitlint --edit $1
 export default {
   extends: ['@commitlint/config-conventional'],
   rules: {
-    'type-enum': [2, 'always', [
-      'feat', 'fix', 'docs', 'style', 'refactor',
-      'test', 'chore', 'perf', 'ci', 'build'
-    ]]
-  }
+    'type-enum': [
+      2,
+      'always',
+      [
+        'feat',
+        'fix',
+        'docs',
+        'style',
+        'refactor',
+        'test',
+        'chore',
+        'perf',
+        'ci',
+        'build',
+      ],
+    ],
+  },
 }
 ```
 
 **Benefits:**
+
 - Prevent bad commits
 - Enforce code quality
 - Consistent commit messages
 - Automated quality checks
 
 #### 6.3 Add Import Sorting and Organization
+
 **Effort:** Low | **Priority:** Low | **Impact:** Low
 
 ```json
@@ -1062,12 +1153,7 @@ export default {
   "tabWidth": 2,
   "semi": false,
   "singleQuote": true,
-  "importOrder": [
-    "^react",
-    "^@?\\w",
-    "^~/",
-    "^[./]"
-  ],
+  "importOrder": ["^react", "^@?\\w", "^~/", "^[./]"],
   "importOrderSeparation": true,
   "importOrderSortSpecifiers": true,
   "plugins": ["@trivago/prettier-plugin-sort-imports"]
@@ -1075,6 +1161,7 @@ export default {
 ```
 
 **Benefits:**
+
 - Cleaner imports
 - Easier to scan
 - Prevent merge conflicts
@@ -1086,6 +1173,7 @@ export default {
 ### Current State
 
 **Dependencies (16):**
+
 - React 19.1.1
 - React Router 7.9.2
 - TanStack Query 5.90.2
@@ -1094,6 +1182,7 @@ export default {
 - TypeScript 5.9.2
 
 **DevDependencies (13):**
+
 - Vite 5.4.20
 - Orval 7.13.0
 - MSW 2.11.3
@@ -1110,9 +1199,11 @@ export default {
 ### Recommended Improvements
 
 #### 7.1 Add Dependency Update Automation
+
 **Effort:** Low | **Priority:** Medium | **Impact:** Medium
 
 **Create Renovate config:**
+
 ```json
 // renovate.json
 {
@@ -1144,11 +1235,13 @@ export default {
 ```
 
 **Benefits:**
+
 - Keep dependencies updated
 - Automatic security patches
 - Reduce maintenance burden
 
 #### 7.2 Add Security Audit Script
+
 **Effort:** Low | **Priority:** High | **Impact:** Medium
 
 ```json
@@ -1161,12 +1254,13 @@ export default {
 ```
 
 **Add to CI:**
+
 ```yaml
 # .github/workflows/security.yml
 name: Security Audit
 on:
   schedule:
-    - cron: '0 0 * * 0'  # Weekly
+    - cron: '0 0 * * 0' # Weekly
   pull_request:
 
 jobs:
@@ -1178,14 +1272,17 @@ jobs:
 ```
 
 **Benefits:**
+
 - Early security vulnerability detection
 - Automated fixes
 - Compliance
 
 #### 7.3 Evaluate Heavy Dependencies
+
 **Effort:** Medium | **Priority:** Medium | **Impact:** Medium
 
 **Current bundle (estimated):**
+
 - node_modules: 662MB
 - Largest dependencies: MUI, React Router, TanStack Query
 
@@ -1196,6 +1293,7 @@ jobs:
    - d3-array → Consider native Array methods where possible
 
 2. **Use selective imports:**
+
 ```typescript
 // Before
 import { Box, Container, Stack } from '@mui/material'
@@ -1207,16 +1305,19 @@ import Stack from '@mui/material/Stack'
 ```
 
 3. **Lazy load heavy features:**
+
 ```typescript
 const ChartsPanel = lazy(() => import('./components/ChartsPanel'))
 ```
 
 **Benefits:**
+
 - Smaller bundle size
 - Faster initial load
 - Better performance
 
 #### 7.4 Add Package Size Limit
+
 **Effort:** Low | **Priority:** Low | **Impact:** Low
 
 ```json
@@ -1237,12 +1338,13 @@ export default [
   {
     name: 'Client bundle',
     path: 'build/client/**/*.js',
-    limit: '500 KB'
-  }
+    limit: '500 KB',
+  },
 ]
 ```
 
 **Benefits:**
+
 - Prevent bundle bloat
 - Performance budget enforcement
 
@@ -1253,6 +1355,7 @@ export default [
 ### Current State
 
 **Strengths:**
+
 - React Router 7 with SSR enabled
 - TanStack Query for caching (5-minute stale time)
 - Vite for fast builds
@@ -1269,6 +1372,7 @@ export default [
 ### Recommended Improvements
 
 #### 8.1 Implement Component Code Splitting
+
 **Effort:** Medium | **Priority:** High | **Impact:** High
 
 ```typescript
@@ -1296,11 +1400,13 @@ export default function Atlas() {
 ```
 
 **Benefits:**
+
 - Smaller initial bundle
 - Faster initial load
 - Better caching
 
 #### 8.2 Add React.memo for Expensive Components
+
 **Effort:** Low | **Priority:** Medium | **Impact:** Medium
 
 ```typescript
@@ -1332,11 +1438,13 @@ export const GridSquareOverlay = memo(({
 ```
 
 **Benefits:**
+
 - Reduce unnecessary re-renders
 - Better performance with large lists
 - Smoother interactions
 
 #### 8.3 Implement Virtual Scrolling for Large Lists
+
 **Effort:** Medium | **Priority:** Medium | **Impact:** High
 
 For grid squares or large tables:
@@ -1375,11 +1483,13 @@ function GridSquareList({ squares }: Props) {
 ```
 
 **Benefits:**
+
 - Handle thousands of items
 - Constant performance regardless of list size
 - Better UX
 
 #### 8.4 Optimize TanStack Query Configuration
+
 **Effort:** Low | **Priority:** Medium | **Impact:** Medium
 
 ```typescript
@@ -1388,7 +1498,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 1000 * 60 * 5, // 5 minutes
-      gcTime: 1000 * 60 * 10,   // 10 minutes (was cacheTime)
+      gcTime: 1000 * 60 * 10, // 10 minutes (was cacheTime)
       retry: 1,
       refetchOnWindowFocus: false, // Prevent unnecessary refetches
       refetchOnReconnect: true,
@@ -1398,13 +1508,14 @@ const queryClient = new QueryClient({
       onError: (error) => {
         // Global error handling
         console.error('Mutation error:', error)
-      }
-    }
+      },
+    },
   },
 })
 ```
 
 **Add prefetching:**
+
 ```typescript
 // app/routes/home.tsx
 import { useQueryClient } from '@tanstack/react-query'
@@ -1430,11 +1541,13 @@ export default function Home() {
 ```
 
 **Benefits:**
+
 - Better caching strategy
 - Faster perceived performance
 - Reduced API calls
 
 #### 8.5 Implement Image Optimization
+
 **Effort:** Medium | **Priority:** Medium | **Impact:** Medium
 
 ```typescript
@@ -1470,6 +1583,7 @@ export function OptimizedImage({
 ```
 
 **Benefits:**
+
 - Faster page loads
 - Better UX
 - Reduced bandwidth
@@ -1481,6 +1595,7 @@ export function OptimizedImage({
 ### Current State
 
 **Strengths:**
+
 - Good README documentation
 - Mock API mode for development
 - Fast HMR with Vite
@@ -1497,6 +1612,7 @@ export function OptimizedImage({
 ### Recommended Improvements
 
 #### 9.1 Add Storybook for Component Documentation
+
 **Effort:** Medium | **Priority:** Medium | **Impact:** High
 
 ```bash
@@ -1510,13 +1626,14 @@ export default {
   addons: [
     '@storybook/addon-essentials',
     '@storybook/addon-interactions',
-    '@storybook/addon-a11y'
+    '@storybook/addon-a11y',
   ],
-  framework: '@storybook/react-vite'
+  framework: '@storybook/react-vite',
 }
 ```
 
 **Example story:**
+
 ```typescript
 // app/shared/components/QueryStateHandler.stories.tsx
 import type { Meta, StoryObj } from '@storybook/react'
@@ -1554,12 +1671,14 @@ export const Error: Story = {
 ```
 
 **Benefits:**
+
 - Component documentation
 - Visual testing
 - Isolated development
 - Better collaboration
 
 #### 9.2 Add React Query DevTools
+
 **Effort:** Low | **Priority:** Low | **Impact:** Medium
 
 ```typescript
@@ -1580,11 +1699,13 @@ export default function App() {
 ```
 
 **Benefits:**
+
 - Debug query state
 - Inspect cache
 - Better development experience
 
 #### 9.3 Add VS Code Debug Configuration
+
 **Effort:** Low | **Priority:** Low | **Impact:** Low
 
 ```json
@@ -1613,11 +1734,13 @@ export default function App() {
 ```
 
 **Benefits:**
+
 - Better debugging
 - Faster development
 - Easier troubleshooting
 
 #### 9.4 Add Development Utilities
+
 **Effort:** Low | **Priority:** Low | **Impact:** Medium
 
 ```typescript
@@ -1635,7 +1758,7 @@ export const devLog = {
   },
   error: (...args: any[]) => {
     console.error('[ERROR]', ...args)
-  }
+  },
 }
 
 export const devAssert = (condition: boolean, message: string) => {
@@ -1646,6 +1769,7 @@ export const devAssert = (condition: boolean, message: string) => {
 ```
 
 **Benefits:**
+
 - Better logging
 - Easier debugging
 - Development-only code
@@ -1657,6 +1781,7 @@ export const devAssert = (condition: boolean, message: string) => {
 ### Current State
 
 **Strengths:**
+
 - Using React 19 (latest)
 - ES2022 target
 - Modern bundler (Vite)
@@ -1672,15 +1797,14 @@ export const devAssert = (condition: boolean, message: string) => {
 ### Recommended Improvements
 
 #### 10.1 Add Web Vitals Monitoring
+
 **Effort:** Low | **Priority:** Medium | **Impact:** Medium
 
 ```typescript
 // app/utils/vitals.ts
 import { onCLS, onFID, onLCP, onFCP, onTTFB } from 'web-vitals'
 
-export function reportWebVitals(
-  onPerfEntry?: (metric: any) => void
-) {
+export function reportWebVitals(onPerfEntry?: (metric: any) => void) {
   if (onPerfEntry && onPerfEntry instanceof Function) {
     onCLS(onPerfEntry)
     onFID(onPerfEntry)
@@ -1700,11 +1824,13 @@ reportWebVitals((metric) => {
 ```
 
 **Benefits:**
+
 - Track real user performance
 - Identify performance issues
 - Data-driven optimizations
 
 #### 10.2 Implement Dark Mode Properly
+
 **Effort:** Medium | **Priority:** Low | **Impact:** Medium
 
 ```typescript
@@ -1726,7 +1852,7 @@ export function useThemeMode() {
     document.documentElement.classList.toggle('dark', mode === 'dark')
   }, [mode])
 
-  const toggleMode = () => setMode(m => m === 'light' ? 'dark' : 'light')
+  const toggleMode = () => setMode((m) => (m === 'light' ? 'dark' : 'light'))
 
   return { mode, toggleMode }
 }
@@ -1739,20 +1865,23 @@ export function useAppTheme() {
     palette: {
       mode,
       // ... rest of theme
-    }
+    },
   })
 }
 ```
 
 **Benefits:**
+
 - Better UX
 - Reduced eye strain
 - Modern user expectation
 
 #### 10.3 Add Accessibility Improvements
+
 **Effort:** Medium | **Priority:** High | **Impact:** High
 
 **Current issues:**
+
 - Missing aria labels
 - Keyboard navigation not always clear
 - Focus management issues
@@ -1777,6 +1906,7 @@ export function useAppTheme() {
 ```
 
 **Add skip links:**
+
 ```typescript
 // app/root.tsx
 <body>
@@ -1788,11 +1918,13 @@ export function useAppTheme() {
 ```
 
 **Benefits:**
+
 - Better accessibility
 - Legal compliance
 - Wider user reach
 
 #### 10.4 Add Offline Support
+
 **Effort:** High | **Priority:** Low | **Impact:** Medium
 
 ```typescript
@@ -1816,18 +1948,19 @@ export default defineConfig({
               cacheName: 'api-cache',
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24 // 1 day
-              }
-            }
-          }
-        ]
-      }
-    })
-  ]
+                maxAgeSeconds: 60 * 60 * 24, // 1 day
+              },
+            },
+          },
+        ],
+      },
+    }),
+  ],
 })
 ```
 
 **Benefits:**
+
 - Work offline
 - Better reliability
 - Faster loads on repeat visits
@@ -1843,10 +1976,11 @@ export default defineConfig({
 **Enhancements:**
 
 1. **Add request/response logging:**
+
 ```typescript
 // app/api/mutator.ts
 if (import.meta.env.DEV) {
-  AXIOS_INSTANCE.interceptors.request.use(request => {
+  AXIOS_INSTANCE.interceptors.request.use((request) => {
     console.log('API Request:', request.method?.toUpperCase(), request.url)
     return request
   })
@@ -1854,6 +1988,7 @@ if (import.meta.env.DEV) {
 ```
 
 2. **Add retry logic:**
+
 ```typescript
 import axiosRetry from 'axios-retry'
 
@@ -1861,24 +1996,24 @@ axiosRetry(AXIOS_INSTANCE, {
   retries: 3,
   retryDelay: axiosRetry.exponentialDelay,
   retryCondition: (error) => {
-    return axiosRetry.isNetworkOrIdempotentRequestError(error) ||
-           error.response?.status === 429
-  }
+    return (
+      axiosRetry.isNetworkOrIdempotentRequestError(error) ||
+      error.response?.status === 429
+    )
+  },
 })
 ```
 
 3. **Add request cancellation:**
+
 ```typescript
-export function useApiQuery<T>(
-  queryKey: QueryKey,
-  queryFn: () => Promise<T>
-) {
+export function useApiQuery<T>(queryKey: QueryKey, queryFn: () => Promise<T>) {
   return useQuery({
     queryKey,
     queryFn: ({ signal }) => {
       // Orval already handles this with CancelToken
       return queryFn()
-    }
+    },
   })
 }
 ```
@@ -1890,11 +2025,13 @@ export function useApiQuery<T>(
 **Potential additions:**
 
 For complex client state, consider:
+
 - Zustand (lightweight)
 - Jotai (atomic state)
 - React Context + useReducer (built-in)
 
 **Not needed yet**, but worth considering if:
+
 - Sharing state across many components
 - Complex state interactions
 - Need for state persistence
@@ -1929,6 +2066,7 @@ function CreateModelForm() {
 ```
 
 **Benefits:**
+
 - Better validation
 - Less boilerplate
 - Type-safe forms
@@ -1936,6 +2074,7 @@ function CreateModelForm() {
 ### 11.4 Documentation Improvements
 
 **Add:**
+
 1. Architecture Decision Records (ADRs)
 2. Component usage examples in README
 3. API integration guide
@@ -1947,6 +2086,7 @@ function CreateModelForm() {
 ## 12. Priority Implementation Roadmap
 
 ### Phase 1: Critical (Week 1-2)
+
 **Focus: Testing & Quality**
 
 1. Set up Vitest + Testing Library
@@ -1959,6 +2099,7 @@ function CreateModelForm() {
 **Impact:** Prevents bugs, improves code quality
 
 ### Phase 2: High Priority (Week 3-4)
+
 **Focus: Code Organization & Architecture**
 
 1. Extract custom hooks from route components
@@ -1972,6 +2113,7 @@ function CreateModelForm() {
 **Impact:** Better maintainability, easier development
 
 ### Phase 3: Medium Priority (Week 5-6)
+
 **Focus: Performance & DX**
 
 1. Implement code splitting
@@ -1985,6 +2127,7 @@ function CreateModelForm() {
 **Impact:** Better performance, better DX
 
 ### Phase 4: Enhancement (Week 7-8)
+
 **Focus: Polish & Modern Features**
 
 1. Implement dark mode properly
@@ -2003,24 +2146,24 @@ function CreateModelForm() {
 
 ### Code Quality Metrics
 
-| Metric | Current | Target | Timeline |
-|--------|---------|--------|----------|
-| Test Coverage | 0% | 70% | 4 weeks |
-| ESLint Errors | Unknown | 0 | 2 weeks |
-| TypeScript `any` usage | 4 | 0 | 2 weeks |
-| Bundle Size | ~1.3MB | <800KB | 6 weeks |
-| Lighthouse Score | Unknown | >90 | 8 weeks |
-| Component Count | 6 | 30+ | 6 weeks |
-| Hook Count | 0 custom | 15+ | 4 weeks |
+| Metric                 | Current  | Target | Timeline |
+| ---------------------- | -------- | ------ | -------- |
+| Test Coverage          | 0%       | 70%    | 4 weeks  |
+| ESLint Errors          | Unknown  | 0      | 2 weeks  |
+| TypeScript `any` usage | 4        | 0      | 2 weeks  |
+| Bundle Size            | ~1.3MB   | <800KB | 6 weeks  |
+| Lighthouse Score       | Unknown  | >90    | 8 weeks  |
+| Component Count        | 6        | 30+    | 6 weeks  |
+| Hook Count             | 0 custom | 15+    | 4 weeks  |
 
 ### Developer Experience Metrics
 
-| Metric | Current | Target | Timeline |
-|--------|---------|--------|----------|
-| Build Time | ~5s | <3s | 4 weeks |
-| HMR Speed | Fast | Faster | 4 weeks |
-| Time to First Meaningful Paint | Unknown | <1.5s | 6 weeks |
-| Storybook Stories | 0 | 25+ | 6 weeks |
+| Metric                         | Current | Target | Timeline |
+| ------------------------------ | ------- | ------ | -------- |
+| Build Time                     | ~5s     | <3s    | 4 weeks  |
+| HMR Speed                      | Fast    | Faster | 4 weeks  |
+| Time to First Meaningful Paint | Unknown | <1.5s  | 6 weeks  |
+| Storybook Stories              | 0       | 25+    | 6 weeks  |
 
 ---
 
@@ -2034,6 +2177,7 @@ The SmartEM frontend is a solid React application with good foundations. The mos
 4. **Type safety** - Some type suppressions
 
 The project would benefit most from:
+
 - Immediate focus on testing infrastructure
 - Gradual refactoring to extract hooks and split components
 - Adding ESLint and git hooks

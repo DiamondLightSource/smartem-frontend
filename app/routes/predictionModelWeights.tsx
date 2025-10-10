@@ -1,18 +1,4 @@
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
-import {
-  Avatar,
-  Container,
-  FormControlLabel,
-  Grid,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Switch,
-  ThemeProvider,
-} from '@mui/material'
-import { LineChart } from '@mui/x-charts'
+import { Container, ThemeProvider } from '@mui/material'
 import React from 'react'
 import { useParams } from 'react-router'
 
@@ -21,7 +7,6 @@ import { apiUrl } from '../api/mutator'
 import { Navbar } from '../components/navbar'
 import { theme } from '../components/theme'
 import { TimeSeriesChart } from '../components/timeseries'
-import type { Route } from './+types/predictionModelWeights'
 
 export default function PredictionModelWeights() {
   const params = useParams()

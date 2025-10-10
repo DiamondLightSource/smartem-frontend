@@ -130,12 +130,12 @@ export default function Atlas({ loaderData, params }: any) {
         loaderData.squares.map((elem: GridSquare) => [elem.uuid, elem.gridsquare_id])
       )
     )
-  }, [])
+  }, [loaderData.squares.map])
 
   React.useEffect(() => {
     if (predictions) {
-      setPredictionMin(Math.min(...Array.from(predictions).map((k, v) => k[1])))
-      setPredictionMax(Math.max(...Array.from(predictions).map((k, v) => k[1])))
+      setPredictionMin(Math.min(...Array.from(predictions).map((k, _v) => k[1])))
+      setPredictionMax(Math.max(...Array.from(predictions).map((k, _v) => k[1])))
     }
   }, [predictions])
 
@@ -250,17 +250,17 @@ export default function Atlas({ loaderData, params }: any) {
               {latentRep ? (
                 <ScatterChart
                   height={500}
-                  series={Array.from(latentRep).map((k, v) => ({
+                  series={Array.from(latentRep).map((k, _v) => ({
                     label: k[0],
                     id: k[0],
                     data: [{ x: k[1].x, y: k[1].y, id: k[0] }],
                     markerSize:
-                      k[0] == selectedSquare || showUnselectedInLatentSpace
+                      k[0] === selectedSquare || showUnselectedInLatentSpace
                         ? predictions
                           ? (7 * ((predictions?.get(k[0]) ?? 0) + 1)) / 2
                           : 5
                         : 0,
-                    color: k[0] == selectedSquare ? 'black' : colourPalette[k[1].index],
+                    color: k[0] === selectedSquare ? 'black' : colourPalette[k[1].index],
                     valueFormatter: (v) => {
                       if (!selectionFrozen) setSelectedSquare(k[0])
                       return `${squareNameMap?.get(String(v?.id ?? '')) ?? ''}: ${String(k[1].index)}`

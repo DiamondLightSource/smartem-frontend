@@ -1,7 +1,6 @@
 import InsightsIcon from '@mui/icons-material/Insights'
 
 import {
-  Alert,
   Box,
   CircularProgress,
   Collapse,
@@ -90,7 +89,7 @@ const CollapsibleRow = ({ square, holes, weightedPredictions }: FullSquareDetail
           </TableCell>
         ) : (
           <TableCell>
-            {isNaN(weightedPrediction)
+            {Number.isNaN(weightedPrediction)
               ? 0
               : weightedPrediction.toLocaleString(undefined, {
                   minimumSignificantDigits: 3,
@@ -159,7 +158,7 @@ const CollapsibleRow = ({ square, holes, weightedPredictions }: FullSquareDetail
 }
 
 export default function Grid({ params }: Route.ComponentProps) {
-  const [holeNumberOrder, setHoleNumberOrder] = React.useState(true)
+  const [holeNumberOrder, _setHoleNumberOrder] = React.useState(true)
   const [sortOrderDescending, setSortOrderDescending] = React.useState(true)
 
   const {

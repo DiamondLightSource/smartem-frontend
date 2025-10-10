@@ -1,23 +1,20 @@
-import AppBar from '@mui/material/AppBar'
+import { DensityMedium, Science } from '@mui/icons-material'
+import HomeFilledIcon from '@mui/icons-material/HomeFilled'
 import {
   Box,
   Drawer,
   IconButton,
-  Toolbar,
-  Stack,
   List,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Stack,
+  Toolbar,
 } from '@mui/material'
-
+import AppBar from '@mui/material/AppBar'
 import React from 'react'
-
 import { useNavigate } from 'react-router'
-
-import HomeFilledIcon from '@mui/icons-material/HomeFilled'
-import { DensityMedium, Science } from '@mui/icons-material'
 
 export const Navbar = () => {
   const navigate = useNavigate()
@@ -26,12 +23,7 @@ export const Navbar = () => {
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <AppBar
-        component="nav"
-        position="sticky"
-        style={{ top: 0 }}
-        enableColorOnDark={true}
-      >
+      <AppBar component="nav" position="sticky" style={{ top: 0 }} enableColorOnDark={true}>
         <Toolbar>
           <Stack direction="row" spacing={3}>
             <IconButton

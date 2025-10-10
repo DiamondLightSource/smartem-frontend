@@ -48,7 +48,7 @@ export default function Atlas({
       return squares
     }
     loadData()
-  }, [])
+  }, [params.gridId])
 
   return (
     <ThemeProvider theme={theme}>

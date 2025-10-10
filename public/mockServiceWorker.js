@@ -12,15 +12,15 @@ const INTEGRITY_CHECKSUM = '4db4a41e972cec1b64cc569c66952d82'
 const IS_MOCKED_RESPONSE = Symbol('isMockedResponse')
 const activeClientIds = new Set()
 
-addEventListener('install', function () {
+addEventListener('install', () => {
   self.skipWaiting()
 })
 
-addEventListener('activate', function (event) {
+addEventListener('activate', (event) => {
   event.waitUntil(self.clients.claim())
 })
 
-addEventListener('message', async function (event) {
+addEventListener('message', async (event) => {
   const clientId = Reflect.get(event.source || {}, 'id')
 
   if (!clientId || !self.clients) {
@@ -88,7 +88,7 @@ addEventListener('message', async function (event) {
   }
 })
 
-addEventListener('fetch', function (event) {
+addEventListener('fetch', (event) => {
   const requestInterceptedAt = Date.now()
 
   // Bypass navigation requests.
@@ -98,10 +98,7 @@ addEventListener('fetch', function (event) {
 
   // Opening the DevTools triggers the "only-if-cached" request
   // that cannot be handled by the worker. Bypass such requests.
-  if (
-    event.request.cache === 'only-if-cached' &&
-    event.request.mode !== 'same-origin'
-  ) {
+  if (event.request.cache === 'only-if-cached' && event.request.mode !== 'same-origin') {
     return
   }
 
@@ -124,12 +121,7 @@ addEventListener('fetch', function (event) {
 async function handleRequest(event, requestId, requestInterceptedAt) {
   const client = await resolveMainClient(event)
   const requestCloneForEvents = event.request.clone()
-  const response = await getResponse(
-    event,
-    client,
-    requestId,
-    requestInterceptedAt,
-  )
+  const response = await getResponse(event, client, requestId, requestInterceptedAt)
 
   // Send back the response clone for the "response:*" life-cycle events.
   // Ensure MSW is active and ready to handle the message, otherwise
@@ -159,7 +151,7 @@ async function handleRequest(event, requestId, requestInterceptedAt) {
           },
         },
       },
-      responseClone.body ? [serializedRequest.body, responseClone.body] : [],
+      responseClone.body ? [serializedRequest.body, responseClone.body] : []
     )
   }
 
@@ -223,9 +215,7 @@ async function getResponse(event, client, requestId, requestInterceptedAt) {
     const acceptHeader = headers.get('accept')
     if (acceptHeader) {
       const values = acceptHeader.split(',').map((value) => value.trim())
-      const filteredValues = values.filter(
-        (value) => value !== 'msw/passthrough',
-      )
+      const filteredValues = values.filter((value) => value !== 'msw/passthrough')
 
       if (filteredValues.length > 0) {
         headers.set('accept', filteredValues.join(', '))
@@ -262,7 +252,7 @@ async function getResponse(event, client, requestId, requestInterceptedAt) {
         ...serializedRequest,
       },
     },
-    [serializedRequest.body],
+    [serializedRequest.body]
   )
 
   switch (clientMessage.type) {
@@ -289,17 +279,14 @@ function sendToClient(client, message, transferrables = []) {
     const channel = new MessageChannel()
 
     channel.port1.onmessage = (event) => {
-      if (event.data && event.data.error) {
+      if (event.data?.error) {
         return reject(event.data.error)
       }
 
       resolve(event.data)
     }
 
-    client.postMessage(message, [
-      channel.port2,
-      ...transferrables.filter(Boolean),
-    ])
+    client.postMessage(message, [channel.port2, ...transferrables.filter(Boolean)])
   })
 }
 
