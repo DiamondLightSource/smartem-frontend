@@ -24,7 +24,7 @@ import { Navbar } from '../components/navbar'
 import { theme } from '../components/theme'
 import type { Route } from './+types/home'
 
-export function meta({}: Route.MetaArgs) {
+export function meta(_args: Route.MetaArgs) {
   return [{ title: 'SmartEM' }, { name: 'description', content: 'Welcome to React Router!' }]
 }
 

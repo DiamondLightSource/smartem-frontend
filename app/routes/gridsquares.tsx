@@ -35,11 +35,11 @@ export default function GridSquareGallery({ params }: Route.ComponentProps) {
     setPageIndex(value - 1)
   }
 
-  const sizeComparator = (gs01: GridSquareResponse, gs02: GridSquareResponse) => {
+  const sizeComparator = React.useCallback((gs01: GridSquareResponse, gs02: GridSquareResponse) => {
     if (gs01.size_height === null || gs01.size_width === null) return 1
     else if (gs02.size_height === null || gs02.size_width === null) return -1
     return gs02.size_width * gs02.size_height - gs01.size_width * gs01.size_height
-  }
+  }, [])
 
   React.useEffect(() => {
     if (squares) {

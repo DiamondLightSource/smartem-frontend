@@ -67,12 +67,14 @@ export default function Atlas({
                 position: 'relative',
               }}
             >
-              <img src={`${apiUrl()}/grids/${params.gridId}/atlas_image`} />
+              <img src={`${apiUrl()}/grids/${params.gridId}/atlas_image`} alt="Grid atlas" />
               <svg viewBox="0 0 4005 4005" style={{ position: 'absolute', top: 0, left: 0 }}>
+                <title>Grid squares overlay</title>
                 {squares.map((gridSquare: GridSquare) => (
-                  <Tooltip title={gridSquare.gridsquare_id}>
+                  <Tooltip key={gridSquare.uuid} title={gridSquare.gridsquare_id}>
                     <circle
-                      key={gridSquare.uuid}
+                      role="button"
+                      tabIndex={0}
                       cx={gridSquare.center_x ?? 0}
                       cy={gridSquare.center_y ?? 0}
                       r={gridSquare.size_width ? gridSquare.size_width / 2 : 0}
@@ -87,6 +89,7 @@ export default function Atlas({
                       onMouseOver={() =>
                         !selectionFrozen ? setSelectedSquare(gridSquare.uuid) : {}
                       }
+                      onFocus={() => !selectionFrozen && setSelectedSquare(gridSquare.uuid)}
                       strokeOpacity={1}
                       stroke={gridSquare.uuid === selectedSquare ? 'orange' : 'gray'}
                     />
