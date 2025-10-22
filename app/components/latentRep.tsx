@@ -64,7 +64,17 @@ const getLatentRep = async (modelName: string, gridId: string) => {
   return latentRepMap
 }
 
-export default function Atlas({ loaderData, params }: any) {
+export default function Atlas({
+  loaderData,
+  params,
+}: {
+  loaderData: { squares: GridSquare[]; models: PredictionModel[] }
+  params: { gridId: string }
+}) {
+  const modelSelectLabelId = React.useId()
+  const modelSelectId = React.useId()
+  const repModelSelectLabelId = React.useId()
+  const repModelSelectId = React.useId()
   const [maxWidth, setMaxWidth] = React.useState(0)
   const [squareNameMap, setSquareNameMap] = React.useState<Map<string, string>>()
   const [selectedSquare, setSelectedSquare] = React.useState('')
@@ -121,9 +131,9 @@ export default function Atlas({ loaderData, params }: any) {
   }
 
   React.useEffect(() => {
-    const widths = loaderData.squares.map((elem: GridSquare) => {
-      return elem.size_width
-    })
+    const widths = loaderData.squares
+      .map((elem: GridSquare) => elem.size_width)
+      .filter((w): w is number => w !== null)
     setMaxWidth(Math.max(...widths))
     setSquareNameMap(
       new Map<string, string>(
@@ -152,10 +162,12 @@ export default function Atlas({ loaderData, params }: any) {
                 position: 'relative',
               }}
             >
-              <img src={`${apiUrl()}/grids/${params.gridId}/atlas_image`} />
+              <img src={`${apiUrl()}/grids/${params.gridId}/atlas_image`} alt="Grid atlas" />
               <svg viewBox="0 0 4005 4005" style={{ position: 'absolute', top: 0, left: 0 }}>
+                <title>Grid squares overlay</title>
                 {loaderData.squares.map((gridSquare: GridSquare) => (
                   <Tooltip
+                    key={gridSquare.uuid}
                     title={
                       showPredictions && predictions
                         ? `${gridSquare.gridsquare_id}: ${predictions.get(gridSquare.uuid)?.toFixed(3)}`
@@ -163,7 +175,8 @@ export default function Atlas({ loaderData, params }: any) {
                     }
                   >
                     <circle
-                      key={gridSquare.uuid}
+                      role="button"
+                      tabIndex={0}
                       cx={gridSquare.center_x ?? 0}
                       cy={gridSquare.center_y ?? 0}
                       r={
@@ -207,6 +220,7 @@ export default function Atlas({ loaderData, params }: any) {
                       onMouseOver={() =>
                         !selectionFrozen ? setSelectedSquare(gridSquare.uuid) : {}
                       }
+                      onFocus={() => !selectionFrozen && setSelectedSquare(gridSquare.uuid)}
                     />
                   </Tooltip>
                 ))}
@@ -216,22 +230,22 @@ export default function Atlas({ loaderData, params }: any) {
               <Switch checked={showPredictions} onChange={handlePredictionChange} />
               {showPredictions ? (
                 <FormControl fullWidth>
-                  <InputLabel id="model-select-label">Prediction Model</InputLabel>
+                  <InputLabel id={modelSelectLabelId}>Prediction Model</InputLabel>
                   <Select
-                    labelId="model-select-label"
-                    id="model-select"
+                    labelId={modelSelectLabelId}
+                    id={modelSelectId}
                     value={predictionModel}
                     label="Prediction Model"
                     onChange={handleChange}
                   >
                     {loaderData.models.map((model: PredictionModel) => (
-                      <MenuItem value={model.name}>{model.name}</MenuItem>
+                      <MenuItem key={model.name} value={model.name}>
+                        {model.name}
+                      </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
-              ) : (
-                <></>
-              )}
+              ) : null}
               <Tooltip title={'Add latent panel'}>
                 <IconButton
                   aria-label="add-panel"
@@ -269,13 +283,11 @@ export default function Atlas({ loaderData, params }: any) {
                   yAxis={[{ position: 'none' }]}
                   xAxis={[{ position: 'none' }]}
                   hideLegend={true}
-                  onItemClick={(_: any, d: ScatterItemIdentifier) =>
+                  onItemClick={(_: React.MouseEvent, d: ScatterItemIdentifier) =>
                     handleSelectionClick(d.seriesId.toString())
                   }
                 />
-              ) : (
-                <></>
-              )}
+              ) : null}
               <CardActions>
                 <Tooltip
                   title={'Show unselected squares'}
@@ -286,16 +298,18 @@ export default function Atlas({ loaderData, params }: any) {
                   <Checkbox defaultChecked />
                 </Tooltip>
                 <FormControl fullWidth>
-                  <InputLabel id="rep-model-select-label">Prediction Model</InputLabel>
+                  <InputLabel id={repModelSelectLabelId}>Prediction Model</InputLabel>
                   <Select
-                    labelId="rep-model-select-label"
-                    id="model-select"
+                    labelId={repModelSelectLabelId}
+                    id={repModelSelectId}
                     value={repModel}
                     label="Latent Representation Model"
                     onChange={handleLatentRepChange}
                   >
                     {loaderData.models.map((model: PredictionModel) => (
-                      <MenuItem value={model.name}>{model.name}</MenuItem>
+                      <MenuItem key={model.name} value={model.name}>
+                        {model.name}
+                      </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
@@ -310,9 +324,7 @@ export default function Atlas({ loaderData, params }: any) {
                 </Tooltip>
               </CardActions>
             </Card>
-          ) : (
-            <></>
-          )}
+          ) : null}
         </Container>
       </Stack>
     </ThemeProvider>

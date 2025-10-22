@@ -80,6 +80,10 @@ const getLatentRep = async (modelName: string, gridSquareId: string) => {
 export default function GridSquareLR() {
   const params = useParams()
   const navigate = useNavigate()
+  const modelSelectLabelId = React.useId()
+  const modelSelectId = React.useId()
+  const repModelSelectLabelId = React.useId()
+  const repModelSelectId = React.useId()
   const [holes, setHoles] = React.useState<FoilHole[]>([])
   const [models, setModels] = React.useState<PredictionModel[]>([])
   const [maxWidth] = React.useState(0)
@@ -192,8 +196,12 @@ export default function GridSquareLR() {
                 position: 'relative',
               }}
             >
-              <img src={`${url}/gridsquares/${params.squareId}/gridsquare_image`} />
+              <img
+                src={`${url}/gridsquares/${params.squareId}/gridsquare_image`}
+                alt="Grid square"
+              />
               <svg viewBox="0 0 2880 2046" style={{ position: 'absolute', top: 0, left: 0 }}>
+                <title>Foil holes overlay</title>
                 {holes.map((foilHole: FoilHole) => (
                   <Tooltip
                     key={foilHole.uuid}
@@ -204,6 +212,8 @@ export default function GridSquareLR() {
                     }
                   >
                     <circle
+                      role="button"
+                      tabIndex={0}
                       cx={foilHole.x_location ?? 0}
                       cy={foilHole.y_location ?? 0}
                       r={
@@ -247,6 +257,7 @@ export default function GridSquareLR() {
                       }
                       onClick={() => handleSelectionClick(foilHole.uuid)}
                       onMouseOver={() => (!selectionFrozen ? setSelectedHole(foilHole.uuid) : {})}
+                      onFocus={() => !selectionFrozen && setSelectedHole(foilHole.uuid)}
                     />
                   </Tooltip>
                 ))}
@@ -256,10 +267,10 @@ export default function GridSquareLR() {
               <Switch checked={showPredictions} onChange={handlePredictionChange} />
               {showPredictions ? (
                 <FormControl fullWidth>
-                  <InputLabel id="model-select-label">Prediction Model</InputLabel>
+                  <InputLabel id={modelSelectLabelId}>Prediction Model</InputLabel>
                   <Select
-                    labelId="model-select-label"
-                    id="model-select"
+                    labelId={modelSelectLabelId}
+                    id={modelSelectId}
                     value={predictionModel}
                     label="Prediction Model"
                     onChange={handleChange}
@@ -337,10 +348,10 @@ export default function GridSquareLR() {
                   <Checkbox defaultChecked />
                 </Tooltip>
                 <FormControl fullWidth>
-                  <InputLabel id="rep-model-select-label">Prediction Model</InputLabel>
+                  <InputLabel id={repModelSelectLabelId}>Prediction Model</InputLabel>
                   <Select
-                    labelId="rep-model-select-label"
-                    id="model-select"
+                    labelId={repModelSelectLabelId}
+                    id={repModelSelectId}
                     value={repModel}
                     label="Latent Representation Model"
                     onChange={handleLatentRepChange}

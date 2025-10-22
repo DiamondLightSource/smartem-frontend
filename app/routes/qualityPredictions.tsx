@@ -123,6 +123,8 @@ const FoilHolePredictionCharts = ({
 
 export default function QualityPredictionsForSquare() {
   const params = useParams()
+  const metricSelectLabelId = React.useId()
+  const metricSelectId = React.useId()
   const [squarePredictions, setSquarePredictions] = React.useState<
     Record<string, QualityPrediction[]>
   >({})
@@ -176,16 +178,18 @@ export default function QualityPredictionsForSquare() {
       <Navbar />
       <Stack content="center" style={{ width: '100%', paddingTop: '50px' }}>
         <FormControl fullWidth style={{ color: 'black', backgroundColor: '#b927d9' }}>
-          <InputLabel id="metric-select-label">Metric</InputLabel>
+          <InputLabel id={metricSelectLabelId}>Metric</InputLabel>
           <Select
-            labelId="metric-select-label"
-            id="metric-select"
+            labelId={metricSelectLabelId}
+            id={metricSelectId}
             label="metric"
             value={metricName}
             onChange={handleChange}
           >
             {metrics.map((metric) => (
-              <MenuItem value={metric.name}>{metric.name}</MenuItem>
+              <MenuItem key={metric.name} value={metric.name}>
+                {metric.name}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>

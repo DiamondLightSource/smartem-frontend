@@ -89,6 +89,10 @@ const getSuggestion = async (gridId: string) => {
 export default function Atlas() {
   const params = useParams()
   const gridId = params.gridId
+  const modelSelectLabelId = React.useId()
+  const modelSelectId = React.useId()
+  const repModelSelectLabelId = React.useId()
+  const repModelSelectId = React.useId()
   const [squares, setSquares] = React.useState<GridSquare[]>([])
   const [models, setModels] = React.useState<PredictionModel[]>([])
   const [maxWidth, setMaxWidth] = React.useState(0)
@@ -199,10 +203,12 @@ export default function Atlas() {
                 position: 'relative',
               }}
             >
-              <img src={`${url}/grids/${params.gridId}/atlas_image`} />
+              <img src={`${url}/grids/${params.gridId}/atlas_image`} alt="Grid atlas" />
               <svg viewBox="0 0 4005 4005" style={{ position: 'absolute', top: 0, left: 0 }}>
+                <title>Grid squares overlay</title>
                 {squares.map((gridSquare: GridSquare) => (
                   <Tooltip
+                    key={gridSquare.uuid}
                     title={
                       showPredictions && predictions
                         ? `${gridSquare.gridsquare_id}: ${predictions.get(gridSquare.uuid)?.toFixed(3)}`
@@ -210,7 +216,8 @@ export default function Atlas() {
                     }
                   >
                     <circle
-                      key={gridSquare.uuid}
+                      role="button"
+                      tabIndex={0}
                       cx={gridSquare.center_x ?? 0}
                       cy={gridSquare.center_y ?? 0}
                       fillOpacity={0.5}
@@ -256,6 +263,7 @@ export default function Atlas() {
                       onMouseOver={() =>
                         !selectionFrozen ? setSelectedSquare(gridSquare.uuid) : {}
                       }
+                      onFocus={() => !selectionFrozen && setSelectedSquare(gridSquare.uuid)}
                     >
                       {gridSquare.image_path ? (
                         <animate
@@ -265,9 +273,7 @@ export default function Atlas() {
                           repeatCount="indefinite"
                           begin="0.25"
                         />
-                      ) : (
-                        <></>
-                      )}
+                      ) : null}
                     </circle>
                   </Tooltip>
                 ))}
@@ -277,22 +283,22 @@ export default function Atlas() {
               <Switch checked={showPredictions} onChange={handlePredictionChange} />
               {showPredictions ? (
                 <FormControl fullWidth>
-                  <InputLabel id="model-select-label">Prediction Model</InputLabel>
+                  <InputLabel id={modelSelectLabelId}>Prediction Model</InputLabel>
                   <Select
-                    labelId="model-select-label"
-                    id="model-select"
+                    labelId={modelSelectLabelId}
+                    id={modelSelectId}
                     value={predictionModel}
                     label="Prediction Model"
                     onChange={handleChange}
                   >
                     {models.map((model: PredictionModel) => (
-                      <MenuItem value={model.name}>{model.name}</MenuItem>
+                      <MenuItem key={model.name} value={model.name}>
+                        {model.name}
+                      </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
-              ) : (
-                <></>
-              )}
+              ) : null}
               {selectedSquare ? (
                 <IconButton
                   aria-label="inspect-square"
@@ -305,9 +311,7 @@ export default function Atlas() {
                 >
                   <ZoomInIcon />
                 </IconButton>
-              ) : (
-                <></>
-              )}
+              ) : null}
               <IconButton
                 aria-label="suggest-route"
                 style={{ display: 'flex' }}
@@ -357,9 +361,7 @@ export default function Atlas() {
                     handleSelectionClick(d.seriesId.toString())
                   }
                 />
-              ) : (
-                <></>
-              )}
+              ) : null}
               <CardActions>
                 <Tooltip
                   title={'Show unselected squares'}
@@ -370,16 +372,18 @@ export default function Atlas() {
                   <Checkbox defaultChecked />
                 </Tooltip>
                 <FormControl fullWidth>
-                  <InputLabel id="rep-model-select-label">Prediction Model</InputLabel>
+                  <InputLabel id={repModelSelectLabelId}>Prediction Model</InputLabel>
                   <Select
-                    labelId="rep-model-select-label"
-                    id="model-select"
+                    labelId={repModelSelectLabelId}
+                    id={repModelSelectId}
                     value={repModel}
                     label="Latent Representation Model"
                     onChange={handleLatentRepChange}
                   >
                     {models.map((model: PredictionModel) => (
-                      <MenuItem value={model.name}>{model.name}</MenuItem>
+                      <MenuItem key={model.name} value={model.name}>
+                        {model.name}
+                      </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
@@ -394,9 +398,7 @@ export default function Atlas() {
                 </Tooltip>
               </CardActions>
             </Card>
-          ) : (
-            <></>
-          )}
+          ) : null}
         </Container>
       </Stack>
     </ThemeProvider>
