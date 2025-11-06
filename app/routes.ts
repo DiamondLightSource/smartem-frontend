@@ -2,6 +2,7 @@ import { type RouteConfig, route } from '@react-router/dev/routes'
 
 export default [
   route('/', './routes/home.tsx'),
+  route('/admin', './routes/admin.tsx'),
   route('/models', './routes/predictionModels.tsx'),
   route('/models/:modelName/grids/:gridId/weights', './routes/predictionModelWeights.tsx'),
   route('/acquisitions/:acqId', './routes/acquisition.tsx'),
