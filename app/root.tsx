@@ -45,6 +45,24 @@ export function Layout({ children }: { children: React.ReactNode }) {
   )
 }
 
+export function HydrateFallback() {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100vh',
+        fontFamily: 'Inter, system-ui, sans-serif',
+      }}
+    >
+      <div style={{ textAlign: 'center' }}>
+        <h2>Loading SmartEM...</h2>
+      </div>
+    </div>
+  )
+}
+
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
