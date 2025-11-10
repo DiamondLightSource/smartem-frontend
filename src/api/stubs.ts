@@ -33,18 +33,20 @@ export const useGetConnectionStatsDebugConnectionStatsGet = () => {
   }
 }
 
-export const getLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet =
-  () => {
-    return Promise.reject(
-      new Error('Latent representation endpoint not yet implemented in backend')
-    )
-  }
+export const getLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet = (
+  _modelName: string,
+  _gridId: string
+) => {
+  return Promise.resolve([])
+}
 
-export const getPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGet =
-  () => {
-    return Promise.reject(new Error('Grid prediction endpoint not yet implemented in backend'))
-  }
+export const getPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGet = (
+  _modelName: string,
+  _gridId: string
+) => {
+  return Promise.resolve([])
+}
 
 export const getPredictionModelsPredictionModelsGet = () => {
-  return Promise.reject(new Error('Prediction models endpoint not yet implemented in backend'))
+  return Promise.resolve([])
 }
