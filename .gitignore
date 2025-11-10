@@ -10,3 +10,6 @@
 .claude/skills/*/node_modules/
 .claude/skills/*/.temp-execution-*.js
 .claude/skills/*/test-results/
+
+# TanStack Router generated files
+src/routeTree.gen.ts
