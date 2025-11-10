@@ -64,7 +64,7 @@ async function waitForPageReady(page, options = {}) {
     await page.waitForLoadState(waitOptions.waitUntil, {
       timeout: waitOptions.timeout,
     })
-  } catch (e) {
+  } catch (_e) {
     console.warn('Page load timeout, continuing...')
   }
 
@@ -279,7 +279,7 @@ async function handleCookieBanner(page, timeout = 3000) {
         console.log('Cookie banner dismissed')
         return true
       }
-    } catch (e) {
+    } catch (_e) {
       // Continue to next selector
     }
   }
@@ -348,7 +348,7 @@ async function detectDevServers(customPorts = []) {
 
   for (const port of allPorts) {
     try {
-      await new Promise((resolve, reject) => {
+      await new Promise((resolve, _reject) => {
         const req = http.request(
           {
             hostname: 'localhost',
@@ -374,7 +374,7 @@ async function detectDevServers(customPorts = []) {
 
         req.end()
       })
-    } catch (e) {
+    } catch (_e) {
       // Port not available, continue
     }
   }
