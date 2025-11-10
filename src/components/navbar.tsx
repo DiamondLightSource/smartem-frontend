@@ -34,7 +34,7 @@ export const Navbar = () => {
             >
               <DensityMedium />
             </IconButton>
-            <IconButton edge="start" onClick={() => navigate('/')}>
+            <IconButton edge="start" onClick={() => navigate({ to: '/' })}>
               <HomeFilledIcon />
             </IconButton>
           </Stack>
@@ -80,7 +80,7 @@ export const Navbar = () => {
             <ListItem>
               <ListItemButton
                 onClick={() => {
-                  navigate('/admin')
+                  navigate({ to: '/admin' })
                 }}
               >
                 <ListItemIcon>
@@ -92,7 +92,7 @@ export const Navbar = () => {
             <ListItem>
               <ListItemButton
                 onClick={() => {
-                  navigate('/models')
+                  navigate({ to: '/models' })
                 }}
               >
                 <ListItemIcon>

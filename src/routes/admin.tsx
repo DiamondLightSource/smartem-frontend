@@ -548,9 +548,9 @@ function Admin() {
                             <Chip
                               label={acq.status || 'unknown'}
                               color={
-                                acq.status === 'active' || acq.status === 'running'
+                                acq.status === 'Active' || acq.status === 'Running'
                                   ? 'success'
-                                  : acq.status === 'completed'
+                                  : acq.status === 'Completed'
                                     ? 'default'
                                     : 'warning'
                               }
