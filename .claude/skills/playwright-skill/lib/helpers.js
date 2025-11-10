@@ -336,7 +336,7 @@ async function createContext(browser, options = {}) {
  * @returns {Promise<Array>} Array of detected server URLs
  */
 async function detectDevServers(customPorts = []) {
-  const http = require('http')
+  const http = require('node:http')
 
   // Common dev server ports
   const commonPorts = [3000, 3001, 3002, 5173, 8080, 8000, 4200, 5000, 9000, 1234]
