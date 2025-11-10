@@ -3,18 +3,18 @@ import { defineConfig } from 'orval'
 export default defineConfig({
   smartem: {
     input: {
-      target: process.env.OPENAPI_URL || './app/api/openapi.json',
+      target: process.env.OPENAPI_URL || './src/api/openapi.json',
     },
     output: {
       mode: 'tags-split',
-      target: 'app/api/generated/endpoints.ts',
-      schemas: 'app/api/generated/models',
+      target: 'src/api/generated/endpoints.ts',
+      schemas: 'src/api/generated/models',
       client: 'react-query',
       mock: true,
       prettier: true,
       override: {
         mutator: {
-          path: 'app/api/mutator.ts',
+          path: 'src/api/mutator.ts',
           name: 'customInstance',
         },
         query: {
