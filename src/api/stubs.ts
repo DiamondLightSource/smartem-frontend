@@ -1,7 +1,11 @@
 // Stub implementations for API endpoints that don't exist yet
 // These allow the UI to render with fallback behavior
 
-export const useGetPredictionModelsPredictionModelsGet = () => {
+export const useGetPredictionModelsPredictionModelsGet = (): {
+  data: undefined
+  isLoading: false
+  error: Error
+} => {
   return {
     data: undefined,
     isLoading: false,
