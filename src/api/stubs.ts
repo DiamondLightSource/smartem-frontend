@@ -2,12 +2,12 @@
 // These allow the UI to render with fallback behavior
 
 export const useGetPredictionModelsPredictionModelsGet = (): {
-  data: undefined
+  data: [] | undefined
   isLoading: false
   error: Error
 } => {
   return {
-    data: undefined,
+    data: [],
     isLoading: false,
     error: new Error('Prediction models endpoint not yet implemented in backend'),
   }
