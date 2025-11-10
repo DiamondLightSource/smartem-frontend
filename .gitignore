@@ -8,3 +8,4 @@
 .env
 
 .claude/settings.local.json
+.claude/skills/*/node_modules/
