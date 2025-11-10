@@ -47,6 +47,6 @@ export const getPredictionForGridPredictionModelPredictionModelNameGridGridUuidP
   return Promise.resolve([])
 }
 
-export const getPredictionModelsPredictionModelsGet = () => {
+export const getPredictionModelsPredictionModelsGet = (): Promise<never[]> => {
   return Promise.resolve([])
 }
