@@ -53,7 +53,6 @@
     "lefthook": "^1.13.6",
     "msw": "^2.11.3",
     "orval": "^7.13.0",
-    "react-router-devtools": "^1.1.0",
     "tailwindcss": "^4.0.0",
     "typescript": "^5.7.2",
     "vite": "^7.1.11",
