@@ -3,6 +3,7 @@
 
 # Build output
 /dist/
+/build/
 .idea/
 .env
 
@@ -13,3 +14,4 @@
 
 # TanStack Router generated files
 src/routeTree.gen.ts
+.react-router/
