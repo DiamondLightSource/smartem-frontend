@@ -15,6 +15,7 @@ The following endpoints currently have empty schemas in the OpenAPI specificatio
 - `GET /debug/connection-stats` - Returns `schema: {}`
 
 **Impact:**
+
 - No TypeScript type generation for these endpoints
 - Frontend requires manual type definitions
 - No API documentation for response structure
@@ -24,9 +25,11 @@ The following endpoints currently have empty schemas in the OpenAPI specificatio
 ### 2. Missing Historical Sessions Endpoint
 
 **Current State:**
+
 - Only `GET /debug/sessions` exists, which returns active sessions
 
 **Needed:**
+
 - `GET /sessions` or `GET /sessions/history` - Returns all sessions (active and historical)
 - Should include pagination support
 - Should include filtering by status (active, completed, failed, etc.)
@@ -38,11 +41,13 @@ The admin dashboard needs to display both active and past sessions to provide a 
 ### 3. Missing Aggregated Acquisition Metrics
 
 **Current State:**
+
 - `GET /acquisitions` returns basic acquisition info (uuid, name, status, start_time, end_time)
 - No aggregated statistics about acquisitions
 
 **Needed:**
 Add the following fields to `AcquisitionResponse` or create a new endpoint `GET /acquisitions/{uuid}/stats`:
+
 - `total_grids` - Number of grids in this acquisition
 - `total_grid_squares` - Number of grid squares across all grids
 - `total_foil_holes` - Number of foil holes
@@ -73,6 +78,7 @@ class SessionResponse(BaseModel):
 ```
 
 Update endpoint:
+
 ```python
 @router.get("/debug/sessions", response_model=List[SessionResponse])
 async def get_active_sessions() -> List[SessionResponse]:
@@ -94,6 +100,7 @@ class AgentConnectionResponse(BaseModel):
 ```
 
 Update endpoint:
+
 ```python
 @router.get("/debug/agent-connections", response_model=List[AgentConnectionResponse])
 async def get_active_connections() -> List[AgentConnectionResponse]:
@@ -115,6 +122,7 @@ class ConnectionStatsResponse(BaseModel):
 ```
 
 Update endpoint:
+
 ```python
 @router.get("/debug/connection-stats", response_model=ConnectionStatsResponse)
 async def get_connection_stats() -> ConnectionStatsResponse:
@@ -221,6 +229,7 @@ Consider moving these endpoints from `/debug/*` to regular API paths since they'
 ## Frontend Impact
 
 Once these changes are implemented, the frontend will:
+
 - Remove custom TypeScript interfaces for sessions/connections
 - Use auto-generated types from OpenAPI spec
 - Remove custom MSW mock handlers
@@ -229,11 +238,13 @@ Once these changes are implemented, the frontend will:
 ## Related Files
 
 **Backend:**
+
 - OpenAPI spec: `smartem/swagger.json` (or wherever API spec is generated)
 - Session management code (location TBD)
 - Connection management code (location TBD)
 
 **Frontend:**
+
 - `/app/routes/admin.tsx` - Admin dashboard implementation
 - `/app/mocks/customHandlers.ts` - Custom mock handlers (can be removed after)
 - `/app/api/generated/` - Auto-generated API client code
@@ -241,6 +252,7 @@ Once these changes are implemented, the frontend will:
 ## Additional Notes
 
 The admin dashboard is functional with custom mocks and type definitions, but proper API schemas would:
+
 1. Improve developer experience
 2. Ensure data consistency
 3. Enable better error handling

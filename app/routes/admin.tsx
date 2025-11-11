@@ -20,9 +20,9 @@ import {
 import React from 'react'
 import { useNavigate } from 'react-router'
 import {
+  useGetAcquisitionsAcquisitionsGet,
   useGetActiveConnectionsDebugAgentConnectionsGet,
   useGetActiveSessionsDebugSessionsGet,
-  useGetAcquisitionsAcquisitionsGet,
   useGetConnectionStatsDebugConnectionStatsGet,
 } from '../api/generated/default/default'
 import type { AcquisitionResponse } from '../api/generated/models'
@@ -77,10 +77,7 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   return 0
 }
 
-function getComparator<T>(
-  order: Order,
-  orderBy: keyof T
-): (a: T, b: T) => number {
+function getComparator<T>(order: Order, orderBy: keyof T): (a: T, b: T) => number {
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy)
@@ -90,14 +87,22 @@ export default function Admin() {
   const navigate = useNavigate()
 
   // API queries
-  const { data: sessions, isLoading: sessionsLoading, error: sessionsError } =
-    useGetActiveSessionsDebugSessionsGet()
-  const { data: connections, isLoading: connectionsLoading, error: connectionsError } =
-    useGetActiveConnectionsDebugAgentConnectionsGet()
-  const { data: stats, isLoading: statsLoading } =
-    useGetConnectionStatsDebugConnectionStatsGet()
-  const { data: acquisitions, isLoading: acquisitionsLoading, error: acquisitionsError } =
-    useGetAcquisitionsAcquisitionsGet()
+  const {
+    data: sessions,
+    isLoading: sessionsLoading,
+    error: sessionsError,
+  } = useGetActiveSessionsDebugSessionsGet()
+  const {
+    data: connections,
+    isLoading: connectionsLoading,
+    error: connectionsError,
+  } = useGetActiveConnectionsDebugAgentConnectionsGet()
+  const { data: stats, isLoading: statsLoading } = useGetConnectionStatsDebugConnectionStatsGet()
+  const {
+    data: acquisitions,
+    isLoading: acquisitionsLoading,
+    error: acquisitionsError,
+  } = useGetAcquisitionsAcquisitionsGet()
 
   // Sessions table state
   const [sessionsPage, setSessionsPage] = React.useState(0)
@@ -108,13 +113,15 @@ export default function Admin() {
   // Connections table state
   const [connectionsPage, setConnectionsPage] = React.useState(0)
   const [connectionsRowsPerPage, setConnectionsRowsPerPage] = React.useState(10)
-  const [connectionsOrderBy, setConnectionsOrderBy] = React.useState<keyof AgentConnection>('agent_id')
+  const [connectionsOrderBy, setConnectionsOrderBy] =
+    React.useState<keyof AgentConnection>('agent_id')
   const [connectionsOrder, setConnectionsOrder] = React.useState<Order>('asc')
 
   // Acquisitions table state
   const [acquisitionsPage, setAcquisitionsPage] = React.useState(0)
   const [acquisitionsRowsPerPage, setAcquisitionsRowsPerPage] = React.useState(10)
-  const [acquisitionsOrderBy, setAcquisitionsOrderBy] = React.useState<keyof AcquisitionResponse>('uuid')
+  const [acquisitionsOrderBy, setAcquisitionsOrderBy] =
+    React.useState<keyof AcquisitionResponse>('uuid')
   const [acquisitionsOrder, setAcquisitionsOrder] = React.useState<Order>('asc')
 
   // Handlers
@@ -225,7 +232,10 @@ export default function Admin() {
               <Chip label={`Active Sessions: ${statsData.active_sessions}`} color="primary" />
             )}
             {statsData.active_connections !== undefined && (
-              <Chip label={`Active Connections: ${statsData.active_connections}`} color="secondary" />
+              <Chip
+                label={`Active Connections: ${statsData.active_connections}`}
+                color="secondary"
+              />
             )}
             {statsData.total_sessions !== undefined && (
               <Chip label={`Total Sessions: ${statsData.total_sessions}`} />
@@ -380,7 +390,9 @@ export default function Admin() {
                       <TableCell>
                         <TableSortLabel
                           active={connectionsOrderBy === 'connected_at'}
-                          direction={connectionsOrderBy === 'connected_at' ? connectionsOrder : 'asc'}
+                          direction={
+                            connectionsOrderBy === 'connected_at' ? connectionsOrder : 'asc'
+                          }
                           onClick={() => handleConnectionsSort('connected_at')}
                         >
                           Connected At
@@ -389,7 +401,9 @@ export default function Admin() {
                       <TableCell>
                         <TableSortLabel
                           active={connectionsOrderBy === 'last_heartbeat'}
-                          direction={connectionsOrderBy === 'last_heartbeat' ? connectionsOrder : 'asc'}
+                          direction={
+                            connectionsOrderBy === 'last_heartbeat' ? connectionsOrder : 'asc'
+                          }
                           onClick={() => handleConnectionsSort('last_heartbeat')}
                         >
                           Last Heartbeat
@@ -500,7 +514,9 @@ export default function Admin() {
                       <TableCell>
                         <TableSortLabel
                           active={acquisitionsOrderBy === 'start_time'}
-                          direction={acquisitionsOrderBy === 'start_time' ? acquisitionsOrder : 'asc'}
+                          direction={
+                            acquisitionsOrderBy === 'start_time' ? acquisitionsOrder : 'asc'
+                          }
                           onClick={() => handleAcquisitionsSort('start_time')}
                         >
                           Start Time
