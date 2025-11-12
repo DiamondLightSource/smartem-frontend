@@ -12,6 +12,5 @@
 .claude/skills/*/.temp-execution-*.js
 .claude/skills/*/test-results/
 
-# TanStack Router generated files
-src/routeTree.gen.ts
+# TanStack Router temp files
 .tanstack/
