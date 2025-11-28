@@ -65,5 +65,8 @@
     "workerDirectory": [
       "public"
     ]
+  },
+  "overrides": {
+    "@asyncapi/specs": "6.10.0"
   }
 }
