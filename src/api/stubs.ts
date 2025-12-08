@@ -13,30 +13,6 @@ export const useGetPredictionModelsPredictionModelsGet = (): {
   }
 }
 
-export const useGetActiveConnectionsDebugAgentConnectionsGet = () => {
-  return {
-    data: undefined,
-    isLoading: false,
-    error: new Error('Debug connections endpoint not yet implemented in backend'),
-  }
-}
-
-export const useGetActiveSessionsDebugSessionsGet = () => {
-  return {
-    data: undefined,
-    isLoading: false,
-    error: new Error('Debug sessions endpoint not yet implemented in backend'),
-  }
-}
-
-export const useGetConnectionStatsDebugConnectionStatsGet = () => {
-  return {
-    data: undefined,
-    isLoading: false,
-    error: new Error('Debug connection stats endpoint not yet implemented in backend'),
-  }
-}
-
 export const getLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet = (
   _modelName: string,
   _gridId: string
