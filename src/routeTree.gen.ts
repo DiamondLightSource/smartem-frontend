@@ -16,7 +16,6 @@ import { Route as AcquisitionsAcqIdGridsGridIdIndexRouteImport } from './routes/
 import { Route as AcquisitionsAcqIdGridsGridIdSquareSquareIdPredictionsRouteImport } from './routes/acquisitions.$acqId.grids.$gridId.square.$squareId.predictions'
 import { Route as AcquisitionsAcqIdGridsGridIdSquaresSquareIdRouteImport } from './routes/acquisitions.$acqId.grids.$gridId.squares.$squareId'
 import { Route as AcquisitionsAcqIdGridsGridIdWorkspaceRouteImport } from './routes/acquisitions.$acqId.grids.$gridId.workspace'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ModelsRouteImport } from './routes/models'
 import { Route as ModelsModelNameGridsGridIdWeightsRouteImport } from './routes/models.$modelName.grids.$gridId.weights'
@@ -24,11 +23,6 @@ import { Route as ModelsModelNameGridsGridIdWeightsRouteImport } from './routes/
 const ModelsRoute = ModelsRouteImport.update({
   id: '/models',
   path: '/models',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -86,7 +80,6 @@ const AcquisitionsAcqIdGridsGridIdSquareSquareIdPredictionsRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/models': typeof ModelsRouteWithChildren
   '/acquisitions/$acqId': typeof AcquisitionsAcqIdRouteWithChildren
   '/acquisitions/$acqId/grids/$gridId/atlas': typeof AcquisitionsAcqIdGridsGridIdAtlasRoute
@@ -99,7 +92,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/models': typeof ModelsRouteWithChildren
   '/acquisitions/$acqId': typeof AcquisitionsAcqIdRouteWithChildren
   '/acquisitions/$acqId/grids/$gridId/atlas': typeof AcquisitionsAcqIdGridsGridIdAtlasRoute
@@ -113,7 +105,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/models': typeof ModelsRouteWithChildren
   '/acquisitions/$acqId': typeof AcquisitionsAcqIdRouteWithChildren
   '/acquisitions/$acqId/grids/$gridId/atlas': typeof AcquisitionsAcqIdGridsGridIdAtlasRoute
@@ -128,7 +119,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/admin'
     | '/models'
     | '/acquisitions/$acqId'
     | '/acquisitions/$acqId/grids/$gridId/atlas'
@@ -141,7 +131,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/admin'
     | '/models'
     | '/acquisitions/$acqId'
     | '/acquisitions/$acqId/grids/$gridId/atlas'
@@ -154,7 +143,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/admin'
     | '/models'
     | '/acquisitions/$acqId'
     | '/acquisitions/$acqId/grids/$gridId/atlas'
@@ -168,7 +156,6 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRoute
   ModelsRoute: typeof ModelsRouteWithChildren
   AcquisitionsAcqIdRoute: typeof AcquisitionsAcqIdRouteWithChildren
 }
@@ -180,13 +167,6 @@ declare module '@tanstack/react-router' {
       path: '/models'
       fullPath: '/models'
       preLoaderRoute: typeof ModelsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -296,7 +276,6 @@ const AcquisitionsAcqIdRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRoute,
   ModelsRoute: ModelsRouteWithChildren,
   AcquisitionsAcqIdRoute: AcquisitionsAcqIdRouteWithChildren,
 }

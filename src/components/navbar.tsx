@@ -1,4 +1,4 @@
-import { AdminPanelSettings, DensityMedium, Science } from '@mui/icons-material'
+import { DensityMedium, Science } from '@mui/icons-material'
 import HomeFilledIcon from '@mui/icons-material/HomeFilled'
 import {
   Box,
@@ -77,18 +77,6 @@ export const Navbar = () => {
           }}
         >
           <List>
-            <ListItem>
-              <ListItemButton
-                onClick={() => {
-                  navigate({ to: '/admin' })
-                }}
-              >
-                <ListItemIcon>
-                  <AdminPanelSettings />
-                </ListItemIcon>
-                <ListItemText primary="Admin" />
-              </ListItemButton>
-            </ListItem>
             <ListItem>
               <ListItemButton
                 onClick={() => {
