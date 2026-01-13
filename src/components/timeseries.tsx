@@ -12,6 +12,7 @@ import {
   Slider,
   Switch,
 } from '@mui/material'
+import type { AxisValueFormatterContext } from '@mui/x-charts'
 import { LineChart } from '@mui/x-charts'
 
 import React from 'react'
@@ -42,12 +43,15 @@ export const TimeSeriesChart = ({
         )
   const current = yData.length === 0 ? 0 : yData.slice(-1)[0]
 
-  const valueFormatter = (date: any, context: any) => {
-    return timeScale
-      ? context.location === 'tick'
-        ? `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}.${(date.getMilliseconds() / 100).toPrecision(1)}`
-        : `${new Date(date)}`
-      : date.toString()
+  const valueFormatter = (date: Date | number, context: AxisValueFormatterContext) => {
+    if (!timeScale) {
+      return date.toString()
+    }
+    const dateObj = date instanceof Date ? date : new Date(date)
+    if (context.location === 'tick') {
+      return `${dateObj.getHours().toString().padStart(2, '0')}:${dateObj.getMinutes().toString().padStart(2, '0')}:${dateObj.getSeconds().toString().padStart(2, '0')}.${(dateObj.getMilliseconds() / 100).toPrecision(1)}`
+    }
+    return `${dateObj}`
   }
 
   return xData.length === 0 || yData.length === 0 ? (

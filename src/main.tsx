@@ -24,8 +24,8 @@ async function enableMocking() {
   })
 }
 
-const rootElement = document.getElementById('root')!
-if (!rootElement.innerHTML) {
+const rootElement = document.getElementById('root')
+if (rootElement && !rootElement.innerHTML) {
   enableMocking().then(() => {
     const root = createRoot(rootElement)
     root.render(
