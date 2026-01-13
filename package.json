@@ -38,7 +38,7 @@
     "@tanstack/router-devtools": "^1.135.0",
     "@tanstack/router-vite-plugin": "^1.135.0",
     "@types/d3-array": "^3.2.1",
-    "@vitejs/plugin-react": "^5.1.0",
+    "@vitejs/plugin-react": "^5.1.2",
     "axios": "^1.12.2",
     "boring-avatars": "^1.11.2",
     "d3-array": "^3.2.4",
