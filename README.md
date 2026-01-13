@@ -40,10 +40,6 @@ React 19, React Router 7, TanStack Query, Material-UI, Orval, TypeScript, Vite, 
 
 Full documentation: <https://DiamondLightSource.github.io/smartem-devtools>
 
-- [API Client Generation](https://diamondlightsource.github.io/smartem-devtools/frontend/api-client)
-- [Code Quality](https://diamondlightsource.github.io/smartem-devtools/frontend/code-quality)
-- [Git Hooks](https://diamondlightsource.github.io/smartem-devtools/frontend/git-hooks)
-
 ## Contributing
 
 When adding new API endpoints or modifying existing ones:
