@@ -1,0 +1,8 @@
+# OSV Scanner configuration
+# https://google.github.io/osv-scanner/configuration/
+
+# No exemptions configured yet
+# Add vulnerability exemptions here as needed:
+# [[IgnoredVulns]]
+# id = "GHSA-xxxx-xxxx-xxxx"
+# reason = "Not exploitable in our usage"
