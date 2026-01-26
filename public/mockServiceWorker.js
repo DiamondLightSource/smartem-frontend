@@ -7,7 +7,7 @@
  * - Please do NOT modify this file.
  */
 
-const PACKAGE_VERSION = '2.11.3'
+const PACKAGE_VERSION = '2.12.7'
 const INTEGRITY_CHECKSUM = '4db4a41e972cec1b64cc569c66952d82'
 const IS_MOCKED_RESPONSE = Symbol('isMockedResponse')
 const activeClientIds = new Set()
@@ -197,6 +197,7 @@ async function resolveMainClient(event) {
  * @param {FetchEvent} event
  * @param {Client | undefined} client
  * @param {string} requestId
+ * @param {number} requestInterceptedAt
  * @returns {Promise<Response>}
  */
 async function getResponse(event, client, requestId, requestInterceptedAt) {
@@ -279,7 +280,7 @@ function sendToClient(client, message, transferrables = []) {
     const channel = new MessageChannel()
 
     channel.port1.onmessage = (event) => {
-      if (event.data?.error) {
+      if (event.data && event.data.error) {
         return reject(event.data.error)
       }
 
