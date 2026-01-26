@@ -54,6 +54,22 @@ export const TimeSeriesChart = ({
     return `${dateObj}`
   }
 
+  const xAxisConfig = timeScale
+    ? {
+        data: xData as Date[],
+        min: xData[axisRange[0]] as Date,
+        max: xData[axisRange[1]] as Date,
+        scaleType: 'time' as const,
+        valueFormatter,
+      }
+    : {
+        data: Array.from({ length: xData.length }, (_x, i) => i + 1),
+        min: axisRange[0] + 1,
+        max: axisRange[1] + 1,
+        scaleType: 'linear' as const,
+        valueFormatter,
+      }
+
   return xData.length === 0 || yData.length === 0 ? (
     <Box
       sx={{
@@ -86,15 +102,7 @@ export const TimeSeriesChart = ({
         <Grid size={8}>
           <LineChart
             hideLegend
-            xAxis={[
-              {
-                data: timeScale ? xData : Array.from({ length: xData.length }, (_x, i) => i + 1),
-                min: timeScale ? xData[axisRange[0]] : axisRange[0] + 1,
-                max: timeScale ? xData[axisRange[1]] : axisRange[1] + 1,
-                scaleType: timeScale ? 'time' : 'linear',
-                valueFormatter: valueFormatter,
-              },
-            ]}
+            xAxis={[xAxisConfig]}
             grid={{ horizontal: true }}
             series={[{ data: yData, color: '#5C9EAD' }]}
             yAxis={[{ min: 0, max: 1 }]}
