@@ -13,7 +13,7 @@
     "typecheck": "tsc",
     "router:generate": "tsr generate",
     "router:check": "tsr generate && git diff --exit-code src/routeTree.gen.ts",
-    "api:fetch": "curl -s https://diamondlightsource.github.io/smartem-decisions/main/api/smartem/swagger.json -o src/api/openapi.json",
+    "api:fetch": "curl -s https://diamondlightsource.github.io/smartem-devtools/api/smartem/swagger.json -o src/api/openapi.json",
     "api:fetch:local": "curl -s http://localhost:8000/openapi.json -o src/api/openapi.json",
     "api:generate": "orval --config orval.config.ts && node scripts/extract-api-version.js",
     "api:update": "npm run api:fetch && npm run api:generate",

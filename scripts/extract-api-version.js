@@ -6,8 +6,8 @@ import { fileURLToPath } from 'node:url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-const openApiPath = join(__dirname, '../app/api/openapi.json')
-const versionPath = join(__dirname, '../app/api/generated/api-version.ts')
+const openApiPath = join(__dirname, '../src/api/openapi.json')
+const versionPath = join(__dirname, '../src/api/generated/api-version.ts')
 
 try {
   const openApiSpec = JSON.parse(readFileSync(openApiPath, 'utf-8'))
