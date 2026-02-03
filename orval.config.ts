@@ -10,6 +10,7 @@ export default defineConfig({
       target: 'src/api/generated/endpoints.ts',
       schemas: 'src/api/generated/models',
       client: 'react-query',
+      httpClient: 'axios',
       mock: true,
       prettier: true,
       override: {
