@@ -15,7 +15,6 @@ import {
   Select,
   Stack,
   Switch,
-  ThemeProvider,
   Tooltip,
 } from '@mui/material'
 import type { ScatterItemIdentifier } from '@mui/x-charts/models'
@@ -37,9 +36,7 @@ import {
   getPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGet,
   getPredictionModelsPredictionModelsGet,
 } from '../api/stubs'
-
-import { Navbar } from '../components/navbar'
-import { theme } from '../components/theme'
+import { Breadcrumbs, buildAcquisitionCrumbs, RouterLink } from '../components/breadcrumbs'
 
 type GridSquare = GridSquareResponse
 type PredictionModel = QualityPredictionModelResponse
@@ -191,10 +188,16 @@ function Atlas() {
   const url = apiUrl()
 
   return (
-    <ThemeProvider theme={theme}>
-      <Navbar />
+    <>
+      <Breadcrumbs
+        path={[
+          ...buildAcquisitionCrumbs(acqId, gridId),
+          { name: 'Atlas', href: `/acquisitions/${acqId}/grids/${gridId}/atlas` },
+        ]}
+        linkComponent={RouterLink}
+      />
       <Stack direction="row" spacing={2}>
-        <Container maxWidth="sm" content="center" style={{ width: '100%', paddingTop: '50px' }}>
+        <Container maxWidth="sm" content="center" style={{ width: '100%' }}>
           <Card variant="outlined">
             <div
               style={{
@@ -332,7 +335,7 @@ function Atlas() {
             </CardActions>
           </Card>
         </Container>
-        <Container maxWidth="sm" content="center" style={{ width: '100%', paddingTop: '50px' }}>
+        <Container maxWidth="sm" content="center" style={{ width: '100%' }}>
           {showLatentSpace ? (
             <Card variant="outlined">
               {latentRep ? (
@@ -402,7 +405,7 @@ function Atlas() {
           ) : null}
         </Container>
       </Stack>
-    </ThemeProvider>
+    </>
   )
 }
 

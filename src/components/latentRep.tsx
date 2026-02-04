@@ -13,7 +13,6 @@ import {
   Select,
   Stack,
   Switch,
-  ThemeProvider,
   Tooltip,
 } from '@mui/material'
 import type { ScatterItemIdentifier } from '@mui/x-charts/models'
@@ -25,8 +24,6 @@ import type { LatentRepresentationResponse } from '../api/generated/models/laten
 import type { QualityPredictionModelResponse } from '../api/generated/models/qualityPredictionModelResponse'
 import type { QualityPredictionResponse } from '../api/generated/models/qualityPredictionResponse'
 import { apiUrl } from '../api/mutator'
-import { Navbar } from '../components/navbar'
-import { theme } from '../components/theme'
 
 type GridSquare = GridSquareResponse
 type PredictionModel = QualityPredictionModelResponse
@@ -150,183 +147,178 @@ export default function Atlas({
   }, [predictions])
 
   return (
-    <ThemeProvider theme={theme}>
-      <Navbar />
-      <Stack direction="row" spacing={2}>
-        <Container maxWidth="sm" content="center" style={{ width: '100%', paddingTop: '50px' }}>
-          <Card variant="outlined">
-            <div
-              style={{
-                display: 'flex',
-                flex: '1 0 300px',
-                position: 'relative',
-              }}
-            >
-              <img src={`${apiUrl()}/grids/${params.gridId}/atlas_image`} alt="Grid atlas" />
-              <svg viewBox="0 0 4005 4005" style={{ position: 'absolute', top: 0, left: 0 }}>
-                <title>Grid squares overlay</title>
-                {loaderData.squares.map((gridSquare: GridSquare) => (
-                  <Tooltip
-                    key={gridSquare.uuid}
-                    title={
-                      showPredictions && predictions
-                        ? `${gridSquare.gridsquare_id}: ${predictions.get(gridSquare.uuid)?.toFixed(3)}`
-                        : gridSquare.gridsquare_id
-                    }
-                  >
-                    <circle
-                      role="button"
-                      tabIndex={0}
-                      cx={gridSquare.center_x ?? 0}
-                      cy={gridSquare.center_y ?? 0}
-                      r={
-                        predictions?.get(gridSquare.uuid) !== undefined
-                          ? (((1.5 * ((predictions.get(gridSquare.uuid) ?? 0) - predictionMin)) /
-                              (predictionMax - predictionMin)) *
-                              maxWidth) /
-                            2
-                          : (gridSquare.size_width ?? 0) / 2
-                      }
-                      fillOpacity={0.5}
-                      fill={
-                        latentRep
-                          ? colourPalette[latentRep.get(gridSquare.uuid)?.index ?? 0]
-                          : showPredictions
-                            ? predictions?.get(gridSquare.uuid) !== undefined
-                              ? (predictions.get(gridSquare.uuid) ?? 0) >= 0
-                                ? 'green'
-                                : 'red'
-                              : 'dark gray'
-                            : 'purple'
-                      }
-                      strokeWidth={
-                        gridSquare.uuid === selectedSquare
-                          ? 0.25 * (gridSquare.size_width ?? 0)
-                          : 0.1 * (gridSquare.size_width ?? 0)
-                      }
-                      strokeOpacity={1}
-                      stroke={
-                        gridSquare.uuid === selectedSquare
-                          ? 'orange'
-                          : showPredictions
-                            ? predictions?.get(gridSquare.uuid) !== undefined
-                              ? (predictions.get(gridSquare.uuid) ?? 0) >= 0
-                                ? 'green'
-                                : 'red'
-                              : 'gray'
-                            : 'gray'
-                      }
-                      onClick={() => handleSelectionClick(gridSquare.uuid)}
-                      onMouseOver={() =>
-                        !selectionFrozen ? setSelectedSquare(gridSquare.uuid) : {}
-                      }
-                      onFocus={() => !selectionFrozen && setSelectedSquare(gridSquare.uuid)}
-                    />
-                  </Tooltip>
-                ))}
-              </svg>
-            </div>
-            <CardActions>
-              <Switch checked={showPredictions} onChange={handlePredictionChange} />
-              {showPredictions ? (
-                <FormControl fullWidth>
-                  <InputLabel id={modelSelectLabelId}>Prediction Model</InputLabel>
-                  <Select
-                    labelId={modelSelectLabelId}
-                    id={modelSelectId}
-                    value={predictionModel}
-                    label="Prediction Model"
-                    onChange={handleChange}
-                  >
-                    {loaderData.models.map((model: PredictionModel) => (
-                      <MenuItem key={model.name} value={model.name}>
-                        {model.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              ) : null}
-              <Tooltip title={'Add latent panel'}>
-                <IconButton
-                  aria-label="add-panel"
-                  style={{ display: 'flex', marginLeft: 'auto' }}
-                  onClick={() => setShowLatentSpace(true)}
+    <Stack direction="row" spacing={2}>
+      <Container maxWidth="sm" content="center" style={{ width: '100%' }}>
+        <Card variant="outlined">
+          <div
+            style={{
+              display: 'flex',
+              flex: '1 0 300px',
+              position: 'relative',
+            }}
+          >
+            <img src={`${apiUrl()}/grids/${params.gridId}/atlas_image`} alt="Grid atlas" />
+            <svg viewBox="0 0 4005 4005" style={{ position: 'absolute', top: 0, left: 0 }}>
+              <title>Grid squares overlay</title>
+              {loaderData.squares.map((gridSquare: GridSquare) => (
+                <Tooltip
+                  key={gridSquare.uuid}
+                  title={
+                    showPredictions && predictions
+                      ? `${gridSquare.gridsquare_id}: ${predictions.get(gridSquare.uuid)?.toFixed(3)}`
+                      : gridSquare.gridsquare_id
+                  }
                 >
-                  <AddIcon />
+                  <circle
+                    role="button"
+                    tabIndex={0}
+                    cx={gridSquare.center_x ?? 0}
+                    cy={gridSquare.center_y ?? 0}
+                    r={
+                      predictions?.get(gridSquare.uuid) !== undefined
+                        ? (((1.5 * ((predictions.get(gridSquare.uuid) ?? 0) - predictionMin)) /
+                            (predictionMax - predictionMin)) *
+                            maxWidth) /
+                          2
+                        : (gridSquare.size_width ?? 0) / 2
+                    }
+                    fillOpacity={0.5}
+                    fill={
+                      latentRep
+                        ? colourPalette[latentRep.get(gridSquare.uuid)?.index ?? 0]
+                        : showPredictions
+                          ? predictions?.get(gridSquare.uuid) !== undefined
+                            ? (predictions.get(gridSquare.uuid) ?? 0) >= 0
+                              ? 'green'
+                              : 'red'
+                            : 'dark gray'
+                          : 'purple'
+                    }
+                    strokeWidth={
+                      gridSquare.uuid === selectedSquare
+                        ? 0.25 * (gridSquare.size_width ?? 0)
+                        : 0.1 * (gridSquare.size_width ?? 0)
+                    }
+                    strokeOpacity={1}
+                    stroke={
+                      gridSquare.uuid === selectedSquare
+                        ? 'orange'
+                        : showPredictions
+                          ? predictions?.get(gridSquare.uuid) !== undefined
+                            ? (predictions.get(gridSquare.uuid) ?? 0) >= 0
+                              ? 'green'
+                              : 'red'
+                            : 'gray'
+                          : 'gray'
+                    }
+                    onClick={() => handleSelectionClick(gridSquare.uuid)}
+                    onMouseOver={() => (!selectionFrozen ? setSelectedSquare(gridSquare.uuid) : {})}
+                    onFocus={() => !selectionFrozen && setSelectedSquare(gridSquare.uuid)}
+                  />
+                </Tooltip>
+              ))}
+            </svg>
+          </div>
+          <CardActions>
+            <Switch checked={showPredictions} onChange={handlePredictionChange} />
+            {showPredictions ? (
+              <FormControl fullWidth>
+                <InputLabel id={modelSelectLabelId}>Prediction Model</InputLabel>
+                <Select
+                  labelId={modelSelectLabelId}
+                  id={modelSelectId}
+                  value={predictionModel}
+                  label="Prediction Model"
+                  onChange={handleChange}
+                >
+                  {loaderData.models.map((model: PredictionModel) => (
+                    <MenuItem key={model.name} value={model.name}>
+                      {model.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            ) : null}
+            <Tooltip title={'Add latent panel'}>
+              <IconButton
+                aria-label="add-panel"
+                style={{ display: 'flex', marginLeft: 'auto' }}
+                onClick={() => setShowLatentSpace(true)}
+              >
+                <AddIcon />
+              </IconButton>
+            </Tooltip>
+          </CardActions>
+        </Card>
+      </Container>
+      <Container maxWidth="sm" content="center" style={{ width: '100%' }}>
+        {showLatentSpace ? (
+          <Card>
+            {latentRep ? (
+              <ScatterChart
+                height={500}
+                series={Array.from(latentRep).map((k, _v) => ({
+                  label: k[0],
+                  id: k[0],
+                  data: [{ x: k[1].x, y: k[1].y, id: k[0] }],
+                  markerSize:
+                    k[0] === selectedSquare || showUnselectedInLatentSpace
+                      ? predictions
+                        ? (7 * ((predictions?.get(k[0]) ?? 0) + 1)) / 2
+                        : 5
+                      : 0,
+                  color: k[0] === selectedSquare ? 'black' : colourPalette[k[1].index],
+                  valueFormatter: (v) => {
+                    if (!selectionFrozen) setSelectedSquare(k[0])
+                    return `${squareNameMap?.get(String(v?.id ?? '')) ?? ''}: ${String(k[1].index)}`
+                  },
+                }))}
+                yAxis={[{ position: 'none' }]}
+                xAxis={[{ position: 'none' }]}
+                hideLegend={true}
+                onItemClick={(_: React.MouseEvent, d: ScatterItemIdentifier) =>
+                  handleSelectionClick(d.seriesId.toString())
+                }
+              />
+            ) : null}
+            <CardActions>
+              <Tooltip
+                title={'Show unselected squares'}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  setShowUnselectedInLatentSpace(event.target.checked)
+                }}
+              >
+                <Checkbox defaultChecked />
+              </Tooltip>
+              <FormControl fullWidth>
+                <InputLabel id={repModelSelectLabelId}>Prediction Model</InputLabel>
+                <Select
+                  labelId={repModelSelectLabelId}
+                  id={repModelSelectId}
+                  value={repModel}
+                  label="Latent Representation Model"
+                  onChange={handleLatentRepChange}
+                >
+                  {loaderData.models.map((model: PredictionModel) => (
+                    <MenuItem key={model.name} value={model.name}>
+                      {model.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <Tooltip title={'Close latent panel'}>
+                <IconButton
+                  aria-label="close-panel"
+                  style={{ display: 'flex', marginLeft: 'auto' }}
+                  onClick={() => setShowLatentSpace(false)}
+                >
+                  <CloseIcon />
                 </IconButton>
               </Tooltip>
             </CardActions>
           </Card>
-        </Container>
-        <Container maxWidth="sm" content="center" style={{ width: '100%', paddingTop: '50px' }}>
-          {showLatentSpace ? (
-            <Card>
-              {latentRep ? (
-                <ScatterChart
-                  height={500}
-                  series={Array.from(latentRep).map((k, _v) => ({
-                    label: k[0],
-                    id: k[0],
-                    data: [{ x: k[1].x, y: k[1].y, id: k[0] }],
-                    markerSize:
-                      k[0] === selectedSquare || showUnselectedInLatentSpace
-                        ? predictions
-                          ? (7 * ((predictions?.get(k[0]) ?? 0) + 1)) / 2
-                          : 5
-                        : 0,
-                    color: k[0] === selectedSquare ? 'black' : colourPalette[k[1].index],
-                    valueFormatter: (v) => {
-                      if (!selectionFrozen) setSelectedSquare(k[0])
-                      return `${squareNameMap?.get(String(v?.id ?? '')) ?? ''}: ${String(k[1].index)}`
-                    },
-                  }))}
-                  yAxis={[{ position: 'none' }]}
-                  xAxis={[{ position: 'none' }]}
-                  hideLegend={true}
-                  onItemClick={(_: React.MouseEvent, d: ScatterItemIdentifier) =>
-                    handleSelectionClick(d.seriesId.toString())
-                  }
-                />
-              ) : null}
-              <CardActions>
-                <Tooltip
-                  title={'Show unselected squares'}
-                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                    setShowUnselectedInLatentSpace(event.target.checked)
-                  }}
-                >
-                  <Checkbox defaultChecked />
-                </Tooltip>
-                <FormControl fullWidth>
-                  <InputLabel id={repModelSelectLabelId}>Prediction Model</InputLabel>
-                  <Select
-                    labelId={repModelSelectLabelId}
-                    id={repModelSelectId}
-                    value={repModel}
-                    label="Latent Representation Model"
-                    onChange={handleLatentRepChange}
-                  >
-                    {loaderData.models.map((model: PredictionModel) => (
-                      <MenuItem key={model.name} value={model.name}>
-                        {model.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <Tooltip title={'Close latent panel'}>
-                  <IconButton
-                    aria-label="close-panel"
-                    style={{ display: 'flex', marginLeft: 'auto' }}
-                    onClick={() => setShowLatentSpace(false)}
-                  >
-                    <CloseIcon />
-                  </IconButton>
-                </Tooltip>
-              </CardActions>
-            </Card>
-          ) : null}
-        </Container>
-      </Stack>
-    </ThemeProvider>
+        ) : null}
+      </Container>
+    </Stack>
   )
 }

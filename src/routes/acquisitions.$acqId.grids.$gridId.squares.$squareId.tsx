@@ -14,7 +14,6 @@ import {
   Select,
   Stack,
   Switch,
-  ThemeProvider,
   Tooltip,
 } from '@mui/material'
 import type { ScatterItemIdentifier } from '@mui/x-charts/models'
@@ -27,8 +26,7 @@ import type { LatentRepresentationResponse } from '../api/generated/models/laten
 import type { QualityPredictionModelResponse } from '../api/generated/models/qualityPredictionModelResponse'
 import type { QualityPredictionResponse } from '../api/generated/models/qualityPredictionResponse'
 import { apiUrl } from '../api/mutator'
-import { Navbar } from '../components/navbar'
-import { theme } from '../components/theme'
+import { Breadcrumbs, buildAcquisitionCrumbs, RouterLink } from '../components/breadcrumbs'
 
 type FoilHole = FoilHoleResponse
 type PredictionModel = QualityPredictionModelResponse
@@ -184,10 +182,13 @@ function GridSquareLR() {
   const url = apiUrl()
 
   return (
-    <ThemeProvider theme={theme}>
-      <Navbar />
+    <>
+      <Breadcrumbs
+        path={buildAcquisitionCrumbs(acqId, gridId, squareId)}
+        linkComponent={RouterLink}
+      />
       <Stack direction="row" spacing={2}>
-        <Container maxWidth="lg" content="center" style={{ width: '100%', paddingTop: '50px' }}>
+        <Container maxWidth="lg" content="center" style={{ width: '100%' }}>
           <Card variant="outlined">
             <div
               style={{
@@ -305,7 +306,7 @@ function GridSquareLR() {
             </CardActions>
           </Card>
         </Container>
-        <Container maxWidth="sm" content="center" style={{ width: '100%', paddingTop: '50px' }}>
+        <Container maxWidth="sm" content="center" style={{ width: '100%' }}>
           {showLatentSpace ? (
             <Card variant="outlined">
               {latentRep ? (
@@ -375,7 +376,7 @@ function GridSquareLR() {
           ) : null}
         </Container>
       </Stack>
-    </ThemeProvider>
+    </>
   )
 }
 

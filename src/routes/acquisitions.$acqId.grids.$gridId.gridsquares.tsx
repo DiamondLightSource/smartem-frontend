@@ -10,17 +10,15 @@ import {
   Container,
   Grid,
   Pagination,
-  ThemeProvider,
 } from '@mui/material'
 import { createFileRoute } from '@tanstack/react-router'
 import React from 'react'
 import { useGetGridGridsquaresGridsGridUuidGridsquaresGet } from '../api/generated/default/default'
 import type { GridSquareResponse } from '../api/generated/models'
-import { Navbar } from '../components/navbar'
-import { theme } from '../components/theme'
+import { Breadcrumbs, buildAcquisitionCrumbs, RouterLink } from '../components/breadcrumbs'
 
 function GridSquareGallery() {
-  const { gridId } = Route.useParams()
+  const { acqId, gridId } = Route.useParams()
   const {
     data: squares,
     isLoading,
@@ -61,14 +59,19 @@ function GridSquareGallery() {
   }, [filteredSquares])
 
   return (
-    <ThemeProvider theme={theme}>
-      <Navbar />
+    <>
+      <Breadcrumbs
+        path={[
+          ...buildAcquisitionCrumbs(acqId, gridId),
+          { name: 'Grid Squares', href: `/acquisitions/${acqId}/grids/${gridId}/gridsquares` },
+        ]}
+        linkComponent={RouterLink}
+      />
       <Container
         maxWidth="sm"
         content="center"
         style={{
           width: '100%',
-          paddingTop: '50px',
           paddingBottom: '50px',
           borderColor: 'gray',
           borderWidth: '5px',
@@ -120,7 +123,7 @@ function GridSquareGallery() {
           </>
         )}
       </Container>
-    </ThemeProvider>
+    </>
   )
 }
 

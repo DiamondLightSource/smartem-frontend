@@ -13,7 +13,6 @@ import {
   TableHead,
   TableRow,
   TableSortLabel,
-  ThemeProvider,
 } from '@mui/material'
 import Paper from '@mui/material/Paper'
 import { useQueries } from '@tanstack/react-query'
@@ -26,8 +25,7 @@ import {
   useGetGridGridsquaresGridsGridUuidGridsquaresGet,
 } from '../api/generated/default/default'
 import type { FoilHoleResponse, GridSquareResponse } from '../api/generated/models'
-import { Navbar } from '../components/navbar'
-import { theme } from '../components/theme'
+import { Breadcrumbs, buildAcquisitionCrumbs, RouterLink } from '../components/breadcrumbs'
 
 type SquareDetails = {
   square: GridSquareResponse
@@ -159,7 +157,7 @@ const CollapsibleRow = ({ square, holes, weightedPredictions }: FullSquareDetail
 }
 
 function Grid() {
-  const { gridId } = Route.useParams()
+  const { acqId, gridId } = Route.useParams()
   const [holeNumberOrder, _setHoleNumberOrder] = React.useState(true)
   const [sortOrderDescending, setSortOrderDescending] = React.useState(true)
 
@@ -207,9 +205,9 @@ function Grid() {
   }
 
   return (
-    <ThemeProvider theme={theme}>
-      <Navbar />
-      <Container content="center" style={{ width: '100%', paddingTop: '25px' }}>
+    <>
+      <Breadcrumbs path={buildAcquisitionCrumbs(acqId, gridId)} linkComponent={RouterLink} />
+      <Container content="center" style={{ width: '100%' }}>
         <TableContainer component={Paper} style={{ width: '80%' }} sx={{ maxHeight: 650 }}>
           <Table stickyHeader>
             <TableHead>
@@ -259,7 +257,7 @@ function Grid() {
           </Table>
         </TableContainer>
       </Container>
-    </ThemeProvider>
+    </>
   )
 }
 
