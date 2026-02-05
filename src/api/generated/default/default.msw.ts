@@ -35,15 +35,15 @@ export const getGetAcquisitionsAcquisitionsGetResponseMock = (): AcquisitionResp
       null,
     ]),
     start_time: faker.helpers.arrayElement([
-      faker.date.past().toISOString().slice(0, 19) + 'Z',
+      `${faker.date.past().toISOString().slice(0, 19)}Z`,
       null,
     ]),
     end_time: faker.helpers.arrayElement([
-      faker.date.past().toISOString().slice(0, 19) + 'Z',
+      `${faker.date.past().toISOString().slice(0, 19)}Z`,
       null,
     ]),
     paused_time: faker.helpers.arrayElement([
-      faker.date.past().toISOString().slice(0, 19) + 'Z',
+      `${faker.date.past().toISOString().slice(0, 19)}Z`,
       null,
     ]),
     storage_path: faker.helpers.arrayElement([
@@ -86,12 +86,12 @@ export const getCreateAcquisitionAcquisitionsPostResponseMock = (
     null,
   ]),
   start_time: faker.helpers.arrayElement([
-    faker.date.past().toISOString().slice(0, 19) + 'Z',
+    `${faker.date.past().toISOString().slice(0, 19)}Z`,
     null,
   ]),
-  end_time: faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z', null]),
+  end_time: faker.helpers.arrayElement([`${faker.date.past().toISOString().slice(0, 19)}Z`, null]),
   paused_time: faker.helpers.arrayElement([
-    faker.date.past().toISOString().slice(0, 19) + 'Z',
+    `${faker.date.past().toISOString().slice(0, 19)}Z`,
     null,
   ]),
   storage_path: faker.helpers.arrayElement([
@@ -135,12 +135,12 @@ export const getGetAcquisitionAcquisitionsAcquisitionUuidGetResponseMock = (
     null,
   ]),
   start_time: faker.helpers.arrayElement([
-    faker.date.past().toISOString().slice(0, 19) + 'Z',
+    `${faker.date.past().toISOString().slice(0, 19)}Z`,
     null,
   ]),
-  end_time: faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z', null]),
+  end_time: faker.helpers.arrayElement([`${faker.date.past().toISOString().slice(0, 19)}Z`, null]),
   paused_time: faker.helpers.arrayElement([
-    faker.date.past().toISOString().slice(0, 19) + 'Z',
+    `${faker.date.past().toISOString().slice(0, 19)}Z`,
     null,
   ]),
   storage_path: faker.helpers.arrayElement([
@@ -184,12 +184,12 @@ export const getUpdateAcquisitionAcquisitionsAcquisitionUuidPutResponseMock = (
     null,
   ]),
   start_time: faker.helpers.arrayElement([
-    faker.date.past().toISOString().slice(0, 19) + 'Z',
+    `${faker.date.past().toISOString().slice(0, 19)}Z`,
     null,
   ]),
-  end_time: faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z', null]),
+  end_time: faker.helpers.arrayElement([`${faker.date.past().toISOString().slice(0, 19)}Z`, null]),
   paused_time: faker.helpers.arrayElement([
-    faker.date.past().toISOString().slice(0, 19) + 'Z',
+    `${faker.date.past().toISOString().slice(0, 19)}Z`,
     null,
   ]),
   storage_path: faker.helpers.arrayElement([
@@ -244,11 +244,11 @@ export const getGetGridsGridsGetResponseMock = (): GridResponse[] =>
       null,
     ]),
     scan_start_time: faker.helpers.arrayElement([
-      faker.date.past().toISOString().slice(0, 19) + 'Z',
+      `${faker.date.past().toISOString().slice(0, 19)}Z`,
       null,
     ]),
     scan_end_time: faker.helpers.arrayElement([
-      faker.date.past().toISOString().slice(0, 19) + 'Z',
+      `${faker.date.past().toISOString().slice(0, 19)}Z`,
       null,
     ]),
   }))
@@ -272,11 +272,11 @@ export const getGetGridGridsGridUuidGetResponseMock = (
     null,
   ]),
   scan_start_time: faker.helpers.arrayElement([
-    faker.date.past().toISOString().slice(0, 19) + 'Z',
+    `${faker.date.past().toISOString().slice(0, 19)}Z`,
     null,
   ]),
   scan_end_time: faker.helpers.arrayElement([
-    faker.date.past().toISOString().slice(0, 19) + 'Z',
+    `${faker.date.past().toISOString().slice(0, 19)}Z`,
     null,
   ]),
   ...overrideResponse,
@@ -301,11 +301,11 @@ export const getUpdateGridGridsGridUuidPutResponseMock = (
     null,
   ]),
   scan_start_time: faker.helpers.arrayElement([
-    faker.date.past().toISOString().slice(0, 19) + 'Z',
+    `${faker.date.past().toISOString().slice(0, 19)}Z`,
     null,
   ]),
   scan_end_time: faker.helpers.arrayElement([
-    faker.date.past().toISOString().slice(0, 19) + 'Z',
+    `${faker.date.past().toISOString().slice(0, 19)}Z`,
     null,
   ]),
   ...overrideResponse,
@@ -333,11 +333,11 @@ export const getGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGetResponseMo
         null,
       ]),
       scan_start_time: faker.helpers.arrayElement([
-        faker.date.past().toISOString().slice(0, 19) + 'Z',
+        `${faker.date.past().toISOString().slice(0, 19)}Z`,
         null,
       ]),
       scan_end_time: faker.helpers.arrayElement([
-        faker.date.past().toISOString().slice(0, 19) + 'Z',
+        `${faker.date.past().toISOString().slice(0, 19)}Z`,
         null,
       ]),
     }))
@@ -361,11 +361,11 @@ export const getCreateAcquisitionGridAcquisitionsAcquisitionUuidGridsPostRespons
     null,
   ]),
   scan_start_time: faker.helpers.arrayElement([
-    faker.date.past().toISOString().slice(0, 19) + 'Z',
+    `${faker.date.past().toISOString().slice(0, 19)}Z`,
     null,
   ]),
   scan_end_time: faker.helpers.arrayElement([
-    faker.date.past().toISOString().slice(0, 19) + 'Z',
+    `${faker.date.past().toISOString().slice(0, 19)}Z`,
     null,
   ]),
   ...overrideResponse,
@@ -380,7 +380,7 @@ export const getGetAtlasesAtlasesGetResponseMock = (): AtlasResponse[] =>
     grid_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
     atlas_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
     acquisition_date: faker.helpers.arrayElement([
-      faker.date.past().toISOString().slice(0, 19) + 'Z',
+      `${faker.date.past().toISOString().slice(0, 19)}Z`,
       null,
     ]),
     storage_folder: faker.helpers.arrayElement([
@@ -436,7 +436,7 @@ export const getGetAtlasAtlasesAtlasUuidGetResponseMock = (
   grid_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
   atlas_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
   acquisition_date: faker.helpers.arrayElement([
-    faker.date.past().toISOString().slice(0, 19) + 'Z',
+    `${faker.date.past().toISOString().slice(0, 19)}Z`,
     null,
   ]),
   storage_folder: faker.helpers.arrayElement([
@@ -493,7 +493,7 @@ export const getUpdateAtlasAtlasesAtlasUuidPutResponseMock = (
   grid_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
   atlas_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
   acquisition_date: faker.helpers.arrayElement([
-    faker.date.past().toISOString().slice(0, 19) + 'Z',
+    `${faker.date.past().toISOString().slice(0, 19)}Z`,
     null,
   ]),
   storage_folder: faker.helpers.arrayElement([
@@ -550,7 +550,7 @@ export const getGetGridAtlasGridsGridUuidAtlasGetResponseMock = (
   grid_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
   atlas_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
   acquisition_date: faker.helpers.arrayElement([
-    faker.date.past().toISOString().slice(0, 19) + 'Z',
+    `${faker.date.past().toISOString().slice(0, 19)}Z`,
     null,
   ]),
   storage_folder: faker.helpers.arrayElement([
@@ -607,7 +607,7 @@ export const getCreateGridAtlasGridsGridUuidAtlasPostResponseMock = (
   grid_uuid: faker.string.alpha({ length: { min: 10, max: 20 } }),
   atlas_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
   acquisition_date: faker.helpers.arrayElement([
-    faker.date.past().toISOString().slice(0, 19) + 'Z',
+    `${faker.date.past().toISOString().slice(0, 19)}Z`,
     null,
   ]),
   storage_folder: faker.helpers.arrayElement([
@@ -882,7 +882,7 @@ export const getGetGridsquaresGridsquaresGetResponseMock = (): GridSquareRespons
       null,
     ]),
     acquisition_datetime: faker.helpers.arrayElement([
-      faker.date.past().toISOString().slice(0, 19) + 'Z',
+      `${faker.date.past().toISOString().slice(0, 19)}Z`,
       null,
     ]),
     defocus: faker.helpers.arrayElement([
@@ -976,7 +976,7 @@ export const getGetGridsquareGridsquaresGridsquareUuidGetResponseMock = (
     null,
   ]),
   acquisition_datetime: faker.helpers.arrayElement([
-    faker.date.past().toISOString().slice(0, 19) + 'Z',
+    `${faker.date.past().toISOString().slice(0, 19)}Z`,
     null,
   ]),
   defocus: faker.helpers.arrayElement([
@@ -1071,7 +1071,7 @@ export const getUpdateGridsquareGridsquaresGridsquareUuidPutResponseMock = (
     null,
   ]),
   acquisition_datetime: faker.helpers.arrayElement([
-    faker.date.past().toISOString().slice(0, 19) + 'Z',
+    `${faker.date.past().toISOString().slice(0, 19)}Z`,
     null,
   ]),
   defocus: faker.helpers.arrayElement([
@@ -1169,7 +1169,7 @@ export const getGetGridGridsquaresGridsGridUuidGridsquaresGetResponseMock =
         null,
       ]),
       acquisition_datetime: faker.helpers.arrayElement([
-        faker.date.past().toISOString().slice(0, 19) + 'Z',
+        `${faker.date.past().toISOString().slice(0, 19)}Z`,
         null,
       ]),
       defocus: faker.helpers.arrayElement([
@@ -1263,7 +1263,7 @@ export const getCreateGridGridsquareGridsGridUuidGridsquaresPostResponseMock = (
     null,
   ]),
   acquisition_datetime: faker.helpers.arrayElement([
-    faker.date.past().toISOString().slice(0, 19) + 'Z',
+    `${faker.date.past().toISOString().slice(0, 19)}Z`,
     null,
   ]),
   defocus: faker.helpers.arrayElement([
@@ -1605,7 +1605,7 @@ export const getGetMicrographsMicrographsGetResponseMock = (): MicrographRespons
       undefined,
     ]),
     acquisition_datetime: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z', null]),
+      faker.helpers.arrayElement([`${faker.date.past().toISOString().slice(0, 19)}Z`, null]),
       undefined,
     ]),
     defocus: faker.helpers.arrayElement([
@@ -1713,7 +1713,7 @@ export const getGetMicrographMicrographsMicrographUuidGetResponseMock = (
     undefined,
   ]),
   acquisition_datetime: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z', null]),
+    faker.helpers.arrayElement([`${faker.date.past().toISOString().slice(0, 19)}Z`, null]),
     undefined,
   ]),
   defocus: faker.helpers.arrayElement([
@@ -1822,7 +1822,7 @@ export const getUpdateMicrographMicrographsMicrographUuidPutResponseMock = (
     undefined,
   ]),
   acquisition_datetime: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z', null]),
+    faker.helpers.arrayElement([`${faker.date.past().toISOString().slice(0, 19)}Z`, null]),
     undefined,
   ]),
   defocus: faker.helpers.arrayElement([
@@ -1931,7 +1931,7 @@ export const getGetFoilholeMicrographsFoilholesFoilholeUuidMicrographsGetRespons
         undefined,
       ]),
       acquisition_datetime: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z', null]),
+        faker.helpers.arrayElement([`${faker.date.past().toISOString().slice(0, 19)}Z`, null]),
         undefined,
       ]),
       defocus: faker.helpers.arrayElement([
@@ -2039,7 +2039,7 @@ export const getCreateFoilholeMicrographFoilholesFoilholeUuidMicrographsPostResp
     undefined,
   ]),
   acquisition_datetime: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z', null]),
+    faker.helpers.arrayElement([`${faker.date.past().toISOString().slice(0, 19)}Z`, null]),
     undefined,
   ]),
   defocus: faker.helpers.arrayElement([

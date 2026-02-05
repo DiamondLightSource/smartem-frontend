@@ -9,14 +9,12 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  ThemeProvider,
 } from '@mui/material'
 import Paper from '@mui/material/Paper'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet } from '../api/generated/default/default'
 import type { GridResponse } from '../api/generated/models'
-import { Navbar } from '../components/navbar'
-import { theme } from '../components/theme'
+import { Breadcrumbs, buildAcquisitionCrumbs, RouterLink } from '../components/breadcrumbs'
 
 function Acquisition() {
   const { acqId } = Route.useParams()
@@ -35,9 +33,9 @@ function Acquisition() {
   }
 
   return (
-    <ThemeProvider theme={theme}>
-      <Navbar />
-      <Container content="center" style={{ width: '100%', paddingTop: '50px' }}>
+    <>
+      <Breadcrumbs path={buildAcquisitionCrumbs(acqId)} linkComponent={RouterLink} />
+      <Container content="center" style={{ width: '100%' }}>
         {isLoading ? (
           <Box display="flex" justifyContent="center" p={4}>
             <CircularProgress />
@@ -87,7 +85,7 @@ function Acquisition() {
           </TableContainer>
         )}
       </Container>
-    </ThemeProvider>
+    </>
   )
 }
 

@@ -6,6 +6,9 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 
 export default defineConfig({
   plugins: [react(), tailwindcss(), TanStackRouterVite(), tsconfigPaths()],
+  resolve: {
+    dedupe: ['react', 'react-dom', 'react/jsx-runtime', '@mui/material'],
+  },
   server: {
     proxy: {
       '/api': {

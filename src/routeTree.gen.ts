@@ -86,7 +86,7 @@ export interface FileRoutesByFullPath {
   '/acquisitions/$acqId/grids/$gridId/gridsquares': typeof AcquisitionsAcqIdGridsGridIdGridsquaresRoute
   '/acquisitions/$acqId/grids/$gridId/workspace': typeof AcquisitionsAcqIdGridsGridIdWorkspaceRoute
   '/models/$modelName/grids/$gridId/weights': typeof ModelsModelNameGridsGridIdWeightsRoute
-  '/acquisitions/$acqId/grids/$gridId/': typeof AcquisitionsAcqIdGridsGridIdIndexRoute
+  '/acquisitions/$acqId/grids/$gridId': typeof AcquisitionsAcqIdGridsGridIdIndexRoute
   '/acquisitions/$acqId/grids/$gridId/squares/$squareId': typeof AcquisitionsAcqIdGridsGridIdSquaresSquareIdRoute
   '/acquisitions/$acqId/grids/$gridId/square/$squareId/predictions': typeof AcquisitionsAcqIdGridsGridIdSquareSquareIdPredictionsRoute
 }
@@ -125,7 +125,7 @@ export interface FileRouteTypes {
     | '/acquisitions/$acqId/grids/$gridId/gridsquares'
     | '/acquisitions/$acqId/grids/$gridId/workspace'
     | '/models/$modelName/grids/$gridId/weights'
-    | '/acquisitions/$acqId/grids/$gridId/'
+    | '/acquisitions/$acqId/grids/$gridId'
     | '/acquisitions/$acqId/grids/$gridId/squares/$squareId'
     | '/acquisitions/$acqId/grids/$gridId/square/$squareId/predictions'
   fileRoutesByTo: FileRoutesByTo
@@ -186,7 +186,7 @@ declare module '@tanstack/react-router' {
     '/acquisitions/$acqId/grids/$gridId/': {
       id: '/acquisitions/$acqId/grids/$gridId/'
       path: '/grids/$gridId'
-      fullPath: '/acquisitions/$acqId/grids/$gridId/'
+      fullPath: '/acquisitions/$acqId/grids/$gridId'
       preLoaderRoute: typeof AcquisitionsAcqIdGridsGridIdIndexRouteImport
       parentRoute: typeof AcquisitionsAcqIdRoute
     }

@@ -1,15 +1,14 @@
 import AddIcon from '@mui/icons-material/Add'
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUp from '@mui/icons-material/KeyboardArrowUp'
-import { Container, IconButton, Menu, MenuItem, Paper, Stack, ThemeProvider } from '@mui/material'
+import { Container, IconButton, Menu, MenuItem, Paper, Stack } from '@mui/material'
 import { createFileRoute } from '@tanstack/react-router'
 import React from 'react'
 import Atlas from '../components/atlas'
-import { Navbar } from '../components/navbar'
-import { theme } from '../components/theme'
+import { Breadcrumbs, buildAcquisitionCrumbs, RouterLink } from '../components/breadcrumbs'
 
 function Workspace() {
-  const { gridId } = Route.useParams()
+  const { acqId, gridId } = Route.useParams()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const [atlasView, setAtlasView] = React.useState(false)
   const open = Boolean(anchorEl)
@@ -25,9 +24,15 @@ function Workspace() {
   }
 
   return (
-    <ThemeProvider theme={theme}>
-      <Navbar />
-      <Container content="center" style={{ width: '100%', paddingTop: '20px' }}>
+    <>
+      <Breadcrumbs
+        path={[
+          ...buildAcquisitionCrumbs(acqId, gridId),
+          { name: 'Workspace', href: `/acquisitions/${acqId}/grids/${gridId}/workspace` },
+        ]}
+        linkComponent={RouterLink}
+      />
+      <Container content="center" style={{ width: '100%' }}>
         <Paper
           square={false}
           sx={{
@@ -60,7 +65,7 @@ function Workspace() {
           </Stack>
         </Paper>
       </Container>
-    </ThemeProvider>
+    </>
   )
 }
 

@@ -10,7 +10,6 @@ import {
   Select,
   Slider,
   Stack,
-  ThemeProvider,
 } from '@mui/material'
 import { BarChart, LineChart } from '@mui/x-charts'
 import { createFileRoute } from '@tanstack/react-router'
@@ -18,8 +17,7 @@ import { bin } from 'd3-array'
 import React from 'react'
 import type { QualityPrediction } from '../api/generated/models/qualityPrediction'
 import { apiUrl } from '../api/mutator'
-import { Navbar } from '../components/navbar'
-import { theme } from '../components/theme'
+import { Breadcrumbs, buildAcquisitionCrumbs, RouterLink } from '../components/breadcrumbs'
 
 const GridSquarePredictionCharts = ({ predictions }: { predictions: QualityPrediction[] }) => {
   return (
@@ -122,7 +120,7 @@ const FoilHolePredictionCharts = ({
 }
 
 function QualityPredictionsForSquare() {
-  const { squareId } = Route.useParams()
+  const { acqId, gridId, squareId } = Route.useParams()
   const metricSelectLabelId = React.useId()
   const metricSelectId = React.useId()
   const [squarePredictions, setSquarePredictions] = React.useState<
@@ -174,9 +172,18 @@ function QualityPredictionsForSquare() {
   }
 
   return (
-    <ThemeProvider theme={theme}>
-      <Navbar />
-      <Stack content="center" style={{ width: '100%', paddingTop: '50px' }}>
+    <>
+      <Breadcrumbs
+        path={[
+          ...buildAcquisitionCrumbs(acqId, gridId, squareId),
+          {
+            name: 'Predictions',
+            href: `/acquisitions/${acqId}/grids/${gridId}/square/${squareId}/predictions`,
+          },
+        ]}
+        linkComponent={RouterLink}
+      />
+      <Stack content="center" style={{ width: '100%' }}>
         <FormControl fullWidth style={{ color: 'black', backgroundColor: '#b927d9' }}>
           <InputLabel id={metricSelectLabelId}>Metric</InputLabel>
           <Select
@@ -250,7 +257,7 @@ function QualityPredictionsForSquare() {
           })}
         </Grid>
       </Stack>
-    </ThemeProvider>
+    </>
   )
 }
 
