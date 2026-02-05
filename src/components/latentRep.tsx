@@ -137,7 +137,7 @@ export default function Atlas({
         loaderData.squares.map((elem: GridSquare) => [elem.uuid, elem.gridsquare_id])
       )
     )
-  }, [loaderData.squares.map])
+  }, [loaderData.squares])
 
   React.useEffect(() => {
     if (predictions) {
