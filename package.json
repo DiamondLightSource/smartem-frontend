@@ -28,6 +28,7 @@
     "check:fix": "biome check --write ."
   },
   "dependencies": {
+    "@diamondlightsource/sci-react-ui": "file:../sci-react-ui",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^7.3.7",
