@@ -1,8 +1,8 @@
 .DS_Store
-/node_modules/
+node_modules/
 
 # Build output
-/dist/
+**/dist/
 /build/
 .idea/
 .env
@@ -13,4 +13,7 @@
 .claude/skills/*/test-results/
 
 # TanStack Router temp files
-.tanstack/
+**/.tanstack/
+
+# Generated API client
+packages/api/src/generated/
