@@ -1,22 +1,26 @@
 {
-  "name": "",
+  "name": "smartem-frontend",
   "private": true,
   "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "engines": {
     "node": ">=22.0.0"
   },
   "scripts": {
-    "build": "vite build",
-    "dev": "vite",
-    "dev:mock": "VITE_ENABLE_MOCKS=true vite",
-    "preview": "vite preview",
-    "typecheck": "tsc",
-    "router:generate": "tsr generate",
-    "router:check": "tsr generate && git diff --exit-code src/routeTree.gen.ts",
-    "api:fetch": "curl -s https://diamondlightsource.github.io/smartem-devtools/api/smartem/swagger.json -o src/api/openapi.json",
-    "api:fetch:local": "curl -s http://localhost:8000/openapi.json -o src/api/openapi.json",
-    "api:generate": "orval --config orval.config.ts && node scripts/extract-api-version.js",
-    "api:update": "npm run api:fetch && npm run api:generate",
+    "dev": "npm run dev -w @smartem/legacy",
+    "dev:mock": "npm run dev:mock -w @smartem/legacy",
+    "dev:smartem": "npm run dev -w @smartem/app",
+    "dev:smartem:mock": "npm run dev:mock -w @smartem/app",
+    "build": "npm run build -w @smartem/legacy",
+    "build:smartem": "npm run build -w @smartem/app",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "api:fetch": "npm run api:fetch -w @smartem/api",
+    "api:fetch:local": "npm run api:fetch:local -w @smartem/api",
+    "api:generate": "npm run api:generate -w @smartem/api",
+    "api:update": "npm run api:update -w @smartem/api",
     "prepare": "lefthook install",
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",
@@ -27,44 +31,11 @@
     "check": "biome check .",
     "check:fix": "biome check --write ."
   },
-  "dependencies": {
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.0",
-    "@mui/icons-material": "^7.3.7",
-    "@mui/material": "^7.0.2",
-    "@mui/x-charts": "^8.27.0",
-    "@tanstack/react-query": "^5.90.20",
-    "@tanstack/react-router": "^1.159.5",
-    "@tanstack/router-devtools": "^1.159.5",
-    "@tanstack/router-vite-plugin": "^1.159.5",
-    "@types/d3-array": "^3.2.1",
-    "@vitejs/plugin-react": "^5.1.4",
-    "axios": "^1.13.5",
-    "boring-avatars": "^2.0.4",
-    "d3-array": "^3.2.4",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4"
-  },
   "devDependencies": {
     "@biomejs/biome": "2.3.14",
-    "@faker-js/faker": "^10.3.0",
-    "@tailwindcss/vite": "^4.1.18",
-    "@tanstack/router-cli": "^1.159.4",
-    "@types/node": "^25",
-    "@types/react": "^19.2.13",
-    "@types/react-dom": "^19.2.3",
     "lefthook": "^2.1.0",
-    "msw": "^2.12.10",
-    "orval": "^8.2.0",
-    "tailwindcss": "^4.0.0",
-    "typescript": "^5.9.3",
-    "vite": "^7.3.1",
-    "vite-tsconfig-paths": "^6.1.0"
-  },
-  "msw": {
-    "workerDirectory": [
-      "public"
-    ]
+    "prettier": "^3.5.3",
+    "typescript": "^5.9.3"
   },
   "overrides": {
     "@asyncapi/specs": "6.10.0",

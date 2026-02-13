@@ -20,7 +20,7 @@ pre-push:
   commands:
     # Type checking
     typecheck:
-      run: npm run typecheck
+      run: npm run typecheck --workspaces --if-present
 
     # Full lint check (don't auto-fix on pre-push)
     biome-lint:
