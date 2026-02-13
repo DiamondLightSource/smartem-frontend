@@ -12,4 +12,4 @@ dist/
 node_modules/
 
 # Ignore generated files
-app/api/generated/
+packages/api/src/generated/

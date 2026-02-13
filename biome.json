@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.3.11/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.3.14/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -10,7 +10,7 @@
   },
   "overrides": [
     {
-      "includes": ["src/routeTree.gen.ts"],
+      "includes": ["**/routeTree.gen.ts"],
       "linter": {
         "enabled": false
       },
@@ -19,7 +19,7 @@
       }
     },
     {
-      "includes": ["public/mockServiceWorker.js"],
+      "includes": ["**/mockServiceWorker.js"],
       "linter": {
         "enabled": false
       }
