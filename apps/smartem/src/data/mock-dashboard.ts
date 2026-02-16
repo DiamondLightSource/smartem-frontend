@@ -22,20 +22,20 @@ export interface Session {
   avgQuality: number | null
 }
 
-export interface TimelineBlock {
+export interface GanttBlock {
   sessionId: string
   sessionName: string
-  instrumentName: string
-  startHour: number
-  endHour: number
+  instrumentId: string
   status: SessionStatus
+  startMs: number
+  endMs: number
   color: string
 }
 
-export interface TimelineDay {
-  date: string
-  dayLabel: string
-  blocks: TimelineBlock[]
+export interface GanttRow {
+  instrumentId: string
+  instrumentName: string
+  blocks: GanttBlock[]
 }
 
 const now = new Date('2026-02-16T14:30:00Z')
@@ -331,7 +331,7 @@ export const recentSessions = sessions
   .filter((s) => s.status === 'completed' || s.status === 'abandoned')
   .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime())
 
-const instrumentColors: Record<string, string> = {
+export const instrumentColors: Record<string, string> = {
   'krios-1': '#0969da',
   'krios-2': '#1a7f37',
   'krios-3': '#8250df',
@@ -346,50 +346,26 @@ const instrumentColors: Record<string, string> = {
   'titan-3': '#6e7781',
 }
 
-function buildTimeline(): TimelineDay[] {
-  const days: TimelineDay[] = []
-  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+export const NOW_MS = now.getTime()
 
-  for (let d = 6; d >= 0; d--) {
-    const dayDate = new Date(now)
-    dayDate.setDate(dayDate.getDate() - d)
-    const dateStr = dayDate.toISOString().slice(0, 10)
-    const dayLabel = dayNames[dayDate.getDay()]
-
-    const blocks: TimelineBlock[] = []
-
-    for (const session of sessions) {
-      const start = new Date(session.startTime)
-      const end = session.endTime ? new Date(session.endTime) : now
-
-      const dayStart = new Date(dateStr)
-      dayStart.setHours(0, 0, 0, 0)
-      const dayEnd = new Date(dateStr)
-      dayEnd.setHours(23, 59, 59, 999)
-
-      if (start <= dayEnd && end >= dayStart) {
-        const overlapStart = start < dayStart ? dayStart : start
-        const overlapEnd = end > dayEnd ? dayEnd : end
-
-        blocks.push({
-          sessionId: session.id,
-          sessionName: session.name,
-          instrumentName: session.instrumentName,
-          startHour: overlapStart.getUTCHours() + overlapStart.getUTCMinutes() / 60,
-          endHour: overlapEnd.getUTCHours() + overlapEnd.getUTCMinutes() / 60,
-          status: session.status,
-          color: instrumentColors[session.instrumentId] ?? '#6e7781',
-        })
-      }
-    }
-
-    days.push({ date: dateStr, dayLabel, blocks })
-  }
-
-  return days
+function buildGanttRows(): GanttRow[] {
+  return instruments.map((inst) => {
+    const blocks: GanttBlock[] = sessions
+      .filter((s) => s.instrumentId === inst.id)
+      .map((s) => ({
+        sessionId: s.id,
+        sessionName: s.name,
+        instrumentId: inst.id,
+        status: s.status,
+        startMs: new Date(s.startTime).getTime(),
+        endMs: s.endTime ? new Date(s.endTime).getTime() : NOW_MS,
+        color: instrumentColors[inst.id] ?? '#6e7781',
+      }))
+    return { instrumentId: inst.id, instrumentName: inst.name, blocks }
+  })
 }
 
-export const timelineDays = buildTimeline()
+export const ganttRows = buildGanttRows()
 
 export function formatDuration(startTime: string, endTime: string | null): string {
   const start = new Date(startTime).getTime()
