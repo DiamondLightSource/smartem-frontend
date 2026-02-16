@@ -1,31 +1,19 @@
-import {
-  Box,
-  Card,
-  CardContent,
-  Chip,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Tooltip,
-  Typography,
-} from '@mui/material'
+import { Box, ButtonBase, Chip, LinearProgress, Tooltip, Typography } from '@mui/material'
 import { createFileRoute } from '@tanstack/react-router'
+import { useState } from 'react'
 import {
   activeSessions,
-  formatDate,
-  formatDateTime,
   formatDuration,
+  type GanttBlock,
+  ganttRows,
   type Instrument,
   type InstrumentStatus,
+  instrumentColors,
   instruments,
+  NOW_MS,
   recentSessions,
   type Session,
   type SessionStatus,
-  type TimelineBlock,
-  timelineDays,
 } from '~/data/mock-dashboard'
 import { statusColors } from '~/theme'
 
@@ -33,9 +21,11 @@ export const Route = createFileRoute('/')({
   component: Dashboard,
 })
 
-// -- Status helpers --
+// ============================================================================
+// Status helpers
+// ============================================================================
 
-const instrumentStatusLabel: Record<InstrumentStatus, string> = {
+const statusLabel: Record<InstrumentStatus, string> = {
   running: 'Running',
   idle: 'Idle',
   paused: 'Paused',
@@ -57,7 +47,7 @@ const sessionStatusColor: Record<SessionStatus, string> = {
   abandoned: statusColors.error,
 }
 
-function StatusDot({ color }: { color: string }) {
+function StatusDot({ color, pulse }: { color: string; pulse?: boolean }) {
   return (
     <Box
       component="span"
@@ -68,375 +58,665 @@ function StatusDot({ color }: { color: string }) {
         borderRadius: '50%',
         backgroundColor: color,
         flexShrink: 0,
+        ...(pulse && {
+          boxShadow: `0 0 0 0 ${color}60`,
+          animation: 'pulse 2s ease-in-out infinite',
+          '@keyframes pulse': {
+            '0%, 100%': { boxShadow: `0 0 0 0 ${color}60` },
+            '50%': { boxShadow: `0 0 0 4px ${color}00` },
+          },
+        }),
       }}
     />
   )
 }
 
-function StatusChip({ label, color }: { label: string; color: string }) {
-  return (
-    <Chip
-      size="small"
-      label={label}
-      sx={{
-        backgroundColor: `${color}14`,
-        color,
-        fontWeight: 500,
-        borderColor: `${color}40`,
-        border: '1px solid',
-      }}
-    />
-  )
-}
+// ============================================================================
+// QUADRANT: Instruments (top-left)
+// ============================================================================
 
-// -- Section header --
-
-function SectionHeader({ title, count }: { title: string; count?: number }) {
-  return (
-    <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1, mb: 1.5 }}>
-      <Typography variant="h4">{title}</Typography>
-      {count != null && (
-        <Typography variant="caption" sx={{ fontWeight: 500 }}>
-          {count}
-        </Typography>
-      )}
-    </Box>
-  )
-}
-
-// -- Instrument strip --
-
-function InstrumentCard({ instrument }: { instrument: Instrument }) {
+function InstrumentTile({
+  instrument,
+  selected,
+  onSelect,
+}: {
+  instrument: Instrument
+  selected: boolean
+  onSelect: (id: string | null) => void
+}) {
   const isOffline = instrument.status === 'offline'
+  const isRunning = instrument.status === 'running'
+  const color = statusColors[instrument.status]
   const session = instrument.currentSessionId
     ? activeSessions.find((s) => s.id === instrument.currentSessionId)
     : null
 
   return (
-    <Card
+    <ButtonBase
+      onClick={() => onSelect(selected ? null : instrument.id)}
       sx={{
-        minWidth: 150,
-        maxWidth: 180,
-        flex: '0 0 auto',
-        opacity: isOffline ? 0.5 : 1,
-        transition: 'box-shadow 0.15s',
-        '&:hover': isOffline ? {} : { boxShadow: '0 1px 3px rgba(0,0,0,0.08)' },
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'stretch',
+        textAlign: 'left',
+        borderRadius: 1.5,
+        border: '1px solid',
+        borderColor: selected ? `${instrumentColors[instrument.id]}80` : 'divider',
+        backgroundColor: selected ? `${instrumentColors[instrument.id]}08` : 'background.paper',
+        p: 1.25,
+        opacity: isOffline ? 0.4 : 1,
+        transition: 'all 0.15s ease',
+        position: 'relative',
+        overflow: 'hidden',
+        '&:hover': isOffline
+          ? {}
+          : {
+              borderColor: `${instrumentColors[instrument.id]}60`,
+              backgroundColor: '#f6f8fa',
+            },
+        ...(isRunning && {
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 2,
+            backgroundColor: color,
+          },
+        }),
       }}
     >
-      <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 0.5 }}>
-          <StatusDot color={statusColors[instrument.status]} />
-          <Typography variant="body2" fontWeight={600} noWrap>
-            {instrument.name}
-          </Typography>
-        </Box>
-        <Typography variant="caption" sx={{ display: 'block', mb: 0.25 }}>
-          {instrumentStatusLabel[instrument.status]}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 0.25 }}>
+        <StatusDot color={color} pulse={isRunning} />
+        <Typography variant="body2" fontWeight={600} noWrap sx={{ flex: 1 }}>
+          {instrument.name}
         </Typography>
-        {session && (
-          <>
+        <Typography
+          variant="caption"
+          sx={{
+            fontSize: '0.625rem',
+            color,
+            fontWeight: 500,
+          }}
+        >
+          {statusLabel[instrument.status]}
+        </Typography>
+      </Box>
+      {session ? (
+        <Box sx={{ mt: 0.5 }}>
+          <Typography
+            variant="caption"
+            noWrap
+            sx={{ display: 'block', color: 'text.primary', fontWeight: 500 }}
+          >
+            {session.name}
+          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.25 }}>
+            <LinearProgress
+              variant="determinate"
+              value={(session.gridsCompleted / session.gridsTotal) * 100}
+              sx={{
+                flex: 1,
+                height: 3,
+                borderRadius: 1,
+                backgroundColor: '#e8eaed',
+                '& .MuiLinearProgress-bar': {
+                  backgroundColor: instrumentColors[instrument.id],
+                  borderRadius: 1,
+                },
+              }}
+            />
             <Typography
               variant="caption"
-              fontWeight={500}
-              noWrap
-              sx={{ display: 'block', color: 'text.primary' }}
+              sx={{ fontSize: '0.625rem', fontVariantNumeric: 'tabular-nums' }}
             >
-              {session.name}
+              {session.gridsCompleted}/{session.gridsTotal}
             </Typography>
-            <Typography variant="caption">
-              {session.gridsCompleted}/{session.gridsTotal} grids
-            </Typography>
-          </>
-        )}
-      </CardContent>
-    </Card>
+          </Box>
+        </Box>
+      ) : (
+        !isOffline && (
+          <Typography
+            variant="caption"
+            sx={{ mt: 0.5, fontSize: '0.625rem', color: 'text.disabled' }}
+          >
+            No active session
+          </Typography>
+        )
+      )}
+    </ButtonBase>
   )
 }
 
-function InstrumentStrip() {
-  const online = instruments.filter((i) => i.status !== 'offline')
-  const offline = instruments.filter((i) => i.status === 'offline')
-
+function InstrumentsPanel({
+  selectedInstrument,
+  onSelectInstrument,
+}: {
+  selectedInstrument: string | null
+  onSelectInstrument: (id: string | null) => void
+}) {
   return (
-    <Box>
-      <SectionHeader title="Instruments" count={instruments.length} />
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        overflow: 'hidden',
+      }}
+    >
+      <PanelHeader
+        title="Instruments"
+        count={instruments.filter((i) => i.status !== 'offline').length}
+        suffix="online"
+      />
       <Box
         sx={{
-          display: 'flex',
-          gap: 1.5,
-          overflowX: 'auto',
-          pb: 1,
-          '&::-webkit-scrollbar': { height: 6 },
-          '&::-webkit-scrollbar-thumb': { backgroundColor: '#d1d9e0', borderRadius: 3 },
+          flex: 1,
+          display: 'grid',
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          gridTemplateRows: 'repeat(3, 1fr)',
+          gap: 1,
+          p: 1.5,
+          pt: 0,
+          overflow: 'hidden',
         }}
       >
-        {online.map((i) => (
-          <InstrumentCard key={i.id} instrument={i} />
-        ))}
-        {offline.map((i) => (
-          <InstrumentCard key={i.id} instrument={i} />
+        {instruments.map((inst) => (
+          <InstrumentTile
+            key={inst.id}
+            instrument={inst}
+            selected={selectedInstrument === inst.id}
+            onSelect={onSelectInstrument}
+          />
         ))}
       </Box>
     </Box>
   )
 }
 
-// -- Active sessions table --
+// ============================================================================
+// QUADRANT: Sessions (top-right)
+// ============================================================================
 
-function ActiveSessionsTable() {
-  return (
-    <Box>
-      <SectionHeader title="Active sessions" count={activeSessions.length} />
-      <TableContainer component={Card}>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell>Session</TableCell>
-              <TableCell>Instrument</TableCell>
-              <TableCell>Started</TableCell>
-              <TableCell>Duration</TableCell>
-              <TableCell>Grids</TableCell>
-              <TableCell>Status</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {activeSessions.map((session) => (
-              <ActiveSessionRow key={session.id} session={session} />
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Box>
-  )
-}
+function SessionRow({ session, highlighted }: { session: Session; highlighted: boolean }) {
+  const isActive = session.status === 'running' || session.status === 'paused'
+  const color = sessionStatusColor[session.status]
+  const instColor = instrumentColors[session.instrumentId] ?? '#6e7781'
 
-function ActiveSessionRow({ session }: { session: Session }) {
   return (
-    <TableRow sx={{ cursor: 'pointer' }}>
-      <TableCell>
-        <Typography variant="body2" fontWeight={500}>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1.5,
+        px: 1.5,
+        py: 0.75,
+        borderRadius: 1,
+        cursor: 'pointer',
+        backgroundColor: highlighted ? `${instColor}08` : 'transparent',
+        borderLeft: highlighted ? `2px solid ${instColor}` : '2px solid transparent',
+        transition: 'all 0.1s ease',
+        '&:hover': { backgroundColor: '#f6f8fa' },
+      }}
+    >
+      <StatusDot color={color} pulse={session.status === 'running'} />
+
+      <Box sx={{ flex: 1, minWidth: 0 }}>
+        <Typography variant="body2" fontWeight={500} noWrap>
           {session.name}
         </Typography>
-      </TableCell>
-      <TableCell>{session.instrumentName}</TableCell>
-      <TableCell>{formatDateTime(session.startTime)}</TableCell>
-      <TableCell>{formatDuration(session.startTime, session.endTime)}</TableCell>
-      <TableCell>
-        <Typography variant="body2" sx={{ fontVariantNumeric: 'tabular-nums' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography variant="caption" sx={{ fontSize: '0.6875rem' }}>
+            {session.instrumentName}
+          </Typography>
+          <Typography variant="caption" sx={{ fontSize: '0.6875rem', color: 'text.disabled' }}>
+            {formatDuration(session.startTime, session.endTime)}
+          </Typography>
+        </Box>
+      </Box>
+
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0 }}>
+        {session.avgQuality != null && <QualityBar value={session.avgQuality} />}
+        <Typography
+          variant="caption"
+          sx={{
+            fontVariantNumeric: 'tabular-nums',
+            fontSize: '0.6875rem',
+            minWidth: 36,
+            textAlign: 'right',
+          }}
+        >
           {session.gridsCompleted}/{session.gridsTotal}
         </Typography>
-      </TableCell>
-      <TableCell>
-        <StatusChip
-          label={sessionStatusLabel[session.status]}
-          color={sessionStatusColor[session.status]}
-        />
-      </TableCell>
-    </TableRow>
-  )
-}
-
-// -- Recent sessions table --
-
-function RecentSessionsTable() {
-  return (
-    <Box>
-      <SectionHeader title="Recent sessions" count={recentSessions.length} />
-      <TableContainer component={Card}>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell>Session</TableCell>
-              <TableCell>Instrument</TableCell>
-              <TableCell>Date</TableCell>
-              <TableCell>Duration</TableCell>
-              <TableCell>Grids</TableCell>
-              <TableCell>Quality</TableCell>
-              <TableCell>Status</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {recentSessions.map((session) => (
-              <RecentSessionRow key={session.id} session={session} />
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+        {isActive && (
+          <Chip
+            size="small"
+            label={sessionStatusLabel[session.status]}
+            sx={{
+              backgroundColor: `${color}14`,
+              color,
+              fontWeight: 500,
+              border: `1px solid ${color}40`,
+              height: 18,
+              fontSize: '0.625rem',
+              '& .MuiChip-label': { px: 0.75 },
+            }}
+          />
+        )}
+      </Box>
     </Box>
   )
 }
 
-function QualityIndicator({ value }: { value: number | null }) {
-  if (value == null) return <Typography variant="caption">--</Typography>
-  const pct = Math.round(value * 100)
+function QualityBar({ value }: { value: number }) {
   const color =
     value >= 0.8 ? statusColors.running : value >= 0.6 ? statusColors.paused : statusColors.error
   return (
-    <Typography variant="body2" sx={{ color, fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>
-      {pct}%
-    </Typography>
-  )
-}
-
-function RecentSessionRow({ session }: { session: Session }) {
-  return (
-    <TableRow sx={{ cursor: 'pointer' }}>
-      <TableCell>
-        <Typography variant="body2" fontWeight={500}>
-          {session.name}
-        </Typography>
-      </TableCell>
-      <TableCell>{session.instrumentName}</TableCell>
-      <TableCell>{formatDate(session.startTime)}</TableCell>
-      <TableCell>{formatDuration(session.startTime, session.endTime)}</TableCell>
-      <TableCell>
-        <Typography variant="body2" sx={{ fontVariantNumeric: 'tabular-nums' }}>
-          {session.gridsCompleted}/{session.gridsTotal}
-        </Typography>
-      </TableCell>
-      <TableCell>
-        <QualityIndicator value={session.avgQuality} />
-      </TableCell>
-      <TableCell>
-        <StatusChip
-          label={sessionStatusLabel[session.status]}
-          color={sessionStatusColor[session.status]}
+    <Tooltip title={`${Math.round(value * 100)}% avg quality`} placement="left">
+      <Box
+        sx={{
+          width: 32,
+          height: 4,
+          backgroundColor: '#e8eaed',
+          borderRadius: 2,
+          overflow: 'hidden',
+        }}
+      >
+        <Box
+          sx={{ width: `${value * 100}%`, height: '100%', backgroundColor: color, borderRadius: 2 }}
         />
-      </TableCell>
-    </TableRow>
+      </Box>
+    </Tooltip>
   )
 }
 
-// -- Session timeline --
+function SessionsPanel({ selectedInstrument }: { selectedInstrument: string | null }) {
+  const filteredActive = selectedInstrument
+    ? activeSessions.filter((s) => s.instrumentId === selectedInstrument)
+    : activeSessions
 
-const HOURS = 24
-const CELL_HEIGHT = 20
-const HOUR_WIDTH = 32
-const HOUR_LABELS = Array.from({ length: HOURS }, (_, i) => i.toString().padStart(2, '0'))
-const HOUR_GRID = Array.from({ length: HOURS }, (_, i) => ({
-  key: `g${i}`,
-  leftPct: (i / HOURS) * 100,
-  isMajor: i % 6 === 0,
-}))
+  const filteredRecent = selectedInstrument
+    ? recentSessions.filter((s) => s.instrumentId === selectedInstrument)
+    : recentSessions
 
-function SessionTimeline() {
   return (
-    <Box>
-      <SectionHeader title="This week" />
-      <Card sx={{ p: 2, overflowX: 'auto' }}>
-        <Box sx={{ position: 'relative', minWidth: HOURS * HOUR_WIDTH + 60 }}>
-          {/* Hour labels */}
-          <Box sx={{ display: 'flex', ml: '60px', mb: 0.5 }}>
-            {HOUR_LABELS.map((label) => (
-              <Typography
-                key={label}
-                variant="caption"
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        overflow: 'hidden',
+      }}
+    >
+      <PanelHeader
+        title="Sessions"
+        count={filteredActive.length + filteredRecent.length}
+        suffix={
+          selectedInstrument
+            ? `on ${instruments.find((i) => i.id === selectedInstrument)?.name}`
+            : undefined
+        }
+      />
+      <Box
+        sx={{
+          flex: 1,
+          overflowY: 'auto',
+          px: 0.5,
+          pb: 1,
+          '&::-webkit-scrollbar': { width: 4 },
+          '&::-webkit-scrollbar-thumb': { backgroundColor: '#d1d9e0', borderRadius: 2 },
+        }}
+      >
+        {filteredActive.length > 0 && (
+          <>
+            <Typography variant="h6" sx={{ px: 1.5, pt: 1, pb: 0.5 }}>
+              Active
+            </Typography>
+            {filteredActive.map((s) => (
+              <SessionRow
+                key={s.id}
+                session={s}
+                highlighted={selectedInstrument === s.instrumentId}
+              />
+            ))}
+          </>
+        )}
+
+        {filteredRecent.length > 0 && (
+          <>
+            <Typography variant="h6" sx={{ px: 1.5, pt: 1.5, pb: 0.5 }}>
+              Recent
+            </Typography>
+            {filteredRecent.map((s) => (
+              <SessionRow
+                key={s.id}
+                session={s}
+                highlighted={selectedInstrument === s.instrumentId}
+              />
+            ))}
+          </>
+        )}
+
+        {filteredActive.length === 0 && filteredRecent.length === 0 && (
+          <Box sx={{ p: 3, textAlign: 'center' }}>
+            <Typography variant="caption">No sessions</Typography>
+          </Box>
+        )}
+      </Box>
+    </Box>
+  )
+}
+
+// ============================================================================
+// QUADRANT: Timeline / Gantt (bottom)
+// ============================================================================
+
+const WEEK_MS = 7 * 24 * 3600_000
+const GANTT_START = NOW_MS - WEEK_MS
+const GANTT_END = NOW_MS
+const GANTT_RANGE = GANTT_END - GANTT_START
+
+const DAY_TICKS = Array.from({ length: 8 }, (_, i) => {
+  const ms = GANTT_START + i * 24 * 3600_000
+  const date = new Date(ms)
+  return {
+    key: date.toISOString().slice(0, 10),
+    ms,
+    pct: ((ms - GANTT_START) / GANTT_RANGE) * 100,
+    label: date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric' }),
+  }
+})
+
+const NOW_PCT = ((NOW_MS - GANTT_START) / GANTT_RANGE) * 100
+
+function GanttTimeline({ selectedInstrument }: { selectedInstrument: string | null }) {
+  const visibleRows = ganttRows.filter((r) => {
+    const inst = instruments.find((i) => i.id === r.instrumentId)
+    return inst && inst.status !== 'offline'
+  })
+
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        overflow: 'hidden',
+      }}
+    >
+      <PanelHeader title="Timeline" suffix="7 days" />
+      <Box sx={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+        {/* Instrument labels */}
+        <Box
+          sx={{
+            width: 72,
+            flexShrink: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            borderRight: '1px solid',
+            borderColor: 'divider',
+          }}
+        >
+          {/* Spacer for tick row */}
+          <Box sx={{ height: 20, flexShrink: 0 }} />
+          {visibleRows.map((row) => {
+            const isSelected = selectedInstrument === row.instrumentId
+            return (
+              <Box
+                key={row.instrumentId}
                 sx={{
-                  width: HOUR_WIDTH,
-                  textAlign: 'center',
-                  fontSize: '0.625rem',
-                  color: 'text.disabled',
+                  flex: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'flex-end',
+                  pr: 1,
+                  backgroundColor: isSelected
+                    ? `${instrumentColors[row.instrumentId]}08`
+                    : 'transparent',
                 }}
               >
-                {label}
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontSize: '0.6875rem',
+                    fontWeight: isSelected ? 600 : 400,
+                    color: isSelected ? instrumentColors[row.instrumentId] : 'text.secondary',
+                  }}
+                >
+                  {row.instrumentName}
+                </Typography>
+              </Box>
+            )
+          })}
+        </Box>
+
+        {/* Gantt area */}
+        <Box sx={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+          {/* Day tick labels */}
+          <Box sx={{ height: 20, position: 'relative', flexShrink: 0 }}>
+            {DAY_TICKS.map((tick) => (
+              <Typography
+                key={tick.key}
+                variant="caption"
+                sx={{
+                  position: 'absolute',
+                  left: `${tick.pct}%`,
+                  top: 2,
+                  transform: 'translateX(-50%)',
+                  fontSize: '0.5625rem',
+                  color: 'text.disabled',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {tick.label}
               </Typography>
             ))}
           </Box>
 
-          {/* Day rows */}
-          {timelineDays.map((day) => (
-            <Box key={day.date} sx={{ display: 'flex', alignItems: 'center', mb: 0.25 }}>
-              <Box sx={{ width: 60, flexShrink: 0, pr: 1, textAlign: 'right' }}>
-                <Typography variant="caption" sx={{ fontWeight: 500, fontSize: '0.6875rem' }}>
-                  {day.dayLabel}
-                </Typography>
-                <Typography
-                  variant="caption"
-                  sx={{ display: 'block', fontSize: '0.5625rem', color: 'text.disabled' }}
-                >
-                  {day.date.slice(5)}
-                </Typography>
-              </Box>
+          {/* Rows */}
+          <Box sx={{ position: 'absolute', top: 20, bottom: 0, left: 0, right: 0 }}>
+            {/* Grid lines */}
+            {DAY_TICKS.map((tick) => (
               <Box
+                key={`line-${tick.key}`}
                 sx={{
-                  position: 'relative',
-                  height: CELL_HEIGHT,
-                  flex: 1,
-                  backgroundColor: '#f6f8fa',
-                  borderRadius: 0.5,
-                  minWidth: HOURS * HOUR_WIDTH,
+                  position: 'absolute',
+                  left: `${tick.pct}%`,
+                  top: 0,
+                  bottom: 0,
+                  width: '1px',
+                  backgroundColor: '#e8eaed',
                 }}
-              >
-                {/* Hour grid lines */}
-                {HOUR_GRID.map((line) => (
-                  <Box
-                    key={line.key}
-                    sx={{
-                      position: 'absolute',
-                      left: `${line.leftPct}%`,
-                      top: 0,
-                      bottom: 0,
-                      width: '1px',
-                      backgroundColor: line.isMajor ? '#d1d9e080' : '#e8eaed40',
-                    }}
-                  />
-                ))}
-                {/* Session blocks */}
-                {day.blocks.map((block) => (
-                  <TimelineBlockEl key={`${block.sessionId}-${block.startHour}`} block={block} />
-                ))}
-              </Box>
-            </Box>
-          ))}
+              />
+            ))}
+
+            {/* Now line */}
+            <Box
+              sx={{
+                position: 'absolute',
+                left: `${NOW_PCT}%`,
+                top: 0,
+                bottom: 0,
+                width: 1.5,
+                backgroundColor: statusColors.error,
+                zIndex: 2,
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  top: -2,
+                  left: -3,
+                  width: 7,
+                  height: 7,
+                  borderRadius: '50%',
+                  backgroundColor: statusColors.error,
+                },
+              }}
+            />
+
+            {/* Session rows */}
+            {visibleRows.map((row, rowIdx) => {
+              const isSelected = selectedInstrument === row.instrumentId
+              const rowTop = `${(rowIdx / visibleRows.length) * 100}%`
+              const rowHeight = `${100 / visibleRows.length}%`
+
+              return (
+                <Box
+                  key={row.instrumentId}
+                  sx={{
+                    position: 'absolute',
+                    top: rowTop,
+                    height: rowHeight,
+                    left: 0,
+                    right: 0,
+                    borderBottom: '1px solid #f0f2f4',
+                    backgroundColor: isSelected
+                      ? `${instrumentColors[row.instrumentId]}04`
+                      : 'transparent',
+                  }}
+                >
+                  {row.blocks.map((block) => (
+                    <GanttBlockEl
+                      key={block.sessionId}
+                      block={block}
+                      dimmed={selectedInstrument != null && selectedInstrument !== row.instrumentId}
+                    />
+                  ))}
+                </Box>
+              )
+            })}
+          </Box>
         </Box>
-      </Card>
+      </Box>
     </Box>
   )
 }
 
-function TimelineBlockEl({ block }: { block: TimelineBlock }) {
-  const leftPct = (block.startHour / HOURS) * 100
-  const widthPct = ((block.endHour - block.startHour) / HOURS) * 100
+function GanttBlockEl({ block, dimmed }: { block: GanttBlock; dimmed: boolean }) {
+  const leftPct = Math.max(0, ((block.startMs - GANTT_START) / GANTT_RANGE) * 100)
+  const rightPct = Math.min(100, ((block.endMs - GANTT_START) / GANTT_RANGE) * 100)
+  const widthPct = rightPct - leftPct
+  const isActive = block.status === 'running' || block.status === 'paused'
+
+  if (widthPct <= 0) return null
 
   return (
-    <Tooltip title={`${block.instrumentName}: ${block.sessionName}`} placement="top">
+    <Tooltip title={`${block.sessionName}`} placement="top">
       <Box
         sx={{
           position: 'absolute',
           left: `${leftPct}%`,
-          width: `${Math.max(widthPct, 0.5)}%`,
-          top: 2,
-          bottom: 2,
+          width: `${widthPct}%`,
+          top: '15%',
+          height: '70%',
           backgroundColor: block.color,
-          opacity: block.status === 'abandoned' ? 0.4 : 0.75,
+          opacity: dimmed ? 0.15 : block.status === 'abandoned' ? 0.35 : 0.7,
           borderRadius: 0.5,
-          cursor: 'default',
+          cursor: 'pointer',
+          transition: 'opacity 0.15s ease',
           '&:hover': { opacity: 1 },
+          ...(isActive && {
+            borderRight: `2px solid ${block.color}`,
+            backgroundImage: `linear-gradient(90deg, ${block.color} 0%, ${block.color}cc 100%)`,
+          }),
         }}
       />
     </Tooltip>
   )
 }
 
-// -- Dashboard --
+// ============================================================================
+// Shared
+// ============================================================================
 
-function Dashboard() {
+function PanelHeader({ title, count, suffix }: { title: string; count?: number; suffix?: string }) {
   return (
     <Box
       sx={{
-        maxWidth: 1200,
-        mx: 'auto',
-        px: 3,
-        py: 3,
         display: 'flex',
-        flexDirection: 'column',
-        gap: 4,
+        alignItems: 'baseline',
+        gap: 0.75,
+        px: 1.5,
+        py: 1,
+        borderBottom: '1px solid',
+        borderColor: 'divider',
+        flexShrink: 0,
       }}
     >
-      <InstrumentStrip />
-      <ActiveSessionsTable />
-      <RecentSessionsTable />
-      <SessionTimeline />
+      <Typography variant="h5">{title}</Typography>
+      {count != null && (
+        <Typography variant="caption" sx={{ fontWeight: 500 }}>
+          {count}
+        </Typography>
+      )}
+      {suffix && (
+        <Typography variant="caption" sx={{ fontSize: '0.6875rem' }}>
+          {suffix}
+        </Typography>
+      )}
+    </Box>
+  )
+}
+
+// ============================================================================
+// Dashboard (three-quadrant HUD)
+// ============================================================================
+
+function Dashboard() {
+  const [selectedInstrument, setSelectedInstrument] = useState<string | null>(null)
+
+  return (
+    <Box
+      sx={{
+        height: 'calc(100vh - 56px)',
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gridTemplateRows: '1fr auto',
+        gridTemplateAreas: `
+          "instruments sessions"
+          "timeline timeline"
+        `,
+        overflow: 'hidden',
+      }}
+    >
+      {/* Top-left: Instruments */}
+      <Box
+        sx={{
+          gridArea: 'instruments',
+          borderRight: '1px solid',
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+          overflow: 'hidden',
+        }}
+      >
+        <InstrumentsPanel
+          selectedInstrument={selectedInstrument}
+          onSelectInstrument={setSelectedInstrument}
+        />
+      </Box>
+
+      {/* Top-right: Sessions */}
+      <Box
+        sx={{
+          gridArea: 'sessions',
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+          overflow: 'hidden',
+        }}
+      >
+        <SessionsPanel selectedInstrument={selectedInstrument} />
+      </Box>
+
+      {/* Bottom: Timeline */}
+      <Box
+        sx={{
+          gridArea: 'timeline',
+          height: 220,
+          overflow: 'hidden',
+        }}
+      >
+        <GanttTimeline selectedInstrument={selectedInstrument} />
+      </Box>
     </Box>
   )
 }
