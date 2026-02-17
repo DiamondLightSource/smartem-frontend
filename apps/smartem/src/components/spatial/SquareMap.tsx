@@ -1,23 +1,113 @@
-import { Box, Typography } from '@mui/material'
-import { useState } from 'react'
+import { Box, ButtonBase, Checkbox, FormControlLabel, Typography } from '@mui/material'
+import { useCallback, useMemo, useState } from 'react'
 import type { MockFoilHole } from '~/data/mock-session-detail'
 import { statusColors } from '~/theme'
+import {
+  computeHeatmapBins,
+  type HeatmapBin,
+  type HeatmapOptions,
+  qualityColor,
+  valueToHeatmapColor,
+} from '~/utils/heatmap'
 
-function qualityColor(q: number): string {
-  if (q >= 0.7) return statusColors.running
-  if (q >= 0.4) return statusColors.paused
-  return statusColors.error
+type MetricKey = 'quality' | 'resolution' | 'astigmatism' | 'particleCount'
+
+const METRIC_OPTIONS: Record<MetricKey, HeatmapOptions> = {
+  quality: { label: 'Quality', type: 'linear', binCount: 5 },
+  resolution: { label: 'Resolution (A)', max: 5, type: 'log', binCount: 5 },
+  astigmatism: { label: 'Astigmatism (nm)', max: 50, type: 'log', binCount: 5 },
+  particleCount: {
+    label: 'Particle Count',
+    min: 0,
+    max: 300,
+    type: 'linear',
+    binCount: 5,
+  },
 }
 
 interface SquareMapProps {
   foilholes: MockFoilHole[]
   squareLabel: string
+  onFoilholeClick?: (uuid: string) => void
 }
 
-export function SquareMap({ foilholes, squareLabel }: SquareMapProps) {
+export function SquareMap({ foilholes, squareLabel, onFoilholeClick }: SquareMapProps) {
   const [hoveredId, setHoveredId] = useState<string | null>(null)
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [selectionFrozen, setSelectionFrozen] = useState(false)
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 })
+  const [metric, setMetric] = useState<MetricKey>('quality')
+  const [hideNull, setHideNull] = useState(false)
+
+  const useHeatmap = metric !== 'quality'
+
+  const metricValues = useMemo(() => {
+    if (!useHeatmap) return null
+    return foilholes.map((fh) => {
+      if (metric === 'resolution') return fh.resolution
+      if (metric === 'astigmatism') return fh.astigmatism
+      if (metric === 'particleCount') return fh.particleCount
+      return null
+    })
+  }, [foilholes, metric, useHeatmap])
+
+  const heatmapBins = useMemo(() => {
+    if (!metricValues) return [] as HeatmapBin[]
+    return computeHeatmapBins(metricValues, METRIC_OPTIONS[metric])
+  }, [metricValues, metric])
+
+  const getMetricValue = useCallback(
+    (fh: MockFoilHole): number | null => {
+      if (metric === 'quality') return fh.quality
+      if (metric === 'resolution') return fh.resolution
+      if (metric === 'astigmatism') return fh.astigmatism
+      if (metric === 'particleCount') return fh.particleCount
+      return null
+    },
+    [metric]
+  )
+
+  const getFill = useCallback(
+    (fh: MockFoilHole): string => {
+      if (!useHeatmap) return qualityColor(fh.quality)
+      const val = getMetricValue(fh)
+      return valueToHeatmapColor(val, heatmapBins) ?? '#656d76'
+    },
+    [useHeatmap, getMetricValue, heatmapBins]
+  )
+
+  const isNullMetric = useCallback(
+    (fh: MockFoilHole): boolean => {
+      if (!useHeatmap) return false
+      return getMetricValue(fh) === null
+    },
+    [useHeatmap, getMetricValue]
+  )
+
+  const handleClick = useCallback(
+    (uuid: string) => {
+      if (onFoilholeClick) {
+        onFoilholeClick(uuid)
+        return
+      }
+      if (uuid === selectedId) {
+        setSelectionFrozen((f) => !f)
+      } else {
+        setSelectionFrozen(true)
+        setSelectedId(uuid)
+      }
+    },
+    [onFoilholeClick, selectedId]
+  )
+
+  const handleHover = useCallback(
+    (uuid: string | null) => {
+      if (!selectionFrozen) {
+        setHoveredId(uuid)
+      }
+    },
+    [selectionFrozen]
+  )
 
   const hoveredHole = hoveredId ? foilholes.find((h) => h.uuid === hoveredId) : null
   const selectedHole = selectedId ? foilholes.find((h) => h.uuid === selectedId) : null
@@ -26,7 +116,14 @@ export function SquareMap({ foilholes, squareLabel }: SquareMapProps) {
     foilholes.length > 0 ? foilholes.reduce((sum, h) => sum + h.quality, 0) / foilholes.length : 0
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        overflow: 'hidden',
+      }}
+    >
       <Box
         sx={{
           flex: 1,
@@ -37,6 +134,15 @@ export function SquareMap({ foilholes, squareLabel }: SquareMapProps) {
           justifyContent: 'center',
         }}
       >
+        {/* Checkered placeholder for microscope image */}
+        <Box
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            background: 'repeating-conic-gradient(#e8eaed 0% 25%, #f0f2f4 0% 50%) 50% / 20px 20px',
+            borderRadius: 1,
+          }}
+        />
         <svg
           viewBox="0 0 2880 2046"
           role="img"
@@ -46,19 +152,27 @@ export function SquareMap({ foilholes, squareLabel }: SquareMapProps) {
             height: '100%',
             maxWidth: '100%',
             maxHeight: '100%',
-            background: '#e8eaed',
-            borderRadius: 4,
+            position: 'relative',
+            zIndex: 1,
           }}
           onMouseMove={(e) => {
             const rect = e.currentTarget.getBoundingClientRect()
-            setTooltipPos({ x: e.clientX - rect.left, y: e.clientY - rect.top })
+            setTooltipPos({
+              x: e.clientX - rect.left,
+              y: e.clientY - rect.top,
+            })
           }}
         >
           {foilholes.map((fh) => {
             const isHovered = hoveredId === fh.uuid
             const isSelected = selectedId === fh.uuid
-            const fill = qualityColor(fh.quality)
-            const opacity = isHovered || isSelected ? 1.0 : 0.6
+            const isNull = isNullMetric(fh)
+
+            if (isNull && hideNull) return null
+
+            const fill = isNull ? 'black' : getFill(fh)
+            const opacity = isNull ? 0.2 : isHovered || isSelected ? 1.0 : 0.6
+
             return (
               <circle
                 key={fh.uuid}
@@ -69,13 +183,24 @@ export function SquareMap({ foilholes, squareLabel }: SquareMapProps) {
                 r={fh.diameter / 2}
                 fill={fill}
                 opacity={opacity}
-                stroke={fh.isNearGridBar ? '#656d76' : isHovered || isSelected ? '#1f2328' : 'none'}
-                strokeWidth={fh.isNearGridBar ? 4 : isHovered || isSelected ? 4 : 0}
+                stroke={
+                  isNull
+                    ? '#cf222e'
+                    : fh.isNearGridBar
+                      ? '#656d76'
+                      : isSelected
+                        ? '#e59344'
+                        : isHovered
+                          ? '#1f2328'
+                          : 'none'
+                }
+                strokeWidth={isNull ? 2 : fh.isNearGridBar ? 4 : isHovered || isSelected ? 4 : 0}
                 strokeDasharray={fh.isNearGridBar ? '8 4' : 'none'}
+                strokeOpacity={isNull ? 0.4 : 1}
                 style={{ cursor: 'pointer', transition: 'opacity 0.1s' }}
-                onMouseEnter={() => setHoveredId(fh.uuid)}
-                onMouseLeave={() => setHoveredId(null)}
-                onClick={() => setSelectedId((prev) => (prev === fh.uuid ? null : fh.uuid))}
+                onMouseEnter={() => handleHover(fh.uuid)}
+                onMouseLeave={() => handleHover(null)}
+                onClick={() => handleClick(fh.uuid)}
               />
             )
           })}
@@ -99,7 +224,10 @@ export function SquareMap({ foilholes, squareLabel }: SquareMapProps) {
               zIndex: 10,
             }}
           >
-            {hoveredHole.foilholeId} — {Math.round(hoveredHole.quality * 100)}%
+            {hoveredHole.foilholeId} —{' '}
+            {useHeatmap
+              ? `${getMetricValue(hoveredHole) ?? 'N/A'} ${METRIC_OPTIONS[metric].label}`
+              : `${Math.round(hoveredHole.quality * 100)}%`}
             {hoveredHole.isNearGridBar && ' (near grid bar)'}
           </Box>
         )}
@@ -110,12 +238,13 @@ export function SquareMap({ foilholes, squareLabel }: SquareMapProps) {
         sx={{
           display: 'flex',
           alignItems: 'center',
-          gap: 2,
+          gap: 1,
           px: 2,
-          py: 1,
+          py: 0.75,
           borderTop: '1px solid',
           borderColor: 'divider',
           flexShrink: 0,
+          flexWrap: 'wrap',
         }}
       >
         <Typography variant="caption" sx={{ fontWeight: 600 }}>
@@ -128,13 +257,26 @@ export function SquareMap({ foilholes, squareLabel }: SquareMapProps) {
           avg {Math.round(avgQuality * 100)}%
         </Typography>
 
+        {selectionFrozen && (
+          <Typography
+            variant="caption"
+            sx={{
+              color: statusColors.paused,
+              fontWeight: 500,
+              fontSize: '0.625rem',
+            }}
+          >
+            locked
+          </Typography>
+        )}
+
         {selectedHole && (
           <Box
             sx={{
               display: 'flex',
-              gap: 1.5,
-              ml: 1,
-              pl: 1.5,
+              gap: 1,
+              ml: 0.5,
+              pl: 1,
               borderLeft: '1px solid',
               borderColor: 'divider',
             }}
@@ -143,7 +285,7 @@ export function SquareMap({ foilholes, squareLabel }: SquareMapProps) {
               {selectedHole.foilholeId}
             </Typography>
             <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-              {Math.round(selectedHole.quality * 100)}% quality
+              {Math.round(selectedHole.quality * 100)}%
             </Typography>
             <Typography variant="caption" sx={{ color: 'text.secondary' }}>
               {selectedHole.status}
@@ -160,13 +302,70 @@ export function SquareMap({ foilholes, squareLabel }: SquareMapProps) {
         )}
 
         <Box sx={{ flex: 1 }} />
-        <QualityLegend />
+
+        {/* Metric selector */}
+        <Box sx={{ display: 'flex', gap: 0.25 }}>
+          {(Object.keys(METRIC_OPTIONS) as MetricKey[]).map((key) => (
+            <ButtonBase
+              key={key}
+              onClick={() => setMetric(key)}
+              sx={{
+                px: 0.75,
+                py: 0.25,
+                borderRadius: 0.5,
+                fontSize: '0.5625rem',
+                fontWeight: key === metric ? 600 : 400,
+                color: key === metric ? 'text.primary' : 'text.disabled',
+                backgroundColor: key === metric ? '#f0f2f4' : 'transparent',
+                '&:hover': { backgroundColor: '#f6f8fa' },
+              }}
+            >
+              {METRIC_OPTIONS[key].label.split(' ')[0]}
+            </ButtonBase>
+          ))}
+        </Box>
+
+        {useHeatmap && (
+          <FormControlLabel
+            control={
+              <Checkbox
+                size="small"
+                checked={hideNull}
+                onChange={(e) => setHideNull(e.target.checked)}
+                sx={{ p: 0.25 }}
+              />
+            }
+            label={
+              <Typography variant="caption" sx={{ fontSize: '0.5625rem' }}>
+                Hide uncollected
+              </Typography>
+            }
+            sx={{ mr: 0, ml: 0.5 }}
+          />
+        )}
+
+        <HeatmapLegend useHeatmap={useHeatmap} bins={heatmapBins} />
       </Box>
     </Box>
   )
 }
 
-function QualityLegend() {
+function HeatmapLegend({ useHeatmap, bins }: { useHeatmap: boolean; bins: HeatmapBin[] }) {
+  if (useHeatmap && bins.length > 0) {
+    return (
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+        <Box sx={{ display: 'flex', gap: '1px' }}>
+          {bins.map((bin) => (
+            <Box key={bin.edge} sx={{ width: 16, height: 6, backgroundColor: bin.color }} />
+          ))}
+        </Box>
+        <Typography variant="caption" sx={{ fontSize: '0.5rem', color: 'text.disabled' }}>
+          {bins[0].edge.toFixed(1)}-{bins[bins.length - 1].edge.toFixed(1)}
+        </Typography>
+      </Box>
+    )
+  }
+
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
       <Typography variant="caption" sx={{ fontSize: '0.625rem', color: 'text.disabled' }}>

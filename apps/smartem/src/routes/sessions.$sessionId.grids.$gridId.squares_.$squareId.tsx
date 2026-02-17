@@ -1,15 +1,14 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { SquareMap } from '~/components/spatial/SquareMap'
-import { getFoilHoles, getGridSquare } from '~/data/mock-session-detail'
+import { Box } from '@mui/material'
+import { createFileRoute, Outlet } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/sessions/$sessionId/grids/$gridId/squares_/$squareId')({
-  component: SquareDetailView,
+  component: SquareLayout,
 })
 
-function SquareDetailView() {
-  const { squareId } = Route.useParams()
-  const square = getGridSquare(squareId)
-  const foilholes = getFoilHoles(squareId)
-
-  return <SquareMap foilholes={foilholes} squareLabel={square?.gridsquareId ?? squareId} />
+function SquareLayout() {
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+      <Outlet />
+    </Box>
+  )
 }

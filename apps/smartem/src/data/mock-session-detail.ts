@@ -14,6 +14,12 @@ export interface MockGrid {
   avgQuality: number | null
 }
 
+export interface MockLatentCoords {
+  x: number
+  y: number
+  clusterIndex: number
+}
+
 export interface MockGridSquare {
   uuid: string
   gridsquareId: string
@@ -27,6 +33,8 @@ export interface MockGridSquare {
   magnification: number | null
   quality: number
   foilholeCount: number
+  latent: MockLatentCoords | null
+  hasImageData: boolean
 }
 
 export interface MockFoilHole {
@@ -40,6 +48,45 @@ export interface MockFoilHole {
   quality: number
   isNearGridBar: boolean
   micrographCount: number
+  resolution: number | null
+  astigmatism: number | null
+  particleCount: number | null
+  latent: MockLatentCoords | null
+}
+
+export interface MockMicrograph {
+  uuid: string
+  micrographId: string
+  foilholeUuid: string
+  timestamp: string
+  processingStatus: 'pending' | 'processing' | 'completed' | 'failed'
+  resolution: number
+  defocus: number
+  astigmatism: number
+  motionTotal: number
+  ctfFitResolution: number
+}
+
+export interface MockPredictionModel {
+  id: string
+  name: string
+  version: string
+  description: string
+  type: 'grid-quality' | 'ice-thickness' | 'particle-density' | 'ctf-quality'
+}
+
+export interface MockPredictionDataPoint {
+  timestamp: string
+  squareUuid: string
+  quality: number
+}
+
+export interface MockModelPredictions {
+  modelId: string
+  gridUuid: string
+  dataPoints: MockPredictionDataPoint[]
+  squareQualities: Map<string, number>
+  foilholeQualities: Map<string, number>
 }
 
 // ---------------------------------------------------------------------------
@@ -167,6 +214,7 @@ function generateGridSquares(grid: MockGrid): MockGridSquare[] {
       ? 'registered'
       : pickStatus(['registered', 'collected', 'completed'], [0.1, 0.3, 0.6])
 
+    const hasData = sqStatus !== 'registered'
     squares.push({
       uuid: `${grid.uuid}-sq-${String(i).padStart(3, '0')}`,
       gridsquareId: `GS-${String(i + 1).padStart(3, '0')}`,
@@ -176,10 +224,18 @@ function generateGridSquares(grid: MockGrid): MockGridSquare[] {
       centerY: Math.max(200, Math.min(3805, y)),
       sizeWidth,
       selected: rand() > 0.3,
-      defocus: sqStatus !== 'registered' ? +(-randRange(0.8, 3.0)).toFixed(1) : null,
-      magnification: sqStatus !== 'registered' ? Math.round(randRange(75000, 130000)) : null,
+      defocus: hasData ? +(-randRange(0.8, 3.0)).toFixed(1) : null,
+      magnification: hasData ? Math.round(randRange(75000, 130000)) : null,
       quality,
       foilholeCount: fhCount,
+      latent: hasData
+        ? {
+            x: +randRange(-3, 3).toFixed(2),
+            y: +randRange(-3, 3).toFixed(2),
+            clusterIndex: Math.floor(randRange(0, 10)),
+          }
+        : null,
+      hasImageData: hasData && rand() > 0.2,
     })
   }
 
@@ -212,6 +268,7 @@ function generateFoilHoles(square: MockGridSquare): MockFoilHole[] {
       [0.1, 0.35, 0.55]
     )
 
+    const hasProcessed = status === 'processed'
     holes.push({
       uuid: `${square.uuid}-fh-${String(i).padStart(3, '0')}`,
       foilholeId: `FH-${String(i + 1).padStart(3, '0')}`,
@@ -222,7 +279,18 @@ function generateFoilHoles(square: MockGridSquare): MockFoilHole[] {
       diameter,
       quality,
       isNearGridBar,
-      micrographCount: status === 'processed' ? Math.round(randRange(1, 4)) : 0,
+      micrographCount: hasProcessed ? Math.round(randRange(1, 4)) : 0,
+      resolution: hasProcessed ? +randRange(1.5, 5.0).toFixed(2) : null,
+      astigmatism: hasProcessed ? +randRange(1, 50).toFixed(1) : null,
+      particleCount: hasProcessed ? Math.round(randRange(10, 300)) : null,
+      latent:
+        status !== 'none'
+          ? {
+              x: +randRange(-3, 3).toFixed(2),
+              y: +randRange(-3, 3).toFixed(2),
+              clusterIndex: Math.floor(randRange(0, 10)),
+            }
+          : null,
     })
   }
 
@@ -244,6 +312,128 @@ for (const grid of allGrids) {
   for (const sq of squares) {
     foilHolesBySquare.set(sq.uuid, generateFoilHoles(sq))
   }
+}
+
+// ---------------------------------------------------------------------------
+// Prediction models (static)
+// ---------------------------------------------------------------------------
+
+const predictionModels: MockPredictionModel[] = [
+  {
+    id: 'model-resnet-gq',
+    name: 'ResNet-GridQuality',
+    version: '2.1.0',
+    description: 'Grid square quality classifier using ResNet backbone',
+    type: 'grid-quality',
+  },
+  {
+    id: 'model-ice-thick',
+    name: 'IceThickness-v2',
+    version: '2.0.3',
+    description: 'Ice thickness estimation from grid square images',
+    type: 'ice-thickness',
+  },
+  {
+    id: 'model-particle-cnn',
+    name: 'ParticleDensity-CNN',
+    version: '1.4.1',
+    description: 'Particle density estimation using CNN',
+    type: 'particle-density',
+  },
+  {
+    id: 'model-ctf-qual',
+    name: 'CTF-QualityNet',
+    version: '1.2.0',
+    description: 'CTF fit quality assessment network',
+    type: 'ctf-quality',
+  },
+]
+
+// ---------------------------------------------------------------------------
+// Second PRNG seed for new data (avoids disturbing existing deterministic data)
+// ---------------------------------------------------------------------------
+
+const rand2 = mulberry32(137)
+
+function rand2Range(min: number, max: number) {
+  return min + rand2() * (max - min)
+}
+
+// ---------------------------------------------------------------------------
+// Generate micrographs for a foilhole
+// ---------------------------------------------------------------------------
+
+function generateMicrographs(foilhole: MockFoilHole): MockMicrograph[] {
+  const count = foilhole.micrographCount
+  const micrographs: MockMicrograph[] = []
+
+  for (let i = 0; i < count; i++) {
+    const r = rand2()
+    const status: MockMicrograph['processingStatus'] =
+      r < 0.65 ? 'completed' : r < 0.8 ? 'processing' : r < 0.92 ? 'pending' : 'failed'
+
+    micrographs.push({
+      uuid: `${foilhole.uuid}-mic-${String(i).padStart(3, '0')}`,
+      micrographId: `MIC-${String(i + 1).padStart(4, '0')}`,
+      foilholeUuid: foilhole.uuid,
+      timestamp: `2026-02-16T${String(8 + Math.floor(i * 0.5)).padStart(2, '0')}:${String(Math.round(rand2Range(0, 59))).padStart(2, '0')}:00Z`,
+      processingStatus: status,
+      resolution: +rand2Range(1.5, 4.5).toFixed(2),
+      defocus: +(-rand2Range(0.8, 3.5)).toFixed(2),
+      astigmatism: +rand2Range(0.01, 0.15).toFixed(3),
+      motionTotal: +rand2Range(0.5, 8.0).toFixed(2),
+      ctfFitResolution: +rand2Range(2.0, 6.0).toFixed(2),
+    })
+  }
+
+  return micrographs
+}
+
+// ---------------------------------------------------------------------------
+// Generate predictions for a grid
+// ---------------------------------------------------------------------------
+
+function generatePredictions(gridUuid: string, squares: MockGridSquare[]): MockModelPredictions[] {
+  return predictionModels.map((model) => {
+    const dataPoints: MockPredictionDataPoint[] = squares.map((sq, i) => ({
+      timestamp: `2026-02-16T${String(6 + Math.floor((i * 20) / 60)).padStart(2, '0')}:${String((i * 20) % 60).padStart(2, '0')}:00Z`,
+      squareUuid: sq.uuid,
+      quality: +rand2Range(0.15, 0.95).toFixed(3),
+    }))
+
+    const squareQualities = new Map<string, number>()
+    for (const sq of squares) {
+      squareQualities.set(sq.uuid, +rand2Range(0.1, 0.98).toFixed(3))
+    }
+
+    const foilholeQualities = new Map<string, number>()
+    for (const sq of squares) {
+      const fhs = foilHolesBySquare.get(sq.uuid) ?? []
+      for (const fh of fhs) {
+        foilholeQualities.set(fh.uuid, +rand2Range(0.1, 0.98).toFixed(3))
+      }
+    }
+
+    return { modelId: model.id, gridUuid, dataPoints, squareQualities, foilholeQualities }
+  })
+}
+
+// ---------------------------------------------------------------------------
+// Pre-generate micrographs and predictions
+// ---------------------------------------------------------------------------
+
+const micrographsByFoilhole = new Map<string, MockMicrograph[]>()
+const predictionsByGrid = new Map<string, MockModelPredictions[]>()
+
+for (const foilholes of foilHolesBySquare.values()) {
+  for (const fh of foilholes) {
+    micrographsByFoilhole.set(fh.uuid, generateMicrographs(fh))
+  }
+}
+
+for (const grid of allGrids) {
+  const squares = gridSquaresByGrid.get(grid.uuid) ?? []
+  predictionsByGrid.set(grid.uuid, generatePredictions(grid.uuid, squares))
 }
 
 // ---------------------------------------------------------------------------
@@ -272,4 +462,24 @@ export function getGridSquare(squareUuid: string): MockGridSquare | undefined {
 
 export function getFoilHoles(squareUuid: string): MockFoilHole[] {
   return foilHolesBySquare.get(squareUuid) ?? []
+}
+
+export function getFoilHole(foilholeUuid: string): MockFoilHole | undefined {
+  for (const foilholes of foilHolesBySquare.values()) {
+    const found = foilholes.find((fh) => fh.uuid === foilholeUuid)
+    if (found) return found
+  }
+  return undefined
+}
+
+export function getMicrographs(foilholeUuid: string): MockMicrograph[] {
+  return micrographsByFoilhole.get(foilholeUuid) ?? []
+}
+
+export function getPredictionModels(): MockPredictionModel[] {
+  return predictionModels
+}
+
+export function getGridPredictions(gridUuid: string): MockModelPredictions[] {
+  return predictionsByGrid.get(gridUuid) ?? []
 }

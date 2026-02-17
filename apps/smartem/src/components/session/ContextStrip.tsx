@@ -1,8 +1,15 @@
 import { Box, Typography } from '@mui/material'
 import { Link, useParams } from '@tanstack/react-router'
 import { sessions } from '~/data/mock-dashboard'
-import { getGrid, getGridSquare } from '~/data/mock-session-detail'
+import {
+  getFoilHole,
+  getFoilHoles,
+  getGrid,
+  getGridSquare,
+  getGridSquares,
+} from '~/data/mock-session-detail'
 import { statusColors } from '~/theme'
+import { qualityColor } from '~/utils/heatmap'
 
 function StatusDot({ color, pulse }: { color: string; pulse?: boolean }) {
   return (
@@ -51,37 +58,53 @@ const statusColorMap: Record<string, string> = {
   abandoned: statusColors.error,
 }
 
-function AtlasThumbnail() {
+function AtlasThumbnail({ gridUuid }: { gridUuid: string }) {
+  const squares = getGridSquares(gridUuid)
   return (
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" role="img" aria-label="Atlas">
-      <rect width="28" height="28" rx="4" fill="#f0f2f4" />
-      <circle cx="10" cy="10" r="3" fill="#656d76" opacity="0.5" />
-      <circle cx="18" cy="12" r="2.5" fill="#656d76" opacity="0.5" />
-      <circle cx="12" cy="19" r="2" fill="#656d76" opacity="0.5" />
-      <circle cx="20" cy="20" r="2.5" fill="#656d76" opacity="0.5" />
-      <circle cx="8" cy="15" r="1.5" fill="#656d76" opacity="0.3" />
+    <svg width="28" height="28" viewBox="0 0 4005 4005" fill="none" role="img" aria-label="Atlas">
+      <rect width="4005" height="4005" rx="200" fill="#f0f2f4" />
+      {squares.map((sq) => (
+        <circle
+          key={sq.uuid}
+          cx={sq.centerX}
+          cy={sq.centerY}
+          r={sq.sizeWidth / 2}
+          fill={qualityColor(sq.quality)}
+          opacity={sq.selected ? 0.8 : 0.4}
+        />
+      ))}
     </svg>
   )
 }
 
-function SquareThumbnail() {
+function SquareThumbnail({
+  squareUuid,
+  highlightHoleUuid,
+}: {
+  squareUuid: string
+  highlightHoleUuid?: string
+}) {
+  const foilholes = getFoilHoles(squareUuid)
   return (
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" role="img" aria-label="Grid square">
-      <rect width="28" height="28" rx="4" fill="#f0f2f4" />
-      <rect
-        x="4"
-        y="4"
-        width="20"
-        height="20"
-        rx="2"
-        fill="none"
-        stroke="#656d76"
-        strokeWidth="1"
-        opacity="0.4"
-      />
-      <circle cx="10" cy="10" r="2" fill="#656d76" opacity="0.4" />
-      <circle cx="18" cy="10" r="2" fill="#656d76" opacity="0.4" />
-      <circle cx="14" cy="17" r="2" fill="#656d76" opacity="0.4" />
+    <svg
+      width="28"
+      height="28"
+      viewBox="0 0 2880 2046"
+      fill="none"
+      role="img"
+      aria-label="Grid square"
+    >
+      <rect width="2880" height="2046" rx="100" fill="#f0f2f4" />
+      {foilholes.map((fh) => (
+        <circle
+          key={fh.uuid}
+          cx={fh.xLocation}
+          cy={fh.yLocation}
+          r={fh.diameter / 2}
+          fill={highlightHoleUuid === fh.uuid ? statusColors.idle : qualityColor(fh.quality)}
+          opacity={highlightHoleUuid === fh.uuid ? 1.0 : 0.5}
+        />
+      ))}
     </svg>
   )
 }
@@ -106,6 +129,7 @@ export function ContextStrip() {
   const sessionId = (params as Record<string, string>).sessionId
   const gridId = (params as Record<string, string>).gridId
   const squareId = (params as Record<string, string>).squareId
+  const holeId = (params as Record<string, string>).holeId
 
   const session = sessions.find((s) => s.id === sessionId)
   if (!session) return null
@@ -115,6 +139,7 @@ export function ContextStrip() {
 
   const grid = gridId ? getGrid(gridId) : undefined
   const square = squareId ? getGridSquare(squareId) : undefined
+  const foilhole = holeId ? getFoilHole(holeId) : undefined
 
   return (
     <Box
@@ -170,7 +195,7 @@ export function ContextStrip() {
               padding: '2px 4px',
             }}
           >
-            <AtlasThumbnail />
+            <AtlasThumbnail gridUuid={gridId} />
             <Typography
               variant="caption"
               sx={{ fontSize: '0.625rem', color: 'text.secondary', fontWeight: 500 }}
@@ -195,7 +220,7 @@ export function ContextStrip() {
                 padding: '2px 4px',
               }}
             >
-              <SquareThumbnail />
+              <SquareThumbnail squareUuid={squareId} highlightHoleUuid={holeId} />
               <Typography
                 variant="caption"
                 sx={{ fontSize: '0.625rem', color: 'text.secondary', fontWeight: 500 }}
@@ -203,6 +228,37 @@ export function ContextStrip() {
                 {square?.gridsquareId ?? squareId}
               </Typography>
             </Link>
+          </>
+        )}
+
+        {holeId && squareId && gridId && (
+          <>
+            <ChevronRight />
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.5,
+                borderRadius: 0.5,
+                px: 0.5,
+                py: 0.25,
+              }}
+            >
+              <Box
+                sx={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: '50%',
+                  backgroundColor: foilhole ? qualityColor(foilhole.quality) : '#656d76',
+                }}
+              />
+              <Typography
+                variant="caption"
+                sx={{ fontSize: '0.625rem', color: 'text.secondary', fontWeight: 500 }}
+              >
+                {foilhole?.foilholeId ?? holeId}
+              </Typography>
+            </Box>
           </>
         )}
       </Box>
