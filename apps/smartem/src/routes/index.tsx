@@ -17,12 +17,19 @@ import {
   recentSessions,
   type Session,
   type SessionStatus,
+  sessions,
 } from '~/data/mock-dashboard'
 import { statusColors } from '~/theme'
 
 export const Route = createFileRoute('/')({
   component: Dashboard,
 })
+
+// ============================================================================
+// Types
+// ============================================================================
+
+type InstrumentView = 'list' | 'cards' | 'icons'
 
 // ============================================================================
 // Status helpers
@@ -182,28 +189,279 @@ function DividerV({ onDrag }: { onDrag: (delta: number) => void }) {
 }
 
 // ============================================================================
+// View toggle icons
+// ============================================================================
+
+function ViewToggle({
+  view,
+  onChange,
+}: {
+  view: InstrumentView
+  onChange: (v: InstrumentView) => void
+}) {
+  const views: { key: InstrumentView; icon: React.ReactNode; tip: string }[] = [
+    { key: 'list', icon: <ListViewIcon />, tip: 'List' },
+    { key: 'cards', icon: <CardsViewIcon />, tip: 'Cards' },
+    { key: 'icons', icon: <IconsViewIcon />, tip: 'Grid' },
+  ]
+
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 1,
+        overflow: 'hidden',
+      }}
+    >
+      {views.map((v) => (
+        <Tooltip key={v.key} title={v.tip} placement="bottom">
+          <ButtonBase
+            onClick={() => onChange(v.key)}
+            sx={{
+              p: 0.5,
+              width: 26,
+              height: 24,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: view === v.key ? '#f0f2f4' : 'transparent',
+              color: view === v.key ? 'text.primary' : 'text.disabled',
+              '&:hover': { backgroundColor: '#f6f8fa' },
+              borderRight: v.key !== 'icons' ? '1px solid' : 'none',
+              borderColor: 'divider',
+            }}
+          >
+            {v.icon}
+          </ButtonBase>
+        </Tooltip>
+      ))}
+    </Box>
+  )
+}
+
+function ListViewIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="currentColor"
+      role="img"
+      aria-label="List view"
+    >
+      <rect x="0" y="1" width="14" height="2.5" rx="0.5" />
+      <rect x="0" y="5.75" width="14" height="2.5" rx="0.5" />
+      <rect x="0" y="10.5" width="14" height="2.5" rx="0.5" />
+    </svg>
+  )
+}
+
+function CardsViewIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="currentColor"
+      role="img"
+      aria-label="Cards view"
+    >
+      <rect x="0" y="0" width="6" height="6" rx="1" />
+      <rect x="8" y="0" width="6" height="6" rx="1" />
+      <rect x="0" y="8" width="6" height="6" rx="1" />
+      <rect x="8" y="8" width="6" height="6" rx="1" />
+    </svg>
+  )
+}
+
+function IconsViewIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="currentColor"
+      role="img"
+      aria-label="Grid view"
+    >
+      <rect x="0" y="0" width="3" height="3" rx="0.5" />
+      <rect x="5.5" y="0" width="3" height="3" rx="0.5" />
+      <rect x="11" y="0" width="3" height="3" rx="0.5" />
+      <rect x="0" y="5.5" width="3" height="3" rx="0.5" />
+      <rect x="5.5" y="5.5" width="3" height="3" rx="0.5" />
+      <rect x="11" y="5.5" width="3" height="3" rx="0.5" />
+      <rect x="0" y="11" width="3" height="3" rx="0.5" />
+      <rect x="5.5" y="11" width="3" height="3" rx="0.5" />
+      <rect x="11" y="11" width="3" height="3" rx="0.5" />
+    </svg>
+  )
+}
+
+// ============================================================================
 // QUADRANT: Instruments (top-left)
 // ============================================================================
 
-function InstrumentTile({
+function InstrumentItem({
   instrument,
   selected,
-  onSelect,
+  highlighted,
+  onToggle,
+  view,
 }: {
   instrument: Instrument
   selected: boolean
-  onSelect: (id: string | null) => void
+  highlighted: boolean
+  onToggle: (id: string) => void
+  view: InstrumentView
 }) {
   const isOffline = instrument.status === 'offline'
   const isRunning = instrument.status === 'running'
   const color = statusColors[instrument.status]
+  const iColor = instrumentColors[instrument.id]
   const session = instrument.currentSessionId
     ? activeSessions.find((s) => s.id === instrument.currentSessionId)
     : null
 
+  const borderActive = selected || highlighted
+
+  if (view === 'list') {
+    return (
+      <ButtonBase
+        onClick={() => onToggle(instrument.id)}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1.5,
+          width: '100%',
+          textAlign: 'left',
+          px: 1.25,
+          py: 0.5,
+          borderRadius: 1,
+          border: '1px solid',
+          borderColor: borderActive ? `${iColor}80` : 'transparent',
+          backgroundColor: borderActive ? `${iColor}06` : 'transparent',
+          opacity: isOffline ? 0.45 : 1,
+          transition: 'all 0.1s',
+          '&:hover': { backgroundColor: '#f6f8fa' },
+        }}
+      >
+        <MicroscopeIcon status={instrument.status} scale={0.16} />
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <StatusDot color={color} pulse={isRunning} />
+            <Typography variant="body2" fontWeight={600} noWrap>
+              {instrument.name}
+            </Typography>
+            <Typography variant="caption" sx={{ color, fontSize: '0.625rem', fontWeight: 500 }}>
+              {statusLabel[instrument.status]}
+            </Typography>
+          </Box>
+          {session && (
+            <Typography
+              variant="caption"
+              noWrap
+              sx={{ color: 'text.secondary', fontSize: '0.6875rem' }}
+            >
+              {session.name} — {session.gridsCompleted}/{session.gridsTotal} grids
+            </Typography>
+          )}
+        </Box>
+        {session && (
+          <Box sx={{ width: 60, flexShrink: 0 }}>
+            <LinearProgress
+              variant="determinate"
+              value={(session.gridsCompleted / session.gridsTotal) * 100}
+              sx={{
+                height: 3,
+                borderRadius: 1,
+                backgroundColor: '#e8eaed',
+                '& .MuiLinearProgress-bar': { backgroundColor: iColor, borderRadius: 1 },
+              }}
+            />
+          </Box>
+        )}
+      </ButtonBase>
+    )
+  }
+
+  if (view === 'cards') {
+    return (
+      <ButtonBase
+        onClick={() => onToggle(instrument.id)}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
+          textAlign: 'left',
+          borderRadius: 1,
+          border: '1px solid',
+          borderColor: borderActive ? `${iColor}80` : 'divider',
+          backgroundColor: borderActive ? `${iColor}06` : 'background.paper',
+          p: 0.75,
+          opacity: isOffline ? 0.4 : 1,
+          transition: 'all 0.15s',
+          overflow: 'hidden',
+          '&:hover': isOffline ? {} : { borderColor: `${iColor}60`, backgroundColor: '#f6f8fa' },
+        }}
+      >
+        <Box sx={{ flexShrink: 0 }}>
+          <MicroscopeIcon status={instrument.status} scale={0.22} />
+        </Box>
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <StatusDot color={color} pulse={isRunning} />
+            <Typography variant="caption" fontWeight={600} noWrap sx={{ fontSize: '0.6875rem' }}>
+              {instrument.name}
+            </Typography>
+          </Box>
+          <Typography variant="caption" sx={{ color, fontSize: '0.5625rem', fontWeight: 500 }}>
+            {statusLabel[instrument.status]}
+          </Typography>
+          {session && (
+            <>
+              <Typography
+                variant="caption"
+                noWrap
+                sx={{ display: 'block', color: 'text.secondary', fontSize: '0.5625rem', mt: 0.25 }}
+              >
+                {session.name}
+              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.25 }}>
+                <LinearProgress
+                  variant="determinate"
+                  value={(session.gridsCompleted / session.gridsTotal) * 100}
+                  sx={{
+                    flex: 1,
+                    height: 2,
+                    borderRadius: 1,
+                    backgroundColor: '#e8eaed',
+                    '& .MuiLinearProgress-bar': { backgroundColor: iColor, borderRadius: 1 },
+                  }}
+                />
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontSize: '0.5rem',
+                    fontVariantNumeric: 'tabular-nums',
+                    color: 'text.secondary',
+                  }}
+                >
+                  {session.gridsCompleted}/{session.gridsTotal}
+                </Typography>
+              </Box>
+            </>
+          )}
+        </Box>
+      </ButtonBase>
+    )
+  }
+
+  // icons view (default grid)
   return (
     <ButtonBase
-      onClick={() => onSelect(selected ? null : instrument.id)}
+      onClick={() => onToggle(instrument.id)}
       sx={{
         display: 'flex',
         flexDirection: 'column',
@@ -211,19 +469,13 @@ function InstrumentTile({
         justifyContent: 'flex-end',
         borderRadius: 1,
         border: '1px solid',
-        borderColor: selected ? `${instrumentColors[instrument.id]}80` : 'divider',
-        backgroundColor: selected ? `${instrumentColors[instrument.id]}06` : 'background.paper',
-        p: 0.75,
+        borderColor: borderActive ? `${iColor}80` : 'divider',
+        backgroundColor: borderActive ? `${iColor}06` : 'background.paper',
+        p: 0.5,
         pt: 0.25,
         transition: 'all 0.15s ease',
-        position: 'relative',
         overflow: 'hidden',
-        '&:hover': isOffline
-          ? {}
-          : {
-              borderColor: `${instrumentColors[instrument.id]}60`,
-              backgroundColor: '#f6f8fa',
-            },
+        '&:hover': isOffline ? {} : { borderColor: `${iColor}60`, backgroundColor: '#f6f8fa' },
       }}
     >
       <Box
@@ -244,83 +496,81 @@ function InstrumentTile({
             {instrument.name}
           </Typography>
         </Box>
-        {session ? (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.25, px: 0.25 }}>
-            <LinearProgress
-              variant="determinate"
-              value={(session.gridsCompleted / session.gridsTotal) * 100}
-              sx={{
-                flex: 1,
-                height: 2,
-                borderRadius: 1,
-                backgroundColor: '#e8eaed',
-                '& .MuiLinearProgress-bar': {
-                  backgroundColor: instrumentColors[instrument.id],
-                  borderRadius: 1,
-                },
-              }}
-            />
-            <Typography
-              variant="caption"
-              sx={{
-                fontSize: '0.5rem',
-                fontVariantNumeric: 'tabular-nums',
-                color: 'text.secondary',
-              }}
-            >
-              {session.gridsCompleted}/{session.gridsTotal}
-            </Typography>
-          </Box>
-        ) : (
-          <Typography
-            variant="caption"
-            sx={{
-              display: 'block',
-              textAlign: 'center',
-              fontSize: '0.5rem',
-              color: 'text.disabled',
-              mt: 0.125,
-            }}
-          >
-            {isOffline ? 'Offline' : statusLabel[instrument.status]}
-          </Typography>
-        )}
       </Box>
     </ButtonBase>
   )
 }
 
 function InstrumentsPanel({
-  selectedInstrument,
-  onSelectInstrument,
+  selectedInstruments,
+  highlightedInstrument,
+  onToggleInstrument,
+  view,
+  onViewChange,
 }: {
-  selectedInstrument: string | null
-  onSelectInstrument: (id: string | null) => void
+  selectedInstruments: Set<string>
+  highlightedInstrument: string | null
+  onToggleInstrument: (id: string) => void
+  view: InstrumentView
+  onViewChange: (v: InstrumentView) => void
 }) {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
-      <PanelHeader
-        title="Instruments"
-        count={instruments.filter((i) => i.status !== 'offline').length}
-        suffix="online"
-      />
+      {/* Header with view toggle */}
       <Box
         sx={{
-          flex: 1,
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gridTemplateRows: 'repeat(3, 1fr)',
+          display: 'flex',
+          alignItems: 'center',
           gap: 0.75,
+          px: 1.5,
+          py: 0.75,
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+          flexShrink: 0,
+        }}
+      >
+        <Typography variant="h5">Instruments</Typography>
+        <Typography variant="caption" sx={{ fontWeight: 500 }}>
+          {instruments.filter((i) => i.status !== 'offline').length}
+        </Typography>
+        <Typography variant="caption" sx={{ fontSize: '0.6875rem' }}>
+          online
+        </Typography>
+        {selectedInstruments.size > 0 && (
+          <Typography
+            variant="caption"
+            sx={{ fontSize: '0.625rem', color: 'primary.main', fontWeight: 500 }}
+          >
+            ({selectedInstruments.size} selected)
+          </Typography>
+        )}
+        <Box sx={{ flex: 1 }} />
+        <ViewToggle view={view} onChange={onViewChange} />
+      </Box>
+
+      <Box
+        sx={{
+          display: view === 'list' ? 'flex' : 'grid',
+          flexDirection: view === 'list' ? 'column' : undefined,
+          gridTemplateColumns:
+            view === 'cards' ? 'repeat(2, 1fr)' : view === 'icons' ? 'repeat(4, 1fr)' : undefined,
+          gridTemplateRows: view === 'icons' ? 'repeat(3, 1fr)' : undefined,
+          gap: view === 'list' ? 0.25 : 0.75,
+          flex: 1,
           p: 0.75,
-          overflow: 'hidden',
+          overflow: view === 'icons' ? 'hidden' : 'auto',
+          '&::-webkit-scrollbar': { width: 4 },
+          '&::-webkit-scrollbar-thumb': { backgroundColor: '#d1d9e0', borderRadius: 2 },
         }}
       >
         {instruments.map((inst) => (
-          <InstrumentTile
+          <InstrumentItem
             key={inst.id}
             instrument={inst}
-            selected={selectedInstrument === inst.id}
-            onSelect={onSelectInstrument}
+            selected={selectedInstruments.has(inst.id)}
+            highlighted={highlightedInstrument === inst.id}
+            onToggle={onToggleInstrument}
+            view={view}
           />
         ))}
       </Box>
@@ -332,7 +582,6 @@ function InstrumentsPanel({
 // QUADRANT: Sessions (top-right)
 // ============================================================================
 
-// Mock detail data for expanded sessions
 const mockSessionDetails = {
   grids: [
     { name: 'Grid A1', squares: 42, foilholes: 318, status: 'collected' },
@@ -355,11 +604,13 @@ function SessionRow({
   highlighted,
   expanded,
   onToggle,
+  onHoverInstrument,
 }: {
   session: Session
   highlighted: boolean
   expanded: boolean
   onToggle: (id: string) => void
+  onHoverInstrument: (id: string | null) => void
 }) {
   const isActive = session.status === 'running' || session.status === 'paused'
   const color = sessionStatusColor[session.status]
@@ -369,6 +620,8 @@ function SessionRow({
     <Box>
       <Box
         onClick={() => onToggle(session.id)}
+        onMouseEnter={() => onHoverInstrument(session.instrumentId)}
+        onMouseLeave={() => onHoverInstrument(null)}
         sx={{
           display: 'flex',
           alignItems: 'center',
@@ -427,8 +680,6 @@ function SessionRow({
           )}
         </Box>
       </Box>
-
-      {/* Expanded detail card */}
       {expanded && <SessionDetailCard session={session} />}
     </Box>
   )
@@ -450,7 +701,6 @@ function SessionDetailCard({ session }: { session: Session }) {
         backgroundColor: '#fafbfc',
       }}
     >
-      {/* Session meta row */}
       <Box sx={{ display: 'flex', gap: 3, mb: 1, flexWrap: 'wrap' }}>
         <MetricItem
           label="Started"
@@ -467,8 +717,6 @@ function SessionDetailCard({ session }: { session: Session }) {
         <MetricItem label="Avg resolution" value={`${m.avgResolution} A`} />
         <MetricItem label="Avg defocus" value={`${m.avgDefocus} um`} />
       </Box>
-
-      {/* Grid table */}
       <Typography variant="h6" sx={{ mb: 0.5 }}>
         Grids
       </Typography>
@@ -564,32 +812,38 @@ function QualityBar({ value }: { value: number }) {
 }
 
 function SessionsPanel({
-  selectedInstrument,
+  selectedInstruments,
   expandedSession,
   onToggleSession,
+  onHoverInstrument,
 }: {
-  selectedInstrument: string | null
+  selectedInstruments: Set<string>
   expandedSession: string | null
   onToggleSession: (id: string) => void
+  onHoverInstrument: (id: string | null) => void
 }) {
-  const filteredActive = selectedInstrument
-    ? activeSessions.filter((s) => s.instrumentId === selectedInstrument)
+  const hasFilter = selectedInstruments.size > 0
+  const filteredActive = hasFilter
+    ? activeSessions.filter((s) => selectedInstruments.has(s.instrumentId))
     : activeSessions
 
-  const filteredRecent = selectedInstrument
-    ? recentSessions.filter((s) => s.instrumentId === selectedInstrument)
+  const filteredRecent = hasFilter
+    ? recentSessions.filter((s) => selectedInstruments.has(s.instrumentId))
     : recentSessions
+
+  const filterLabel = hasFilter
+    ? `on ${[...selectedInstruments]
+        .map((id) => instruments.find((i) => i.id === id)?.name)
+        .filter(Boolean)
+        .join(', ')}`
+    : undefined
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
       <PanelHeader
         title="Sessions"
         count={filteredActive.length + filteredRecent.length}
-        suffix={
-          selectedInstrument
-            ? `on ${instruments.find((i) => i.id === selectedInstrument)?.name}`
-            : undefined
-        }
+        suffix={filterLabel}
       />
       <Box
         sx={{
@@ -610,9 +864,10 @@ function SessionsPanel({
               <SessionRow
                 key={s.id}
                 session={s}
-                highlighted={selectedInstrument === s.instrumentId}
+                highlighted={hasFilter && selectedInstruments.has(s.instrumentId)}
                 expanded={expandedSession === s.id}
                 onToggle={onToggleSession}
+                onHoverInstrument={onHoverInstrument}
               />
             ))}
           </>
@@ -626,9 +881,10 @@ function SessionsPanel({
               <SessionRow
                 key={s.id}
                 session={s}
-                highlighted={selectedInstrument === s.instrumentId}
+                highlighted={hasFilter && selectedInstruments.has(s.instrumentId)}
                 expanded={expandedSession === s.id}
                 onToggle={onToggleSession}
+                onHoverInstrument={onHoverInstrument}
               />
             ))}
           </>
@@ -665,17 +921,18 @@ const DAY_TICKS = Array.from({ length: 8 }, (_, i) => {
 
 const NOW_PCT = ((NOW_MS - GANTT_START) / GANTT_RANGE) * 100
 
-function GanttTimeline({ selectedInstrument }: { selectedInstrument: string | null }) {
+function GanttTimeline({ activeInstruments }: { activeInstruments: Set<string> }) {
   const visibleRows = ganttRows.filter((r) => {
     const inst = instruments.find((i) => i.id === r.instrumentId)
     return inst && inst.status !== 'offline'
   })
 
+  const hasFilter = activeInstruments.size > 0
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
       <PanelHeader title="Timeline" suffix="7 days" />
       <Box sx={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
-        {/* Instrument labels */}
         <Box
           sx={{
             width: 72,
@@ -688,7 +945,7 @@ function GanttTimeline({ selectedInstrument }: { selectedInstrument: string | nu
         >
           <Box sx={{ height: 20, flexShrink: 0 }} />
           {visibleRows.map((row) => {
-            const isSelected = selectedInstrument === row.instrumentId
+            const isActive = activeInstruments.has(row.instrumentId)
             return (
               <Box
                 key={row.instrumentId}
@@ -698,7 +955,7 @@ function GanttTimeline({ selectedInstrument }: { selectedInstrument: string | nu
                   alignItems: 'center',
                   justifyContent: 'flex-end',
                   pr: 1,
-                  backgroundColor: isSelected
+                  backgroundColor: isActive
                     ? `${instrumentColors[row.instrumentId]}08`
                     : 'transparent',
                 }}
@@ -707,8 +964,8 @@ function GanttTimeline({ selectedInstrument }: { selectedInstrument: string | nu
                   variant="caption"
                   sx={{
                     fontSize: '0.6875rem',
-                    fontWeight: isSelected ? 600 : 400,
-                    color: isSelected ? instrumentColors[row.instrumentId] : 'text.secondary',
+                    fontWeight: isActive ? 600 : 400,
+                    color: isActive ? instrumentColors[row.instrumentId] : 'text.secondary',
                   }}
                 >
                   {row.instrumentName}
@@ -718,7 +975,6 @@ function GanttTimeline({ selectedInstrument }: { selectedInstrument: string | nu
           })}
         </Box>
 
-        {/* Gantt area */}
         <Box sx={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
           <Box sx={{ height: 20, position: 'relative', flexShrink: 0 }}>
             {DAY_TICKS.map((tick) => (
@@ -778,7 +1034,7 @@ function GanttTimeline({ selectedInstrument }: { selectedInstrument: string | nu
             />
 
             {visibleRows.map((row, rowIdx) => {
-              const isSelected = selectedInstrument === row.instrumentId
+              const isActive = activeInstruments.has(row.instrumentId)
               const rowTop = `${(rowIdx / visibleRows.length) * 100}%`
               const rowHeight = `${100 / visibleRows.length}%`
 
@@ -792,7 +1048,7 @@ function GanttTimeline({ selectedInstrument }: { selectedInstrument: string | nu
                     left: 0,
                     right: 0,
                     borderBottom: '1px solid #f0f2f4',
-                    backgroundColor: isSelected
+                    backgroundColor: isActive
                       ? `${instrumentColors[row.instrumentId]}04`
                       : 'transparent',
                   }}
@@ -801,7 +1057,7 @@ function GanttTimeline({ selectedInstrument }: { selectedInstrument: string | nu
                     <GanttBlockEl
                       key={block.sessionId}
                       block={block}
-                      dimmed={selectedInstrument != null && selectedInstrument !== row.instrumentId}
+                      dimmed={hasFilter && !activeInstruments.has(row.instrumentId)}
                     />
                   ))}
                 </Box>
@@ -891,10 +1147,11 @@ const MIN_TIMELINE = 120
 const MAX_TIMELINE_FRAC = 0.6
 
 function Dashboard() {
-  const [selectedInstrument, setSelectedInstrument] = useState<string | null>(null)
+  const [selectedInstruments, setSelectedInstruments] = useState<Set<string>>(new Set())
+  const [hoveredInstrument, setHoveredInstrument] = useState<string | null>(null)
   const [expandedSession, setExpandedSession] = useState<string | null>(null)
+  const [instrumentView, setInstrumentView] = useState<InstrumentView>('icons')
 
-  // Panel sizing state (fraction / pixels)
   const [leftFrac, setLeftFrac] = useState(0.5)
   const [timelineH, setTimelineH] = useState(260)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -912,9 +1169,31 @@ function Dashboard() {
     setTimelineH((prev) => Math.min(maxPx, Math.max(MIN_TIMELINE, prev - delta)))
   }, [])
 
+  const toggleInstrument = useCallback((id: string) => {
+    setSelectedInstruments((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }, [])
+
   const toggleSession = useCallback((id: string) => {
     setExpandedSession((prev) => (prev === id ? null : id))
   }, [])
+
+  // Expanding a session also highlights its instrument
+  const expandedInstrument = expandedSession
+    ? (sessions.find((s) => s.id === expandedSession)?.instrumentId ?? null)
+    : null
+
+  // Combined set for timeline/gantt highlighting: selected + hovered + expanded
+  const activeInstruments = new Set(selectedInstruments)
+  if (hoveredInstrument) activeInstruments.add(hoveredInstrument)
+  if (expandedInstrument) activeInstruments.add(expandedInstrument)
+
+  // For instrument panel highlighting: hovered from sessions or expanded session
+  const sessionHighlightedInstrument = hoveredInstrument ?? expandedInstrument
 
   return (
     <Box
@@ -926,7 +1205,6 @@ function Dashboard() {
         overflow: 'hidden',
       }}
     >
-      {/* Top row: instruments | divider | sessions */}
       <Box sx={{ flex: 1, display: 'flex', overflow: 'hidden', minHeight: 0 }}>
         <Box
           sx={{
@@ -937,24 +1215,26 @@ function Dashboard() {
           }}
         >
           <InstrumentsPanel
-            selectedInstrument={selectedInstrument}
-            onSelectInstrument={setSelectedInstrument}
+            selectedInstruments={selectedInstruments}
+            highlightedInstrument={sessionHighlightedInstrument}
+            onToggleInstrument={toggleInstrument}
+            view={instrumentView}
+            onViewChange={setInstrumentView}
           />
         </Box>
         <DividerV onDrag={handleVDrag} />
         <Box sx={{ flex: 1, overflow: 'hidden' }}>
           <SessionsPanel
-            selectedInstrument={selectedInstrument}
+            selectedInstruments={selectedInstruments}
             expandedSession={expandedSession}
             onToggleSession={toggleSession}
+            onHoverInstrument={setHoveredInstrument}
           />
         </Box>
       </Box>
 
-      {/* Horizontal divider */}
       <DividerH onDrag={handleHDrag} />
 
-      {/* Bottom: Timeline */}
       <Box
         sx={{
           height: timelineH,
@@ -964,7 +1244,7 @@ function Dashboard() {
           overflow: 'hidden',
         }}
       >
-        <GanttTimeline selectedInstrument={selectedInstrument} />
+        <GanttTimeline activeInstruments={activeInstruments} />
       </Box>
     </Box>
   )
