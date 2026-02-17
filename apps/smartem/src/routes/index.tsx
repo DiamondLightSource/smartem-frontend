@@ -1,6 +1,7 @@
 import { Box, ButtonBase, Chip, LinearProgress, Tooltip, Typography } from '@mui/material'
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
+import { MicroscopeIcon } from '~/components/widgets/MicroscopeIcon'
 import {
   activeSessions,
   formatDuration,
@@ -97,14 +98,14 @@ function InstrumentTile({
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'stretch',
-        textAlign: 'left',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
         borderRadius: 1.5,
         border: '1px solid',
         borderColor: selected ? `${instrumentColors[instrument.id]}80` : 'divider',
-        backgroundColor: selected ? `${instrumentColors[instrument.id]}08` : 'background.paper',
-        p: 1.25,
-        opacity: isOffline ? 0.4 : 1,
+        backgroundColor: selected ? `${instrumentColors[instrument.id]}06` : 'background.paper',
+        p: 1,
+        pt: 0.5,
         transition: 'all 0.15s ease',
         position: 'relative',
         overflow: 'hidden',
@@ -114,77 +115,85 @@ function InstrumentTile({
               borderColor: `${instrumentColors[instrument.id]}60`,
               backgroundColor: '#f6f8fa',
             },
-        ...(isRunning && {
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 2,
-            backgroundColor: color,
-          },
-        }),
       }}
     >
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 0.25 }}>
-        <StatusDot color={color} pulse={isRunning} />
-        <Typography variant="body2" fontWeight={600} noWrap sx={{ flex: 1 }}>
-          {instrument.name}
-        </Typography>
-        <Typography
-          variant="caption"
-          sx={{
-            fontSize: '0.625rem',
-            color,
-            fontWeight: 500,
-          }}
-        >
-          {statusLabel[instrument.status]}
-        </Typography>
+      {/* Microscope illustration */}
+      <Box
+        sx={{
+          flex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: 0,
+        }}
+      >
+        <MicroscopeIcon status={instrument.status} scale={0.42} />
       </Box>
-      {session ? (
-        <Box sx={{ mt: 0.5 }}>
-          <Typography
-            variant="caption"
-            noWrap
-            sx={{ display: 'block', color: 'text.primary', fontWeight: 500 }}
-          >
-            {session.name}
+
+      {/* Info strip below microscope */}
+      <Box sx={{ width: '100%', mt: 0.5 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
+          <StatusDot color={color} pulse={isRunning} />
+          <Typography variant="caption" fontWeight={600} noWrap sx={{ fontSize: '0.6875rem' }}>
+            {instrument.name}
           </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.25 }}>
-            <LinearProgress
-              variant="determinate"
-              value={(session.gridsCompleted / session.gridsTotal) * 100}
-              sx={{
-                flex: 1,
-                height: 3,
-                borderRadius: 1,
-                backgroundColor: '#e8eaed',
-                '& .MuiLinearProgress-bar': {
-                  backgroundColor: instrumentColors[instrument.id],
-                  borderRadius: 1,
-                },
-              }}
-            />
+        </Box>
+        {session ? (
+          <Box sx={{ mt: 0.25 }}>
             <Typography
               variant="caption"
-              sx={{ fontSize: '0.625rem', fontVariantNumeric: 'tabular-nums' }}
+              noWrap
+              sx={{
+                display: 'block',
+                textAlign: 'center',
+                fontSize: '0.5625rem',
+                color: 'text.secondary',
+              }}
             >
-              {session.gridsCompleted}/{session.gridsTotal}
+              {session.name}
             </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.25, px: 0.5 }}>
+              <LinearProgress
+                variant="determinate"
+                value={(session.gridsCompleted / session.gridsTotal) * 100}
+                sx={{
+                  flex: 1,
+                  height: 2,
+                  borderRadius: 1,
+                  backgroundColor: '#e8eaed',
+                  '& .MuiLinearProgress-bar': {
+                    backgroundColor: instrumentColors[instrument.id],
+                    borderRadius: 1,
+                  },
+                }}
+              />
+              <Typography
+                variant="caption"
+                sx={{
+                  fontSize: '0.5625rem',
+                  fontVariantNumeric: 'tabular-nums',
+                  color: 'text.secondary',
+                }}
+              >
+                {session.gridsCompleted}/{session.gridsTotal}
+              </Typography>
+            </Box>
           </Box>
-        </Box>
-      ) : (
-        !isOffline && (
+        ) : (
           <Typography
             variant="caption"
-            sx={{ mt: 0.5, fontSize: '0.625rem', color: 'text.disabled' }}
+            sx={{
+              display: 'block',
+              textAlign: 'center',
+              fontSize: '0.5625rem',
+              color: 'text.disabled',
+              mt: 0.25,
+            }}
           >
-            No active session
+            {isOffline ? 'Offline' : statusLabel[instrument.status]}
           </Typography>
-        )
-      )}
+        )}
+      </Box>
     </ButtonBase>
   )
 }
@@ -217,8 +226,7 @@ function InstrumentsPanel({
           gridTemplateColumns: 'repeat(4, 1fr)',
           gridTemplateRows: 'repeat(3, 1fr)',
           gap: 1,
-          p: 1.5,
-          pt: 0,
+          p: 1,
           overflow: 'hidden',
         }}
       >
