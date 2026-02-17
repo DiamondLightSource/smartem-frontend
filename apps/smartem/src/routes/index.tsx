@@ -1,10 +1,12 @@
 import { Box, ButtonBase, Chip, LinearProgress, Tooltip, Typography } from '@mui/material'
 import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { MicroscopeIcon } from '~/components/widgets/MicroscopeIcon'
 import {
   activeSessions,
+  formatDate,
   formatDuration,
+  formatTime,
   type GanttBlock,
   ganttRows,
   type Instrument,
@@ -73,6 +75,113 @@ function StatusDot({ color, pulse }: { color: string; pulse?: boolean }) {
 }
 
 // ============================================================================
+// Resizable divider
+// ============================================================================
+
+function useDrag(onDrag: (delta: number) => void) {
+  const dragging = useRef(false)
+  const lastPos = useRef(0)
+
+  const onMouseDown = useCallback(
+    (axis: 'x' | 'y') => (e: React.MouseEvent) => {
+      e.preventDefault()
+      dragging.current = true
+      lastPos.current = axis === 'x' ? e.clientX : e.clientY
+
+      const onMove = (ev: MouseEvent) => {
+        if (!dragging.current) return
+        const pos = axis === 'x' ? ev.clientX : ev.clientY
+        const delta = pos - lastPos.current
+        lastPos.current = pos
+        onDrag(delta)
+      }
+
+      const onUp = () => {
+        dragging.current = false
+        document.removeEventListener('mousemove', onMove)
+        document.removeEventListener('mouseup', onUp)
+        document.body.style.cursor = ''
+        document.body.style.userSelect = ''
+      }
+
+      document.body.style.cursor = axis === 'x' ? 'col-resize' : 'row-resize'
+      document.body.style.userSelect = 'none'
+      document.addEventListener('mousemove', onMove)
+      document.addEventListener('mouseup', onUp)
+    },
+    [onDrag]
+  )
+
+  return onMouseDown
+}
+
+function DividerH({ onDrag }: { onDrag: (delta: number) => void }) {
+  const onMouseDown = useDrag(onDrag)
+  return (
+    <Box
+      onMouseDown={onMouseDown('y')}
+      sx={{
+        height: 5,
+        cursor: 'row-resize',
+        backgroundColor: 'transparent',
+        position: 'relative',
+        flexShrink: 0,
+        zIndex: 10,
+        '&:hover, &:active': { '& > div': { backgroundColor: 'primary.main', opacity: 1 } },
+      }}
+    >
+      <Box
+        sx={{
+          position: 'absolute',
+          left: '30%',
+          right: '30%',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          height: 3,
+          borderRadius: 1,
+          backgroundColor: 'divider',
+          opacity: 0.5,
+          transition: 'all 0.15s',
+        }}
+      />
+    </Box>
+  )
+}
+
+function DividerV({ onDrag }: { onDrag: (delta: number) => void }) {
+  const onMouseDown = useDrag(onDrag)
+  return (
+    <Box
+      onMouseDown={onMouseDown('x')}
+      sx={{
+        width: 5,
+        cursor: 'col-resize',
+        backgroundColor: 'transparent',
+        position: 'relative',
+        flexShrink: 0,
+        zIndex: 10,
+        '&:hover, &:active': { '& > div': { backgroundColor: 'primary.main', opacity: 1 } },
+      }}
+    >
+      <Box
+        sx={{
+          position: 'absolute',
+          top: '30%',
+          bottom: '30%',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: 3,
+          borderRadius: 1,
+          backgroundColor: 'divider',
+          opacity: 0.5,
+          transition: 'all 0.15s',
+        }}
+      />
+    </Box>
+  )
+}
+
+// ============================================================================
 // QUADRANT: Instruments (top-left)
 // ============================================================================
 
@@ -100,12 +209,12 @@ function InstrumentTile({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'flex-end',
-        borderRadius: 1.5,
+        borderRadius: 1,
         border: '1px solid',
         borderColor: selected ? `${instrumentColors[instrument.id]}80` : 'divider',
         backgroundColor: selected ? `${instrumentColors[instrument.id]}06` : 'background.paper',
-        p: 1,
-        pt: 0.5,
+        p: 0.75,
+        pt: 0.25,
         transition: 'all 0.15s ease',
         position: 'relative',
         overflow: 'hidden',
@@ -117,7 +226,6 @@ function InstrumentTile({
             },
       }}
     >
-      {/* Microscope illustration */}
       <Box
         sx={{
           flex: 1,
@@ -127,57 +235,41 @@ function InstrumentTile({
           minHeight: 0,
         }}
       >
-        <MicroscopeIcon status={instrument.status} scale={0.42} />
+        <MicroscopeIcon status={instrument.status} scale={0.28} />
       </Box>
-
-      {/* Info strip below microscope */}
-      <Box sx={{ width: '100%', mt: 0.5 }}>
+      <Box sx={{ width: '100%', mt: 0.25 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
           <StatusDot color={color} pulse={isRunning} />
-          <Typography variant="caption" fontWeight={600} noWrap sx={{ fontSize: '0.6875rem' }}>
+          <Typography variant="caption" fontWeight={600} noWrap sx={{ fontSize: '0.625rem' }}>
             {instrument.name}
           </Typography>
         </Box>
         {session ? (
-          <Box sx={{ mt: 0.25 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.25, px: 0.25 }}>
+            <LinearProgress
+              variant="determinate"
+              value={(session.gridsCompleted / session.gridsTotal) * 100}
+              sx={{
+                flex: 1,
+                height: 2,
+                borderRadius: 1,
+                backgroundColor: '#e8eaed',
+                '& .MuiLinearProgress-bar': {
+                  backgroundColor: instrumentColors[instrument.id],
+                  borderRadius: 1,
+                },
+              }}
+            />
             <Typography
               variant="caption"
-              noWrap
               sx={{
-                display: 'block',
-                textAlign: 'center',
-                fontSize: '0.5625rem',
+                fontSize: '0.5rem',
+                fontVariantNumeric: 'tabular-nums',
                 color: 'text.secondary',
               }}
             >
-              {session.name}
+              {session.gridsCompleted}/{session.gridsTotal}
             </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.25, px: 0.5 }}>
-              <LinearProgress
-                variant="determinate"
-                value={(session.gridsCompleted / session.gridsTotal) * 100}
-                sx={{
-                  flex: 1,
-                  height: 2,
-                  borderRadius: 1,
-                  backgroundColor: '#e8eaed',
-                  '& .MuiLinearProgress-bar': {
-                    backgroundColor: instrumentColors[instrument.id],
-                    borderRadius: 1,
-                  },
-                }}
-              />
-              <Typography
-                variant="caption"
-                sx={{
-                  fontSize: '0.5625rem',
-                  fontVariantNumeric: 'tabular-nums',
-                  color: 'text.secondary',
-                }}
-              >
-                {session.gridsCompleted}/{session.gridsTotal}
-              </Typography>
-            </Box>
           </Box>
         ) : (
           <Typography
@@ -185,9 +277,9 @@ function InstrumentTile({
             sx={{
               display: 'block',
               textAlign: 'center',
-              fontSize: '0.5625rem',
+              fontSize: '0.5rem',
               color: 'text.disabled',
-              mt: 0.25,
+              mt: 0.125,
             }}
           >
             {isOffline ? 'Offline' : statusLabel[instrument.status]}
@@ -206,14 +298,7 @@ function InstrumentsPanel({
   onSelectInstrument: (id: string | null) => void
 }) {
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        overflow: 'hidden',
-      }}
-    >
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
       <PanelHeader
         title="Instruments"
         count={instruments.filter((i) => i.status !== 'offline').length}
@@ -225,8 +310,8 @@ function InstrumentsPanel({
           display: 'grid',
           gridTemplateColumns: 'repeat(4, 1fr)',
           gridTemplateRows: 'repeat(3, 1fr)',
-          gap: 1,
-          p: 1,
+          gap: 0.75,
+          p: 0.75,
           overflow: 'hidden',
         }}
       >
@@ -247,72 +332,211 @@ function InstrumentsPanel({
 // QUADRANT: Sessions (top-right)
 // ============================================================================
 
-function SessionRow({ session, highlighted }: { session: Session; highlighted: boolean }) {
+// Mock detail data for expanded sessions
+const mockSessionDetails = {
+  grids: [
+    { name: 'Grid A1', squares: 42, foilholes: 318, status: 'collected' },
+    { name: 'Grid A2', squares: 38, foilholes: 290, status: 'collected' },
+    { name: 'Grid B1', squares: 45, foilholes: 340, status: 'collecting' },
+    { name: 'Grid B2', squares: 0, foilholes: 0, status: 'queued' },
+  ],
+  metrics: {
+    totalMicrographs: 2847,
+    avgDefocus: -1.8,
+    avgResolution: 3.2,
+    avgMotion: 1.4,
+    particlesPicked: 142350,
+    iceFraction: 0.12,
+  },
+}
+
+function SessionRow({
+  session,
+  highlighted,
+  expanded,
+  onToggle,
+}: {
+  session: Session
+  highlighted: boolean
+  expanded: boolean
+  onToggle: (id: string) => void
+}) {
   const isActive = session.status === 'running' || session.status === 'paused'
   const color = sessionStatusColor[session.status]
   const instColor = instrumentColors[session.instrumentId] ?? '#6e7781'
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 1.5,
-        px: 1.5,
-        py: 0.75,
-        borderRadius: 1,
-        cursor: 'pointer',
-        backgroundColor: highlighted ? `${instColor}08` : 'transparent',
-        borderLeft: highlighted ? `2px solid ${instColor}` : '2px solid transparent',
-        transition: 'all 0.1s ease',
-        '&:hover': { backgroundColor: '#f6f8fa' },
-      }}
-    >
-      <StatusDot color={color} pulse={session.status === 'running'} />
-
-      <Box sx={{ flex: 1, minWidth: 0 }}>
-        <Typography variant="body2" fontWeight={500} noWrap>
-          {session.name}
-        </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Typography variant="caption" sx={{ fontSize: '0.6875rem' }}>
-            {session.instrumentName}
+    <Box>
+      <Box
+        onClick={() => onToggle(session.id)}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1.5,
+          px: 1.5,
+          py: 0.75,
+          borderRadius: 1,
+          cursor: 'pointer',
+          backgroundColor: expanded ? '#f6f8fa' : highlighted ? `${instColor}08` : 'transparent',
+          borderLeft: highlighted ? `2px solid ${instColor}` : '2px solid transparent',
+          transition: 'all 0.1s ease',
+          '&:hover': { backgroundColor: '#f6f8fa' },
+        }}
+      >
+        <StatusDot color={color} pulse={session.status === 'running'} />
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <Typography variant="body2" fontWeight={500} noWrap>
+            {session.name}
           </Typography>
-          <Typography variant="caption" sx={{ fontSize: '0.6875rem', color: 'text.disabled' }}>
-            {formatDuration(session.startTime, session.endTime)}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography variant="caption" sx={{ fontSize: '0.6875rem' }}>
+              {session.instrumentName}
+            </Typography>
+            <Typography variant="caption" sx={{ fontSize: '0.6875rem', color: 'text.disabled' }}>
+              {formatDuration(session.startTime, session.endTime)}
+            </Typography>
+          </Box>
+        </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0 }}>
+          {session.avgQuality != null && <QualityBar value={session.avgQuality} />}
+          <Typography
+            variant="caption"
+            sx={{
+              fontVariantNumeric: 'tabular-nums',
+              fontSize: '0.6875rem',
+              minWidth: 36,
+              textAlign: 'right',
+            }}
+          >
+            {session.gridsCompleted}/{session.gridsTotal}
           </Typography>
+          {isActive && (
+            <Chip
+              size="small"
+              label={sessionStatusLabel[session.status]}
+              sx={{
+                backgroundColor: `${color}14`,
+                color,
+                fontWeight: 500,
+                border: `1px solid ${color}40`,
+                height: 18,
+                fontSize: '0.625rem',
+                '& .MuiChip-label': { px: 0.75 },
+              }}
+            />
+          )}
         </Box>
       </Box>
 
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0 }}>
-        {session.avgQuality != null && <QualityBar value={session.avgQuality} />}
-        <Typography
-          variant="caption"
-          sx={{
-            fontVariantNumeric: 'tabular-nums',
-            fontSize: '0.6875rem',
-            minWidth: 36,
-            textAlign: 'right',
-          }}
-        >
-          {session.gridsCompleted}/{session.gridsTotal}
-        </Typography>
-        {isActive && (
-          <Chip
-            size="small"
-            label={sessionStatusLabel[session.status]}
-            sx={{
-              backgroundColor: `${color}14`,
-              color,
-              fontWeight: 500,
-              border: `1px solid ${color}40`,
-              height: 18,
-              fontSize: '0.625rem',
-              '& .MuiChip-label': { px: 0.75 },
-            }}
+      {/* Expanded detail card */}
+      {expanded && <SessionDetailCard session={session} />}
+    </Box>
+  )
+}
+
+function SessionDetailCard({ session }: { session: Session }) {
+  const m = mockSessionDetails.metrics
+  const instColor = instrumentColors[session.instrumentId] ?? '#6e7781'
+
+  return (
+    <Box
+      sx={{
+        mx: 1.5,
+        mb: 1,
+        p: 1.25,
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 1.5,
+        backgroundColor: '#fafbfc',
+      }}
+    >
+      {/* Session meta row */}
+      <Box sx={{ display: 'flex', gap: 3, mb: 1, flexWrap: 'wrap' }}>
+        <MetricItem
+          label="Started"
+          value={`${formatDate(session.startTime)} ${formatTime(session.startTime)}`}
+        />
+        {session.endTime && (
+          <MetricItem
+            label="Ended"
+            value={`${formatDate(session.endTime)} ${formatTime(session.endTime)}`}
           />
         )}
+        <MetricItem label="Micrographs" value={m.totalMicrographs.toLocaleString()} />
+        <MetricItem label="Particles" value={m.particlesPicked.toLocaleString()} />
+        <MetricItem label="Avg resolution" value={`${m.avgResolution} A`} />
+        <MetricItem label="Avg defocus" value={`${m.avgDefocus} um`} />
       </Box>
+
+      {/* Grid table */}
+      <Typography variant="h6" sx={{ mb: 0.5 }}>
+        Grids
+      </Typography>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
+        {mockSessionDetails.grids
+          .slice(0, session.gridsTotal > 4 ? 4 : session.gridsTotal)
+          .map((grid) => (
+            <Box
+              key={grid.name}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.5,
+                py: 0.25,
+                px: 0.5,
+                borderRadius: 0.5,
+                '&:hover': { backgroundColor: '#f0f2f4' },
+              }}
+            >
+              <Typography variant="caption" fontWeight={500} sx={{ minWidth: 50 }}>
+                {grid.name}
+              </Typography>
+              <Typography variant="caption" sx={{ color: 'text.secondary', minWidth: 60 }}>
+                {grid.squares} sq
+              </Typography>
+              <Typography variant="caption" sx={{ color: 'text.secondary', minWidth: 60 }}>
+                {grid.foilholes} fh
+              </Typography>
+              <Chip
+                size="small"
+                label={grid.status}
+                sx={{
+                  height: 16,
+                  fontSize: '0.5625rem',
+                  backgroundColor:
+                    grid.status === 'collected'
+                      ? `${statusColors.running}14`
+                      : grid.status === 'collecting'
+                        ? `${instColor}14`
+                        : '#f0f2f4',
+                  color:
+                    grid.status === 'collected'
+                      ? statusColors.running
+                      : grid.status === 'collecting'
+                        ? instColor
+                        : 'text.secondary',
+                  '& .MuiChip-label': { px: 0.5 },
+                }}
+              />
+            </Box>
+          ))}
+      </Box>
+    </Box>
+  )
+}
+
+function MetricItem({ label, value }: { label: string; value: string }) {
+  return (
+    <Box>
+      <Typography
+        variant="caption"
+        sx={{ fontSize: '0.5625rem', color: 'text.disabled', display: 'block' }}
+      >
+        {label}
+      </Typography>
+      <Typography variant="caption" sx={{ fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>
+        {value}
+      </Typography>
     </Box>
   )
 }
@@ -339,7 +563,15 @@ function QualityBar({ value }: { value: number }) {
   )
 }
 
-function SessionsPanel({ selectedInstrument }: { selectedInstrument: string | null }) {
+function SessionsPanel({
+  selectedInstrument,
+  expandedSession,
+  onToggleSession,
+}: {
+  selectedInstrument: string | null
+  expandedSession: string | null
+  onToggleSession: (id: string) => void
+}) {
   const filteredActive = selectedInstrument
     ? activeSessions.filter((s) => s.instrumentId === selectedInstrument)
     : activeSessions
@@ -349,14 +581,7 @@ function SessionsPanel({ selectedInstrument }: { selectedInstrument: string | nu
     : recentSessions
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        overflow: 'hidden',
-      }}
-    >
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
       <PanelHeader
         title="Sessions"
         count={filteredActive.length + filteredRecent.length}
@@ -386,11 +611,12 @@ function SessionsPanel({ selectedInstrument }: { selectedInstrument: string | nu
                 key={s.id}
                 session={s}
                 highlighted={selectedInstrument === s.instrumentId}
+                expanded={expandedSession === s.id}
+                onToggle={onToggleSession}
               />
             ))}
           </>
         )}
-
         {filteredRecent.length > 0 && (
           <>
             <Typography variant="h6" sx={{ px: 1.5, pt: 1.5, pb: 0.5 }}>
@@ -401,11 +627,12 @@ function SessionsPanel({ selectedInstrument }: { selectedInstrument: string | nu
                 key={s.id}
                 session={s}
                 highlighted={selectedInstrument === s.instrumentId}
+                expanded={expandedSession === s.id}
+                onToggle={onToggleSession}
               />
             ))}
           </>
         )}
-
         {filteredActive.length === 0 && filteredRecent.length === 0 && (
           <Box sx={{ p: 3, textAlign: 'center' }}>
             <Typography variant="caption">No sessions</Typography>
@@ -445,14 +672,7 @@ function GanttTimeline({ selectedInstrument }: { selectedInstrument: string | nu
   })
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        overflow: 'hidden',
-      }}
-    >
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
       <PanelHeader title="Timeline" suffix="7 days" />
       <Box sx={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
         {/* Instrument labels */}
@@ -466,7 +686,6 @@ function GanttTimeline({ selectedInstrument }: { selectedInstrument: string | nu
             borderColor: 'divider',
           }}
         >
-          {/* Spacer for tick row */}
           <Box sx={{ height: 20, flexShrink: 0 }} />
           {visibleRows.map((row) => {
             const isSelected = selectedInstrument === row.instrumentId
@@ -501,7 +720,6 @@ function GanttTimeline({ selectedInstrument }: { selectedInstrument: string | nu
 
         {/* Gantt area */}
         <Box sx={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
-          {/* Day tick labels */}
           <Box sx={{ height: 20, position: 'relative', flexShrink: 0 }}>
             {DAY_TICKS.map((tick) => (
               <Typography
@@ -522,9 +740,7 @@ function GanttTimeline({ selectedInstrument }: { selectedInstrument: string | nu
             ))}
           </Box>
 
-          {/* Rows */}
           <Box sx={{ position: 'absolute', top: 20, bottom: 0, left: 0, right: 0 }}>
-            {/* Grid lines */}
             {DAY_TICKS.map((tick) => (
               <Box
                 key={`line-${tick.key}`}
@@ -539,7 +755,6 @@ function GanttTimeline({ selectedInstrument }: { selectedInstrument: string | nu
               />
             ))}
 
-            {/* Now line */}
             <Box
               sx={{
                 position: 'absolute',
@@ -562,7 +777,6 @@ function GanttTimeline({ selectedInstrument }: { selectedInstrument: string | nu
               }}
             />
 
-            {/* Session rows */}
             {visibleRows.map((row, rowIdx) => {
               const isSelected = selectedInstrument === row.instrumentId
               const rowTop = `${(rowIdx / visibleRows.length) * 100}%`
@@ -609,7 +823,7 @@ function GanttBlockEl({ block, dimmed }: { block: GanttBlock; dimmed: boolean })
   if (widthPct <= 0) return null
 
   return (
-    <Tooltip title={`${block.sessionName}`} placement="top">
+    <Tooltip title={block.sessionName} placement="top">
       <Box
         sx={{
           position: 'absolute',
@@ -645,7 +859,7 @@ function PanelHeader({ title, count, suffix }: { title: string; count?: number; 
         alignItems: 'baseline',
         gap: 0.75,
         px: 1.5,
-        py: 1,
+        py: 0.75,
         borderBottom: '1px solid',
         borderColor: 'divider',
         flexShrink: 0,
@@ -667,59 +881,86 @@ function PanelHeader({ title, count, suffix }: { title: string; count?: number; 
 }
 
 // ============================================================================
-// Dashboard (three-quadrant HUD)
+// Dashboard (three-quadrant HUD with resizable panels)
 // ============================================================================
+
+const HEADER_H = 56
+const MIN_COL = 0.25
+const MAX_COL = 0.75
+const MIN_TIMELINE = 120
+const MAX_TIMELINE_FRAC = 0.6
 
 function Dashboard() {
   const [selectedInstrument, setSelectedInstrument] = useState<string | null>(null)
+  const [expandedSession, setExpandedSession] = useState<string | null>(null)
+
+  // Panel sizing state (fraction / pixels)
+  const [leftFrac, setLeftFrac] = useState(0.5)
+  const [timelineH, setTimelineH] = useState(260)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  const handleVDrag = useCallback((delta: number) => {
+    if (!containerRef.current) return
+    const totalW = containerRef.current.offsetWidth
+    setLeftFrac((prev) => Math.min(MAX_COL, Math.max(MIN_COL, prev + delta / totalW)))
+  }, [])
+
+  const handleHDrag = useCallback((delta: number) => {
+    if (!containerRef.current) return
+    const totalH = containerRef.current.offsetHeight
+    const maxPx = totalH * MAX_TIMELINE_FRAC
+    setTimelineH((prev) => Math.min(maxPx, Math.max(MIN_TIMELINE, prev - delta)))
+  }, [])
+
+  const toggleSession = useCallback((id: string) => {
+    setExpandedSession((prev) => (prev === id ? null : id))
+  }, [])
 
   return (
     <Box
+      ref={containerRef}
       sx={{
-        height: 'calc(100vh - 56px)',
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gridTemplateRows: '1fr auto',
-        gridTemplateAreas: `
-          "instruments sessions"
-          "timeline timeline"
-        `,
+        height: `calc(100vh - ${HEADER_H}px)`,
+        display: 'flex',
+        flexDirection: 'column',
         overflow: 'hidden',
       }}
     >
-      {/* Top-left: Instruments */}
-      <Box
-        sx={{
-          gridArea: 'instruments',
-          borderRight: '1px solid',
-          borderBottom: '1px solid',
-          borderColor: 'divider',
-          overflow: 'hidden',
-        }}
-      >
-        <InstrumentsPanel
-          selectedInstrument={selectedInstrument}
-          onSelectInstrument={setSelectedInstrument}
-        />
+      {/* Top row: instruments | divider | sessions */}
+      <Box sx={{ flex: 1, display: 'flex', overflow: 'hidden', minHeight: 0 }}>
+        <Box
+          sx={{
+            width: `${leftFrac * 100}%`,
+            borderRight: '1px solid',
+            borderColor: 'divider',
+            overflow: 'hidden',
+          }}
+        >
+          <InstrumentsPanel
+            selectedInstrument={selectedInstrument}
+            onSelectInstrument={setSelectedInstrument}
+          />
+        </Box>
+        <DividerV onDrag={handleVDrag} />
+        <Box sx={{ flex: 1, overflow: 'hidden' }}>
+          <SessionsPanel
+            selectedInstrument={selectedInstrument}
+            expandedSession={expandedSession}
+            onToggleSession={toggleSession}
+          />
+        </Box>
       </Box>
 
-      {/* Top-right: Sessions */}
-      <Box
-        sx={{
-          gridArea: 'sessions',
-          borderBottom: '1px solid',
-          borderColor: 'divider',
-          overflow: 'hidden',
-        }}
-      >
-        <SessionsPanel selectedInstrument={selectedInstrument} />
-      </Box>
+      {/* Horizontal divider */}
+      <DividerH onDrag={handleHDrag} />
 
       {/* Bottom: Timeline */}
       <Box
         sx={{
-          gridArea: 'timeline',
-          height: 220,
+          height: timelineH,
+          flexShrink: 0,
+          borderTop: '1px solid',
+          borderColor: 'divider',
           overflow: 'hidden',
         }}
       >
