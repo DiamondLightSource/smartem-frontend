@@ -77,7 +77,7 @@ export function Header() {
           gap: 1,
         }}
       >
-        {/* Diamond Light Source logo */}
+        {/* Logos */}
         <Tooltip title="Diamond Light Source — eBIC">
           <IconButton
             component="a"
@@ -85,12 +85,29 @@ export function Header() {
             target="_blank"
             rel="noopener noreferrer"
             size="small"
-            sx={{ p: 0.5, mr: 0.5 }}
+            sx={{ p: 0.5 }}
           >
             <Box
               component="img"
               src="/diamond-logo.ico"
               alt="Diamond Light Source"
+              sx={{ width: 24, height: 24 }}
+            />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="FragmentScreen">
+          <IconButton
+            component="a"
+            href="https://fragmentscreen.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            size="small"
+            sx={{ p: 0.5, mr: 0.5 }}
+          >
+            <Box
+              component="img"
+              src="/fragment-screen-logo.png"
+              alt="FragmentScreen"
               sx={{ width: 24, height: 24 }}
             />
           </IconButton>
@@ -171,25 +188,6 @@ export function Header() {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, ml: 2, flexShrink: 0 }}>
           <SettingsMenu />
           <RoleSwitcher />
-
-          {/* FragmentScreen logo */}
-          <Tooltip title="FragmentScreen">
-            <IconButton
-              component="a"
-              href="https://fragmentscreen.org"
-              target="_blank"
-              rel="noopener noreferrer"
-              size="small"
-              sx={{ p: 0.5, ml: 0.5 }}
-            >
-              <Box
-                component="img"
-                src="/fragment-screen-logo.png"
-                alt="FragmentScreen"
-                sx={{ width: 24, height: 24 }}
-              />
-            </IconButton>
-          </Tooltip>
         </Box>
       </Toolbar>
     </AppBar>
@@ -208,7 +206,7 @@ function SettingsMenu() {
           onClick={(e) => setAnchorEl(e.currentTarget)}
           sx={{ color: 'text.secondary' }}
         >
-          <GearIcon />
+          <HamburgerIcon />
         </IconButton>
       </Tooltip>
       <Menu
@@ -343,7 +341,7 @@ function RoleSwitcher() {
 // Inline SVG icons (16×16)
 // ---------------------------------------------------------------------------
 
-function GearIcon() {
+function HamburgerIcon() {
   return (
     <svg
       width="16"
@@ -351,15 +349,9 @@ function GearIcon() {
       viewBox="0 0 16 16"
       fill="currentColor"
       role="img"
-      aria-label="Settings"
+      aria-label="Menu"
     >
-      <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492ZM6.754 8a1.246 1.246 0 1 1 2.492 0 1.246 1.246 0 0 1-2.492 0Z" />
-      <path
-        d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0a1.847 1.847 0 0 1-2.756 1.037c-1.543-1.1-3.478.835-2.378 2.378a1.847 1.847 0 0 1-1.037 2.756c-1.79.527-1.79 3.065 0 3.592a1.847 1.847 0 0 1 1.037 2.756c-1.1 1.543.835 3.478 2.378 2.378a1.847 1.847 0 0 1 2.756 1.037c.527 1.79 3.065 1.79 3.592 0a1.847 1.847 0 0 1 2.756-1.037c1.543 1.1 3.478-.835 2.378-2.378a1.847 1.847 0 0 1 1.037-2.756c1.79-.527 1.79-3.065 0-3.592a1.847 1.847 0 0 1-1.037-2.756c1.1-1.543-.835-3.478-2.378-2.378a1.847 1.847 0 0 1-2.756-1.037ZM8 4.068a3.932 3.932 0 1 1 0 7.864 3.932 3.932 0 0 1 0-7.864Z"
-        clipRule="evenodd"
-        fillRule="evenodd"
-        opacity=".5"
-      />
+      <path d="M1 2.75A.75.75 0 0 1 1.75 2h12.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 2.75Zm0 5A.75.75 0 0 1 1.75 7h12.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 7.75ZM1.75 12h12.5a.75.75 0 0 1 0 1.5H1.75a.75.75 0 0 1 0-1.5Z" />
     </svg>
   )
 }
