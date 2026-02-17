@@ -25,7 +25,8 @@ const navLinks = [
 
 function NavLink({ label, to }: { label: string; to: string }) {
   const router = useRouterState()
-  const isActive = router.location.pathname === to
+  const isActive =
+    to === '/' ? router.location.pathname === '/' : router.location.pathname.startsWith(to)
 
   return (
     <Typography
