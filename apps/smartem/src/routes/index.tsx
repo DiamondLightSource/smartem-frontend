@@ -30,6 +30,7 @@ export const Route = createFileRoute('/')({
 // ============================================================================
 
 type InstrumentView = 'list' | 'cards' | 'icons'
+type TimelineRange = 'today' | 'week' | 'month'
 
 // ============================================================================
 // Status helpers
@@ -296,6 +297,52 @@ function IconsViewIcon() {
       <rect x="5.5" y="11" width="3" height="3" rx="0.5" />
       <rect x="11" y="11" width="3" height="3" rx="0.5" />
     </svg>
+  )
+}
+
+const TIMELINE_RANGES: { key: TimelineRange; label: string }[] = [
+  { key: 'today', label: 'Today' },
+  { key: 'week', label: 'Week' },
+  { key: 'month', label: 'Month' },
+]
+
+function RangeToggle({
+  range,
+  onChange,
+}: {
+  range: TimelineRange
+  onChange: (r: TimelineRange) => void
+}) {
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 1,
+        overflow: 'hidden',
+      }}
+    >
+      {TIMELINE_RANGES.map((r, idx) => (
+        <ButtonBase
+          key={r.key}
+          onClick={() => onChange(r.key)}
+          sx={{
+            px: 1,
+            height: 24,
+            fontSize: '0.6875rem',
+            fontWeight: range === r.key ? 600 : 400,
+            backgroundColor: range === r.key ? '#f0f2f4' : 'transparent',
+            color: range === r.key ? 'text.primary' : 'text.disabled',
+            '&:hover': { backgroundColor: '#f6f8fa' },
+            borderRight: idx < TIMELINE_RANGES.length - 1 ? '1px solid' : 'none',
+            borderColor: 'divider',
+          }}
+        >
+          {r.label}
+        </ButtonBase>
+      ))}
+    </Box>
   )
 }
 
@@ -903,25 +950,75 @@ function SessionsPanel({
 // QUADRANT: Timeline / Gantt (bottom)
 // ============================================================================
 
-const WEEK_MS = 7 * 24 * 3600_000
-const GANTT_START = NOW_MS - WEEK_MS
-const GANTT_END = NOW_MS
-const GANTT_RANGE = GANTT_END - GANTT_START
+interface GanttConfig {
+  start: number
+  range: number
+  nowPct: number
+  ticks: { key: string; pct: number; label: string }[]
+  suffix: string
+}
 
-const DAY_TICKS = Array.from({ length: 8 }, (_, i) => {
-  const ms = GANTT_START + i * 24 * 3600_000
-  const date = new Date(ms)
-  return {
-    key: date.toISOString().slice(0, 10),
-    ms,
-    pct: ((ms - GANTT_START) / GANTT_RANGE) * 100,
-    label: date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric' }),
+function buildGanttConfig(range: TimelineRange): GanttConfig {
+  const HOUR = 3600_000
+  const DAY = 24 * HOUR
+
+  if (range === 'today') {
+    const start = NOW_MS - DAY
+    const span = DAY
+    const ticks = Array.from({ length: 9 }, (_, i) => {
+      const ms = start + i * 3 * HOUR
+      const d = new Date(ms)
+      return {
+        key: `h-${i}`,
+        pct: ((i * 3 * HOUR) / span) * 100,
+        label: d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+      }
+    })
+    return { start, range: span, nowPct: 100, ticks, suffix: '24 h' }
   }
-})
 
-const NOW_PCT = ((NOW_MS - GANTT_START) / GANTT_RANGE) * 100
+  if (range === 'month') {
+    const start = NOW_MS - 30 * DAY
+    const span = 30 * DAY
+    const ticks: GanttConfig['ticks'] = []
+    for (let i = 0; i <= 30; i += 5) {
+      const ms = start + i * DAY
+      const d = new Date(ms)
+      ticks.push({
+        key: d.toISOString().slice(0, 10),
+        pct: ((i * DAY) / span) * 100,
+        label: d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }),
+      })
+    }
+    return { start, range: span, nowPct: 100, ticks, suffix: '30 days' }
+  }
 
-function GanttTimeline({ activeInstruments }: { activeInstruments: Set<string> }) {
+  // week (default)
+  const start = NOW_MS - 7 * DAY
+  const span = 7 * DAY
+  const ticks = Array.from({ length: 8 }, (_, i) => {
+    const ms = start + i * DAY
+    const d = new Date(ms)
+    return {
+      key: d.toISOString().slice(0, 10),
+      pct: ((i * DAY) / span) * 100,
+      label: d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric' }),
+    }
+  })
+  return { start, range: span, nowPct: 100, ticks, suffix: '7 days' }
+}
+
+function GanttTimeline({
+  activeInstruments,
+  range,
+  onRangeChange,
+}: {
+  activeInstruments: Set<string>
+  range: TimelineRange
+  onRangeChange: (r: TimelineRange) => void
+}) {
+  const cfg = buildGanttConfig(range)
+
   const visibleRows = ganttRows.filter((r) => {
     const inst = instruments.find((i) => i.id === r.instrumentId)
     return inst && inst.status !== 'offline'
@@ -931,7 +1028,26 @@ function GanttTimeline({ activeInstruments }: { activeInstruments: Set<string> }
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
-      <PanelHeader title="Timeline" suffix="7 days" />
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 0.75,
+          px: 1.5,
+          py: 0.75,
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+          flexShrink: 0,
+        }}
+      >
+        <Typography variant="h5">Timeline</Typography>
+        <Typography variant="caption" sx={{ fontSize: '0.6875rem' }}>
+          {cfg.suffix}
+        </Typography>
+        <Box sx={{ flex: 1 }} />
+        <RangeToggle range={range} onChange={onRangeChange} />
+      </Box>
+
       <Box sx={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
         <Box
           sx={{
@@ -977,7 +1093,7 @@ function GanttTimeline({ activeInstruments }: { activeInstruments: Set<string> }
 
         <Box sx={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
           <Box sx={{ height: 20, position: 'relative', flexShrink: 0 }}>
-            {DAY_TICKS.map((tick) => (
+            {cfg.ticks.map((tick) => (
               <Typography
                 key={tick.key}
                 variant="caption"
@@ -997,7 +1113,7 @@ function GanttTimeline({ activeInstruments }: { activeInstruments: Set<string> }
           </Box>
 
           <Box sx={{ position: 'absolute', top: 20, bottom: 0, left: 0, right: 0 }}>
-            {DAY_TICKS.map((tick) => (
+            {cfg.ticks.map((tick) => (
               <Box
                 key={`line-${tick.key}`}
                 sx={{
@@ -1014,7 +1130,7 @@ function GanttTimeline({ activeInstruments }: { activeInstruments: Set<string> }
             <Box
               sx={{
                 position: 'absolute',
-                left: `${NOW_PCT}%`,
+                left: `${cfg.nowPct}%`,
                 top: 0,
                 bottom: 0,
                 width: 1.5,
@@ -1057,6 +1173,8 @@ function GanttTimeline({ activeInstruments }: { activeInstruments: Set<string> }
                     <GanttBlockEl
                       key={block.sessionId}
                       block={block}
+                      ganttStart={cfg.start}
+                      ganttRange={cfg.range}
                       dimmed={hasFilter && !activeInstruments.has(row.instrumentId)}
                     />
                   ))}
@@ -1070,9 +1188,19 @@ function GanttTimeline({ activeInstruments }: { activeInstruments: Set<string> }
   )
 }
 
-function GanttBlockEl({ block, dimmed }: { block: GanttBlock; dimmed: boolean }) {
-  const leftPct = Math.max(0, ((block.startMs - GANTT_START) / GANTT_RANGE) * 100)
-  const rightPct = Math.min(100, ((block.endMs - GANTT_START) / GANTT_RANGE) * 100)
+function GanttBlockEl({
+  block,
+  ganttStart,
+  ganttRange,
+  dimmed,
+}: {
+  block: GanttBlock
+  ganttStart: number
+  ganttRange: number
+  dimmed: boolean
+}) {
+  const leftPct = Math.max(0, ((block.startMs - ganttStart) / ganttRange) * 100)
+  const rightPct = Math.min(100, ((block.endMs - ganttStart) / ganttRange) * 100)
   const widthPct = rightPct - leftPct
   const isActive = block.status === 'running' || block.status === 'paused'
 
@@ -1151,6 +1279,7 @@ function Dashboard() {
   const [hoveredInstrument, setHoveredInstrument] = useState<string | null>(null)
   const [expandedSession, setExpandedSession] = useState<string | null>(null)
   const [instrumentView, setInstrumentView] = useState<InstrumentView>('icons')
+  const [timelineRange, setTimelineRange] = useState<TimelineRange>('week')
 
   const [leftFrac, setLeftFrac] = useState(0.5)
   const [timelineH, setTimelineH] = useState(260)
@@ -1244,7 +1373,11 @@ function Dashboard() {
           overflow: 'hidden',
         }}
       >
-        <GanttTimeline activeInstruments={activeInstruments} />
+        <GanttTimeline
+          activeInstruments={activeInstruments}
+          range={timelineRange}
+          onRangeChange={setTimelineRange}
+        />
       </Box>
     </Box>
   )
