@@ -439,73 +439,70 @@ function InstrumentItem({
         onClick={() => onToggle(instrument.id)}
         sx={{
           display: 'flex',
-          alignItems: 'center',
-          gap: 1,
-          textAlign: 'left',
-          borderRadius: 1,
+          flexDirection: 'column',
+          textAlign: 'center',
+          borderRadius: 1.5,
           border: '1px solid',
           borderColor: borderActive ? `${iColor}80` : 'divider',
           backgroundColor: borderActive ? `${iColor}06` : 'background.paper',
-          p: 0.75,
+          p: 1,
           opacity: isOffline ? 0.4 : 1,
           transition: 'all 0.15s',
           overflow: 'hidden',
           '&:hover': isOffline ? {} : { borderColor: `${iColor}60`, backgroundColor: '#f6f8fa' },
         }}
       >
-        <Box sx={{ flexShrink: 0 }}>
-          <MicroscopeIcon status={instrument.status} scale={0.22} />
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 0.75 }}>
+          <MicroscopeIcon status={instrument.status} scale={0.3} />
         </Box>
-        <Box sx={{ flex: 1, minWidth: 0 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-            <StatusDot color={color} pulse={isRunning} />
-            <Typography variant="caption" fontWeight={600} noWrap sx={{ fontSize: '0.6875rem' }}>
-              {instrument.name}
-            </Typography>
-          </Box>
-          <Typography variant="caption" sx={{ color, fontSize: '0.5625rem', fontWeight: 500 }}>
-            {statusLabel[instrument.status]}
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
+          <StatusDot color={color} pulse={isRunning} />
+          <Typography variant="caption" fontWeight={600} noWrap sx={{ fontSize: '0.6875rem' }}>
+            {instrument.name}
           </Typography>
-          {session && (
-            <>
+        </Box>
+        <Typography variant="caption" sx={{ color, fontSize: '0.5625rem', fontWeight: 500 }}>
+          {statusLabel[instrument.status]}
+        </Typography>
+        {session && (
+          <Box sx={{ width: '100%', mt: 0.5 }}>
+            <Typography
+              variant="caption"
+              noWrap
+              sx={{ display: 'block', color: 'text.secondary', fontSize: '0.5625rem' }}
+            >
+              {session.name}
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.25 }}>
+              <LinearProgress
+                variant="determinate"
+                value={(session.gridsCompleted / session.gridsTotal) * 100}
+                sx={{
+                  flex: 1,
+                  height: 2,
+                  borderRadius: 1,
+                  backgroundColor: '#e8eaed',
+                  '& .MuiLinearProgress-bar': { backgroundColor: iColor, borderRadius: 1 },
+                }}
+              />
               <Typography
                 variant="caption"
-                noWrap
-                sx={{ display: 'block', color: 'text.secondary', fontSize: '0.5625rem', mt: 0.25 }}
+                sx={{
+                  fontSize: '0.5rem',
+                  fontVariantNumeric: 'tabular-nums',
+                  color: 'text.secondary',
+                }}
               >
-                {session.name}
+                {session.gridsCompleted}/{session.gridsTotal}
               </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.25 }}>
-                <LinearProgress
-                  variant="determinate"
-                  value={(session.gridsCompleted / session.gridsTotal) * 100}
-                  sx={{
-                    flex: 1,
-                    height: 2,
-                    borderRadius: 1,
-                    backgroundColor: '#e8eaed',
-                    '& .MuiLinearProgress-bar': { backgroundColor: iColor, borderRadius: 1 },
-                  }}
-                />
-                <Typography
-                  variant="caption"
-                  sx={{
-                    fontSize: '0.5rem',
-                    fontVariantNumeric: 'tabular-nums',
-                    color: 'text.secondary',
-                  }}
-                >
-                  {session.gridsCompleted}/{session.gridsTotal}
-                </Typography>
-              </Box>
-            </>
-          )}
-        </Box>
+            </Box>
+          </Box>
+        )}
       </ButtonBase>
     )
   }
 
-  // icons view (default grid)
+  // icons view — smartphone-style shortcuts
   return (
     <ButtonBase
       onClick={() => onToggle(instrument.id)}
@@ -513,36 +510,28 @@ function InstrumentItem({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'flex-end',
-        borderRadius: 1,
-        border: '1px solid',
-        borderColor: borderActive ? `${iColor}80` : 'divider',
-        backgroundColor: borderActive ? `${iColor}06` : 'background.paper',
+        justifyContent: 'center',
+        borderRadius: 2,
         p: 0.5,
-        pt: 0.25,
+        opacity: isOffline ? 0.35 : 1,
         transition: 'all 0.15s ease',
-        overflow: 'hidden',
-        '&:hover': isOffline ? {} : { borderColor: `${iColor}60`, backgroundColor: '#f6f8fa' },
+        backgroundColor: borderActive ? `${iColor}0a` : 'transparent',
+        '&:hover': isOffline ? {} : { backgroundColor: '#f6f8fa' },
       }}
     >
-      <Box
-        sx={{
-          flex: 1,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: 0,
-        }}
-      >
+      <Box sx={{ mb: 0.5 }}>
         <MicroscopeIcon status={instrument.status} scale={0.28} />
       </Box>
-      <Box sx={{ width: '100%', mt: 0.25 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
-          <StatusDot color={color} pulse={isRunning} />
-          <Typography variant="caption" fontWeight={600} noWrap sx={{ fontSize: '0.625rem' }}>
-            {instrument.name}
-          </Typography>
-        </Box>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
+        <StatusDot color={color} pulse={isRunning} />
+        <Typography
+          variant="caption"
+          fontWeight={borderActive ? 700 : 500}
+          noWrap
+          sx={{ fontSize: '0.625rem', color: borderActive ? iColor : 'text.primary' }}
+        >
+          {instrument.name}
+        </Typography>
       </Box>
     </ButtonBase>
   )
@@ -577,8 +566,8 @@ function InstrumentsPanel({
         }}
       >
         <Typography variant="h5">Instruments</Typography>
-        <Typography variant="caption" sx={{ fontWeight: 500 }}>
-          {instruments.filter((i) => i.status !== 'offline').length}
+        <Typography variant="caption" sx={{ fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>
+          {instruments.filter((i) => i.status !== 'offline').length}/{instruments.length}
         </Typography>
         <Typography variant="caption" sx={{ fontSize: '0.6875rem' }}>
           online
@@ -602,7 +591,8 @@ function InstrumentsPanel({
           gridTemplateColumns:
             view === 'cards' ? 'repeat(2, 1fr)' : view === 'icons' ? 'repeat(4, 1fr)' : undefined,
           gridTemplateRows: view === 'icons' ? 'repeat(3, 1fr)' : undefined,
-          gap: view === 'list' ? 0.25 : 0.75,
+          gap: view === 'list' ? 0.25 : view === 'icons' ? 0 : 0.75,
+          placeItems: view === 'icons' ? 'center' : undefined,
           flex: 1,
           p: 0.75,
           overflow: view === 'icons' ? 'hidden' : 'auto',
