@@ -5,6 +5,8 @@ import { getGrid } from '~/data/mock-session-detail'
 const tabs = [
   { key: 'atlas', label: 'Atlas', suffix: '/atlas' },
   { key: 'squares', label: 'Squares', suffix: '/squares' },
+  { key: 'predictions', label: 'Predictions', suffix: '/predictions' },
+  { key: 'workspace', label: 'Workspace', suffix: '/workspace' },
 ] as const
 
 export function ViewSwitcher() {
