@@ -10,37 +10,156 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SessionsRouteImport } from './routes/sessions'
+import { Route as SessionsSessionIdRouteImport } from './routes/sessions.$sessionId'
+import { Route as SessionsSessionIdGridsGridIdRouteImport } from './routes/sessions.$sessionId.grids.$gridId'
+import { Route as SessionsSessionIdGridsGridIdAtlasRouteImport } from './routes/sessions.$sessionId.grids.$gridId.atlas'
+import { Route as SessionsSessionIdGridsGridIdIndexRouteImport } from './routes/sessions.$sessionId.grids.$gridId.index'
+import { Route as SessionsSessionIdGridsGridIdSquaresRouteImport } from './routes/sessions.$sessionId.grids.$gridId.squares'
+import { Route as SessionsSessionIdGridsGridIdSquaresSquareIdRouteImport } from './routes/sessions.$sessionId.grids.$gridId.squares_.$squareId'
+import { Route as SessionsSessionIdIndexRouteImport } from './routes/sessions.$sessionId.index'
+import { Route as SessionsIndexRouteImport } from './routes/sessions.index'
 
+const SessionsRoute = SessionsRouteImport.update({
+  id: '/sessions',
+  path: '/sessions',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SessionsIndexRoute = SessionsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SessionsRoute,
+} as any)
+const SessionsSessionIdRoute = SessionsSessionIdRouteImport.update({
+  id: '/$sessionId',
+  path: '/$sessionId',
+  getParentRoute: () => SessionsRoute,
+} as any)
+const SessionsSessionIdIndexRoute = SessionsSessionIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SessionsSessionIdRoute,
+} as any)
+const SessionsSessionIdGridsGridIdRoute =
+  SessionsSessionIdGridsGridIdRouteImport.update({
+    id: '/grids/$gridId',
+    path: '/grids/$gridId',
+    getParentRoute: () => SessionsSessionIdRoute,
+  } as any)
+const SessionsSessionIdGridsGridIdIndexRoute =
+  SessionsSessionIdGridsGridIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => SessionsSessionIdGridsGridIdRoute,
+  } as any)
+const SessionsSessionIdGridsGridIdSquaresRoute =
+  SessionsSessionIdGridsGridIdSquaresRouteImport.update({
+    id: '/squares',
+    path: '/squares',
+    getParentRoute: () => SessionsSessionIdGridsGridIdRoute,
+  } as any)
+const SessionsSessionIdGridsGridIdAtlasRoute =
+  SessionsSessionIdGridsGridIdAtlasRouteImport.update({
+    id: '/atlas',
+    path: '/atlas',
+    getParentRoute: () => SessionsSessionIdGridsGridIdRoute,
+  } as any)
+const SessionsSessionIdGridsGridIdSquaresSquareIdRoute =
+  SessionsSessionIdGridsGridIdSquaresSquareIdRouteImport.update({
+    id: '/squares_/$squareId',
+    path: '/squares/$squareId',
+    getParentRoute: () => SessionsSessionIdGridsGridIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/sessions': typeof SessionsRouteWithChildren
+  '/sessions/$sessionId': typeof SessionsSessionIdRouteWithChildren
+  '/sessions/': typeof SessionsIndexRoute
+  '/sessions/$sessionId/': typeof SessionsSessionIdIndexRoute
+  '/sessions/$sessionId/grids/$gridId': typeof SessionsSessionIdGridsGridIdRouteWithChildren
+  '/sessions/$sessionId/grids/$gridId/atlas': typeof SessionsSessionIdGridsGridIdAtlasRoute
+  '/sessions/$sessionId/grids/$gridId/squares': typeof SessionsSessionIdGridsGridIdSquaresRoute
+  '/sessions/$sessionId/grids/$gridId/': typeof SessionsSessionIdGridsGridIdIndexRoute
+  '/sessions/$sessionId/grids/$gridId/squares/$squareId': typeof SessionsSessionIdGridsGridIdSquaresSquareIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/sessions': typeof SessionsIndexRoute
+  '/sessions/$sessionId': typeof SessionsSessionIdIndexRoute
+  '/sessions/$sessionId/grids/$gridId/atlas': typeof SessionsSessionIdGridsGridIdAtlasRoute
+  '/sessions/$sessionId/grids/$gridId/squares': typeof SessionsSessionIdGridsGridIdSquaresRoute
+  '/sessions/$sessionId/grids/$gridId': typeof SessionsSessionIdGridsGridIdIndexRoute
+  '/sessions/$sessionId/grids/$gridId/squares/$squareId': typeof SessionsSessionIdGridsGridIdSquaresSquareIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/sessions': typeof SessionsRouteWithChildren
+  '/sessions/$sessionId': typeof SessionsSessionIdRouteWithChildren
+  '/sessions/': typeof SessionsIndexRoute
+  '/sessions/$sessionId/': typeof SessionsSessionIdIndexRoute
+  '/sessions/$sessionId/grids/$gridId': typeof SessionsSessionIdGridsGridIdRouteWithChildren
+  '/sessions/$sessionId/grids/$gridId/atlas': typeof SessionsSessionIdGridsGridIdAtlasRoute
+  '/sessions/$sessionId/grids/$gridId/squares': typeof SessionsSessionIdGridsGridIdSquaresRoute
+  '/sessions/$sessionId/grids/$gridId/': typeof SessionsSessionIdGridsGridIdIndexRoute
+  '/sessions/$sessionId/grids/$gridId/squares_/$squareId': typeof SessionsSessionIdGridsGridIdSquaresSquareIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/sessions'
+    | '/sessions/$sessionId'
+    | '/sessions/'
+    | '/sessions/$sessionId/'
+    | '/sessions/$sessionId/grids/$gridId'
+    | '/sessions/$sessionId/grids/$gridId/atlas'
+    | '/sessions/$sessionId/grids/$gridId/squares'
+    | '/sessions/$sessionId/grids/$gridId/'
+    | '/sessions/$sessionId/grids/$gridId/squares/$squareId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/sessions'
+    | '/sessions/$sessionId'
+    | '/sessions/$sessionId/grids/$gridId/atlas'
+    | '/sessions/$sessionId/grids/$gridId/squares'
+    | '/sessions/$sessionId/grids/$gridId'
+    | '/sessions/$sessionId/grids/$gridId/squares/$squareId'
+  id:
+    | '__root__'
+    | '/'
+    | '/sessions'
+    | '/sessions/$sessionId'
+    | '/sessions/'
+    | '/sessions/$sessionId/'
+    | '/sessions/$sessionId/grids/$gridId'
+    | '/sessions/$sessionId/grids/$gridId/atlas'
+    | '/sessions/$sessionId/grids/$gridId/squares'
+    | '/sessions/$sessionId/grids/$gridId/'
+    | '/sessions/$sessionId/grids/$gridId/squares_/$squareId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  SessionsRoute: typeof SessionsRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sessions': {
+      id: '/sessions'
+      path: '/sessions'
+      fullPath: '/sessions'
+      preLoaderRoute: typeof SessionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +167,120 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sessions/': {
+      id: '/sessions/'
+      path: '/'
+      fullPath: '/sessions/'
+      preLoaderRoute: typeof SessionsIndexRouteImport
+      parentRoute: typeof SessionsRoute
+    }
+    '/sessions/$sessionId': {
+      id: '/sessions/$sessionId'
+      path: '/$sessionId'
+      fullPath: '/sessions/$sessionId'
+      preLoaderRoute: typeof SessionsSessionIdRouteImport
+      parentRoute: typeof SessionsRoute
+    }
+    '/sessions/$sessionId/': {
+      id: '/sessions/$sessionId/'
+      path: '/'
+      fullPath: '/sessions/$sessionId/'
+      preLoaderRoute: typeof SessionsSessionIdIndexRouteImport
+      parentRoute: typeof SessionsSessionIdRoute
+    }
+    '/sessions/$sessionId/grids/$gridId': {
+      id: '/sessions/$sessionId/grids/$gridId'
+      path: '/grids/$gridId'
+      fullPath: '/sessions/$sessionId/grids/$gridId'
+      preLoaderRoute: typeof SessionsSessionIdGridsGridIdRouteImport
+      parentRoute: typeof SessionsSessionIdRoute
+    }
+    '/sessions/$sessionId/grids/$gridId/': {
+      id: '/sessions/$sessionId/grids/$gridId/'
+      path: '/'
+      fullPath: '/sessions/$sessionId/grids/$gridId/'
+      preLoaderRoute: typeof SessionsSessionIdGridsGridIdIndexRouteImport
+      parentRoute: typeof SessionsSessionIdGridsGridIdRoute
+    }
+    '/sessions/$sessionId/grids/$gridId/squares': {
+      id: '/sessions/$sessionId/grids/$gridId/squares'
+      path: '/squares'
+      fullPath: '/sessions/$sessionId/grids/$gridId/squares'
+      preLoaderRoute: typeof SessionsSessionIdGridsGridIdSquaresRouteImport
+      parentRoute: typeof SessionsSessionIdGridsGridIdRoute
+    }
+    '/sessions/$sessionId/grids/$gridId/atlas': {
+      id: '/sessions/$sessionId/grids/$gridId/atlas'
+      path: '/atlas'
+      fullPath: '/sessions/$sessionId/grids/$gridId/atlas'
+      preLoaderRoute: typeof SessionsSessionIdGridsGridIdAtlasRouteImport
+      parentRoute: typeof SessionsSessionIdGridsGridIdRoute
+    }
+    '/sessions/$sessionId/grids/$gridId/squares_/$squareId': {
+      id: '/sessions/$sessionId/grids/$gridId/squares_/$squareId'
+      path: '/squares/$squareId'
+      fullPath: '/sessions/$sessionId/grids/$gridId/squares/$squareId'
+      preLoaderRoute: typeof SessionsSessionIdGridsGridIdSquaresSquareIdRouteImport
+      parentRoute: typeof SessionsSessionIdGridsGridIdRoute
+    }
   }
 }
 
+interface SessionsSessionIdGridsGridIdRouteChildren {
+  SessionsSessionIdGridsGridIdAtlasRoute: typeof SessionsSessionIdGridsGridIdAtlasRoute
+  SessionsSessionIdGridsGridIdSquaresRoute: typeof SessionsSessionIdGridsGridIdSquaresRoute
+  SessionsSessionIdGridsGridIdIndexRoute: typeof SessionsSessionIdGridsGridIdIndexRoute
+  SessionsSessionIdGridsGridIdSquaresSquareIdRoute: typeof SessionsSessionIdGridsGridIdSquaresSquareIdRoute
+}
+
+const SessionsSessionIdGridsGridIdRouteChildren: SessionsSessionIdGridsGridIdRouteChildren =
+  {
+    SessionsSessionIdGridsGridIdAtlasRoute:
+      SessionsSessionIdGridsGridIdAtlasRoute,
+    SessionsSessionIdGridsGridIdSquaresRoute:
+      SessionsSessionIdGridsGridIdSquaresRoute,
+    SessionsSessionIdGridsGridIdIndexRoute:
+      SessionsSessionIdGridsGridIdIndexRoute,
+    SessionsSessionIdGridsGridIdSquaresSquareIdRoute:
+      SessionsSessionIdGridsGridIdSquaresSquareIdRoute,
+  }
+
+const SessionsSessionIdGridsGridIdRouteWithChildren =
+  SessionsSessionIdGridsGridIdRoute._addFileChildren(
+    SessionsSessionIdGridsGridIdRouteChildren,
+  )
+
+interface SessionsSessionIdRouteChildren {
+  SessionsSessionIdIndexRoute: typeof SessionsSessionIdIndexRoute
+  SessionsSessionIdGridsGridIdRoute: typeof SessionsSessionIdGridsGridIdRouteWithChildren
+}
+
+const SessionsSessionIdRouteChildren: SessionsSessionIdRouteChildren = {
+  SessionsSessionIdIndexRoute: SessionsSessionIdIndexRoute,
+  SessionsSessionIdGridsGridIdRoute:
+    SessionsSessionIdGridsGridIdRouteWithChildren,
+}
+
+const SessionsSessionIdRouteWithChildren =
+  SessionsSessionIdRoute._addFileChildren(SessionsSessionIdRouteChildren)
+
+interface SessionsRouteChildren {
+  SessionsSessionIdRoute: typeof SessionsSessionIdRouteWithChildren
+  SessionsIndexRoute: typeof SessionsIndexRoute
+}
+
+const SessionsRouteChildren: SessionsRouteChildren = {
+  SessionsSessionIdRoute: SessionsSessionIdRouteWithChildren,
+  SessionsIndexRoute: SessionsIndexRoute,
+}
+
+const SessionsRouteWithChildren = SessionsRoute._addFileChildren(
+  SessionsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  SessionsRoute: SessionsRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
