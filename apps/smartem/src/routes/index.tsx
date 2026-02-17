@@ -1,5 +1,5 @@
 import { Box, ButtonBase, Chip, LinearProgress, Tooltip, Typography } from '@mui/material'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { useCallback, useRef, useState } from 'react'
 import { MicroscopeIcon } from '~/components/widgets/MicroscopeIcon'
 import {
@@ -675,9 +675,24 @@ function SessionRow({
       >
         <StatusDot color={color} pulse={session.status === 'running'} />
         <Box sx={{ flex: 1, minWidth: 0 }}>
-          <Typography variant="body2" fontWeight={500} noWrap>
-            {session.name}
-          </Typography>
+          <Link
+            to="/sessions/$sessionId"
+            params={{ sessionId: session.id }}
+            onClick={(e) => e.stopPropagation()}
+            style={{ textDecoration: 'none' }}
+          >
+            <Typography
+              variant="body2"
+              fontWeight={500}
+              noWrap
+              sx={{
+                color: 'text.primary',
+                '&:hover': { textDecoration: 'underline', color: 'primary.main' },
+              }}
+            >
+              {session.name}
+            </Typography>
+          </Link>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Typography variant="caption" sx={{ fontSize: '0.6875rem' }}>
               {session.instrumentName}
@@ -715,6 +730,43 @@ function SessionRow({
               }}
             />
           )}
+          <Link
+            to="/sessions/$sessionId"
+            params={{ sessionId: session.id }}
+            onClick={(e) => e.stopPropagation()}
+            style={{ textDecoration: 'none' }}
+          >
+            <ButtonBase
+              sx={{
+                width: 20,
+                height: 20,
+                borderRadius: 0.5,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'text.disabled',
+                '&:hover': { backgroundColor: '#e8eaed', color: 'text.primary' },
+              }}
+            >
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                fill="currentColor"
+                role="img"
+                aria-label="View session"
+              >
+                <path
+                  d="M4.5 2.5L8 6l-3.5 3.5"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </ButtonBase>
+          </Link>
         </Box>
       </Box>
       {expanded && <SessionDetailCard session={session} />}
