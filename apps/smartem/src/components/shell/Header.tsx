@@ -1,5 +1,16 @@
-import { AppBar, Box, Button, InputBase, Toolbar, Tooltip, Typography } from '@mui/material'
+import {
+  AppBar,
+  Box,
+  Button,
+  InputBase,
+  Menu,
+  MenuItem,
+  Toolbar,
+  Tooltip,
+  Typography,
+} from '@mui/material'
 import { Link, useRouterState } from '@tanstack/react-router'
+import { useCallback, useRef, useState } from 'react'
 
 const navLinks = [
   { label: 'Dashboard', to: '/' },
@@ -32,6 +43,22 @@ function NavLink({ label, to }: { label: string; to: string }) {
       {label}
     </Typography>
   )
+}
+
+type UserRole = 'visitor' | 'staff' | 'admin'
+
+const ROLE_KEY = 'smartem-user-role'
+
+const ROLES: { key: UserRole; label: string; short: string }[] = [
+  { key: 'visitor', label: 'Visitor user', short: 'Visitor' },
+  { key: 'staff', label: 'Facility staff', short: 'Staff' },
+  { key: 'admin', label: 'System admin', short: 'Admin' },
+]
+
+function readRole(): UserRole {
+  const v = localStorage.getItem(ROLE_KEY)
+  if (v === 'visitor' || v === 'staff' || v === 'admin') return v
+  return 'staff'
 }
 
 export function Header() {
@@ -134,12 +161,55 @@ export function Header() {
             </Button>
           </Tooltip>
 
-          <Button size="small" variant="outlined">
-            Sign in
-          </Button>
+          <RoleSwitcher />
         </Box>
       </Toolbar>
     </AppBar>
+  )
+}
+
+function RoleSwitcher() {
+  const [role, setRole] = useState<UserRole>(readRole)
+  const [open, setOpen] = useState(false)
+  const anchorRef = useRef<HTMLButtonElement>(null)
+
+  const pick = useCallback((r: UserRole) => {
+    setRole(r)
+    localStorage.setItem(ROLE_KEY, r)
+    setOpen(false)
+  }, [])
+
+  const current = ROLES.find((r) => r.key === role) ?? ROLES[1]
+
+  return (
+    <>
+      <Button
+        ref={anchorRef}
+        size="small"
+        variant="outlined"
+        onClick={() => setOpen((v) => !v)}
+        sx={{ textTransform: 'none', fontWeight: 500, fontSize: '0.8125rem' }}
+      >
+        {current.short}
+      </Button>
+      <Menu
+        anchorEl={anchorRef.current}
+        open={open}
+        onClose={() => setOpen(false)}
+        slotProps={{ paper: { sx: { mt: 0.5, minWidth: 160 } } }}
+      >
+        {ROLES.map((r) => (
+          <MenuItem
+            key={r.key}
+            selected={r.key === role}
+            onClick={() => pick(r.key)}
+            sx={{ fontSize: '0.8125rem' }}
+          >
+            {r.label}
+          </MenuItem>
+        ))}
+      </Menu>
+    </>
   )
 }
 
