@@ -1,7 +1,7 @@
 import { Box, ButtonBase, Typography } from '@mui/material'
 import { useMemo, useState } from 'react'
 import type { MockModelPredictions, MockPredictionModel } from '~/data/mock-session-detail'
-import { statusColors } from '~/theme'
+import { gray, statusColors } from '~/theme'
 import { qualityColor } from '~/utils/heatmap'
 
 interface PredictionsViewProps {
@@ -53,8 +53,8 @@ export function PredictionsView({ models, predictions }: PredictionsViewProps) {
                 fontSize: '0.8125rem',
                 fontWeight: isActive ? 600 : 400,
                 color: isActive ? 'text.primary' : 'text.secondary',
-                backgroundColor: isActive ? '#f0f2f4' : 'transparent',
-                '&:hover': { backgroundColor: '#f6f8fa' },
+                backgroundColor: isActive ? gray[50] : 'transparent',
+                '&:hover': { backgroundColor: gray[100] },
               }}
             >
               {model.name}
@@ -71,7 +71,7 @@ export function PredictionsView({ models, predictions }: PredictionsViewProps) {
             flex: '1 1 500px',
             border: '1px solid',
             borderColor: 'divider',
-            borderRadius: 1.5,
+            borderRadius: 1,
             p: 2,
           }}
         >
@@ -87,7 +87,7 @@ export function PredictionsView({ models, predictions }: PredictionsViewProps) {
             flex: '0 1 360px',
             border: '1px solid',
             borderColor: 'divider',
-            borderRadius: 1.5,
+            borderRadius: 1,
             p: 2,
           }}
         >
@@ -124,7 +124,7 @@ export function PredictionsView({ models, predictions }: PredictionsViewProps) {
             flex: 1,
             height: 4,
             appearance: 'none',
-            background: '#d1d9e0',
+            background: gray[300],
             borderRadius: 2,
             outline: 'none',
             '&::-webkit-slider-thumb': {
@@ -214,15 +214,22 @@ function TimeSeriesChart({
         y1={pad.top}
         x2={pad.left}
         y2={pad.top + plotH}
-        stroke="#d1d9e0"
+        stroke={gray[300]}
         strokeWidth="1"
       />
       {[0, 0.25, 0.5, 0.75, 1].map((v) => {
         const y = pad.top + (1 - v) * plotH
         return (
           <g key={v}>
-            <line x1={pad.left - 4} y1={y} x2={pad.left} y2={y} stroke="#d1d9e0" strokeWidth="1" />
-            <text x={pad.left - 8} y={y + 3} textAnchor="end" fontSize="9" fill="#8b949e">
+            <line
+              x1={pad.left - 4}
+              y1={y}
+              x2={pad.left}
+              y2={y}
+              stroke={gray[300]}
+              strokeWidth="1"
+            />
+            <text x={pad.left - 8} y={y + 3} textAnchor="end" fontSize="9" fill={gray[500]}>
               {Math.round(v * 100)}
             </text>
           </g>
@@ -234,10 +241,10 @@ function TimeSeriesChart({
         y1={pad.top + plotH}
         x2={pad.left + plotW}
         y2={pad.top + plotH}
-        stroke="#d1d9e0"
+        stroke={gray[300]}
         strokeWidth="1"
       />
-      <text x={pad.left + plotW / 2} y={H - 4} textAnchor="middle" fontSize="9" fill="#8b949e">
+      <text x={pad.left + plotW / 2} y={H - 4} textAnchor="middle" fontSize="9" fill={gray[500]}>
         Squares (time-ordered)
       </text>
 
@@ -286,7 +293,7 @@ function HistogramChart({ bins, maxBin }: { bins: number[]; maxBin: number }) {
         y1={pad.top}
         x2={pad.left}
         y2={pad.top + plotH}
-        stroke="#d1d9e0"
+        stroke={gray[300]}
         strokeWidth="1"
       />
 
@@ -296,7 +303,7 @@ function HistogramChart({ bins, maxBin }: { bins: number[]; maxBin: number }) {
         y1={pad.top + plotH}
         x2={pad.left + plotW}
         y2={pad.top + plotH}
-        stroke="#d1d9e0"
+        stroke={gray[300]}
         strokeWidth="1"
       />
 
@@ -323,7 +330,7 @@ function HistogramChart({ bins, maxBin }: { bins: number[]; maxBin: number }) {
               y={pad.top + plotH + 14}
               textAnchor="middle"
               fontSize="8"
-              fill="#8b949e"
+              fill={gray[500]}
             >
               {(i / 10).toFixed(1)}
             </text>
@@ -331,7 +338,7 @@ function HistogramChart({ bins, maxBin }: { bins: number[]; maxBin: number }) {
         )
       })}
 
-      <text x={pad.left + plotW / 2} y={H - 4} textAnchor="middle" fontSize="9" fill="#8b949e">
+      <text x={pad.left + plotW / 2} y={H - 4} textAnchor="middle" fontSize="9" fill={gray[500]}>
         Quality
       </text>
       <text
@@ -339,7 +346,7 @@ function HistogramChart({ bins, maxBin }: { bins: number[]; maxBin: number }) {
         y={pad.top + plotH / 2}
         textAnchor="middle"
         fontSize="9"
-        fill="#8b949e"
+        fill={gray[500]}
         transform={`rotate(-90, 8, ${pad.top + plotH / 2})`}
       >
         Count

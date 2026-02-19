@@ -8,9 +8,20 @@ export const Route = createFileRoute('/acquisitions/$acquisitionId/grids/$gridId
 
 function GridLayout() {
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        overflow: 'hidden',
+        borderRadius: 1,
+        border: '1px solid',
+        borderColor: 'divider',
+        backgroundColor: 'background.paper',
+      }}
+    >
       <ViewSwitcher />
-      <Box sx={{ flex: 1, overflow: 'auto' }}>
+      <Box sx={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
         <Outlet />
       </Box>
     </Box>

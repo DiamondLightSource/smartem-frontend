@@ -9,6 +9,7 @@ import {
   getGridSquares,
   getPredictionModels,
 } from '~/data/mock-session-detail'
+import { gray } from '~/theme'
 
 export const Route = createFileRoute('/acquisitions/$acquisitionId/grids/$gridId/atlas')({
   component: AtlasView,
@@ -99,7 +100,7 @@ function AtlasView() {
               alignItems: 'center',
               px: 1.5,
               height: 28,
-              backgroundColor: '#f6f8fa',
+              backgroundColor: gray[100],
               borderBottom: '1px solid',
               borderColor: 'divider',
               flexShrink: 0,
@@ -138,7 +139,7 @@ function AtlasView() {
               backgroundColor: '#ffffff',
               border: '1px solid',
               borderColor: 'divider',
-              '&:hover': { backgroundColor: '#f6f8fa' },
+              '&:hover': { backgroundColor: gray[100] },
             }}
           >
             <svg
@@ -166,7 +167,7 @@ function CloseButton({ onClick }: { onClick: () => void }) {
   return (
     <IconButton onClick={onClick} size="small" sx={{ p: 0.25 }}>
       <svg width="12" height="12" viewBox="0 0 12 12" fill="none" role="img" aria-label="Close">
-        <path d="M3 3l6 6M9 3l-6 6" stroke="#656d76" strokeWidth="1.5" strokeLinecap="round" />
+        <path d="M3 3l6 6M9 3l-6 6" stroke={gray[600]} strokeWidth="1.5" strokeLinecap="round" />
       </svg>
     </IconButton>
   )

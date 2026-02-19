@@ -1,11 +1,23 @@
 import { createTheme } from '@mui/material/styles'
 
+const gray = {
+  50: '#f0f2f4',
+  100: '#f6f8fa',
+  200: '#e8eaed',
+  300: '#d1d9e0',
+  400: '#afb8c1',
+  500: '#8b949e',
+  600: '#656d76',
+  700: '#424a53',
+  900: '#1f2328',
+} as const
+
 const statusColors = {
   running: '#1a7f37',
   idle: '#0969da',
   paused: '#bf8700',
   error: '#cf222e',
-  offline: '#656d76',
+  offline: gray[600],
 } as const
 
 const theme = createTheme({
@@ -18,9 +30,9 @@ const theme = createTheme({
       contrastText: '#ffffff',
     },
     secondary: {
-      main: '#656d76',
-      dark: '#424a53',
-      light: '#8b949e',
+      main: gray[600],
+      dark: gray[700],
+      light: gray[500],
     },
     error: { main: statusColors.error },
     warning: { main: statusColors.paused },
@@ -30,11 +42,11 @@ const theme = createTheme({
       default: '#ffffff',
       paper: '#ffffff',
     },
-    divider: '#d1d9e0',
+    divider: gray[300],
     text: {
-      primary: '#1f2328',
-      secondary: '#656d76',
-      disabled: '#8b949e',
+      primary: gray[900],
+      secondary: gray[600],
+      disabled: gray[500],
     },
   },
   typography: {
@@ -52,11 +64,11 @@ const theme = createTheme({
       lineHeight: 1.5,
       textTransform: 'uppercase',
       letterSpacing: '0.04em',
-      color: '#656d76',
+      color: gray[600],
     },
     body1: { fontSize: '0.875rem', lineHeight: 1.5, letterSpacing: '-0.003em' },
     body2: { fontSize: '0.8125rem', lineHeight: 1.5, letterSpacing: '-0.003em' },
-    caption: { fontSize: '0.75rem', lineHeight: 1.5, color: '#656d76' },
+    caption: { fontSize: '0.75rem', lineHeight: 1.5, color: gray[600] },
     button: {
       fontSize: '0.8125rem',
       fontWeight: 500,
@@ -79,8 +91,8 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundColor: '#ffffff',
-          color: '#1f2328',
-          borderBottom: '1px solid #d1d9e0',
+          color: gray[900],
+          borderBottom: `1px solid ${gray[300]}`,
         },
       },
     },
@@ -88,7 +100,7 @@ const theme = createTheme({
       defaultProps: { elevation: 0 },
       styleOverrides: {
         root: {
-          border: '1px solid #d1d9e0',
+          border: `1px solid ${gray[300]}`,
           backgroundImage: 'none',
         },
       },
@@ -97,7 +109,7 @@ const theme = createTheme({
       defaultProps: { elevation: 0 },
       styleOverrides: {
         root: {
-          border: '1px solid #d1d9e0',
+          border: `1px solid ${gray[300]}`,
           backgroundImage: 'none',
         },
       },
@@ -128,10 +140,10 @@ const theme = createTheme({
           padding: '2px 10px',
         },
         outlined: {
-          borderColor: '#d1d9e0',
+          borderColor: gray[300],
           '&:hover': {
-            borderColor: '#afb8c1',
-            backgroundColor: '#f6f8fa',
+            borderColor: gray[400],
+            backgroundColor: gray[100],
           },
         },
       },
@@ -141,13 +153,13 @@ const theme = createTheme({
         root: {
           fontSize: '0.8125rem',
           padding: '8px 16px',
-          borderColor: '#d1d9e0',
+          borderColor: gray[300],
         },
         head: {
           fontWeight: 600,
           fontSize: '0.75rem',
-          color: '#656d76',
-          backgroundColor: '#f6f8fa',
+          color: gray[600],
+          backgroundColor: gray[100],
         },
       },
     },
@@ -155,7 +167,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           '&:hover': {
-            backgroundColor: '#f6f8fa',
+            backgroundColor: gray[100],
           },
         },
       },
@@ -167,11 +179,11 @@ const theme = createTheme({
       styleOverrides: {
         tooltip: {
           fontSize: '0.75rem',
-          backgroundColor: '#1f2328',
+          backgroundColor: gray[900],
         },
       },
     },
   },
 })
 
-export { statusColors, theme }
+export { gray, statusColors, theme }

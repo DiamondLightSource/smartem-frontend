@@ -1,6 +1,7 @@
 import { Box, ButtonBase, Typography } from '@mui/material'
 import { Link, useParams, useRouterState } from '@tanstack/react-router'
 import { getGrid } from '~/data/mock-session-detail'
+import { gray } from '~/theme'
 
 const tabs = [
   { key: 'atlas', label: 'Atlas', suffix: '/atlas' },
@@ -51,9 +52,9 @@ export function ViewSwitcher() {
               fontSize: '0.8125rem',
               fontWeight: isActive ? 600 : 400,
               color: isActive ? 'text.primary' : 'text.secondary',
-              backgroundColor: isActive ? '#f0f2f4' : 'transparent',
+              backgroundColor: isActive ? gray[50] : 'transparent',
               textDecoration: 'none',
-              '&:hover': { backgroundColor: '#f6f8fa' },
+              '&:hover': { backgroundColor: gray[100] },
             }}
           >
             {tab.label}

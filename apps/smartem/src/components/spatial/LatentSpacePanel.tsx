@@ -1,6 +1,7 @@
 import { Box, Checkbox, FormControlLabel, Typography } from '@mui/material'
 import { useMemo, useState } from 'react'
 import type { MockLatentCoords } from '~/data/mock-session-detail'
+import { gray } from '~/theme'
 import { CLUSTER_PALETTE } from '~/utils/heatmap'
 
 interface LatentSpaceItem {
@@ -71,7 +72,7 @@ export function LatentSpacePanel({
             height: '100%',
             maxWidth: '100%',
             maxHeight: '100%',
-            background: '#1f2328',
+            background: gray[900],
             borderRadius: 4,
           }}
         >

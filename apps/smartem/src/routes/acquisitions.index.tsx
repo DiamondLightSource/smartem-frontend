@@ -17,7 +17,7 @@ import {
   type SessionStatus,
   sessions,
 } from '~/data/mock-dashboard'
-import { statusColors } from '~/theme'
+import { gray, statusColors } from '~/theme'
 
 export const Route = createFileRoute('/acquisitions/')({
   component: SessionsListPage,
@@ -50,6 +50,9 @@ function SessionsListPage() {
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
+        p: 0.5,
+        gap: 0.5,
+        backgroundColor: gray[50],
       }}
     >
       <Box
@@ -59,9 +62,11 @@ function SessionsListPage() {
           gap: 1,
           px: 3,
           py: 1.5,
-          borderBottom: '1px solid',
-          borderColor: 'divider',
           flexShrink: 0,
+          borderRadius: 1,
+          border: '1px solid',
+          borderColor: 'divider',
+          backgroundColor: 'background.paper',
         }}
       >
         <Typography variant="h4">Acquisitions</Typography>
@@ -70,7 +75,16 @@ function SessionsListPage() {
         </Typography>
       </Box>
 
-      <TableContainer sx={{ flex: 1, overflow: 'auto' }}>
+      <TableContainer
+        sx={{
+          flex: 1,
+          overflow: 'auto',
+          borderRadius: 1,
+          border: '1px solid',
+          borderColor: 'divider',
+          backgroundColor: 'background.paper',
+        }}
+      >
         <Table stickyHeader size="small">
           <TableHead>
             <TableRow>
@@ -165,7 +179,7 @@ function QualityCell({ value }: { value: number }) {
         sx={{
           width: 40,
           height: 4,
-          backgroundColor: '#e8eaed',
+          backgroundColor: gray[200],
           borderRadius: 2,
           overflow: 'hidden',
         }}
