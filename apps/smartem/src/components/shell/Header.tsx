@@ -17,6 +17,7 @@ import { Link, useNavigate, useRouterState } from '@tanstack/react-router'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { type CommandGroup, CommandPalette } from '~/components/widgets/CommandPalette'
 import { sessions } from '~/data/mock-dashboard'
+import { gray } from '~/theme'
 
 const navLinks = [
   { label: 'Acquisitions', to: '/acquisitions' },
@@ -42,7 +43,7 @@ function NavLink({ label, to }: { label: string; to: string }) {
         color: isActive ? 'text.primary' : 'text.secondary',
         textDecoration: 'none',
         '&:hover': {
-          backgroundColor: '#f6f8fa',
+          backgroundColor: gray[100],
           color: 'text.primary',
         },
       }}
@@ -196,9 +197,9 @@ export function Header() {
                 borderRadius: 1.5,
                 px: 1.5,
                 height: 32,
-                backgroundColor: '#f6f8fa',
+                backgroundColor: gray[100],
                 cursor: 'pointer',
-                '&:hover': { borderColor: '#afb8c1' },
+                '&:hover': { borderColor: gray[400] },
               }}
             >
               <InputBase

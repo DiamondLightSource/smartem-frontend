@@ -5,7 +5,7 @@ import type {
   MockModelPredictions,
   MockPredictionModel,
 } from '~/data/mock-session-detail'
-import { statusColors } from '~/theme'
+import { gray, statusColors } from '~/theme'
 import {
   CLUSTER_PALETTE,
   computeHeatmapBins,
@@ -121,8 +121,8 @@ export function AtlasMap({
       }
       if (showPredictions && predValues) {
         const val = predValues.get(sq.uuid)
-        if (val != null) return valueToHeatmapColor(val, predBins) ?? '#656d76'
-        return '#656d76'
+        if (val != null) return valueToHeatmapColor(val, predBins) ?? gray[600]
+        return gray[600]
       }
       return qualityColor(sq.quality)
     },
@@ -170,7 +170,7 @@ export function AtlasMap({
           sx={{
             position: 'absolute',
             inset: 0,
-            background: 'repeating-conic-gradient(#e8eaed 0% 25%, #f0f2f4 0% 50%) 50% / 20px 20px',
+            background: `repeating-conic-gradient(${gray[200]} 0% 25%, ${gray[50]} 0% 50%) 50% / 20px 20px`,
             borderRadius: 1,
           }}
         />
@@ -207,7 +207,7 @@ export function AtlasMap({
                 r={r}
                 fill={fill}
                 opacity={opacity}
-                stroke={isSelected ? '#e59344' : isHovered ? '#1f2328' : 'none'}
+                stroke={isSelected ? '#e59344' : isHovered ? gray[900] : 'none'}
                 strokeWidth={isSelected ? 12 : isHovered ? 8 : 0}
                 style={{ cursor: 'pointer', transition: 'opacity 0.1s' }}
                 onMouseEnter={() => handleHover(sq.uuid)}
@@ -235,7 +235,7 @@ export function AtlasMap({
               position: 'absolute',
               left: tooltipPos.x + 12,
               top: tooltipPos.y - 30,
-              backgroundColor: '#1f2328',
+              backgroundColor: gray[900],
               color: '#ffffff',
               px: 1,
               py: 0.5,
@@ -324,8 +324,8 @@ export function AtlasMap({
                       fontSize: '0.5625rem',
                       fontWeight: m.id === selectedModelId ? 600 : 400,
                       color: m.id === selectedModelId ? 'text.primary' : 'text.disabled',
-                      backgroundColor: m.id === selectedModelId ? '#f0f2f4' : 'transparent',
-                      '&:hover': { backgroundColor: '#f6f8fa' },
+                      backgroundColor: m.id === selectedModelId ? gray[50] : 'transparent',
+                      '&:hover': { backgroundColor: gray[100] },
                     }}
                   >
                     {m.name.split('-')[0]}
@@ -347,8 +347,8 @@ export function AtlasMap({
               fontSize: '0.625rem',
               fontWeight: colorMode === 'cluster' ? 600 : 400,
               color: colorMode === 'cluster' ? 'text.primary' : 'text.disabled',
-              backgroundColor: colorMode === 'cluster' ? '#f0f2f4' : 'transparent',
-              '&:hover': { backgroundColor: '#f6f8fa' },
+              backgroundColor: colorMode === 'cluster' ? gray[50] : 'transparent',
+              '&:hover': { backgroundColor: gray[100] },
             }}
           >
             Clusters

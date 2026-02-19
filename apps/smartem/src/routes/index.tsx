@@ -19,7 +19,7 @@ import {
   type SessionStatus,
   sessions,
 } from '~/data/mock-dashboard'
-import { statusColors } from '~/theme'
+import { gray, statusColors } from '~/theme'
 
 export const Route = createFileRoute('/')({
   component: Dashboard,
@@ -129,7 +129,7 @@ function DividerH({ onDrag }: { onDrag: (delta: number) => void }) {
     <Box
       onMouseDown={onMouseDown('y')}
       sx={{
-        height: 5,
+        height: 8,
         cursor: 'row-resize',
         backgroundColor: 'transparent',
         position: 'relative',
@@ -162,7 +162,7 @@ function DividerV({ onDrag }: { onDrag: (delta: number) => void }) {
     <Box
       onMouseDown={onMouseDown('x')}
       sx={{
-        width: 5,
+        width: 8,
         cursor: 'col-resize',
         backgroundColor: 'transparent',
         position: 'relative',
@@ -227,9 +227,9 @@ function ViewToggle({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              backgroundColor: view === v.key ? '#f0f2f4' : 'transparent',
+              backgroundColor: view === v.key ? gray[50] : 'transparent',
               color: view === v.key ? 'text.primary' : 'text.disabled',
-              '&:hover': { backgroundColor: '#f6f8fa' },
+              '&:hover': { backgroundColor: gray[100] },
               borderRight: v.key !== 'icons' ? '1px solid' : 'none',
               borderColor: 'divider',
             }}
@@ -332,9 +332,9 @@ function RangeToggle({
             height: 24,
             fontSize: '0.6875rem',
             fontWeight: range === r.key ? 600 : 400,
-            backgroundColor: range === r.key ? '#f0f2f4' : 'transparent',
+            backgroundColor: range === r.key ? gray[50] : 'transparent',
             color: range === r.key ? 'text.primary' : 'text.disabled',
-            '&:hover': { backgroundColor: '#f6f8fa' },
+            '&:hover': { backgroundColor: gray[100] },
             borderRight: idx < TIMELINE_RANGES.length - 1 ? '1px solid' : 'none',
             borderColor: 'divider',
           }}
@@ -391,7 +391,7 @@ function InstrumentItem({
           backgroundColor: borderActive ? `${iColor}06` : 'transparent',
           opacity: isOffline ? 0.45 : 1,
           transition: 'all 0.1s',
-          '&:hover': { backgroundColor: '#f6f8fa' },
+          '&:hover': { backgroundColor: gray[100] },
         }}
       >
         <MicroscopeIcon status={instrument.status} scale={0.16} />
@@ -423,7 +423,7 @@ function InstrumentItem({
               sx={{
                 height: 3,
                 borderRadius: 1,
-                backgroundColor: '#e8eaed',
+                backgroundColor: gray[200],
                 '& .MuiLinearProgress-bar': { backgroundColor: iColor, borderRadius: 1 },
               }}
             />
@@ -449,7 +449,7 @@ function InstrumentItem({
           opacity: isOffline ? 0.4 : 1,
           transition: 'all 0.15s',
           overflow: 'hidden',
-          '&:hover': isOffline ? {} : { borderColor: `${iColor}60`, backgroundColor: '#f6f8fa' },
+          '&:hover': isOffline ? {} : { borderColor: `${iColor}60`, backgroundColor: gray[100] },
         }}
       >
         <Box sx={{ display: 'flex', justifyContent: 'center', mb: 0.75 }}>
@@ -481,7 +481,7 @@ function InstrumentItem({
                   flex: 1,
                   height: 2,
                   borderRadius: 1,
-                  backgroundColor: '#e8eaed',
+                  backgroundColor: gray[200],
                   '& .MuiLinearProgress-bar': { backgroundColor: iColor, borderRadius: 1 },
                 }}
               />
@@ -516,7 +516,7 @@ function InstrumentItem({
         opacity: isOffline ? 0.35 : 1,
         transition: 'all 0.15s ease',
         backgroundColor: borderActive ? `${iColor}0a` : 'transparent',
-        '&:hover': isOffline ? {} : { backgroundColor: '#f6f8fa' },
+        '&:hover': isOffline ? {} : { backgroundColor: gray[100] },
       }}
     >
       <Box sx={{ mb: 0.5 }}>
@@ -597,7 +597,7 @@ function InstrumentsPanel({
           p: 0.75,
           overflow: view === 'icons' ? 'hidden' : 'auto',
           '&::-webkit-scrollbar': { width: 4 },
-          '&::-webkit-scrollbar-thumb': { backgroundColor: '#d1d9e0', borderRadius: 2 },
+          '&::-webkit-scrollbar-thumb': { backgroundColor: gray[300], borderRadius: 2 },
         }}
       >
         {instruments.map((inst) => (
@@ -667,10 +667,10 @@ function SessionRow({
           py: 0.75,
           borderRadius: 1,
           cursor: 'pointer',
-          backgroundColor: expanded ? '#f6f8fa' : highlighted ? `${instColor}08` : 'transparent',
+          backgroundColor: expanded ? gray[100] : highlighted ? `${instColor}08` : 'transparent',
           borderLeft: highlighted ? `2px solid ${instColor}` : '2px solid transparent',
           transition: 'all 0.1s ease',
-          '&:hover': { backgroundColor: '#f6f8fa' },
+          '&:hover': { backgroundColor: gray[100] },
         }}
       >
         <StatusDot color={color} pulse={session.status === 'running'} />
@@ -745,7 +745,7 @@ function SessionRow({
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: 'text.disabled',
-                '&:hover': { backgroundColor: '#e8eaed', color: 'text.primary' },
+                '&:hover': { backgroundColor: gray[200], color: 'text.primary' },
               }}
             >
               <svg
@@ -822,7 +822,7 @@ function SessionDetailCard({ session }: { session: Session }) {
                 py: 0.25,
                 px: 0.5,
                 borderRadius: 0.5,
-                '&:hover': { backgroundColor: '#f0f2f4' },
+                '&:hover': { backgroundColor: gray[50] },
               }}
             >
               <Typography variant="caption" fontWeight={500} sx={{ minWidth: 50 }}>
@@ -845,7 +845,7 @@ function SessionDetailCard({ session }: { session: Session }) {
                       ? `${statusColors.running}14`
                       : grid.status === 'collecting'
                         ? `${instColor}14`
-                        : '#f0f2f4',
+                        : gray[50],
                   color:
                     grid.status === 'collected'
                       ? statusColors.running
@@ -887,7 +887,7 @@ function QualityBar({ value }: { value: number }) {
         sx={{
           width: 32,
           height: 4,
-          backgroundColor: '#e8eaed',
+          backgroundColor: gray[200],
           borderRadius: 2,
           overflow: 'hidden',
         }}
@@ -941,7 +941,7 @@ function SessionsPanel({
           px: 0.5,
           pb: 1,
           '&::-webkit-scrollbar': { width: 4 },
-          '&::-webkit-scrollbar-thumb': { backgroundColor: '#d1d9e0', borderRadius: 2 },
+          '&::-webkit-scrollbar-thumb': { backgroundColor: gray[300], borderRadius: 2 },
         }}
       >
         {filteredActive.length > 0 && (
@@ -1164,7 +1164,7 @@ function GanttTimeline({
                   top: 0,
                   bottom: 0,
                   width: '1px',
-                  backgroundColor: '#e8eaed',
+                  backgroundColor: gray[200],
                 }}
               />
             ))}
@@ -1205,7 +1205,7 @@ function GanttTimeline({
                     height: rowHeight,
                     left: 0,
                     right: 0,
-                    borderBottom: '1px solid #f0f2f4',
+                    borderBottom: `1px solid ${gray[50]}`,
                     backgroundColor: isActive
                       ? `${instrumentColors[row.instrumentId]}04`
                       : 'transparent',
@@ -1374,15 +1374,19 @@ function Dashboard() {
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
+        p: 0.5,
+        backgroundColor: gray[50],
       }}
     >
       <Box sx={{ flex: 1, display: 'flex', overflow: 'hidden', minHeight: 0 }}>
         <Box
           sx={{
             width: `${leftFrac * 100}%`,
-            borderRight: '1px solid',
-            borderColor: 'divider',
             overflow: 'hidden',
+            borderRadius: 1,
+            border: '1px solid',
+            borderColor: 'divider',
+            backgroundColor: 'background.paper',
           }}
         >
           <InstrumentsPanel
@@ -1394,7 +1398,16 @@ function Dashboard() {
           />
         </Box>
         <DividerV onDrag={handleVDrag} />
-        <Box sx={{ flex: 1, overflow: 'hidden' }}>
+        <Box
+          sx={{
+            flex: 1,
+            overflow: 'hidden',
+            borderRadius: 1,
+            border: '1px solid',
+            borderColor: 'divider',
+            backgroundColor: 'background.paper',
+          }}
+        >
           <SessionsPanel
             selectedInstruments={selectedInstruments}
             expandedSession={expandedSession}
@@ -1410,9 +1423,11 @@ function Dashboard() {
         sx={{
           height: timelineH,
           flexShrink: 0,
-          borderTop: '1px solid',
-          borderColor: 'divider',
           overflow: 'hidden',
+          borderRadius: 1,
+          border: '1px solid',
+          borderColor: 'divider',
+          backgroundColor: 'background.paper',
         }}
       >
         <GanttTimeline

@@ -1,7 +1,7 @@
 import { Box, ButtonBase, Checkbox, FormControlLabel, Typography } from '@mui/material'
 import { useCallback, useMemo, useState } from 'react'
 import type { MockFoilHole } from '~/data/mock-session-detail'
-import { statusColors } from '~/theme'
+import { gray, statusColors } from '~/theme'
 import {
   computeHeatmapBins,
   type HeatmapBin,
@@ -71,7 +71,7 @@ export function SquareMap({ foilholes, squareLabel, onFoilholeClick }: SquareMap
     (fh: MockFoilHole): string => {
       if (!useHeatmap) return qualityColor(fh.quality)
       const val = getMetricValue(fh)
-      return valueToHeatmapColor(val, heatmapBins) ?? '#656d76'
+      return valueToHeatmapColor(val, heatmapBins) ?? gray[600]
     },
     [useHeatmap, getMetricValue, heatmapBins]
   )
@@ -139,7 +139,7 @@ export function SquareMap({ foilholes, squareLabel, onFoilholeClick }: SquareMap
           sx={{
             position: 'absolute',
             inset: 0,
-            background: 'repeating-conic-gradient(#e8eaed 0% 25%, #f0f2f4 0% 50%) 50% / 20px 20px',
+            background: `repeating-conic-gradient(${gray[200]} 0% 25%, ${gray[50]} 0% 50%) 50% / 20px 20px`,
             borderRadius: 1,
           }}
         />
@@ -187,11 +187,11 @@ export function SquareMap({ foilholes, squareLabel, onFoilholeClick }: SquareMap
                   isNull
                     ? '#cf222e'
                     : fh.isNearGridBar
-                      ? '#656d76'
+                      ? gray[600]
                       : isSelected
                         ? '#e59344'
                         : isHovered
-                          ? '#1f2328'
+                          ? gray[900]
                           : 'none'
                 }
                 strokeWidth={isNull ? 2 : fh.isNearGridBar ? 4 : isHovered || isSelected ? 4 : 0}
@@ -213,7 +213,7 @@ export function SquareMap({ foilholes, squareLabel, onFoilholeClick }: SquareMap
               position: 'absolute',
               left: tooltipPos.x + 12,
               top: tooltipPos.y - 30,
-              backgroundColor: '#1f2328',
+              backgroundColor: gray[900],
               color: '#ffffff',
               px: 1,
               py: 0.5,
@@ -316,8 +316,8 @@ export function SquareMap({ foilholes, squareLabel, onFoilholeClick }: SquareMap
                 fontSize: '0.5625rem',
                 fontWeight: key === metric ? 600 : 400,
                 color: key === metric ? 'text.primary' : 'text.disabled',
-                backgroundColor: key === metric ? '#f0f2f4' : 'transparent',
-                '&:hover': { backgroundColor: '#f6f8fa' },
+                backgroundColor: key === metric ? gray[50] : 'transparent',
+                '&:hover': { backgroundColor: gray[100] },
               }}
             >
               {METRIC_OPTIONS[key].label.split(' ')[0]}
