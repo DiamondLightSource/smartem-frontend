@@ -14,7 +14,7 @@ import { useMemo, useState } from 'react'
 import { getGridSquares, type MockGridSquare } from '~/data/mock-session-detail'
 import { statusColors } from '~/theme'
 
-export const Route = createFileRoute('/sessions/$sessionId/grids/$gridId/squares')({
+export const Route = createFileRoute('/acquisitions/$acquisitionId/grids/$gridId/squares')({
   component: SquaresTable,
 })
 
@@ -22,7 +22,7 @@ type SortField = 'quality' | 'foilholeCount' | 'gridsquareId'
 type SortDir = 'asc' | 'desc'
 
 function SquaresTable() {
-  const { sessionId, gridId } = Route.useParams()
+  const { acquisitionId, gridId } = Route.useParams()
   const navigate = useNavigate()
   const squares = getGridSquares(gridId)
 
@@ -95,8 +95,8 @@ function SquaresTable() {
               sx={{ cursor: 'pointer' }}
               onClick={() =>
                 navigate({
-                  to: '/sessions/$sessionId/grids/$gridId/squares/$squareId',
-                  params: { sessionId, gridId, squareId: sq.uuid },
+                  to: '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId',
+                  params: { acquisitionId, gridId, squareId: sq.uuid },
                 })
               }
             >
