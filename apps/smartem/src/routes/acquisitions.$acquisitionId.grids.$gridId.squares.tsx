@@ -12,7 +12,7 @@ import {
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import { getGridSquares, type MockGridSquare } from '~/data/mock-session-detail'
-import { statusColors } from '~/theme'
+import { gray, statusColors } from '~/theme'
 
 export const Route = createFileRoute('/acquisitions/$acquisitionId/grids/$gridId/squares')({
   component: SquaresTable,
@@ -166,7 +166,7 @@ function QualityCell({ value }: { value: number }) {
         sx={{
           width: 40,
           height: 4,
-          backgroundColor: '#e8eaed',
+          backgroundColor: gray[200],
           borderRadius: 2,
           overflow: 'hidden',
         }}

@@ -8,7 +8,7 @@ import {
   getGridSquare,
   getGridSquares,
 } from '~/data/mock-session-detail'
-import { statusColors } from '~/theme'
+import { gray, statusColors } from '~/theme'
 import { qualityColor } from '~/utils/heatmap'
 
 function StatusDot({ color, pulse }: { color: string; pulse?: boolean }) {
@@ -62,7 +62,7 @@ function AtlasThumbnail({ gridUuid }: { gridUuid: string }) {
   const squares = getGridSquares(gridUuid)
   return (
     <svg width="28" height="28" viewBox="0 0 4005 4005" fill="none" role="img" aria-label="Atlas">
-      <rect width="4005" height="4005" rx="200" fill="#f0f2f4" />
+      <rect width="4005" height="4005" rx="200" fill={gray[50]} />
       {squares.map((sq) => (
         <circle
           key={sq.uuid}
@@ -94,7 +94,7 @@ function SquareThumbnail({
       role="img"
       aria-label="Grid square"
     >
-      <rect width="2880" height="2046" rx="100" fill="#f0f2f4" />
+      <rect width="2880" height="2046" rx="100" fill={gray[50]} />
       {foilholes.map((fh) => (
         <circle
           key={fh.uuid}
@@ -111,10 +111,17 @@ function SquareThumbnail({
 
 function ChevronRight() {
   return (
-    <svg width="12" height="12" viewBox="0 0 12 12" fill="#8b949e" role="img" aria-label="Navigate">
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      fill={gray[500]}
+      role="img"
+      aria-label="Navigate"
+    >
       <path
         d="M4.5 2.5L8 6l-3.5 3.5"
-        stroke="#8b949e"
+        stroke={gray[500]}
         strokeWidth="1.5"
         fill="none"
         strokeLinecap="round"
@@ -134,7 +141,7 @@ export function ContextStrip() {
   const session = sessions.find((s) => s.id === acquisitionId)
   if (!session) return null
 
-  const color = statusColorMap[session.status] ?? '#656d76'
+  const color = statusColorMap[session.status] ?? gray[600]
   const isRunning = session.status === 'running'
 
   const grid = gridId ? getGrid(gridId) : undefined
@@ -149,8 +156,9 @@ export function ContextStrip() {
         alignItems: 'center',
         px: 2,
         gap: 1.5,
-        backgroundColor: '#f6f8fa',
-        borderBottom: '1px solid',
+        backgroundColor: 'background.paper',
+        borderRadius: 1,
+        border: '1px solid',
         borderColor: 'divider',
         flexShrink: 0,
       }}
@@ -253,7 +261,7 @@ export function ContextStrip() {
                   width: 8,
                   height: 8,
                   borderRadius: '50%',
-                  backgroundColor: foilhole ? qualityColor(foilhole.quality) : '#656d76',
+                  backgroundColor: foilhole ? qualityColor(foilhole.quality) : gray[600],
                 }}
               />
               <Typography

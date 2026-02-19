@@ -2,7 +2,7 @@ import { Box, Typography } from '@mui/material'
 import { useMemo } from 'react'
 import { AtlasMap } from '~/components/spatial/AtlasMap'
 import type { MockGrid, MockGridSquare } from '~/data/mock-session-detail'
-import { statusColors } from '~/theme'
+import { gray, statusColors } from '~/theme'
 import { qualityColor } from '~/utils/heatmap'
 
 interface WorkspaceViewProps {
@@ -90,7 +90,7 @@ export function WorkspaceView({ grid, squares, onSquareClick }: WorkspaceViewPro
                       px: 1,
                       borderRadius: 0.5,
                       cursor: 'pointer',
-                      '&:hover': { backgroundColor: '#f6f8fa' },
+                      '&:hover': { backgroundColor: gray[100] },
                     }}
                   >
                     <Box
@@ -109,7 +109,7 @@ export function WorkspaceView({ grid, squares, onSquareClick }: WorkspaceViewPro
                       sx={{
                         flex: 1,
                         height: 4,
-                        backgroundColor: '#e8eaed',
+                        backgroundColor: gray[200],
                         borderRadius: 2,
                         overflow: 'hidden',
                       }}
@@ -163,7 +163,7 @@ export function WorkspaceView({ grid, squares, onSquareClick }: WorkspaceViewPro
                     opacity="0.7"
                     rx="2"
                   />
-                  <text x={x + barW / 2} y={148} textAnchor="middle" fontSize="9" fill="#8b949e">
+                  <text x={x + barW / 2} y={148} textAnchor="middle" fontSize="9" fill={gray[500]}>
                     {(i / 10).toFixed(1)}
                   </text>
                   {count > 0 && (
@@ -172,7 +172,7 @@ export function WorkspaceView({ grid, squares, onSquareClick }: WorkspaceViewPro
                       y={y - 4}
                       textAnchor="middle"
                       fontSize="8"
-                      fill="#656d76"
+                      fill={gray[600]}
                     >
                       {count}
                     </text>
@@ -180,7 +180,7 @@ export function WorkspaceView({ grid, squares, onSquareClick }: WorkspaceViewPro
                 </g>
               )
             })}
-            <line x1="40" y1="130" x2="580" y2="130" stroke="#d1d9e0" strokeWidth="1" />
+            <line x1="40" y1="130" x2="580" y2="130" stroke={gray[300]} strokeWidth="1" />
           </svg>
         </Box>
       </Panel>
@@ -202,7 +202,7 @@ function Panel({
       sx={{
         border: '1px solid',
         borderColor: 'divider',
-        borderRadius: 1.5,
+        borderRadius: 1,
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
@@ -215,7 +215,7 @@ function Panel({
           display: 'flex',
           alignItems: 'center',
           px: 1.5,
-          backgroundColor: '#f6f8fa',
+          backgroundColor: gray[100],
           borderBottom: '1px solid',
           borderColor: 'divider',
           flexShrink: 0,

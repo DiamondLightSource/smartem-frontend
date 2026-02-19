@@ -1,7 +1,7 @@
 import { Box, Typography } from '@mui/material'
 import { useState } from 'react'
 import type { MockFoilHole, MockMicrograph } from '~/data/mock-session-detail'
-import { statusColors } from '~/theme'
+import { gray, statusColors } from '~/theme'
 import { qualityColor } from '~/utils/heatmap'
 
 const processingStatusColors: Record<MockMicrograph['processingStatus'], string> = {
@@ -87,7 +87,7 @@ export function FoilholeDetail({ foilhole, micrographs, onBack }: FoilholeDetail
                     ? `${statusColors.running}18`
                     : foilhole.status === 'acquired'
                       ? `${statusColors.paused}18`
-                      : '#f0f2f4',
+                      : gray[50],
                 color:
                   foilhole.status === 'processed'
                     ? statusColors.running
@@ -210,17 +210,17 @@ function MicrographCard({ micrograph }: { micrograph: MockMicrograph }) {
       sx={{
         border: '1px solid',
         borderColor: 'divider',
-        borderRadius: 1.5,
+        borderRadius: 1,
         overflow: 'hidden',
         cursor: 'pointer',
-        '&:hover': { borderColor: '#afb8c1' },
+        '&:hover': { borderColor: gray[400] },
       }}
     >
       {/* Placeholder image */}
       <Box
         sx={{
           height: 100,
-          backgroundColor: '#e8eaed',
+          backgroundColor: gray[200],
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',

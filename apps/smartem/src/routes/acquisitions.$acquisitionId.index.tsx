@@ -2,7 +2,7 @@ import { Box, Chip, LinearProgress, Typography } from '@mui/material'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { sessions } from '~/data/mock-dashboard'
 import { getSessionGrids, type MockGrid } from '~/data/mock-session-detail'
-import { statusColors } from '~/theme'
+import { gray, statusColors } from '~/theme'
 
 export const Route = createFileRoute('/acquisitions/$acquisitionId/')({
   component: SessionOverview,
@@ -50,7 +50,20 @@ function SessionOverview() {
   const duration = formatDuration(session.startTime, session.endTime)
 
   return (
-    <Box sx={{ p: 2.5, display: 'flex', flexDirection: 'column', gap: 2 }}>
+    <Box
+      sx={{
+        p: 2.5,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
+        height: '100%',
+        overflow: 'auto',
+        borderRadius: 1,
+        border: '1px solid',
+        borderColor: 'divider',
+        backgroundColor: 'background.paper',
+      }}
+    >
       {/* Stats bar */}
       <Box
         sx={{
@@ -59,8 +72,8 @@ function SessionOverview() {
           gap: 3,
           px: 1.5,
           py: 1,
-          backgroundColor: '#f6f8fa',
-          borderRadius: 1.5,
+          backgroundColor: gray[100],
+          borderRadius: 1,
           border: '1px solid',
           borderColor: 'divider',
         }}
@@ -130,11 +143,11 @@ function GridCard({ grid, acquisitionId }: { grid: MockGrid; acquisitionId: stri
           p: 1.5,
           border: '1px solid',
           borderColor: 'divider',
-          borderRadius: 1.5,
+          borderRadius: 1,
           backgroundColor: 'background.paper',
           cursor: 'pointer',
           transition: 'all 0.1s',
-          '&:hover': { borderColor: '#afb8c1', backgroundColor: '#f6f8fa' },
+          '&:hover': { borderColor: gray[400], backgroundColor: gray[100] },
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -163,7 +176,7 @@ function GridCard({ grid, acquisitionId }: { grid: MockGrid; acquisitionId: stri
           sx={{
             height: 3,
             borderRadius: 1,
-            backgroundColor: '#e8eaed',
+            backgroundColor: gray[200],
             '& .MuiLinearProgress-bar': { backgroundColor: color, borderRadius: 1 },
           }}
         />
