@@ -10,8 +10,8 @@ const tabs = [
 ] as const
 
 export function ViewSwitcher() {
-  const { sessionId, gridId } = useParams({ strict: false }) as {
-    sessionId: string
+  const { acquisitionId, gridId } = useParams({ strict: false }) as {
+    acquisitionId: string
     gridId: string
   }
   const router = useRouterState()
@@ -37,7 +37,7 @@ export function ViewSwitcher() {
       </Typography>
 
       {tabs.map((tab) => {
-        const to = `/sessions/${sessionId}/grids/${gridId}${tab.suffix}`
+        const to = `/acquisitions/${acquisitionId}/grids/${gridId}${tab.suffix}`
         const isActive = pathname.endsWith(tab.suffix)
         return (
           <ButtonBase

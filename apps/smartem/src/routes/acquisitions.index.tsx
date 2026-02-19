@@ -19,7 +19,7 @@ import {
 } from '~/data/mock-dashboard'
 import { statusColors } from '~/theme'
 
-export const Route = createFileRoute('/sessions/')({
+export const Route = createFileRoute('/acquisitions/')({
   component: SessionsListPage,
 })
 
@@ -64,7 +64,7 @@ function SessionsListPage() {
           flexShrink: 0,
         }}
       >
-        <Typography variant="h4">Sessions</Typography>
+        <Typography variant="h4">Acquisitions</Typography>
         <Typography variant="caption" sx={{ fontWeight: 500 }}>
           {sessions.length}
         </Typography>
@@ -92,7 +92,10 @@ function SessionsListPage() {
                   hover
                   sx={{ cursor: 'pointer' }}
                   onClick={() =>
-                    navigate({ to: '/sessions/$sessionId', params: { sessionId: s.id } })
+                    navigate({
+                      to: '/acquisitions/$acquisitionId',
+                      params: { acquisitionId: s.id },
+                    })
                   }
                 >
                   <TableCell>

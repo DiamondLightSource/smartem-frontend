@@ -4,7 +4,7 @@ import { sessions } from '~/data/mock-dashboard'
 import { getSessionGrids, type MockGrid } from '~/data/mock-session-detail'
 import { statusColors } from '~/theme'
 
-export const Route = createFileRoute('/sessions/$sessionId/')({
+export const Route = createFileRoute('/acquisitions/$acquisitionId/')({
   component: SessionOverview,
 })
 
@@ -23,9 +23,9 @@ const gridStatusLabel: Record<MockGrid['status'], string> = {
 }
 
 function SessionOverview() {
-  const { sessionId } = Route.useParams()
-  const session = sessions.find((s) => s.id === sessionId)
-  const grids = getSessionGrids(sessionId)
+  const { acquisitionId } = Route.useParams()
+  const session = sessions.find((s) => s.id === acquisitionId)
+  const grids = getSessionGrids(acquisitionId)
 
   if (!session) {
     return (
@@ -84,7 +84,7 @@ function SessionOverview() {
         }}
       >
         {grids.map((grid) => (
-          <GridCard key={grid.uuid} grid={grid} sessionId={sessionId} />
+          <GridCard key={grid.uuid} grid={grid} acquisitionId={acquisitionId} />
         ))}
       </Box>
     </Box>
@@ -107,7 +107,7 @@ function StatItem({ label, value }: { label: string; value: string }) {
   )
 }
 
-function GridCard({ grid, sessionId }: { grid: MockGrid; sessionId: string }) {
+function GridCard({ grid, acquisitionId }: { grid: MockGrid; acquisitionId: string }) {
   const color = gridStatusColor[grid.status]
   const progress =
     grid.status === 'completed'
@@ -118,8 +118,8 @@ function GridCard({ grid, sessionId }: { grid: MockGrid; sessionId: string }) {
 
   return (
     <Link
-      to="/sessions/$sessionId/grids/$gridId"
-      params={{ sessionId, gridId: grid.uuid }}
+      to="/acquisitions/$acquisitionId/grids/$gridId"
+      params={{ acquisitionId, gridId: grid.uuid }}
       style={{ textDecoration: 'none', color: 'inherit' }}
     >
       <Box

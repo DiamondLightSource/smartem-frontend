@@ -3,13 +3,13 @@ import { FoilholeDetail } from '~/components/foilhole/FoilholeDetail'
 import { getFoilHole, getMicrographs } from '~/data/mock-session-detail'
 
 export const Route = createFileRoute(
-  '/sessions/$sessionId/grids/$gridId/squares_/$squareId/holes_/$holeId'
+  '/acquisitions/$acquisitionId/grids/$gridId/squares_/$squareId/holes_/$holeId'
 )({
   component: FoilholeView,
 })
 
 function FoilholeView() {
-  const { sessionId, gridId, squareId, holeId } = Route.useParams()
+  const { acquisitionId, gridId, squareId, holeId } = Route.useParams()
   const navigate = useNavigate()
   const foilhole = getFoilHole(holeId)
   const micrographs = getMicrographs(holeId)
@@ -22,8 +22,8 @@ function FoilholeView() {
       micrographs={micrographs}
       onBack={() =>
         navigate({
-          to: '/sessions/$sessionId/grids/$gridId/squares/$squareId',
-          params: { sessionId, gridId, squareId },
+          to: '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId',
+          params: { acquisitionId, gridId, squareId },
         })
       }
     />

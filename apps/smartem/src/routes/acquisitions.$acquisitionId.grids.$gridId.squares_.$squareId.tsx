@@ -1,7 +1,9 @@
 import { Box } from '@mui/material'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/sessions/$sessionId/grids/$gridId/squares_/$squareId')({
+export const Route = createFileRoute(
+  '/acquisitions/$acquisitionId/grids/$gridId/squares_/$squareId'
+)({
   component: SquareLayout,
 })
 

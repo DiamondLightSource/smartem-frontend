@@ -126,12 +126,12 @@ function ChevronRight() {
 
 export function ContextStrip() {
   const params = useParams({ strict: false })
-  const sessionId = (params as Record<string, string>).sessionId
+  const acquisitionId = (params as Record<string, string>).acquisitionId
   const gridId = (params as Record<string, string>).gridId
   const squareId = (params as Record<string, string>).squareId
   const holeId = (params as Record<string, string>).holeId
 
-  const session = sessions.find((s) => s.id === sessionId)
+  const session = sessions.find((s) => s.id === acquisitionId)
   if (!session) return null
 
   const color = statusColorMap[session.status] ?? '#656d76'
@@ -155,7 +155,11 @@ export function ContextStrip() {
         flexShrink: 0,
       }}
     >
-      <Link to="/sessions/$sessionId" params={{ sessionId }} style={{ textDecoration: 'none' }}>
+      <Link
+        to="/acquisitions/$acquisitionId"
+        params={{ acquisitionId }}
+        style={{ textDecoration: 'none' }}
+      >
         <Typography
           variant="body2"
           sx={{
@@ -184,8 +188,8 @@ export function ContextStrip() {
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
         {gridId && (
           <Link
-            to="/sessions/$sessionId/grids/$gridId/atlas"
-            params={{ sessionId, gridId }}
+            to="/acquisitions/$acquisitionId/grids/$gridId/atlas"
+            params={{ acquisitionId, gridId }}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -209,8 +213,8 @@ export function ContextStrip() {
           <>
             <ChevronRight />
             <Link
-              to="/sessions/$sessionId/grids/$gridId/squares/$squareId"
-              params={{ sessionId, gridId, squareId }}
+              to="/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId"
+              params={{ acquisitionId, gridId, squareId }}
               style={{
                 display: 'flex',
                 alignItems: 'center',
