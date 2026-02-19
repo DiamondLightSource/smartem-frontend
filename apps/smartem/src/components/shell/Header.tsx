@@ -13,12 +13,13 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import { Link, useRouterState } from '@tanstack/react-router'
-import { useCallback, useRef, useState } from 'react'
+import { Link, useNavigate, useRouterState } from '@tanstack/react-router'
+import { useCallback, useMemo, useRef, useState } from 'react'
+import { type CommandGroup, CommandPalette } from '~/components/widgets/CommandPalette'
+import { sessions } from '~/data/mock-dashboard'
 
 const navLinks = [
-  { label: 'Dashboard', to: '/' },
-  { label: 'Sessions', to: '/sessions' },
+  { label: 'Acquisitions', to: '/acquisitions' },
   { label: 'Models', to: '/models' },
   { label: 'Depositions', to: '/depositions' },
 ] as const
@@ -68,130 +69,184 @@ function readRole(): UserRole {
 }
 
 export function Header() {
+  const navigate = useNavigate()
+  const [paletteOpen, setPaletteOpen] = useState(false)
+
+  const commandGroups: CommandGroup[] = useMemo(
+    () => [
+      {
+        id: 'nav',
+        label: 'Navigation',
+        items: navLinks.map((link) => ({
+          id: `nav-${link.to}`,
+          label: link.label,
+          onSelect: () => navigate({ to: link.to as string }),
+          keywords:
+            link.label === 'Acquisitions'
+              ? ['sessions', 'list', 'all']
+              : link.label === 'Models'
+                ? ['ml', 'predictions']
+                : link.label === 'Depositions'
+                  ? ['aria', 'submit']
+                  : ['home', 'overview'],
+        })),
+      },
+      {
+        id: 'acquisitions',
+        label: 'Acquisitions',
+        items: sessions.map((s) => ({
+          id: `acq-${s.id}`,
+          label: s.name,
+          description: `${s.instrumentName} — ${s.gridsCompleted}/${s.gridsTotal} grids`,
+          onSelect: () =>
+            navigate({
+              to: '/acquisitions/$acquisitionId',
+              params: { acquisitionId: s.id },
+            }),
+          keywords: [s.instrumentName, s.status],
+        })),
+      },
+    ],
+    [navigate]
+  )
+
   return (
-    <AppBar position="sticky" component="header">
-      <Toolbar
-        sx={{
-          minHeight: '56px !important',
-          height: 56,
-          px: { xs: 2, sm: 3 },
-          gap: 1,
-        }}
-      >
-        {/* Logos */}
-        <Tooltip title="Diamond Light Source — eBIC">
-          <IconButton
-            component="a"
-            href="https://www.diamond.ac.uk/Instruments/Biological-Cryo-Imaging/eBIC.html"
-            target="_blank"
-            rel="noopener noreferrer"
-            size="small"
-            sx={{ p: 0.5 }}
-          >
-            <Box
-              component="img"
-              src="/diamond-logo.ico"
-              alt="Diamond Light Source"
-              sx={{ width: 24, height: 24 }}
-            />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="FragmentScreen">
-          <IconButton
-            component="a"
-            href="https://fragmentscreen.org"
-            target="_blank"
-            rel="noopener noreferrer"
-            size="small"
-            sx={{ p: 0.5, mr: 0.5 }}
-          >
-            <Box
-              component="img"
-              src="/fragment-screen-logo.png"
-              alt="FragmentScreen"
-              sx={{ width: 24, height: 24 }}
-            />
-          </IconButton>
-        </Tooltip>
-
-        <Typography
-          component={Link}
-          to="/"
-          variant="body1"
+    <>
+      <AppBar position="sticky" component="header">
+        <Toolbar
           sx={{
-            fontWeight: 700,
-            fontSize: '1rem',
-            color: 'text.primary',
-            textDecoration: 'none',
-            mr: 2,
-            flexShrink: 0,
+            minHeight: '56px !important',
+            height: 56,
+            px: { xs: 2, sm: 3 },
+            gap: 1,
           }}
         >
-          SmartEM
-        </Typography>
+          {/* Logos */}
+          <Tooltip title="Diamond Light Source — eBIC">
+            <IconButton
+              component="a"
+              href="https://www.diamond.ac.uk/Instruments/Biological-Cryo-Imaging/eBIC.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              size="small"
+              sx={{ p: 0.5 }}
+            >
+              <Box
+                component="img"
+                src="/diamond-logo.ico"
+                alt="Diamond Light Source"
+                sx={{ width: 24, height: 24 }}
+              />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="FragmentScreen">
+            <IconButton
+              component="a"
+              href="https://fragmentscreen.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              size="small"
+              sx={{ p: 0.5, mr: 0.5 }}
+            >
+              <Box
+                component="img"
+                src="/fragment-screen-logo.png"
+                alt="FragmentScreen"
+                sx={{ width: 24, height: 24 }}
+              />
+            </IconButton>
+          </Tooltip>
 
-        <Box sx={{ display: 'flex', gap: 0.25, mr: 2, flexShrink: 0 }}>
-          {navLinks.map((link) => (
-            <NavLink key={link.to} {...link} />
-          ))}
-        </Box>
-
-        <Box
-          sx={{
-            flex: 1,
-            maxWidth: 480,
-            mx: 'auto',
-          }}
-        >
-          <Box
+          <Typography
+            component={Link}
+            to="/"
+            variant="body1"
             sx={{
-              display: 'flex',
-              alignItems: 'center',
-              border: '1px solid',
-              borderColor: 'divider',
-              borderRadius: 1.5,
-              px: 1.5,
-              height: 32,
-              backgroundColor: '#f6f8fa',
-              '&:hover': { borderColor: '#afb8c1' },
+              fontWeight: 700,
+              fontSize: '1rem',
+              color: 'text.primary',
+              textDecoration: 'none',
+              mr: 2,
+              flexShrink: 0,
             }}
           >
-            <InputBase
-              placeholder="Search or jump to..."
-              readOnly
+            SmartEM
+          </Typography>
+
+          <Box sx={{ display: 'flex', gap: 0.25, mr: 2, flexShrink: 0 }}>
+            {navLinks.map((link) => (
+              <NavLink key={link.to} {...link} />
+            ))}
+          </Box>
+
+          <Box
+            sx={{
+              flex: 1,
+              maxWidth: 480,
+              mx: 'auto',
+            }}
+          >
+            <Box
+              onClick={() => setPaletteOpen(true)}
               sx={{
-                flex: 1,
-                fontSize: '0.8125rem',
-                color: 'text.secondary',
-                '& input': { cursor: 'default', padding: 0 },
-              }}
-            />
-            <Typography
-              component="kbd"
-              sx={{
-                fontSize: '0.6875rem',
-                color: 'text.disabled',
+                display: 'flex',
+                alignItems: 'center',
                 border: '1px solid',
                 borderColor: 'divider',
-                borderRadius: 0.5,
-                px: 0.75,
-                py: 0.125,
-                lineHeight: 1.4,
-                fontFamily: 'inherit',
-                backgroundColor: '#ffffff',
+                borderRadius: 1.5,
+                px: 1.5,
+                height: 32,
+                backgroundColor: '#f6f8fa',
+                cursor: 'pointer',
+                '&:hover': { borderColor: '#afb8c1' },
               }}
             >
-              /
-            </Typography>
+              <InputBase
+                placeholder="Search or jump to..."
+                readOnly
+                sx={{
+                  flex: 1,
+                  fontSize: '0.8125rem',
+                  color: 'text.secondary',
+                  '& input': { cursor: 'pointer', padding: 0 },
+                }}
+              />
+              <Typography
+                component="kbd"
+                sx={{
+                  fontSize: '0.6875rem',
+                  color: 'text.disabled',
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  borderRadius: 0.5,
+                  px: 0.75,
+                  py: 0.125,
+                  lineHeight: 1.4,
+                  fontFamily: 'inherit',
+                  backgroundColor: '#ffffff',
+                }}
+              >
+                /
+              </Typography>
+            </Box>
           </Box>
-        </Box>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, ml: 2, flexShrink: 0 }}>
-          <SettingsMenu />
-          <RoleSwitcher />
-        </Box>
-      </Toolbar>
-    </AppBar>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, ml: 2, flexShrink: 0 }}>
+            <SettingsMenu />
+            <RoleSwitcher />
+          </Box>
+        </Toolbar>
+      </AppBar>
+
+      <CommandPalette
+        groups={commandGroups}
+        isOpen={paletteOpen}
+        onClose={() => setPaletteOpen(false)}
+        shortcutKey="/"
+        requireMeta={false}
+        placeholder="Search or jump to..."
+      />
+    </>
   )
 }
 
