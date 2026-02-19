@@ -2,7 +2,7 @@ import { Box } from '@mui/material'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 import { ContextStrip } from '~/components/session/ContextStrip'
 
-export const Route = createFileRoute('/sessions/$sessionId')({
+export const Route = createFileRoute('/acquisitions/$acquisitionId')({
   component: SessionLayout,
 })
 

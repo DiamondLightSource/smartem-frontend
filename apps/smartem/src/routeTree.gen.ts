@@ -9,24 +9,24 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SessionsRouteImport } from './routes/sessions'
+import { Route as AcquisitionsRouteImport } from './routes/acquisitions'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as SessionsIndexRouteImport } from './routes/sessions.index'
-import { Route as SessionsSessionIdRouteImport } from './routes/sessions.$sessionId'
-import { Route as SessionsSessionIdIndexRouteImport } from './routes/sessions.$sessionId.index'
-import { Route as SessionsSessionIdGridsGridIdRouteImport } from './routes/sessions.$sessionId.grids.$gridId'
-import { Route as SessionsSessionIdGridsGridIdIndexRouteImport } from './routes/sessions.$sessionId.grids.$gridId.index'
-import { Route as SessionsSessionIdGridsGridIdWorkspaceRouteImport } from './routes/sessions.$sessionId.grids.$gridId.workspace'
-import { Route as SessionsSessionIdGridsGridIdSquaresRouteImport } from './routes/sessions.$sessionId.grids.$gridId.squares'
-import { Route as SessionsSessionIdGridsGridIdPredictionsRouteImport } from './routes/sessions.$sessionId.grids.$gridId.predictions'
-import { Route as SessionsSessionIdGridsGridIdAtlasRouteImport } from './routes/sessions.$sessionId.grids.$gridId.atlas'
-import { Route as SessionsSessionIdGridsGridIdSquaresSquareIdRouteImport } from './routes/sessions.$sessionId.grids.$gridId.squares_.$squareId'
-import { Route as SessionsSessionIdGridsGridIdSquaresSquareIdIndexRouteImport } from './routes/sessions.$sessionId.grids.$gridId.squares_.$squareId.index'
-import { Route as SessionsSessionIdGridsGridIdSquaresSquareIdHolesHoleIdRouteImport } from './routes/sessions.$sessionId.grids.$gridId.squares_.$squareId.holes_.$holeId'
+import { Route as AcquisitionsIndexRouteImport } from './routes/acquisitions.index'
+import { Route as AcquisitionsAcquisitionIdRouteImport } from './routes/acquisitions.$acquisitionId'
+import { Route as AcquisitionsAcquisitionIdIndexRouteImport } from './routes/acquisitions.$acquisitionId.index'
+import { Route as AcquisitionsAcquisitionIdGridsGridIdRouteImport } from './routes/acquisitions.$acquisitionId.grids.$gridId'
+import { Route as AcquisitionsAcquisitionIdGridsGridIdIndexRouteImport } from './routes/acquisitions.$acquisitionId.grids.$gridId.index'
+import { Route as AcquisitionsAcquisitionIdGridsGridIdWorkspaceRouteImport } from './routes/acquisitions.$acquisitionId.grids.$gridId.workspace'
+import { Route as AcquisitionsAcquisitionIdGridsGridIdSquaresRouteImport } from './routes/acquisitions.$acquisitionId.grids.$gridId.squares'
+import { Route as AcquisitionsAcquisitionIdGridsGridIdPredictionsRouteImport } from './routes/acquisitions.$acquisitionId.grids.$gridId.predictions'
+import { Route as AcquisitionsAcquisitionIdGridsGridIdAtlasRouteImport } from './routes/acquisitions.$acquisitionId.grids.$gridId.atlas'
+import { Route as AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRouteImport } from './routes/acquisitions.$acquisitionId.grids.$gridId.squares_.$squareId'
+import { Route as AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdIndexRouteImport } from './routes/acquisitions.$acquisitionId.grids.$gridId.squares_.$squareId.index'
+import { Route as AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdHolesHoleIdRouteImport } from './routes/acquisitions.$acquisitionId.grids.$gridId.squares_.$squareId.holes_.$holeId'
 
-const SessionsRoute = SessionsRouteImport.update({
-  id: '/sessions',
-  path: '/sessions',
+const AcquisitionsRoute = AcquisitionsRouteImport.update({
+  id: '/acquisitions',
+  path: '/acquisitions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -34,180 +34,186 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SessionsIndexRoute = SessionsIndexRouteImport.update({
+const AcquisitionsIndexRoute = AcquisitionsIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => SessionsRoute,
+  getParentRoute: () => AcquisitionsRoute,
 } as any)
-const SessionsSessionIdRoute = SessionsSessionIdRouteImport.update({
-  id: '/$sessionId',
-  path: '/$sessionId',
-  getParentRoute: () => SessionsRoute,
-} as any)
-const SessionsSessionIdIndexRoute = SessionsSessionIdIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => SessionsSessionIdRoute,
-} as any)
-const SessionsSessionIdGridsGridIdRoute =
-  SessionsSessionIdGridsGridIdRouteImport.update({
+const AcquisitionsAcquisitionIdRoute =
+  AcquisitionsAcquisitionIdRouteImport.update({
+    id: '/$acquisitionId',
+    path: '/$acquisitionId',
+    getParentRoute: () => AcquisitionsRoute,
+  } as any)
+const AcquisitionsAcquisitionIdIndexRoute =
+  AcquisitionsAcquisitionIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AcquisitionsAcquisitionIdRoute,
+  } as any)
+const AcquisitionsAcquisitionIdGridsGridIdRoute =
+  AcquisitionsAcquisitionIdGridsGridIdRouteImport.update({
     id: '/grids/$gridId',
     path: '/grids/$gridId',
-    getParentRoute: () => SessionsSessionIdRoute,
+    getParentRoute: () => AcquisitionsAcquisitionIdRoute,
   } as any)
-const SessionsSessionIdGridsGridIdIndexRoute =
-  SessionsSessionIdGridsGridIdIndexRouteImport.update({
+const AcquisitionsAcquisitionIdGridsGridIdIndexRoute =
+  AcquisitionsAcquisitionIdGridsGridIdIndexRouteImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => SessionsSessionIdGridsGridIdRoute,
+    getParentRoute: () => AcquisitionsAcquisitionIdGridsGridIdRoute,
   } as any)
-const SessionsSessionIdGridsGridIdWorkspaceRoute =
-  SessionsSessionIdGridsGridIdWorkspaceRouteImport.update({
+const AcquisitionsAcquisitionIdGridsGridIdWorkspaceRoute =
+  AcquisitionsAcquisitionIdGridsGridIdWorkspaceRouteImport.update({
     id: '/workspace',
     path: '/workspace',
-    getParentRoute: () => SessionsSessionIdGridsGridIdRoute,
+    getParentRoute: () => AcquisitionsAcquisitionIdGridsGridIdRoute,
   } as any)
-const SessionsSessionIdGridsGridIdSquaresRoute =
-  SessionsSessionIdGridsGridIdSquaresRouteImport.update({
+const AcquisitionsAcquisitionIdGridsGridIdSquaresRoute =
+  AcquisitionsAcquisitionIdGridsGridIdSquaresRouteImport.update({
     id: '/squares',
     path: '/squares',
-    getParentRoute: () => SessionsSessionIdGridsGridIdRoute,
+    getParentRoute: () => AcquisitionsAcquisitionIdGridsGridIdRoute,
   } as any)
-const SessionsSessionIdGridsGridIdPredictionsRoute =
-  SessionsSessionIdGridsGridIdPredictionsRouteImport.update({
+const AcquisitionsAcquisitionIdGridsGridIdPredictionsRoute =
+  AcquisitionsAcquisitionIdGridsGridIdPredictionsRouteImport.update({
     id: '/predictions',
     path: '/predictions',
-    getParentRoute: () => SessionsSessionIdGridsGridIdRoute,
+    getParentRoute: () => AcquisitionsAcquisitionIdGridsGridIdRoute,
   } as any)
-const SessionsSessionIdGridsGridIdAtlasRoute =
-  SessionsSessionIdGridsGridIdAtlasRouteImport.update({
+const AcquisitionsAcquisitionIdGridsGridIdAtlasRoute =
+  AcquisitionsAcquisitionIdGridsGridIdAtlasRouteImport.update({
     id: '/atlas',
     path: '/atlas',
-    getParentRoute: () => SessionsSessionIdGridsGridIdRoute,
+    getParentRoute: () => AcquisitionsAcquisitionIdGridsGridIdRoute,
   } as any)
-const SessionsSessionIdGridsGridIdSquaresSquareIdRoute =
-  SessionsSessionIdGridsGridIdSquaresSquareIdRouteImport.update({
+const AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRoute =
+  AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRouteImport.update({
     id: '/squares_/$squareId',
     path: '/squares/$squareId',
-    getParentRoute: () => SessionsSessionIdGridsGridIdRoute,
+    getParentRoute: () => AcquisitionsAcquisitionIdGridsGridIdRoute,
   } as any)
-const SessionsSessionIdGridsGridIdSquaresSquareIdIndexRoute =
-  SessionsSessionIdGridsGridIdSquaresSquareIdIndexRouteImport.update({
+const AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdIndexRoute =
+  AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdIndexRouteImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => SessionsSessionIdGridsGridIdSquaresSquareIdRoute,
+    getParentRoute: () =>
+      AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRoute,
   } as any)
-const SessionsSessionIdGridsGridIdSquaresSquareIdHolesHoleIdRoute =
-  SessionsSessionIdGridsGridIdSquaresSquareIdHolesHoleIdRouteImport.update({
-    id: '/holes_/$holeId',
-    path: '/holes/$holeId',
-    getParentRoute: () => SessionsSessionIdGridsGridIdSquaresSquareIdRoute,
-  } as any)
+const AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdHolesHoleIdRoute =
+  AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdHolesHoleIdRouteImport.update(
+    {
+      id: '/holes_/$holeId',
+      path: '/holes/$holeId',
+      getParentRoute: () =>
+        AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRoute,
+    } as any,
+  )
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/sessions': typeof SessionsRouteWithChildren
-  '/sessions/$sessionId': typeof SessionsSessionIdRouteWithChildren
-  '/sessions/': typeof SessionsIndexRoute
-  '/sessions/$sessionId/': typeof SessionsSessionIdIndexRoute
-  '/sessions/$sessionId/grids/$gridId': typeof SessionsSessionIdGridsGridIdRouteWithChildren
-  '/sessions/$sessionId/grids/$gridId/atlas': typeof SessionsSessionIdGridsGridIdAtlasRoute
-  '/sessions/$sessionId/grids/$gridId/predictions': typeof SessionsSessionIdGridsGridIdPredictionsRoute
-  '/sessions/$sessionId/grids/$gridId/squares': typeof SessionsSessionIdGridsGridIdSquaresRoute
-  '/sessions/$sessionId/grids/$gridId/workspace': typeof SessionsSessionIdGridsGridIdWorkspaceRoute
-  '/sessions/$sessionId/grids/$gridId/': typeof SessionsSessionIdGridsGridIdIndexRoute
-  '/sessions/$sessionId/grids/$gridId/squares/$squareId': typeof SessionsSessionIdGridsGridIdSquaresSquareIdRouteWithChildren
-  '/sessions/$sessionId/grids/$gridId/squares/$squareId/': typeof SessionsSessionIdGridsGridIdSquaresSquareIdIndexRoute
-  '/sessions/$sessionId/grids/$gridId/squares/$squareId/holes/$holeId': typeof SessionsSessionIdGridsGridIdSquaresSquareIdHolesHoleIdRoute
+  '/acquisitions': typeof AcquisitionsRouteWithChildren
+  '/acquisitions/$acquisitionId': typeof AcquisitionsAcquisitionIdRouteWithChildren
+  '/acquisitions/': typeof AcquisitionsIndexRoute
+  '/acquisitions/$acquisitionId/': typeof AcquisitionsAcquisitionIdIndexRoute
+  '/acquisitions/$acquisitionId/grids/$gridId': typeof AcquisitionsAcquisitionIdGridsGridIdRouteWithChildren
+  '/acquisitions/$acquisitionId/grids/$gridId/atlas': typeof AcquisitionsAcquisitionIdGridsGridIdAtlasRoute
+  '/acquisitions/$acquisitionId/grids/$gridId/predictions': typeof AcquisitionsAcquisitionIdGridsGridIdPredictionsRoute
+  '/acquisitions/$acquisitionId/grids/$gridId/squares': typeof AcquisitionsAcquisitionIdGridsGridIdSquaresRoute
+  '/acquisitions/$acquisitionId/grids/$gridId/workspace': typeof AcquisitionsAcquisitionIdGridsGridIdWorkspaceRoute
+  '/acquisitions/$acquisitionId/grids/$gridId/': typeof AcquisitionsAcquisitionIdGridsGridIdIndexRoute
+  '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId': typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRouteWithChildren
+  '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId/': typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdIndexRoute
+  '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId/holes/$holeId': typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdHolesHoleIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/sessions': typeof SessionsIndexRoute
-  '/sessions/$sessionId': typeof SessionsSessionIdIndexRoute
-  '/sessions/$sessionId/grids/$gridId/atlas': typeof SessionsSessionIdGridsGridIdAtlasRoute
-  '/sessions/$sessionId/grids/$gridId/predictions': typeof SessionsSessionIdGridsGridIdPredictionsRoute
-  '/sessions/$sessionId/grids/$gridId/squares': typeof SessionsSessionIdGridsGridIdSquaresRoute
-  '/sessions/$sessionId/grids/$gridId/workspace': typeof SessionsSessionIdGridsGridIdWorkspaceRoute
-  '/sessions/$sessionId/grids/$gridId': typeof SessionsSessionIdGridsGridIdIndexRoute
-  '/sessions/$sessionId/grids/$gridId/squares/$squareId': typeof SessionsSessionIdGridsGridIdSquaresSquareIdIndexRoute
-  '/sessions/$sessionId/grids/$gridId/squares/$squareId/holes/$holeId': typeof SessionsSessionIdGridsGridIdSquaresSquareIdHolesHoleIdRoute
+  '/acquisitions': typeof AcquisitionsIndexRoute
+  '/acquisitions/$acquisitionId': typeof AcquisitionsAcquisitionIdIndexRoute
+  '/acquisitions/$acquisitionId/grids/$gridId/atlas': typeof AcquisitionsAcquisitionIdGridsGridIdAtlasRoute
+  '/acquisitions/$acquisitionId/grids/$gridId/predictions': typeof AcquisitionsAcquisitionIdGridsGridIdPredictionsRoute
+  '/acquisitions/$acquisitionId/grids/$gridId/squares': typeof AcquisitionsAcquisitionIdGridsGridIdSquaresRoute
+  '/acquisitions/$acquisitionId/grids/$gridId/workspace': typeof AcquisitionsAcquisitionIdGridsGridIdWorkspaceRoute
+  '/acquisitions/$acquisitionId/grids/$gridId': typeof AcquisitionsAcquisitionIdGridsGridIdIndexRoute
+  '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId': typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdIndexRoute
+  '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId/holes/$holeId': typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdHolesHoleIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/sessions': typeof SessionsRouteWithChildren
-  '/sessions/$sessionId': typeof SessionsSessionIdRouteWithChildren
-  '/sessions/': typeof SessionsIndexRoute
-  '/sessions/$sessionId/': typeof SessionsSessionIdIndexRoute
-  '/sessions/$sessionId/grids/$gridId': typeof SessionsSessionIdGridsGridIdRouteWithChildren
-  '/sessions/$sessionId/grids/$gridId/atlas': typeof SessionsSessionIdGridsGridIdAtlasRoute
-  '/sessions/$sessionId/grids/$gridId/predictions': typeof SessionsSessionIdGridsGridIdPredictionsRoute
-  '/sessions/$sessionId/grids/$gridId/squares': typeof SessionsSessionIdGridsGridIdSquaresRoute
-  '/sessions/$sessionId/grids/$gridId/workspace': typeof SessionsSessionIdGridsGridIdWorkspaceRoute
-  '/sessions/$sessionId/grids/$gridId/': typeof SessionsSessionIdGridsGridIdIndexRoute
-  '/sessions/$sessionId/grids/$gridId/squares_/$squareId': typeof SessionsSessionIdGridsGridIdSquaresSquareIdRouteWithChildren
-  '/sessions/$sessionId/grids/$gridId/squares_/$squareId/': typeof SessionsSessionIdGridsGridIdSquaresSquareIdIndexRoute
-  '/sessions/$sessionId/grids/$gridId/squares_/$squareId/holes_/$holeId': typeof SessionsSessionIdGridsGridIdSquaresSquareIdHolesHoleIdRoute
+  '/acquisitions': typeof AcquisitionsRouteWithChildren
+  '/acquisitions/$acquisitionId': typeof AcquisitionsAcquisitionIdRouteWithChildren
+  '/acquisitions/': typeof AcquisitionsIndexRoute
+  '/acquisitions/$acquisitionId/': typeof AcquisitionsAcquisitionIdIndexRoute
+  '/acquisitions/$acquisitionId/grids/$gridId': typeof AcquisitionsAcquisitionIdGridsGridIdRouteWithChildren
+  '/acquisitions/$acquisitionId/grids/$gridId/atlas': typeof AcquisitionsAcquisitionIdGridsGridIdAtlasRoute
+  '/acquisitions/$acquisitionId/grids/$gridId/predictions': typeof AcquisitionsAcquisitionIdGridsGridIdPredictionsRoute
+  '/acquisitions/$acquisitionId/grids/$gridId/squares': typeof AcquisitionsAcquisitionIdGridsGridIdSquaresRoute
+  '/acquisitions/$acquisitionId/grids/$gridId/workspace': typeof AcquisitionsAcquisitionIdGridsGridIdWorkspaceRoute
+  '/acquisitions/$acquisitionId/grids/$gridId/': typeof AcquisitionsAcquisitionIdGridsGridIdIndexRoute
+  '/acquisitions/$acquisitionId/grids/$gridId/squares_/$squareId': typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRouteWithChildren
+  '/acquisitions/$acquisitionId/grids/$gridId/squares_/$squareId/': typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdIndexRoute
+  '/acquisitions/$acquisitionId/grids/$gridId/squares_/$squareId/holes_/$holeId': typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdHolesHoleIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/sessions'
-    | '/sessions/$sessionId'
-    | '/sessions/'
-    | '/sessions/$sessionId/'
-    | '/sessions/$sessionId/grids/$gridId'
-    | '/sessions/$sessionId/grids/$gridId/atlas'
-    | '/sessions/$sessionId/grids/$gridId/predictions'
-    | '/sessions/$sessionId/grids/$gridId/squares'
-    | '/sessions/$sessionId/grids/$gridId/workspace'
-    | '/sessions/$sessionId/grids/$gridId/'
-    | '/sessions/$sessionId/grids/$gridId/squares/$squareId'
-    | '/sessions/$sessionId/grids/$gridId/squares/$squareId/'
-    | '/sessions/$sessionId/grids/$gridId/squares/$squareId/holes/$holeId'
+    | '/acquisitions'
+    | '/acquisitions/$acquisitionId'
+    | '/acquisitions/'
+    | '/acquisitions/$acquisitionId/'
+    | '/acquisitions/$acquisitionId/grids/$gridId'
+    | '/acquisitions/$acquisitionId/grids/$gridId/atlas'
+    | '/acquisitions/$acquisitionId/grids/$gridId/predictions'
+    | '/acquisitions/$acquisitionId/grids/$gridId/squares'
+    | '/acquisitions/$acquisitionId/grids/$gridId/workspace'
+    | '/acquisitions/$acquisitionId/grids/$gridId/'
+    | '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId'
+    | '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId/'
+    | '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId/holes/$holeId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/sessions'
-    | '/sessions/$sessionId'
-    | '/sessions/$sessionId/grids/$gridId/atlas'
-    | '/sessions/$sessionId/grids/$gridId/predictions'
-    | '/sessions/$sessionId/grids/$gridId/squares'
-    | '/sessions/$sessionId/grids/$gridId/workspace'
-    | '/sessions/$sessionId/grids/$gridId'
-    | '/sessions/$sessionId/grids/$gridId/squares/$squareId'
-    | '/sessions/$sessionId/grids/$gridId/squares/$squareId/holes/$holeId'
+    | '/acquisitions'
+    | '/acquisitions/$acquisitionId'
+    | '/acquisitions/$acquisitionId/grids/$gridId/atlas'
+    | '/acquisitions/$acquisitionId/grids/$gridId/predictions'
+    | '/acquisitions/$acquisitionId/grids/$gridId/squares'
+    | '/acquisitions/$acquisitionId/grids/$gridId/workspace'
+    | '/acquisitions/$acquisitionId/grids/$gridId'
+    | '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId'
+    | '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId/holes/$holeId'
   id:
     | '__root__'
     | '/'
-    | '/sessions'
-    | '/sessions/$sessionId'
-    | '/sessions/'
-    | '/sessions/$sessionId/'
-    | '/sessions/$sessionId/grids/$gridId'
-    | '/sessions/$sessionId/grids/$gridId/atlas'
-    | '/sessions/$sessionId/grids/$gridId/predictions'
-    | '/sessions/$sessionId/grids/$gridId/squares'
-    | '/sessions/$sessionId/grids/$gridId/workspace'
-    | '/sessions/$sessionId/grids/$gridId/'
-    | '/sessions/$sessionId/grids/$gridId/squares_/$squareId'
-    | '/sessions/$sessionId/grids/$gridId/squares_/$squareId/'
-    | '/sessions/$sessionId/grids/$gridId/squares_/$squareId/holes_/$holeId'
+    | '/acquisitions'
+    | '/acquisitions/$acquisitionId'
+    | '/acquisitions/'
+    | '/acquisitions/$acquisitionId/'
+    | '/acquisitions/$acquisitionId/grids/$gridId'
+    | '/acquisitions/$acquisitionId/grids/$gridId/atlas'
+    | '/acquisitions/$acquisitionId/grids/$gridId/predictions'
+    | '/acquisitions/$acquisitionId/grids/$gridId/squares'
+    | '/acquisitions/$acquisitionId/grids/$gridId/workspace'
+    | '/acquisitions/$acquisitionId/grids/$gridId/'
+    | '/acquisitions/$acquisitionId/grids/$gridId/squares_/$squareId'
+    | '/acquisitions/$acquisitionId/grids/$gridId/squares_/$squareId/'
+    | '/acquisitions/$acquisitionId/grids/$gridId/squares_/$squareId/holes_/$holeId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  SessionsRoute: typeof SessionsRouteWithChildren
+  AcquisitionsRoute: typeof AcquisitionsRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/sessions': {
-      id: '/sessions'
-      path: '/sessions'
-      fullPath: '/sessions'
-      preLoaderRoute: typeof SessionsRouteImport
+    '/acquisitions': {
+      id: '/acquisitions'
+      path: '/acquisitions'
+      fullPath: '/acquisitions'
+      preLoaderRoute: typeof AcquisitionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -217,172 +223,175 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sessions/': {
-      id: '/sessions/'
+    '/acquisitions/': {
+      id: '/acquisitions/'
       path: '/'
-      fullPath: '/sessions/'
-      preLoaderRoute: typeof SessionsIndexRouteImport
-      parentRoute: typeof SessionsRoute
+      fullPath: '/acquisitions/'
+      preLoaderRoute: typeof AcquisitionsIndexRouteImport
+      parentRoute: typeof AcquisitionsRoute
     }
-    '/sessions/$sessionId': {
-      id: '/sessions/$sessionId'
-      path: '/$sessionId'
-      fullPath: '/sessions/$sessionId'
-      preLoaderRoute: typeof SessionsSessionIdRouteImport
-      parentRoute: typeof SessionsRoute
+    '/acquisitions/$acquisitionId': {
+      id: '/acquisitions/$acquisitionId'
+      path: '/$acquisitionId'
+      fullPath: '/acquisitions/$acquisitionId'
+      preLoaderRoute: typeof AcquisitionsAcquisitionIdRouteImport
+      parentRoute: typeof AcquisitionsRoute
     }
-    '/sessions/$sessionId/': {
-      id: '/sessions/$sessionId/'
+    '/acquisitions/$acquisitionId/': {
+      id: '/acquisitions/$acquisitionId/'
       path: '/'
-      fullPath: '/sessions/$sessionId/'
-      preLoaderRoute: typeof SessionsSessionIdIndexRouteImport
-      parentRoute: typeof SessionsSessionIdRoute
+      fullPath: '/acquisitions/$acquisitionId/'
+      preLoaderRoute: typeof AcquisitionsAcquisitionIdIndexRouteImport
+      parentRoute: typeof AcquisitionsAcquisitionIdRoute
     }
-    '/sessions/$sessionId/grids/$gridId': {
-      id: '/sessions/$sessionId/grids/$gridId'
+    '/acquisitions/$acquisitionId/grids/$gridId': {
+      id: '/acquisitions/$acquisitionId/grids/$gridId'
       path: '/grids/$gridId'
-      fullPath: '/sessions/$sessionId/grids/$gridId'
-      preLoaderRoute: typeof SessionsSessionIdGridsGridIdRouteImport
-      parentRoute: typeof SessionsSessionIdRoute
+      fullPath: '/acquisitions/$acquisitionId/grids/$gridId'
+      preLoaderRoute: typeof AcquisitionsAcquisitionIdGridsGridIdRouteImport
+      parentRoute: typeof AcquisitionsAcquisitionIdRoute
     }
-    '/sessions/$sessionId/grids/$gridId/': {
-      id: '/sessions/$sessionId/grids/$gridId/'
+    '/acquisitions/$acquisitionId/grids/$gridId/': {
+      id: '/acquisitions/$acquisitionId/grids/$gridId/'
       path: '/'
-      fullPath: '/sessions/$sessionId/grids/$gridId/'
-      preLoaderRoute: typeof SessionsSessionIdGridsGridIdIndexRouteImport
-      parentRoute: typeof SessionsSessionIdGridsGridIdRoute
+      fullPath: '/acquisitions/$acquisitionId/grids/$gridId/'
+      preLoaderRoute: typeof AcquisitionsAcquisitionIdGridsGridIdIndexRouteImport
+      parentRoute: typeof AcquisitionsAcquisitionIdGridsGridIdRoute
     }
-    '/sessions/$sessionId/grids/$gridId/workspace': {
-      id: '/sessions/$sessionId/grids/$gridId/workspace'
+    '/acquisitions/$acquisitionId/grids/$gridId/workspace': {
+      id: '/acquisitions/$acquisitionId/grids/$gridId/workspace'
       path: '/workspace'
-      fullPath: '/sessions/$sessionId/grids/$gridId/workspace'
-      preLoaderRoute: typeof SessionsSessionIdGridsGridIdWorkspaceRouteImport
-      parentRoute: typeof SessionsSessionIdGridsGridIdRoute
+      fullPath: '/acquisitions/$acquisitionId/grids/$gridId/workspace'
+      preLoaderRoute: typeof AcquisitionsAcquisitionIdGridsGridIdWorkspaceRouteImport
+      parentRoute: typeof AcquisitionsAcquisitionIdGridsGridIdRoute
     }
-    '/sessions/$sessionId/grids/$gridId/squares': {
-      id: '/sessions/$sessionId/grids/$gridId/squares'
+    '/acquisitions/$acquisitionId/grids/$gridId/squares': {
+      id: '/acquisitions/$acquisitionId/grids/$gridId/squares'
       path: '/squares'
-      fullPath: '/sessions/$sessionId/grids/$gridId/squares'
-      preLoaderRoute: typeof SessionsSessionIdGridsGridIdSquaresRouteImport
-      parentRoute: typeof SessionsSessionIdGridsGridIdRoute
+      fullPath: '/acquisitions/$acquisitionId/grids/$gridId/squares'
+      preLoaderRoute: typeof AcquisitionsAcquisitionIdGridsGridIdSquaresRouteImport
+      parentRoute: typeof AcquisitionsAcquisitionIdGridsGridIdRoute
     }
-    '/sessions/$sessionId/grids/$gridId/predictions': {
-      id: '/sessions/$sessionId/grids/$gridId/predictions'
+    '/acquisitions/$acquisitionId/grids/$gridId/predictions': {
+      id: '/acquisitions/$acquisitionId/grids/$gridId/predictions'
       path: '/predictions'
-      fullPath: '/sessions/$sessionId/grids/$gridId/predictions'
-      preLoaderRoute: typeof SessionsSessionIdGridsGridIdPredictionsRouteImport
-      parentRoute: typeof SessionsSessionIdGridsGridIdRoute
+      fullPath: '/acquisitions/$acquisitionId/grids/$gridId/predictions'
+      preLoaderRoute: typeof AcquisitionsAcquisitionIdGridsGridIdPredictionsRouteImport
+      parentRoute: typeof AcquisitionsAcquisitionIdGridsGridIdRoute
     }
-    '/sessions/$sessionId/grids/$gridId/atlas': {
-      id: '/sessions/$sessionId/grids/$gridId/atlas'
+    '/acquisitions/$acquisitionId/grids/$gridId/atlas': {
+      id: '/acquisitions/$acquisitionId/grids/$gridId/atlas'
       path: '/atlas'
-      fullPath: '/sessions/$sessionId/grids/$gridId/atlas'
-      preLoaderRoute: typeof SessionsSessionIdGridsGridIdAtlasRouteImport
-      parentRoute: typeof SessionsSessionIdGridsGridIdRoute
+      fullPath: '/acquisitions/$acquisitionId/grids/$gridId/atlas'
+      preLoaderRoute: typeof AcquisitionsAcquisitionIdGridsGridIdAtlasRouteImport
+      parentRoute: typeof AcquisitionsAcquisitionIdGridsGridIdRoute
     }
-    '/sessions/$sessionId/grids/$gridId/squares_/$squareId': {
-      id: '/sessions/$sessionId/grids/$gridId/squares_/$squareId'
+    '/acquisitions/$acquisitionId/grids/$gridId/squares_/$squareId': {
+      id: '/acquisitions/$acquisitionId/grids/$gridId/squares_/$squareId'
       path: '/squares/$squareId'
-      fullPath: '/sessions/$sessionId/grids/$gridId/squares/$squareId'
-      preLoaderRoute: typeof SessionsSessionIdGridsGridIdSquaresSquareIdRouteImport
-      parentRoute: typeof SessionsSessionIdGridsGridIdRoute
+      fullPath: '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId'
+      preLoaderRoute: typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRouteImport
+      parentRoute: typeof AcquisitionsAcquisitionIdGridsGridIdRoute
     }
-    '/sessions/$sessionId/grids/$gridId/squares_/$squareId/': {
-      id: '/sessions/$sessionId/grids/$gridId/squares_/$squareId/'
+    '/acquisitions/$acquisitionId/grids/$gridId/squares_/$squareId/': {
+      id: '/acquisitions/$acquisitionId/grids/$gridId/squares_/$squareId/'
       path: '/'
-      fullPath: '/sessions/$sessionId/grids/$gridId/squares/$squareId/'
-      preLoaderRoute: typeof SessionsSessionIdGridsGridIdSquaresSquareIdIndexRouteImport
-      parentRoute: typeof SessionsSessionIdGridsGridIdSquaresSquareIdRoute
+      fullPath: '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId/'
+      preLoaderRoute: typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdIndexRouteImport
+      parentRoute: typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRoute
     }
-    '/sessions/$sessionId/grids/$gridId/squares_/$squareId/holes_/$holeId': {
-      id: '/sessions/$sessionId/grids/$gridId/squares_/$squareId/holes_/$holeId'
+    '/acquisitions/$acquisitionId/grids/$gridId/squares_/$squareId/holes_/$holeId': {
+      id: '/acquisitions/$acquisitionId/grids/$gridId/squares_/$squareId/holes_/$holeId'
       path: '/holes/$holeId'
-      fullPath: '/sessions/$sessionId/grids/$gridId/squares/$squareId/holes/$holeId'
-      preLoaderRoute: typeof SessionsSessionIdGridsGridIdSquaresSquareIdHolesHoleIdRouteImport
-      parentRoute: typeof SessionsSessionIdGridsGridIdSquaresSquareIdRoute
+      fullPath: '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId/holes/$holeId'
+      preLoaderRoute: typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdHolesHoleIdRouteImport
+      parentRoute: typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRoute
     }
   }
 }
 
-interface SessionsSessionIdGridsGridIdSquaresSquareIdRouteChildren {
-  SessionsSessionIdGridsGridIdSquaresSquareIdIndexRoute: typeof SessionsSessionIdGridsGridIdSquaresSquareIdIndexRoute
-  SessionsSessionIdGridsGridIdSquaresSquareIdHolesHoleIdRoute: typeof SessionsSessionIdGridsGridIdSquaresSquareIdHolesHoleIdRoute
+interface AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRouteChildren {
+  AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdIndexRoute: typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdIndexRoute
+  AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdHolesHoleIdRoute: typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdHolesHoleIdRoute
 }
 
-const SessionsSessionIdGridsGridIdSquaresSquareIdRouteChildren: SessionsSessionIdGridsGridIdSquaresSquareIdRouteChildren =
+const AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRouteChildren: AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRouteChildren =
   {
-    SessionsSessionIdGridsGridIdSquaresSquareIdIndexRoute:
-      SessionsSessionIdGridsGridIdSquaresSquareIdIndexRoute,
-    SessionsSessionIdGridsGridIdSquaresSquareIdHolesHoleIdRoute:
-      SessionsSessionIdGridsGridIdSquaresSquareIdHolesHoleIdRoute,
+    AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdIndexRoute:
+      AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdIndexRoute,
+    AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdHolesHoleIdRoute:
+      AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdHolesHoleIdRoute,
   }
 
-const SessionsSessionIdGridsGridIdSquaresSquareIdRouteWithChildren =
-  SessionsSessionIdGridsGridIdSquaresSquareIdRoute._addFileChildren(
-    SessionsSessionIdGridsGridIdSquaresSquareIdRouteChildren,
+const AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRouteWithChildren =
+  AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRoute._addFileChildren(
+    AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRouteChildren,
   )
 
-interface SessionsSessionIdGridsGridIdRouteChildren {
-  SessionsSessionIdGridsGridIdAtlasRoute: typeof SessionsSessionIdGridsGridIdAtlasRoute
-  SessionsSessionIdGridsGridIdPredictionsRoute: typeof SessionsSessionIdGridsGridIdPredictionsRoute
-  SessionsSessionIdGridsGridIdSquaresRoute: typeof SessionsSessionIdGridsGridIdSquaresRoute
-  SessionsSessionIdGridsGridIdWorkspaceRoute: typeof SessionsSessionIdGridsGridIdWorkspaceRoute
-  SessionsSessionIdGridsGridIdIndexRoute: typeof SessionsSessionIdGridsGridIdIndexRoute
-  SessionsSessionIdGridsGridIdSquaresSquareIdRoute: typeof SessionsSessionIdGridsGridIdSquaresSquareIdRouteWithChildren
+interface AcquisitionsAcquisitionIdGridsGridIdRouteChildren {
+  AcquisitionsAcquisitionIdGridsGridIdAtlasRoute: typeof AcquisitionsAcquisitionIdGridsGridIdAtlasRoute
+  AcquisitionsAcquisitionIdGridsGridIdPredictionsRoute: typeof AcquisitionsAcquisitionIdGridsGridIdPredictionsRoute
+  AcquisitionsAcquisitionIdGridsGridIdSquaresRoute: typeof AcquisitionsAcquisitionIdGridsGridIdSquaresRoute
+  AcquisitionsAcquisitionIdGridsGridIdWorkspaceRoute: typeof AcquisitionsAcquisitionIdGridsGridIdWorkspaceRoute
+  AcquisitionsAcquisitionIdGridsGridIdIndexRoute: typeof AcquisitionsAcquisitionIdGridsGridIdIndexRoute
+  AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRoute: typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRouteWithChildren
 }
 
-const SessionsSessionIdGridsGridIdRouteChildren: SessionsSessionIdGridsGridIdRouteChildren =
+const AcquisitionsAcquisitionIdGridsGridIdRouteChildren: AcquisitionsAcquisitionIdGridsGridIdRouteChildren =
   {
-    SessionsSessionIdGridsGridIdAtlasRoute:
-      SessionsSessionIdGridsGridIdAtlasRoute,
-    SessionsSessionIdGridsGridIdPredictionsRoute:
-      SessionsSessionIdGridsGridIdPredictionsRoute,
-    SessionsSessionIdGridsGridIdSquaresRoute:
-      SessionsSessionIdGridsGridIdSquaresRoute,
-    SessionsSessionIdGridsGridIdWorkspaceRoute:
-      SessionsSessionIdGridsGridIdWorkspaceRoute,
-    SessionsSessionIdGridsGridIdIndexRoute:
-      SessionsSessionIdGridsGridIdIndexRoute,
-    SessionsSessionIdGridsGridIdSquaresSquareIdRoute:
-      SessionsSessionIdGridsGridIdSquaresSquareIdRouteWithChildren,
+    AcquisitionsAcquisitionIdGridsGridIdAtlasRoute:
+      AcquisitionsAcquisitionIdGridsGridIdAtlasRoute,
+    AcquisitionsAcquisitionIdGridsGridIdPredictionsRoute:
+      AcquisitionsAcquisitionIdGridsGridIdPredictionsRoute,
+    AcquisitionsAcquisitionIdGridsGridIdSquaresRoute:
+      AcquisitionsAcquisitionIdGridsGridIdSquaresRoute,
+    AcquisitionsAcquisitionIdGridsGridIdWorkspaceRoute:
+      AcquisitionsAcquisitionIdGridsGridIdWorkspaceRoute,
+    AcquisitionsAcquisitionIdGridsGridIdIndexRoute:
+      AcquisitionsAcquisitionIdGridsGridIdIndexRoute,
+    AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRoute:
+      AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRouteWithChildren,
   }
 
-const SessionsSessionIdGridsGridIdRouteWithChildren =
-  SessionsSessionIdGridsGridIdRoute._addFileChildren(
-    SessionsSessionIdGridsGridIdRouteChildren,
+const AcquisitionsAcquisitionIdGridsGridIdRouteWithChildren =
+  AcquisitionsAcquisitionIdGridsGridIdRoute._addFileChildren(
+    AcquisitionsAcquisitionIdGridsGridIdRouteChildren,
   )
 
-interface SessionsSessionIdRouteChildren {
-  SessionsSessionIdIndexRoute: typeof SessionsSessionIdIndexRoute
-  SessionsSessionIdGridsGridIdRoute: typeof SessionsSessionIdGridsGridIdRouteWithChildren
+interface AcquisitionsAcquisitionIdRouteChildren {
+  AcquisitionsAcquisitionIdIndexRoute: typeof AcquisitionsAcquisitionIdIndexRoute
+  AcquisitionsAcquisitionIdGridsGridIdRoute: typeof AcquisitionsAcquisitionIdGridsGridIdRouteWithChildren
 }
 
-const SessionsSessionIdRouteChildren: SessionsSessionIdRouteChildren = {
-  SessionsSessionIdIndexRoute: SessionsSessionIdIndexRoute,
-  SessionsSessionIdGridsGridIdRoute:
-    SessionsSessionIdGridsGridIdRouteWithChildren,
+const AcquisitionsAcquisitionIdRouteChildren: AcquisitionsAcquisitionIdRouteChildren =
+  {
+    AcquisitionsAcquisitionIdIndexRoute: AcquisitionsAcquisitionIdIndexRoute,
+    AcquisitionsAcquisitionIdGridsGridIdRoute:
+      AcquisitionsAcquisitionIdGridsGridIdRouteWithChildren,
+  }
+
+const AcquisitionsAcquisitionIdRouteWithChildren =
+  AcquisitionsAcquisitionIdRoute._addFileChildren(
+    AcquisitionsAcquisitionIdRouteChildren,
+  )
+
+interface AcquisitionsRouteChildren {
+  AcquisitionsAcquisitionIdRoute: typeof AcquisitionsAcquisitionIdRouteWithChildren
+  AcquisitionsIndexRoute: typeof AcquisitionsIndexRoute
 }
 
-const SessionsSessionIdRouteWithChildren =
-  SessionsSessionIdRoute._addFileChildren(SessionsSessionIdRouteChildren)
-
-interface SessionsRouteChildren {
-  SessionsSessionIdRoute: typeof SessionsSessionIdRouteWithChildren
-  SessionsIndexRoute: typeof SessionsIndexRoute
+const AcquisitionsRouteChildren: AcquisitionsRouteChildren = {
+  AcquisitionsAcquisitionIdRoute: AcquisitionsAcquisitionIdRouteWithChildren,
+  AcquisitionsIndexRoute: AcquisitionsIndexRoute,
 }
 
-const SessionsRouteChildren: SessionsRouteChildren = {
-  SessionsSessionIdRoute: SessionsSessionIdRouteWithChildren,
-  SessionsIndexRoute: SessionsIndexRoute,
-}
-
-const SessionsRouteWithChildren = SessionsRoute._addFileChildren(
-  SessionsRouteChildren,
+const AcquisitionsRouteWithChildren = AcquisitionsRoute._addFileChildren(
+  AcquisitionsRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  SessionsRoute: SessionsRouteWithChildren,
+  AcquisitionsRoute: AcquisitionsRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

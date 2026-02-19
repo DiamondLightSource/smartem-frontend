@@ -676,8 +676,8 @@ function SessionRow({
         <StatusDot color={color} pulse={session.status === 'running'} />
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Link
-            to="/sessions/$sessionId"
-            params={{ sessionId: session.id }}
+            to="/acquisitions/$acquisitionId"
+            params={{ acquisitionId: session.id }}
             onClick={(e) => e.stopPropagation()}
             style={{ textDecoration: 'none' }}
           >
@@ -731,8 +731,8 @@ function SessionRow({
             />
           )}
           <Link
-            to="/sessions/$sessionId"
-            params={{ sessionId: session.id }}
+            to="/acquisitions/$acquisitionId"
+            params={{ acquisitionId: session.id }}
             onClick={(e) => e.stopPropagation()}
             style={{ textDecoration: 'none' }}
           >

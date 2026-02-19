@@ -2,7 +2,7 @@ import { Box } from '@mui/material'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 import { ViewSwitcher } from '~/components/session/ViewSwitcher'
 
-export const Route = createFileRoute('/sessions/$sessionId/grids/$gridId')({
+export const Route = createFileRoute('/acquisitions/$acquisitionId/grids/$gridId')({
   component: GridLayout,
 })
 
