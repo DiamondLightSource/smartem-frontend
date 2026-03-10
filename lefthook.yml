@@ -32,3 +32,6 @@ pre-push:
 
     gitleaks:
       run: gitleaks protect --staged --redact
+
+    trufflehog:
+      run: trufflehog git file://. --only-verified
