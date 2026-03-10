@@ -29,3 +29,6 @@ pre-push:
     # Format check
     format-check:
       run: npm run format:check
+
+    gitleaks:
+      run: gitleaks protect --staged --redact
