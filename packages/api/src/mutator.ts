@@ -14,6 +14,19 @@ export const AXIOS_INSTANCE = Axios.create({
   baseURL: apiUrl(),
 })
 
+let authToken: string | null = null
+
+export const setAuthToken = (token: string | null) => {
+  authToken = token || null
+}
+
+AXIOS_INSTANCE.interceptors.request.use((config) => {
+  if (authToken) {
+    config.headers.Authorization = `Bearer ${authToken}`
+  }
+  return config
+})
+
 export class ApiError extends Error {
   constructor(
     message: string,
