@@ -1,6 +1,7 @@
 import { createRouter, RouterProvider } from '@tanstack/react-router'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { AuthGate } from './auth'
 import { routeTree } from './routeTree.gen'
 import './app.css'
 
@@ -30,7 +31,9 @@ if (rootElement && !rootElement.innerHTML) {
     const root = createRoot(rootElement)
     root.render(
       <StrictMode>
-        <RouterProvider router={router} />
+        <AuthGate>
+          <RouterProvider router={router} />
+        </AuthGate>
       </StrictMode>
     )
   })

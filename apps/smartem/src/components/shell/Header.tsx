@@ -1,7 +1,7 @@
+import { AccountCircle, Login } from '@mui/icons-material'
 import {
   AppBar,
   Box,
-  Button,
   Divider,
   IconButton,
   InputBase,
@@ -14,7 +14,8 @@ import {
   Typography,
 } from '@mui/material'
 import { Link, useNavigate, useRouterState } from '@tanstack/react-router'
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
+import { useAuth } from '~/auth'
 import { type CommandGroup, CommandPalette } from '~/components/widgets/CommandPalette'
 import { sessions } from '~/data/mock-dashboard'
 import { gray } from '~/theme'
@@ -51,22 +52,6 @@ function NavLink({ label, to }: { label: string; to: string }) {
       {label}
     </Typography>
   )
-}
-
-type UserRole = 'visitor' | 'staff' | 'admin'
-
-const ROLE_KEY = 'smartem-user-role'
-
-const ROLES: { key: UserRole; label: string; short: string }[] = [
-  { key: 'visitor', label: 'Visitor user', short: 'Visitor' },
-  { key: 'staff', label: 'Facility staff', short: 'Staff' },
-  { key: 'admin', label: 'System admin', short: 'Admin' },
-]
-
-function readRole(): UserRole {
-  const v = localStorage.getItem(ROLE_KEY)
-  if (v === 'visitor' || v === 'staff' || v === 'admin') return v
-  return 'staff'
 }
 
 export function Header() {
@@ -234,7 +219,7 @@ export function Header() {
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, ml: 2, flexShrink: 0 }}>
             <SettingsMenu />
-            <RoleSwitcher />
+            <AuthControls />
           </Box>
         </Toolbar>
       </AppBar>
@@ -349,46 +334,52 @@ function SettingsMenu() {
   )
 }
 
-function RoleSwitcher() {
-  const [role, setRole] = useState<UserRole>(readRole)
-  const [open, setOpen] = useState(false)
-  const anchorRef = useRef<HTMLButtonElement>(null)
+function AuthControls() {
+  const auth = useAuth()
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
-  const pick = useCallback((r: UserRole) => {
-    setRole(r)
-    localStorage.setItem(ROLE_KEY, r)
-    setOpen(false)
-  }, [])
+  if (!auth.initialised) return null
 
-  const current = ROLES.find((r) => r.key === role) ?? ROLES[1]
+  if (!auth.authenticated) {
+    return (
+      <Tooltip title="Sign in">
+        <IconButton size="small" onClick={() => auth.login()} sx={{ color: 'text.secondary' }}>
+          <Login fontSize="small" />
+        </IconButton>
+      </Tooltip>
+    )
+  }
 
   return (
     <>
-      <Button
-        ref={anchorRef}
-        size="small"
-        variant="outlined"
-        onClick={() => setOpen((v) => !v)}
-        sx={{ textTransform: 'none', fontWeight: 500, fontSize: '0.8125rem' }}
-      >
-        {current.short}
-      </Button>
+      <Tooltip title={auth.user?.name || auth.user?.email || 'Account'}>
+        <IconButton
+          size="small"
+          onClick={(e) => setAnchorEl(e.currentTarget)}
+          sx={{ color: 'text.secondary' }}
+        >
+          <AccountCircle fontSize="small" />
+        </IconButton>
+      </Tooltip>
       <Menu
-        anchorEl={anchorRef.current}
-        open={open}
-        onClose={() => setOpen(false)}
-        slotProps={{ paper: { sx: { mt: 0.5, minWidth: 160 } } }}
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={() => setAnchorEl(null)}
+        slotProps={{ paper: { sx: { mt: 0.5, minWidth: 180 } } }}
       >
-        {ROLES.map((r) => (
-          <MenuItem
-            key={r.key}
-            selected={r.key === role}
-            onClick={() => pick(r.key)}
-            sx={{ fontSize: '0.8125rem' }}
-          >
-            {r.label}
-          </MenuItem>
-        ))}
+        <MenuItem disabled sx={{ opacity: '0.7 !important', fontSize: '0.8125rem' }}>
+          {auth.user?.name || auth.user?.email}
+        </MenuItem>
+        <Divider />
+        <MenuItem
+          onClick={() => {
+            setAnchorEl(null)
+            auth.logout()
+          }}
+          sx={{ fontSize: '0.8125rem' }}
+        >
+          Sign out
+        </MenuItem>
       </Menu>
     </>
   )
