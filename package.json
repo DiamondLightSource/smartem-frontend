@@ -35,7 +35,7 @@
     "@biomejs/biome": "2.4.8",
     "lefthook": "^2.1.4",
     "prettier": "^3.5.3",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.2"
   },
   "overrides": {
     "@asyncapi/specs": "6.10.0",
