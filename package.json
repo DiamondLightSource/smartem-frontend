@@ -34,6 +34,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.4.8",
     "lefthook": "^2.1.4",
+    "msw": "^2.12.14",
     "prettier": "^3.5.3",
     "typescript": "^6.0.2"
   },
