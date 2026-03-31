@@ -1,5 +1,5 @@
 import { Box, Chip, CircularProgress, Typography } from '@mui/material'
-import type { AcquisitionResponse, GridResponse, GridStatus } from '@smartem/api'
+import type { GridResponse, GridStatus } from '@smartem/api'
 import {
   useGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet,
   useGetAcquisitionsAcquisitionsGet,
@@ -197,7 +197,7 @@ function GridCard({ grid, acquisitionId }: { grid: GridResponse; acquisitionId: 
           )}
           {grid.scan_end_time && (
             <Typography variant="caption" sx={{ fontSize: '0.6875rem' }}>
-              {formatDuration(grid.scan_start_time!, grid.scan_end_time)}
+              {grid.scan_start_time && formatDuration(grid.scan_start_time, grid.scan_end_time)}
             </Typography>
           )}
         </Box>

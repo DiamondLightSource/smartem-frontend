@@ -10,7 +10,7 @@ import {
   TableSortLabel,
   Typography,
 } from '@mui/material'
-import type { GridSquareResponse, GridSquareStatus } from '@smartem/api'
+import type { GridSquareStatus } from '@smartem/api'
 import { useGetGridGridsquaresGridsGridUuidGridsquaresGet } from '@smartem/api'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
