@@ -1,53 +1,77 @@
-import { Box, Chip, LinearProgress, Typography } from '@mui/material'
+import { Box, Chip, CircularProgress, Typography } from '@mui/material'
+import type { AcquisitionResponse, GridResponse, GridStatus } from '@smartem/api'
+import {
+  useGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet,
+  useGetAcquisitionsAcquisitionsGet,
+} from '@smartem/api'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { sessions } from '~/data/mock-dashboard'
-import { getSessionGrids, type MockGrid } from '~/data/mock-session-detail'
 import { gray, statusColors } from '~/theme'
 
 export const Route = createFileRoute('/acquisitions/$acquisitionId/')({
   component: SessionOverview,
 })
 
-const gridStatusColor: Record<MockGrid['status'], string> = {
-  completed: statusColors.running,
-  collecting: statusColors.paused,
-  screening: statusColors.idle,
-  queued: statusColors.offline,
+const gridStatusColor: Record<GridStatus, string> = {
+  none: statusColors.offline,
+  'scan started': statusColors.paused,
+  'scan completed': statusColors.idle,
+  'grid squares decision started': statusColors.paused,
+  'grid squares decision completed': statusColors.running,
 }
 
-const gridStatusLabel: Record<MockGrid['status'], string> = {
-  completed: 'Completed',
-  collecting: 'Collecting',
-  screening: 'Screening',
-  queued: 'Queued',
+const gridStatusLabel: Record<GridStatus, string> = {
+  none: 'None',
+  'scan started': 'Scanning',
+  'scan completed': 'Scanned',
+  'grid squares decision started': 'Deciding',
+  'grid squares decision completed': 'Completed',
+}
+
+function formatDuration(startTime: string, endTime: string | null): string {
+  const start = new Date(startTime).getTime()
+  const end = endTime ? new Date(endTime).getTime() : Date.now()
+  const hours = Math.floor((end - start) / 3_600_000)
+  const mins = Math.floor(((end - start) % 3_600_000) / 60_000)
+  if (hours === 0) return `${mins}m`
+  return `${hours}h ${mins}m`
+}
+
+function formatTime(iso: string): string {
+  return new Date(iso).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
 }
 
 function SessionOverview() {
   const { acquisitionId } = Route.useParams()
-  const session = sessions.find((s) => s.id === acquisitionId)
-  const grids = getSessionGrids(acquisitionId)
+  const {
+    data: grids,
+    isLoading,
+    error,
+  } = useGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet(acquisitionId)
+  const { data: acquisitions } = useGetAcquisitionsAcquisitionsGet()
+  const acquisition = acquisitions?.find((a) => a.uuid === acquisitionId)
 
-  if (!session) {
+  if (isLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+        <CircularProgress size={28} />
+      </Box>
+    )
+  }
+
+  if (error) {
     return (
       <Box sx={{ p: 4, textAlign: 'center' }}>
-        <Typography variant="body1" color="text.secondary">
-          Session not found
+        <Typography variant="body1" color="error">
+          Failed to load grids
         </Typography>
       </Box>
     )
   }
 
-  const completedGrids = grids.filter((g) => g.status === 'completed').length
-  const totalFoilholes = grids.reduce((sum, g) => sum + g.foilholeCount, 0)
-  const totalMicrographs = grids.reduce((sum, g) => sum + g.micrographCount, 0)
-  const gridsWithQuality = grids.filter((g) => g.avgQuality != null)
-  const avgQuality =
-    gridsWithQuality.length > 0
-      ? gridsWithQuality.reduce((sum, g) => sum + (g.avgQuality ?? 0), 0) / gridsWithQuality.length
-      : null
-
-  const instrument = session.instrumentName
-  const duration = formatDuration(session.startTime, session.endTime)
+  const gridList = grids ?? []
+  const completedGrids = gridList.filter(
+    (g) => g.status === 'grid squares decision completed' || g.status === 'scan completed'
+  ).length
 
   return (
     <Box
@@ -64,7 +88,6 @@ function SessionOverview() {
         backgroundColor: 'background.paper',
       }}
     >
-      {/* Stats bar */}
       <Box
         sx={{
           display: 'flex',
@@ -78,17 +101,18 @@ function SessionOverview() {
           borderColor: 'divider',
         }}
       >
-        <StatItem label="Grids" value={`${completedGrids}/${grids.length}`} />
-        <StatItem label="Foilholes" value={totalFoilholes.toLocaleString()} />
-        <StatItem label="Micrographs" value={totalMicrographs.toLocaleString()} />
-        {avgQuality != null && (
-          <StatItem label="Avg quality" value={`${Math.round(avgQuality * 100)}%`} />
+        <StatItem label="Grids" value={`${completedGrids}/${gridList.length}`} />
+        {acquisition?.instrument_model && (
+          <StatItem label="Instrument" value={acquisition.instrument_model} />
         )}
-        <StatItem label="Instrument" value={instrument} />
-        <StatItem label="Duration" value={duration} />
+        {acquisition?.start_time && (
+          <StatItem
+            label="Duration"
+            value={formatDuration(acquisition.start_time, acquisition.end_time)}
+          />
+        )}
       </Box>
 
-      {/* Grid cards */}
       <Box
         sx={{
           display: 'grid',
@@ -96,7 +120,7 @@ function SessionOverview() {
           gap: 1.5,
         }}
       >
-        {grids.map((grid) => (
+        {gridList.map((grid) => (
           <GridCard key={grid.uuid} grid={grid} acquisitionId={acquisitionId} />
         ))}
       </Box>
@@ -120,14 +144,9 @@ function StatItem({ label, value }: { label: string; value: string }) {
   )
 }
 
-function GridCard({ grid, acquisitionId }: { grid: MockGrid; acquisitionId: string }) {
-  const color = gridStatusColor[grid.status]
-  const progress =
-    grid.status === 'completed'
-      ? 100
-      : grid.status === 'queued'
-        ? 0
-        : Math.round((grid.micrographCount / Math.max(1, grid.foilholeCount)) * 100)
+function GridCard({ grid, acquisitionId }: { grid: GridResponse; acquisitionId: string }) {
+  const status = grid.status ?? 'none'
+  const color = gridStatusColor[status]
 
   return (
     <Link
@@ -157,7 +176,7 @@ function GridCard({ grid, acquisitionId }: { grid: MockGrid; acquisitionId: stri
           <Box sx={{ flex: 1 }} />
           <Chip
             size="small"
-            label={gridStatusLabel[grid.status]}
+            label={gridStatusLabel[status]}
             sx={{
               height: 18,
               fontSize: '0.625rem',
@@ -170,63 +189,19 @@ function GridCard({ grid, acquisitionId }: { grid: MockGrid; acquisitionId: stri
           />
         </Box>
 
-        <LinearProgress
-          variant="determinate"
-          value={progress}
-          sx={{
-            height: 3,
-            borderRadius: 1,
-            backgroundColor: gray[200],
-            '& .MuiLinearProgress-bar': { backgroundColor: color, borderRadius: 1 },
-          }}
-        />
-
         <Box sx={{ display: 'flex', gap: 2 }}>
-          <Typography variant="caption" sx={{ fontSize: '0.6875rem' }}>
-            {grid.squareCount} squares
-          </Typography>
-          <Typography variant="caption" sx={{ fontSize: '0.6875rem' }}>
-            {grid.foilholeCount} foilholes
-          </Typography>
-          {grid.avgQuality != null && (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              <QualityDot value={grid.avgQuality} />
-              <Typography
-                variant="caption"
-                sx={{ fontSize: '0.6875rem', fontVariantNumeric: 'tabular-nums' }}
-              >
-                {Math.round(grid.avgQuality * 100)}%
-              </Typography>
-            </Box>
+          {grid.scan_start_time && (
+            <Typography variant="caption" sx={{ fontSize: '0.6875rem' }}>
+              Started {formatTime(grid.scan_start_time)}
+            </Typography>
+          )}
+          {grid.scan_end_time && (
+            <Typography variant="caption" sx={{ fontSize: '0.6875rem' }}>
+              {formatDuration(grid.scan_start_time!, grid.scan_end_time)}
+            </Typography>
           )}
         </Box>
       </Box>
     </Link>
   )
-}
-
-function QualityDot({ value }: { value: number }) {
-  const color =
-    value >= 0.7 ? statusColors.running : value >= 0.4 ? statusColors.paused : statusColors.error
-  return (
-    <Box
-      component="span"
-      sx={{
-        display: 'inline-block',
-        width: 6,
-        height: 6,
-        borderRadius: '50%',
-        backgroundColor: color,
-      }}
-    />
-  )
-}
-
-function formatDuration(startTime: string, endTime: string | null): string {
-  const start = new Date(startTime).getTime()
-  const end = endTime ? new Date(endTime).getTime() : Date.now()
-  const hours = Math.floor((end - start) / 3_600_000)
-  const mins = Math.floor(((end - start) % 3_600_000) / 60_000)
-  if (hours === 0) return `${mins}m`
-  return `${hours}h ${mins}m`
 }

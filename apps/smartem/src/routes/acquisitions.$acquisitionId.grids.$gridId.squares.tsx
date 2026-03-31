@@ -1,5 +1,6 @@
 import {
   Box,
+  CircularProgress,
   Table,
   TableBody,
   TableCell,
@@ -9,33 +10,38 @@ import {
   TableSortLabel,
   Typography,
 } from '@mui/material'
+import type { GridSquareResponse, GridSquareStatus } from '@smartem/api'
+import { useGetGridGridsquaresGridsGridUuidGridsquaresGet } from '@smartem/api'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
-import { getGridSquares, type MockGridSquare } from '~/data/mock-session-detail'
-import { gray, statusColors } from '~/theme'
+import { statusColors } from '~/theme'
 
 export const Route = createFileRoute('/acquisitions/$acquisitionId/grids/$gridId/squares')({
   component: SquaresTable,
 })
 
-type SortField = 'quality' | 'foilholeCount' | 'gridsquareId'
+type SortField = 'defocus' | 'magnification' | 'gridsquareId'
 type SortDir = 'asc' | 'desc'
 
 function SquaresTable() {
   const { acquisitionId, gridId } = Route.useParams()
   const navigate = useNavigate()
-  const squares = getGridSquares(gridId)
+  const {
+    data: squares,
+    isLoading,
+    error,
+  } = useGetGridGridsquaresGridsGridUuidGridsquaresGet(gridId)
 
-  const [sortField, setSortField] = useState<SortField>('quality')
-  const [sortDir, setSortDir] = useState<SortDir>('desc')
+  const [sortField, setSortField] = useState<SortField>('gridsquareId')
+  const [sortDir, setSortDir] = useState<SortDir>('asc')
 
   const sorted = useMemo(() => {
-    const arr = [...squares]
+    const arr = [...(squares ?? [])]
     arr.sort((a, b) => {
       let cmp = 0
-      if (sortField === 'quality') cmp = a.quality - b.quality
-      else if (sortField === 'foilholeCount') cmp = a.foilholeCount - b.foilholeCount
-      else cmp = a.gridsquareId.localeCompare(b.gridsquareId)
+      if (sortField === 'defocus') cmp = (a.defocus ?? 0) - (b.defocus ?? 0)
+      else if (sortField === 'magnification') cmp = (a.magnification ?? 0) - (b.magnification ?? 0)
+      else cmp = a.gridsquare_id.localeCompare(b.gridsquare_id)
       return sortDir === 'desc' ? -cmp : cmp
     })
     return arr
@@ -48,6 +54,24 @@ function SquaresTable() {
       setSortField(field)
       setSortDir('desc')
     }
+  }
+
+  if (isLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+        <CircularProgress size={28} />
+      </Box>
+    )
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ p: 4, textAlign: 'center' }}>
+        <Typography variant="body1" color="error">
+          Failed to load grid squares
+        </Typography>
+      </Box>
+    )
   }
 
   return (
@@ -65,26 +89,25 @@ function SquaresTable() {
               </TableSortLabel>
             </TableCell>
             <TableCell>Status</TableCell>
+            <TableCell>Selected</TableCell>
             <TableCell>
               <TableSortLabel
-                active={sortField === 'quality'}
-                direction={sortField === 'quality' ? sortDir : 'desc'}
-                onClick={() => handleSort('quality')}
+                active={sortField === 'defocus'}
+                direction={sortField === 'defocus' ? sortDir : 'desc'}
+                onClick={() => handleSort('defocus')}
               >
-                Quality
+                Defocus
               </TableSortLabel>
             </TableCell>
             <TableCell>
               <TableSortLabel
-                active={sortField === 'foilholeCount'}
-                direction={sortField === 'foilholeCount' ? sortDir : 'desc'}
-                onClick={() => handleSort('foilholeCount')}
+                active={sortField === 'magnification'}
+                direction={sortField === 'magnification' ? sortDir : 'desc'}
+                onClick={() => handleSort('magnification')}
               >
-                Foilholes
+                Magnification
               </TableSortLabel>
             </TableCell>
-            <TableCell>Defocus</TableCell>
-            <TableCell>Magnification</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -102,18 +125,15 @@ function SquaresTable() {
             >
               <TableCell>
                 <Typography variant="body2" fontWeight={500}>
-                  {sq.gridsquareId}
+                  {sq.gridsquare_id}
                 </Typography>
               </TableCell>
               <TableCell>
                 <StatusLabel status={sq.status} />
               </TableCell>
               <TableCell>
-                <QualityCell value={sq.quality} />
-              </TableCell>
-              <TableCell>
-                <Typography variant="body2" sx={{ fontVariantNumeric: 'tabular-nums' }}>
-                  {sq.foilholeCount}
+                <Typography variant="body2" color={sq.selected ? 'text.primary' : 'text.disabled'}>
+                  {sq.selected ? 'Yes' : 'No'}
                 </Typography>
               </TableCell>
               <TableCell>
@@ -121,7 +141,7 @@ function SquaresTable() {
                   variant="body2"
                   sx={{ fontVariantNumeric: 'tabular-nums', color: 'text.secondary' }}
                 >
-                  {sq.defocus != null ? `${sq.defocus} um` : '—'}
+                  {sq.defocus != null ? `${sq.defocus} um` : '--'}
                 </Typography>
               </TableCell>
               <TableCell>
@@ -129,7 +149,7 @@ function SquaresTable() {
                   variant="body2"
                   sx={{ fontVariantNumeric: 'tabular-nums', color: 'text.secondary' }}
                 >
-                  {sq.magnification != null ? `${(sq.magnification / 1000).toFixed(0)}k` : '—'}
+                  {sq.magnification != null ? `${(sq.magnification / 1000).toFixed(0)}k` : '--'}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -140,42 +160,26 @@ function SquaresTable() {
   )
 }
 
-function StatusLabel({ status }: { status: MockGridSquare['status'] }) {
-  const colorMap: Record<MockGridSquare['status'], string> = {
-    completed: statusColors.running,
-    collected: statusColors.paused,
-    registered: statusColors.offline,
-  }
+const statusColorMap: Record<GridSquareStatus, string> = {
+  none: statusColors.offline,
+  'foil holes decision started': statusColors.paused,
+  'foil holes decision completed': statusColors.running,
+}
+
+const statusLabelMap: Record<GridSquareStatus, string> = {
+  none: 'None',
+  'foil holes decision started': 'Deciding',
+  'foil holes decision completed': 'Completed',
+}
+
+function StatusLabel({ status }: { status: GridSquareStatus | null }) {
+  const s = status ?? 'none'
   return (
     <Typography
       variant="caption"
-      sx={{ color: colorMap[status], fontWeight: 500, fontSize: '0.6875rem' }}
+      sx={{ color: statusColorMap[s], fontWeight: 500, fontSize: '0.6875rem' }}
     >
-      {status}
+      {statusLabelMap[s]}
     </Typography>
-  )
-}
-
-function QualityCell({ value }: { value: number }) {
-  const color =
-    value >= 0.7 ? statusColors.running : value >= 0.4 ? statusColors.paused : statusColors.error
-  const pct = Math.round(value * 100)
-  return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-      <Box
-        sx={{
-          width: 40,
-          height: 4,
-          backgroundColor: gray[200],
-          borderRadius: 2,
-          overflow: 'hidden',
-        }}
-      >
-        <Box sx={{ width: `${pct}%`, height: '100%', backgroundColor: color, borderRadius: 2 }} />
-      </Box>
-      <Typography variant="body2" sx={{ fontVariantNumeric: 'tabular-nums', fontSize: '0.75rem' }}>
-        {pct}%
-      </Typography>
-    </Box>
   )
 }

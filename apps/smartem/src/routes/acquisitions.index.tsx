@@ -1,6 +1,7 @@
 import {
   Box,
   Chip,
+  CircularProgress,
   Table,
   TableBody,
   TableCell,
@@ -9,39 +10,75 @@ import {
   TableRow,
   Typography,
 } from '@mui/material'
+import type { AcquisitionStatus } from '@smartem/api'
+import { useGetAcquisitionsAcquisitionsGet } from '@smartem/api'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import {
-  formatDate,
-  formatDuration,
-  formatTime,
-  type SessionStatus,
-  sessions,
-} from '~/data/mock-dashboard'
 import { gray, statusColors } from '~/theme'
 
 export const Route = createFileRoute('/acquisitions/')({
   component: SessionsListPage,
 })
 
-const statusLabel: Record<SessionStatus, string> = {
-  running: 'Running',
-  paused: 'Paused',
+const statusLabel: Record<AcquisitionStatus, string> = {
+  planned: 'Planned',
+  started: 'Started',
   completed: 'Completed',
+  paused: 'Paused',
   abandoned: 'Abandoned',
 }
 
-const statusColor: Record<SessionStatus, string> = {
-  running: statusColors.running,
-  paused: statusColors.paused,
+const statusColor: Record<AcquisitionStatus, string> = {
+  planned: statusColors.offline,
+  started: statusColors.running,
   completed: statusColors.idle,
+  paused: statusColors.paused,
   abandoned: statusColors.error,
+}
+
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+}
+
+function formatTime(iso: string): string {
+  return new Date(iso).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
+}
+
+function formatDuration(startTime: string, endTime: string | null): string {
+  const start = new Date(startTime).getTime()
+  const end = endTime ? new Date(endTime).getTime() : Date.now()
+  const hours = Math.floor((end - start) / 3_600_000)
+  const mins = Math.floor(((end - start) % 3_600_000) / 60_000)
+  if (hours === 0) return `${mins}m`
+  return `${hours}h ${mins}m`
 }
 
 function SessionsListPage() {
   const navigate = useNavigate()
-  const sorted = [...sessions].sort(
-    (a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
-  )
+  const { data: acquisitions, isLoading, error } = useGetAcquisitionsAcquisitionsGet()
+
+  if (isLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+        <CircularProgress size={28} />
+      </Box>
+    )
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ p: 4, textAlign: 'center' }}>
+        <Typography variant="body1" color="error">
+          Failed to load acquisitions
+        </Typography>
+      </Box>
+    )
+  }
+
+  const sorted = [...(acquisitions ?? [])].sort((a, b) => {
+    if (!a.start_time) return 1
+    if (!b.start_time) return -1
+    return new Date(b.start_time).getTime() - new Date(a.start_time).getTime()
+  })
 
   return (
     <Box
@@ -71,7 +108,7 @@ function SessionsListPage() {
       >
         <Typography variant="h4">Acquisitions</Typography>
         <Typography variant="caption" sx={{ fontWeight: 500 }}>
-          {sessions.length}
+          {sorted.length}
         </Typography>
       </Box>
 
@@ -93,34 +130,33 @@ function SessionsListPage() {
               <TableCell>Instrument</TableCell>
               <TableCell>Started</TableCell>
               <TableCell>Duration</TableCell>
-              <TableCell>Grids</TableCell>
-              <TableCell>Quality</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {sorted.map((s) => {
-              const color = statusColor[s.status]
+            {sorted.map((acq) => {
+              const status = acq.status ?? 'planned'
+              const color = statusColor[status]
               return (
                 <TableRow
-                  key={s.id}
+                  key={acq.uuid}
                   hover
                   sx={{ cursor: 'pointer' }}
                   onClick={() =>
                     navigate({
                       to: '/acquisitions/$acquisitionId',
-                      params: { acquisitionId: s.id },
+                      params: { acquisitionId: acq.uuid },
                     })
                   }
                 >
                   <TableCell>
                     <Typography variant="body2" fontWeight={500}>
-                      {s.name}
+                      {acq.name}
                     </Typography>
                   </TableCell>
                   <TableCell>
                     <Chip
                       size="small"
-                      label={statusLabel[s.status]}
+                      label={statusLabel[status]}
                       sx={{
                         height: 20,
                         fontSize: '0.6875rem',
@@ -133,31 +169,21 @@ function SessionsListPage() {
                     />
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2">{s.instrumentName}</Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2" sx={{ fontVariantNumeric: 'tabular-nums' }}>
-                      {formatDate(s.startTime)} {formatTime(s.startTime)}
+                    <Typography variant="body2">
+                      {acq.instrument_model ?? acq.instrument_id ?? '--'}
                     </Typography>
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2" sx={{ fontVariantNumeric: 'tabular-nums' }}>
-                      {formatDuration(s.startTime, s.endTime)}
+                      {acq.start_time
+                        ? `${formatDate(acq.start_time)} ${formatTime(acq.start_time)}`
+                        : '--'}
                     </Typography>
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2" sx={{ fontVariantNumeric: 'tabular-nums' }}>
-                      {s.gridsCompleted}/{s.gridsTotal}
+                      {acq.start_time ? formatDuration(acq.start_time, acq.end_time) : '--'}
                     </Typography>
-                  </TableCell>
-                  <TableCell>
-                    {s.avgQuality != null ? (
-                      <QualityCell value={s.avgQuality} />
-                    ) : (
-                      <Typography variant="body2" color="text.disabled">
-                        —
-                      </Typography>
-                    )}
                   </TableCell>
                 </TableRow>
               )
@@ -165,30 +191,6 @@ function SessionsListPage() {
           </TableBody>
         </Table>
       </TableContainer>
-    </Box>
-  )
-}
-
-function QualityCell({ value }: { value: number }) {
-  const color =
-    value >= 0.7 ? statusColors.running : value >= 0.4 ? statusColors.paused : statusColors.error
-  const pct = Math.round(value * 100)
-  return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-      <Box
-        sx={{
-          width: 40,
-          height: 4,
-          backgroundColor: gray[200],
-          borderRadius: 2,
-          overflow: 'hidden',
-        }}
-      >
-        <Box sx={{ width: `${pct}%`, height: '100%', backgroundColor: color, borderRadius: 2 }} />
-      </Box>
-      <Typography variant="body2" sx={{ fontVariantNumeric: 'tabular-nums', fontSize: '0.75rem' }}>
-        {pct}%
-      </Typography>
     </Box>
   )
 }
