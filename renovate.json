@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>DiamondLightSource/smartem-devtools:renovate/default"],
+  "extends": ["github>DiamondLightSource/smartem-devtools//renovate/default"],
   "packageRules": [
     {
       "description": "Group npm minor/patch",
@@ -12,21 +12,21 @@
       "description": "Group vite ecosystem majors",
       "matchManagers": ["npm"],
       "matchUpdateTypes": ["major"],
-      "matchPackagePatterns": ["^vite$", "^@vitejs/", "^@tailwindcss/vite$"],
+      "matchPackageNames": ["vite", "@tailwindcss/vite", "/^@vitejs//"],
       "groupName": "vite ecosystem major"
     },
     {
       "description": "Group React ecosystem majors",
       "matchManagers": ["npm"],
       "matchUpdateTypes": ["major"],
-      "matchPackagePatterns": ["^react$", "^react-dom$", "^@types/react"],
+      "matchPackageNames": ["react", "react-dom", "/^@types/react/"],
       "groupName": "react ecosystem major"
     },
     {
       "description": "Group MUI majors",
       "matchManagers": ["npm"],
       "matchUpdateTypes": ["major"],
-      "matchPackagePatterns": ["^@mui/"],
+      "matchPackageNames": ["/^@mui//"],
       "groupName": "MUI major"
     }
   ]
