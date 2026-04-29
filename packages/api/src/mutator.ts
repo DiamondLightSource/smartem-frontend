@@ -37,18 +37,19 @@ AXIOS_INSTANCE.interceptors.response.use(
   }
 )
 
+type CancellablePromise<T> = Promise<T> & { cancel: () => void }
+
 export const customInstance = <T>(
   config: AxiosRequestConfig,
   options?: AxiosRequestConfig
-): Promise<T> => {
+): CancellablePromise<T> => {
   const source = Axios.CancelToken.source()
   const promise = AXIOS_INSTANCE({
     ...config,
     ...options,
     cancelToken: source.token,
-  }).then(({ data }) => data)
+  }).then(({ data }) => data) as CancellablePromise<T>
 
-  // @ts-expect-error
   promise.cancel = () => {
     source.cancel('Query was cancelled')
   }
