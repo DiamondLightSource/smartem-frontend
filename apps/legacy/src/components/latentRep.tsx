@@ -25,7 +25,8 @@ import type {
   QualityPredictionResponse,
 } from '@smartem/api'
 import { apiUrl } from '@smartem/api'
-import React from 'react'
+import type React from 'react'
+import { useEffect, useId, useState } from 'react'
 import { Navbar } from '../components/navbar'
 import { theme } from '../components/theme'
 
@@ -72,23 +73,23 @@ export default function Atlas({
   loaderData: { squares: GridSquare[]; models: PredictionModel[] }
   params: { gridId: string }
 }) {
-  const modelSelectLabelId = React.useId()
-  const modelSelectId = React.useId()
-  const repModelSelectLabelId = React.useId()
-  const repModelSelectId = React.useId()
-  const [maxWidth, setMaxWidth] = React.useState(0)
-  const [squareNameMap, setSquareNameMap] = React.useState<Map<string, string>>()
-  const [selectedSquare, setSelectedSquare] = React.useState('')
-  const [showPredictions, setShowPredictions] = React.useState(false)
-  const [predictionModel, setPredictionModel] = React.useState('')
-  const [repModel, setRepModel] = React.useState('')
-  const [predictions, setPredictions] = React.useState<Map<string, number>>()
-  const [predictionMin, setPredictionMin] = React.useState(0)
-  const [predictionMax, setPredictionMax] = React.useState(0)
-  const [latentRep, setLatentRep] = React.useState<Map<string, Coords>>()
-  const [showLatentSpace, setShowLatentSpace] = React.useState(false)
-  const [showUnselectedInLatentSpace, setShowUnselectedInLatentSpace] = React.useState(true)
-  const [selectionFrozen, setSelectionFrozen] = React.useState(false)
+  const modelSelectLabelId = useId()
+  const modelSelectId = useId()
+  const repModelSelectLabelId = useId()
+  const repModelSelectId = useId()
+  const [maxWidth, setMaxWidth] = useState(0)
+  const [squareNameMap, setSquareNameMap] = useState<Map<string, string>>()
+  const [selectedSquare, setSelectedSquare] = useState('')
+  const [showPredictions, setShowPredictions] = useState(false)
+  const [predictionModel, setPredictionModel] = useState('')
+  const [repModel, setRepModel] = useState('')
+  const [predictions, setPredictions] = useState<Map<string, number>>()
+  const [predictionMin, setPredictionMin] = useState(0)
+  const [predictionMax, setPredictionMax] = useState(0)
+  const [latentRep, setLatentRep] = useState<Map<string, Coords>>()
+  const [showLatentSpace, setShowLatentSpace] = useState(false)
+  const [showUnselectedInLatentSpace, setShowUnselectedInLatentSpace] = useState(true)
+  const [selectionFrozen, setSelectionFrozen] = useState(false)
 
   const colourPalette = [
     '#E3B505',
@@ -131,7 +132,7 @@ export default function Atlas({
     }
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     const widths = loaderData.squares
       .map((elem: GridSquare) => elem.size_width)
       .filter((w): w is number => w !== null)
@@ -143,7 +144,7 @@ export default function Atlas({
     )
   }, [loaderData.squares])
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (predictions) {
       setPredictionMin(Math.min(...Array.from(predictions).map((k, _v) => k[1])))
       setPredictionMax(Math.max(...Array.from(predictions).map((k, _v) => k[1])))

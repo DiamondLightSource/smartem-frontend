@@ -36,7 +36,8 @@ import {
   getPredictionModelsPredictionModelsGet,
 } from '@smartem/api'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import React from 'react'
+import type React from 'react'
+import { useEffect, useId, useState } from 'react'
 
 import { Navbar } from '../components/navbar'
 import { theme } from '../components/theme'
@@ -91,17 +92,17 @@ const getSuggestion = async (gridId: string) => {
 function Atlas() {
   const { acqId, gridId } = Route.useParams()
   const navigate = useNavigate()
-  const modelSelectLabelId = React.useId()
-  const modelSelectId = React.useId()
-  const repModelSelectLabelId = React.useId()
-  const repModelSelectId = React.useId()
-  const [squares, setSquares] = React.useState<GridSquare[]>([])
-  const [models, setModels] = React.useState<PredictionModel[]>([])
-  const [maxWidth, setMaxWidth] = React.useState(0)
-  const [squareNameMap, setSquareNameMap] = React.useState<Map<string, string>>()
-  const [selectedSquare, setSelectedSquare] = React.useState('')
+  const modelSelectLabelId = useId()
+  const modelSelectId = useId()
+  const repModelSelectLabelId = useId()
+  const repModelSelectId = useId()
+  const [squares, setSquares] = useState<GridSquare[]>([])
+  const [models, setModels] = useState<PredictionModel[]>([])
+  const [maxWidth, setMaxWidth] = useState(0)
+  const [squareNameMap, setSquareNameMap] = useState<Map<string, string>>()
+  const [selectedSquare, setSelectedSquare] = useState('')
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       if (!gridId) return
       const squaresData = await getGridGridsquaresGridsGridUuidGridsquaresGet(gridId)
@@ -111,17 +112,17 @@ function Atlas() {
     }
     fetchData()
   }, [gridId])
-  const [showPredictions, setShowPredictions] = React.useState(false)
-  const [predictionModel, setPredictionModel] = React.useState('')
-  const [repModel, setRepModel] = React.useState('')
-  const [predictions, setPredictions] = React.useState<Map<string, number>>()
-  const [predictionMin, setPredictionMin] = React.useState(0)
-  const [predictionMax, setPredictionMax] = React.useState(0)
-  const [latentRep, setLatentRep] = React.useState<Map<string, Coords>>()
-  const [showLatentSpace, setShowLatentSpace] = React.useState(false)
-  const [showUnselectedInLatentSpace, setShowUnselectedInLatentSpace] = React.useState(true)
-  const [selectionFrozen, setSelectionFrozen] = React.useState(false)
-  const [suggestions, setSuggestions] = React.useState<string[]>([])
+  const [showPredictions, setShowPredictions] = useState(false)
+  const [predictionModel, setPredictionModel] = useState('')
+  const [repModel, setRepModel] = useState('')
+  const [predictions, setPredictions] = useState<Map<string, number>>()
+  const [predictionMin, setPredictionMin] = useState(0)
+  const [predictionMax, setPredictionMax] = useState(0)
+  const [latentRep, setLatentRep] = useState<Map<string, Coords>>()
+  const [showLatentSpace, setShowLatentSpace] = useState(false)
+  const [showUnselectedInLatentSpace, setShowUnselectedInLatentSpace] = useState(true)
+  const [selectionFrozen, setSelectionFrozen] = useState(false)
+  const [suggestions, setSuggestions] = useState<string[]>([])
 
   const colourPalette = [
     '#f2a2a9',
@@ -169,7 +170,7 @@ function Atlas() {
     setSuggestions(suggestions)
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (squares.length > 0) {
       const widths = squares
         .map((elem: GridSquare) => elem.size_width)
@@ -181,7 +182,7 @@ function Atlas() {
     }
   }, [squares])
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (predictions) {
       setPredictionMin(Math.min(...Array.from(predictions).map((k, _v) => k[1])))
       setPredictionMax(Math.max(...Array.from(predictions).map((k, _v) => k[1])))
