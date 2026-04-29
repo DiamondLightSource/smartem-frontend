@@ -1,6 +1,7 @@
 import { Box, CssBaseline } from '@mui/material'
 import { ThemeProvider } from '@mui/material/styles'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { createRootRoute, Outlet } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/router-devtools'
 import { Header } from '~/components/shell/Header'
@@ -31,6 +32,7 @@ function RootComponent() {
           </Box>
         </Box>
         <TanStackRouterDevtools />
+        {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
       </QueryClientProvider>
     </ThemeProvider>
   )
