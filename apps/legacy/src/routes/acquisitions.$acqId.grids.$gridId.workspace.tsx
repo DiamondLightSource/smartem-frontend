@@ -3,15 +3,16 @@ import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUp from '@mui/icons-material/KeyboardArrowUp'
 import { Container, IconButton, Menu, MenuItem, Paper, Stack, ThemeProvider } from '@mui/material'
 import { createFileRoute } from '@tanstack/react-router'
-import React from 'react'
+import type React from 'react'
+import { useState } from 'react'
 import Atlas from '../components/atlas'
 import { Navbar } from '../components/navbar'
 import { theme } from '../components/theme'
 
 function Workspace() {
   const { gridId } = Route.useParams()
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
-  const [atlasView, setAtlasView] = React.useState(false)
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const [atlasView, setAtlasView] = useState(false)
   const open = Boolean(anchorEl)
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)

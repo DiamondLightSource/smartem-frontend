@@ -17,7 +17,7 @@ import type { QualityPrediction } from '@smartem/api'
 import { apiUrl } from '@smartem/api'
 import { createFileRoute } from '@tanstack/react-router'
 import { bin } from 'd3-array'
-import React from 'react'
+import { useEffect, useId, useState } from 'react'
 import { Navbar } from '../components/navbar'
 import { theme } from '../components/theme'
 
@@ -64,7 +64,7 @@ const FoilHolePredictionCharts = ({
       return Date.parse(value[0].timestamp)
     })
   )
-  const [selectedTime, setSelectedTime] = React.useState(mostRecentTimestamp)
+  const [selectedTime, setSelectedTime] = useState(mostRecentTimestamp)
   const histGenerator = bin().domain([0, 1]).thresholds(19)
 
   const getMostRecentBefore = (preds: QualityPrediction[]) => {
@@ -123,17 +123,17 @@ const FoilHolePredictionCharts = ({
 
 function QualityPredictionsForSquare() {
   const { squareId } = Route.useParams()
-  const metricSelectLabelId = React.useId()
-  const metricSelectId = React.useId()
-  const [squarePredictions, setSquarePredictions] = React.useState<
-    Record<string, QualityPrediction[]>
-  >({})
-  const [holePredictions, setHolePredictions] = React.useState<
+  const metricSelectLabelId = useId()
+  const metricSelectId = useId()
+  const [squarePredictions, setSquarePredictions] = useState<Record<string, QualityPrediction[]>>(
+    {}
+  )
+  const [holePredictions, setHolePredictions] = useState<
     Record<string, Record<string, QualityPrediction[]>>
   >({})
-  const [metrics, setMetrics] = React.useState<{ name: string }[]>([])
+  const [metrics, setMetrics] = useState<{ name: string }[]>([])
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       const squarePredictionsResponse = await fetch(
         `${apiUrl()}/gridsquares/${squareId}/quality_predictions`
@@ -159,8 +159,8 @@ function QualityPredictionsForSquare() {
     return mostRecents.reduce((a: number, b: number) => a + b, 0) / mostRecents.length
   }
 
-  const [metricName, setMetricName] = React.useState('')
-  const [predictionsPerMetric, setPredictionsPerMetric] = React.useState<
+  const [metricName, setMetricName] = useState('')
+  const [predictionsPerMetric, setPredictionsPerMetric] = useState<
     Record<string, Record<string, QualityPrediction[]>>
   >({})
 

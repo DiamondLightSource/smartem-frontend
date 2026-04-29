@@ -2,16 +2,16 @@ import { Container, ThemeProvider } from '@mui/material'
 import type { QualityPredictionModelWeight } from '@smartem/api'
 import { apiUrl } from '@smartem/api'
 import { createFileRoute } from '@tanstack/react-router'
-import React from 'react'
+import { useEffect, useState } from 'react'
 import { Navbar } from '../components/navbar'
 import { theme } from '../components/theme'
 import { TimeSeriesChart } from '../components/timeseries'
 
 function PredictionModelWeights() {
   const { modelName, gridId } = Route.useParams()
-  const [result, setResult] = React.useState<QualityPredictionModelWeight[] | null>(null)
+  const [result, setResult] = useState<QualityPredictionModelWeight[] | null>(null)
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       const models = await fetch(
         `${apiUrl()}/prediction_models/${modelName}/grids/${gridId}/weights`

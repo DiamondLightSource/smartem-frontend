@@ -10,7 +10,7 @@ import {
 } from '@mui/material'
 import type { GridSquareResponse } from '@smartem/api'
 import { apiUrl } from '@smartem/api'
-import React from 'react'
+import { useEffect, useState } from 'react'
 import { theme } from '../components/theme'
 
 type GridSquare = GridSquareResponse
@@ -22,12 +22,12 @@ export default function Atlas({
   params: { gridId: string }
   onClose: () => void
 }) {
-  // const [maxWidth, setMaxWidth] = React.useState(0);
-  // const [squareNameMap, setSquareNameMap] = React.useState<Map<string, string>>()
-  const [selectedSquare, setSelectedSquare] = React.useState('')
-  const [squares, setSquares] = React.useState<GridSquare[]>([])
+  // const [maxWidth, setMaxWidth] = useState(0);
+  // const [squareNameMap, setSquareNameMap] = useState<Map<string, string>>()
+  const [selectedSquare, setSelectedSquare] = useState('')
+  const [squares, setSquares] = useState<GridSquare[]>([])
 
-  const [selectionFrozen, setSelectionFrozen] = React.useState(false)
+  const [selectionFrozen, setSelectionFrozen] = useState(false)
 
   const handleSelectionClick = (uuid: string) => {
     if (uuid === selectedSquare) {
@@ -38,7 +38,7 @@ export default function Atlas({
     }
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     const loadData = async () => {
       const gridsquares = await fetch(`${apiUrl()}/grids/${params.gridId}/gridsquares`)
       const squares = await gridsquares.json()

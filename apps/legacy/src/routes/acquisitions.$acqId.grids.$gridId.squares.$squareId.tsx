@@ -27,7 +27,8 @@ import type {
 } from '@smartem/api'
 import { apiUrl } from '@smartem/api'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import React from 'react'
+import type React from 'react'
+import { useEffect, useId, useState } from 'react'
 import { Navbar } from '../components/navbar'
 import { theme } from '../components/theme'
 
@@ -81,16 +82,16 @@ const getLatentRep = async (modelName: string, gridSquareId: string) => {
 function GridSquareLR() {
   const { acqId, gridId, squareId } = Route.useParams()
   const navigate = useNavigate()
-  const modelSelectLabelId = React.useId()
-  const modelSelectId = React.useId()
-  const repModelSelectLabelId = React.useId()
-  const repModelSelectId = React.useId()
-  const [holes, setHoles] = React.useState<FoilHole[]>([])
-  const [models, setModels] = React.useState<PredictionModel[]>([])
-  const [maxWidth] = React.useState(0)
-  const [selectedSquare, setSelectedSquare] = React.useState('')
+  const modelSelectLabelId = useId()
+  const modelSelectId = useId()
+  const repModelSelectLabelId = useId()
+  const repModelSelectId = useId()
+  const [holes, setHoles] = useState<FoilHole[]>([])
+  const [models, setModels] = useState<PredictionModel[]>([])
+  const [maxWidth] = useState(0)
+  const [selectedSquare, setSelectedSquare] = useState('')
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       const foilholesResponse = await fetch(
         `${apiUrl()}/gridsquares/${squareId}/foilholes?on_square_only=true`
@@ -103,18 +104,18 @@ function GridSquareLR() {
     }
     fetchData()
   }, [squareId])
-  const [holeNameMap, setHoleNameMap] = React.useState<Map<string, string>>()
-  const [selectedHole, setSelectedHole] = React.useState('')
-  const [showPredictions, setShowPredictions] = React.useState(false)
-  const [predictionModel, setPredictionModel] = React.useState('')
-  const [repModel, setRepModel] = React.useState('')
-  const [predictions, setPredictions] = React.useState<Map<string, number>>()
-  const [predictionMin, setPredictionMin] = React.useState(0)
-  const [predictionMax, setPredictionMax] = React.useState(1)
-  const [latentRep, setLatentRep] = React.useState<Map<string, Coords>>()
-  const [showLatentSpace, setShowLatentSpace] = React.useState(false)
-  const [showUnselectedInLatentSpace, setShowUnselectedInLatentSpace] = React.useState(true)
-  const [selectionFrozen, setSelectionFrozen] = React.useState(false)
+  const [holeNameMap, setHoleNameMap] = useState<Map<string, string>>()
+  const [selectedHole, setSelectedHole] = useState('')
+  const [showPredictions, setShowPredictions] = useState(false)
+  const [predictionModel, setPredictionModel] = useState('')
+  const [repModel, setRepModel] = useState('')
+  const [predictions, setPredictions] = useState<Map<string, number>>()
+  const [predictionMin, setPredictionMin] = useState(0)
+  const [predictionMax, setPredictionMax] = useState(1)
+  const [latentRep, setLatentRep] = useState<Map<string, Coords>>()
+  const [showLatentSpace, setShowLatentSpace] = useState(false)
+  const [showUnselectedInLatentSpace, setShowUnselectedInLatentSpace] = useState(true)
+  const [selectionFrozen, setSelectionFrozen] = useState(false)
 
   const colourPalette = [
     '#f2a2a9',
@@ -165,7 +166,7 @@ function GridSquareLR() {
     }
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (holes.length > 0) {
       setHoleNameMap(
         new Map<string, string>(holes.map((elem: FoilHole) => [elem.uuid, elem.foilhole_id]))
@@ -173,7 +174,7 @@ function GridSquareLR() {
     }
   }, [holes])
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (predictions) {
       const min = Math.min(...Array.from(predictions).map((k) => k[1]))
       const max = Math.max(...Array.from(predictions).map((k) => k[1]))

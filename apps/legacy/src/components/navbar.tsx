@@ -14,12 +14,12 @@ import {
 } from '@mui/material'
 import AppBar from '@mui/material/AppBar'
 import { useNavigate } from '@tanstack/react-router'
-import React from 'react'
+import { useState } from 'react'
 
 export const Navbar = () => {
   const navigate = useNavigate()
 
-  const [drawer, setDrawer] = React.useState(false)
+  const [drawer, setDrawer] = useState(false)
 
   return (
     <Box sx={{ display: 'flex' }}>

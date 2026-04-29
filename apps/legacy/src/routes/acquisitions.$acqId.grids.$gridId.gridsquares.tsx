@@ -15,7 +15,8 @@ import {
 import type { GridSquareResponse } from '@smartem/api'
 import { useGetGridGridsquaresGridsGridUuidGridsquaresGet } from '@smartem/api'
 import { createFileRoute } from '@tanstack/react-router'
-import React from 'react'
+import type React from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Navbar } from '../components/navbar'
 import { theme } from '../components/theme'
 
@@ -27,22 +28,22 @@ function GridSquareGallery() {
     error,
   } = useGetGridGridsquaresGridsGridUuidGridsquaresGet(gridId)
 
-  const [pageIndex, setPageIndex] = React.useState(0)
-  const [numPages, setNumPages] = React.useState(Math.ceil((squares?.length || 0) / 9))
-  const [showCollectedOnly, setShowCollectedOnly] = React.useState(false)
-  const [filteredSquares, setFilteredSquares] = React.useState<GridSquareResponse[]>([])
+  const [pageIndex, setPageIndex] = useState(0)
+  const [numPages, setNumPages] = useState(Math.ceil((squares?.length || 0) / 9))
+  const [showCollectedOnly, setShowCollectedOnly] = useState(false)
+  const [filteredSquares, setFilteredSquares] = useState<GridSquareResponse[]>([])
 
   const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
     setPageIndex(value - 1)
   }
 
-  const sizeComparator = React.useCallback((gs01: GridSquareResponse, gs02: GridSquareResponse) => {
+  const sizeComparator = useCallback((gs01: GridSquareResponse, gs02: GridSquareResponse) => {
     if (gs01.size_height === null || gs01.size_width === null) return 1
     else if (gs02.size_height === null || gs02.size_width === null) return -1
     return gs02.size_width * gs02.size_height - gs01.size_width * gs01.size_height
   }, [])
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (squares) {
       setFilteredSquares(
         showCollectedOnly
@@ -56,7 +57,7 @@ function GridSquareGallery() {
     }
   }, [showCollectedOnly, squares, sizeComparator])
 
-  React.useEffect(() => {
+  useEffect(() => {
     setNumPages(Math.ceil(filteredSquares.length / 9))
   }, [filteredSquares])
 

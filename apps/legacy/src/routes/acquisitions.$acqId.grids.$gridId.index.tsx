@@ -24,7 +24,7 @@ import {
 } from '@smartem/api'
 import { useQueries } from '@tanstack/react-query'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import React from 'react'
+import React, { useMemo, useState } from 'react'
 import { Navbar } from '../components/navbar'
 import { theme } from '../components/theme'
 
@@ -43,8 +43,8 @@ type FullSquareDetails = {
 }
 
 const CollapsibleRow = ({ square, holes, weightedPredictions }: FullSquareDetails) => {
-  const [open, setOpen] = React.useState(false)
-  const [sortOrderDescending, setSortOrderDescending] = React.useState(true)
+  const [open, setOpen] = useState(false)
+  const [sortOrderDescending, setSortOrderDescending] = useState(true)
   const { acqId, gridId } = Route.useParams()
   const navigate = useNavigate()
 
@@ -159,8 +159,8 @@ const CollapsibleRow = ({ square, holes, weightedPredictions }: FullSquareDetail
 
 function Grid() {
   const { gridId } = Route.useParams()
-  const [holeNumberOrder, _setHoleNumberOrder] = React.useState(true)
-  const [sortOrderDescending, setSortOrderDescending] = React.useState(true)
+  const [holeNumberOrder, _setHoleNumberOrder] = useState(true)
+  const [sortOrderDescending, setSortOrderDescending] = useState(true)
 
   const {
     data: squares_data,
@@ -180,7 +180,7 @@ function Grid() {
       })) || [],
   })
 
-  const squares: SquareDetails[] = React.useMemo(() => {
+  const squares: SquareDetails[] = useMemo(() => {
     if (!squares_data) return []
     return squares_data.map((square, index) => ({
       square,

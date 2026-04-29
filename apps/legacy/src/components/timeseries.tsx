@@ -15,7 +15,7 @@ import {
 import type { AxisValueFormatterContext } from '@mui/x-charts'
 import { LineChart } from '@mui/x-charts'
 
-import React from 'react'
+import { useState } from 'react'
 
 export const TimeSeriesChart = ({
   xData,
@@ -24,8 +24,8 @@ export const TimeSeriesChart = ({
   xData: number[] | Date[]
   yData: number[]
 }) => {
-  const [axisRange, setAxisRange] = React.useState([0, xData.length])
-  const [timeScale, setTimeScale] = React.useState(true)
+  const [axisRange, setAxisRange] = useState([0, xData.length])
+  const [timeScale, setTimeScale] = useState(true)
 
   const average =
     yData.length === 0 ? 0 : yData.reduce((a: number, b: number) => a + b, 0) / yData.length

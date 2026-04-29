@@ -19,7 +19,8 @@ import Paper from '@mui/material/Paper'
 import type { AcquisitionResponse } from '@smartem/api'
 import { useGetAcquisitionsAcquisitionsGet } from '@smartem/api'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import React from 'react'
+import type React from 'react'
+import { useState } from 'react'
 import { Navbar } from '../components/navbar'
 import { theme } from '../components/theme'
 
@@ -28,7 +29,7 @@ export const Route = createFileRoute('/')({
 })
 
 function Home() {
-  const [menuToggle, setMenuToggle] = React.useState(false)
+  const [menuToggle, setMenuToggle] = useState(false)
   const { data: acquisitions, isLoading, error } = useGetAcquisitionsAcquisitionsGet()
   const navigate = useNavigate()
 
