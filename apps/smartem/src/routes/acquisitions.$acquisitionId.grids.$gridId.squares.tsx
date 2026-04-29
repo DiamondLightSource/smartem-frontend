@@ -162,12 +162,14 @@ function SquaresTable() {
 
 const statusColorMap: Record<GridSquareStatus, string> = {
   none: statusColors.offline,
+  'all foil holes registered': statusColors.idle,
   'foil holes decision started': statusColors.paused,
   'foil holes decision completed': statusColors.running,
 }
 
 const statusLabelMap: Record<GridSquareStatus, string> = {
   none: 'None',
+  'all foil holes registered': 'Holes registered',
   'foil holes decision started': 'Deciding',
   'foil holes decision completed': 'Completed',
 }

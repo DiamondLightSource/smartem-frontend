@@ -1,5 +1,5 @@
 // Auto-generated file - do not edit manually
 // Generated from OpenAPI specification
 
-export const API_VERSION = '0.1.dev276+g1b7ed28d6.d20250818' as const
-export const GENERATED_AT = '2025-11-10T17:22:44.124Z' as const
+export const API_VERSION = '0.1.1rc42.dev9+g3a5577dc2.d20260427' as const
+export const GENERATED_AT = '2026-04-29T14:08:08.922Z' as const
