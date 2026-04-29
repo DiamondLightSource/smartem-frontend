@@ -10,13 +10,6 @@ export * as mswHandlers from './generated/default/default.msw'
 export * from './generated/models'
 // Axios mutator and helpers
 export { ApiError, AXIOS_INSTANCE, apiUrl, customInstance } from './mutator'
-// Stub implementations for not-yet-implemented endpoints
-export {
-  getLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGet,
-  getPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGet,
-  getPredictionModelsPredictionModelsGet,
-  useGetPredictionModelsPredictionModelsGet,
-} from './stubs'
 // API version checking
 export {
   checkApiVersion,
