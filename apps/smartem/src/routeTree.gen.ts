@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ModelsRouteImport } from './routes/models'
 import { Route as AcquisitionsRouteImport } from './routes/acquisitions'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AcquisitionsIndexRouteImport } from './routes/acquisitions.index'
@@ -24,6 +25,11 @@ import { Route as AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRouteImport
 import { Route as AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdIndexRouteImport } from './routes/acquisitions.$acquisitionId.grids.$gridId.squares_.$squareId.index'
 import { Route as AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdHolesHoleIdRouteImport } from './routes/acquisitions.$acquisitionId.grids.$gridId.squares_.$squareId.holes_.$holeId'
 
+const ModelsRoute = ModelsRouteImport.update({
+  id: '/models',
+  path: '/models',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AcquisitionsRoute = AcquisitionsRouteImport.update({
   id: '/acquisitions',
   path: '/acquisitions',
@@ -113,6 +119,7 @@ const AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdHolesHoleIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/acquisitions': typeof AcquisitionsRouteWithChildren
+  '/models': typeof ModelsRoute
   '/acquisitions/$acquisitionId': typeof AcquisitionsAcquisitionIdRouteWithChildren
   '/acquisitions/': typeof AcquisitionsIndexRoute
   '/acquisitions/$acquisitionId/': typeof AcquisitionsAcquisitionIdIndexRoute
@@ -128,6 +135,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/models': typeof ModelsRoute
   '/acquisitions': typeof AcquisitionsIndexRoute
   '/acquisitions/$acquisitionId': typeof AcquisitionsAcquisitionIdIndexRoute
   '/acquisitions/$acquisitionId/grids/$gridId/atlas': typeof AcquisitionsAcquisitionIdGridsGridIdAtlasRoute
@@ -142,6 +150,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/acquisitions': typeof AcquisitionsRouteWithChildren
+  '/models': typeof ModelsRoute
   '/acquisitions/$acquisitionId': typeof AcquisitionsAcquisitionIdRouteWithChildren
   '/acquisitions/': typeof AcquisitionsIndexRoute
   '/acquisitions/$acquisitionId/': typeof AcquisitionsAcquisitionIdIndexRoute
@@ -160,6 +169,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/acquisitions'
+    | '/models'
     | '/acquisitions/$acquisitionId'
     | '/acquisitions/'
     | '/acquisitions/$acquisitionId/'
@@ -175,6 +185,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/models'
     | '/acquisitions'
     | '/acquisitions/$acquisitionId'
     | '/acquisitions/$acquisitionId/grids/$gridId/atlas'
@@ -188,6 +199,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/acquisitions'
+    | '/models'
     | '/acquisitions/$acquisitionId'
     | '/acquisitions/'
     | '/acquisitions/$acquisitionId/'
@@ -205,10 +217,18 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AcquisitionsRoute: typeof AcquisitionsRouteWithChildren
+  ModelsRoute: typeof ModelsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/models': {
+      id: '/models'
+      path: '/models'
+      fullPath: '/models'
+      preLoaderRoute: typeof ModelsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/acquisitions': {
       id: '/acquisitions'
       path: '/acquisitions'
@@ -392,6 +412,7 @@ const AcquisitionsRouteWithChildren = AcquisitionsRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AcquisitionsRoute: AcquisitionsRouteWithChildren,
+  ModelsRoute: ModelsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
