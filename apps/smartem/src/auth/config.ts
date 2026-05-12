@@ -9,6 +9,6 @@ export const isAuthEnabled = (): boolean => {
 
 export const keycloakConfig: KeycloakServerConfig = {
   url: import.meta.env.VITE_KEYCLOAK_URL || 'https://identity.diamond.ac.uk',
-  realm: import.meta.env.VITE_KEYCLOAK_REALM || 'master',
-  clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID || 'smartem-frontend',
+  realm: import.meta.env.VITE_KEYCLOAK_REALM || 'dls',
+  clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID || 'SmartEM',
 }
