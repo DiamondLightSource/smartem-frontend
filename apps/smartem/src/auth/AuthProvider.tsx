@@ -107,11 +107,19 @@ export const AuthProvider = ({ children, onTokenChange }: AuthProviderProps) => 
     }
 
     keycloak
-      .init({ onLoad: 'check-sso' })
+      .init({
+        onLoad: 'check-sso',
+        silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso.html`,
+        pkceMethod: 'S256',
+      })
       .then(() => setAuth(buildAuth(keycloak)))
       .catch((err) => {
         console.error('Keycloak init failed:', err)
-        setAuth({ ...defaultAuth, initialised: true, error: 'Failed to connect to Keycloak' })
+        setAuth({
+          ...buildAuth(keycloak),
+          initialised: true,
+          error: 'Failed to connect to Keycloak',
+        })
       })
 
     return () => {
