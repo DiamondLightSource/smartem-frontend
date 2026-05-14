@@ -9,7 +9,7 @@ export * as mswHandlers from './generated/default/default.msw'
 // Generated TypeScript models/types
 export * from './generated/models'
 // Axios mutator and helpers
-export { ApiError, AXIOS_INSTANCE, apiUrl, customInstance } from './mutator'
+export { ApiError, AXIOS_INSTANCE, apiUrl, customInstance, setAuthToken } from './mutator'
 // API version checking
 export {
   checkApiVersion,
