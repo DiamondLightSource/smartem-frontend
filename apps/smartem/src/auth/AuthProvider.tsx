@@ -111,6 +111,16 @@ export const AuthProvider = ({ children, onTokenChange }: AuthProviderProps) => 
         onLoad: 'check-sso',
         silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso.html`,
         pkceMethod: 'S256',
+        // Don't fall back to a top-level redirect when the silent iframe can't
+        // read Keycloak's session cookie (third-party cookies are blocked by
+        // default in modern browsers). The fallback turns "not logged in" into
+        // a full page navigation, which in dev's StrictMode double-mount or
+        // alongside the polling iframe below produces a redirect loop.
+        silentCheckSsoFallback: false,
+        // The default post-init polling iframe (5s interval) hits the same
+        // third-party-cookie wall and keeps firing top-level logins. Disable
+        // it; cross-tab logout is handled via the token-refresh path.
+        checkLoginIframe: false,
       })
       .then(() => setAuth(buildAuth(keycloak)))
       .catch((err) => {
