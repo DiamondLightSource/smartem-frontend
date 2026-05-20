@@ -1,23 +1,30 @@
-FROM node:25-alpine AS development-dependencies-env
-COPY . /app
+FROM node:22-alpine AS build
 WORKDIR /app
+
+COPY package.json package-lock.json ./
+COPY apps/smartem/package.json apps/smartem/
+COPY apps/legacy/package.json apps/legacy/
+COPY packages/api/package.json packages/api/
+COPY packages/ui/package.json packages/ui/
 RUN npm ci
 
-FROM node:25-alpine AS production-dependencies-env
-COPY ./package.json package-lock.json /app/
-WORKDIR /app
-RUN npm ci --omit=dev
+COPY apps/smartem apps/smartem
+COPY packages packages
+COPY scripts scripts
+COPY tsconfig.base.json tsconfig.json biome.json ./
 
-FROM node:25-alpine AS build-env
-ARG apiendpoint=localhost:8000/api 
-ENV VITE_API_ENDPOINT=${apiendpoint}
-COPY . /app/
-COPY --from=development-dependencies-env /app/node_modules /app/node_modules
-WORKDIR /app
-RUN npm run build
+ARG FRONTEND_VERSION=dev
+ARG GIT_SHA=unknown
+ARG BUILD_TIME=unknown
+ENV FRONTEND_VERSION=$FRONTEND_VERSION \
+    GIT_SHA=$GIT_SHA \
+    BUILD_TIME=$BUILD_TIME
 
-FROM node:25-alpine
-COPY ./package.json package-lock.json /app/
-COPY --from=production-dependencies-env /app/node_modules /app/node_modules
-COPY --from=build-env /app/build /app/build
-WORKDIR /app
+RUN node scripts/write-version-json.mjs
+RUN npm run build:smartem
+
+FROM nginx:1.30-alpine
+RUN rm /etc/nginx/conf.d/default.conf
+COPY apps/smartem/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/apps/smartem/dist /usr/share/nginx/html
+EXPOSE 80

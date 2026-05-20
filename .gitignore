@@ -17,3 +17,6 @@ node_modules/
 
 # Generated API client
 packages/api/src/generated/
+
+# Generated build metadata (written by scripts/write-version-json.mjs in CI)
+apps/smartem/public/version.json
