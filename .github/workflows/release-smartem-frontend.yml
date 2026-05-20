@@ -127,6 +127,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Generate API client
+        run: npm run api:generate -w @smartem/api
+
       - name: Biome check
         run: npm run check
 
@@ -147,6 +150,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Generate API client
+        run: npm run api:generate -w @smartem/api
 
       - name: Write version.json
         env:
