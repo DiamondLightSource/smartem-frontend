@@ -20,6 +20,7 @@ ENV FRONTEND_VERSION=$FRONTEND_VERSION \
     GIT_SHA=$GIT_SHA \
     BUILD_TIME=$BUILD_TIME
 
+RUN npm run api:generate -w @smartem/api
 RUN node scripts/write-version-json.mjs
 RUN npm run build:smartem
 
