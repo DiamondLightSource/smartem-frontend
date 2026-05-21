@@ -26,6 +26,9 @@ RUN npm run build:smartem
 
 FROM nginx:1.30-alpine
 RUN rm /etc/nginx/conf.d/default.conf
-COPY apps/smartem/nginx.conf /etc/nginx/conf.d/default.conf
+COPY apps/smartem/nginx.conf /etc/nginx/templates/default.conf.template
+ENV BACKEND_HOST=smartem-http-api-service \
+    NGINX_ENTRYPOINT_LOCAL_RESOLVERS=1 \
+    NGINX_ENVSUBST_FILTER='^(BACKEND_HOST|NGINX_LOCAL_RESOLVERS)$'
 COPY --from=build /app/apps/smartem/dist /usr/share/nginx/html
 EXPOSE 80
