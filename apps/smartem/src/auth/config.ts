@@ -1,14 +1,25 @@
 import type { KeycloakServerConfig } from 'keycloak-js'
 
-export const isAuthEnabled = (): boolean => {
-  if (import.meta.env.VITE_ENABLE_MOCKS === 'true') {
-    return import.meta.env.VITE_AUTH_ENABLED === 'true'
-  }
-  return import.meta.env.VITE_AUTH_ENABLED !== 'false'
+export interface RuntimeConfig {
+  keycloak: KeycloakServerConfig
+  authEnabled: boolean
 }
 
-export const keycloakConfig: KeycloakServerConfig = {
-  url: import.meta.env.VITE_KEYCLOAK_URL || 'https://identity.diamond.ac.uk',
-  realm: import.meta.env.VITE_KEYCLOAK_REALM || 'dls',
-  clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID || 'SmartEM_User',
+let runtimeConfig: RuntimeConfig | null = null
+
+export const setRuntimeConfig = (config: RuntimeConfig): void => {
+  runtimeConfig = config
 }
+
+const getRuntimeConfig = (): RuntimeConfig => {
+  if (!runtimeConfig) {
+    throw new Error(
+      'Runtime config not loaded. /config.json must be fetched and applied before reading auth config.'
+    )
+  }
+  return runtimeConfig
+}
+
+export const isAuthEnabled = (): boolean => getRuntimeConfig().authEnabled
+
+export const getKeycloakConfig = (): KeycloakServerConfig => getRuntimeConfig().keycloak

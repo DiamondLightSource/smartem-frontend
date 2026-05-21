@@ -1,3 +1,5 @@
 export { AuthGate } from './AuthGate'
 export { AuthProvider, useAuth } from './AuthProvider'
+export type { RuntimeConfig } from './config'
+export { setRuntimeConfig } from './config'
 export type { Auth, AuthUser } from './types'

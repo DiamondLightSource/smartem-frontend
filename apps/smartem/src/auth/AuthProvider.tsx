@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import { keycloakConfig } from './config'
+import { getKeycloakConfig } from './config'
 import type { Auth, AuthUser } from './types'
 
 const MIN_SECONDS_BEFORE_EXPIRY = 10
@@ -58,7 +58,7 @@ export const AuthProvider = ({ children, onTokenChange }: AuthProviderProps) => 
   onTokenChangeRef.current = onTokenChange
 
   useEffect(() => {
-    const keycloak = new Keycloak(keycloakConfig)
+    const keycloak = new Keycloak(getKeycloakConfig())
 
     const emitToken = () => {
       const token = keycloak.authenticated && keycloak.token ? keycloak.token : ''

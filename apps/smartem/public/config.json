@@ -1,0 +1,8 @@
+{
+  "keycloak": {
+    "url": "http://localhost:30090",
+    "realm": "dls",
+    "clientId": "SmartEM_User"
+  },
+  "authEnabled": false
+}
