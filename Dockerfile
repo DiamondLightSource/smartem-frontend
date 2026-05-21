@@ -6,12 +6,12 @@ COPY apps/smartem/package.json apps/smartem/
 COPY apps/legacy/package.json apps/legacy/
 COPY packages/api/package.json packages/api/
 COPY packages/ui/package.json packages/ui/
-RUN npm ci
+RUN npm ci --ignore-scripts
 
 COPY apps/smartem apps/smartem
 COPY packages packages
 COPY scripts scripts
-COPY tsconfig.base.json tsconfig.json biome.json ./
+COPY tsconfig.base.json tsconfig.json ./
 
 ARG FRONTEND_VERSION=dev
 ARG GIT_SHA=unknown
