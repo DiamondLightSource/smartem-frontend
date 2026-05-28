@@ -1,6 +1,11 @@
+import {
+  useGetGridGridsGridUuidGet,
+  useGetGridGridsquaresGridsGridUuidGridsquaresGet,
+} from '@smartem/api'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useMemo } from 'react'
 import { WorkspaceView } from '~/components/workspace/WorkspaceView'
-import { getGrid, getGridSquares } from '~/data/mock-session-detail'
+import { gridResponseToMock, gridSquareResponseToMock } from '~/data/api-adapters'
 
 export const Route = createFileRoute('/acquisitions/$acquisitionId/grids/$gridId/workspace')({
   component: WorkspaceRoute,
@@ -9,8 +14,17 @@ export const Route = createFileRoute('/acquisitions/$acquisitionId/grids/$gridId
 function WorkspaceRoute() {
   const { acquisitionId, gridId } = Route.useParams()
   const navigate = useNavigate()
-  const grid = getGrid(gridId)
-  const squares = getGridSquares(gridId)
+  const { data: gridResponse } = useGetGridGridsGridUuidGet(gridId)
+  const { data: squareResponses } = useGetGridGridsquaresGridsGridUuidGridsquaresGet(gridId)
+
+  const grid = useMemo(
+    () => (gridResponse ? gridResponseToMock(gridResponse) : null),
+    [gridResponse]
+  )
+  const squares = useMemo(
+    () => (squareResponses ?? []).map(gridSquareResponseToMock),
+    [squareResponses]
+  )
 
   if (!grid) return null
 

@@ -1,27 +1,40 @@
 import { Box, IconButton, Tooltip, Typography } from '@mui/material'
+import {
+  useGetGridGridsGridUuidGet,
+  useGetGridGridsquaresGridsGridUuidGridsquaresGet,
+} from '@smartem/api'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import { AtlasMap } from '~/components/spatial/AtlasMap'
 import { LatentSpacePanel } from '~/components/spatial/LatentSpacePanel'
-import {
-  getGrid,
-  getGridPredictions,
-  getGridSquares,
-  getPredictionModels,
-} from '~/data/mock-session-detail'
+import { gridResponseToMock, gridSquareResponseToMock } from '~/data/api-adapters'
+import type { MockModelPredictions, MockPredictionModel } from '~/data/mock-session-detail'
 import { gray } from '~/theme'
 
 export const Route = createFileRoute('/acquisitions/$acquisitionId/grids/$gridId/atlas')({
   component: AtlasView,
 })
 
+// Prediction overlays and latent-space items rely on quality-prediction time series
+// endpoints that are not yet wired here; until then, pass empty arrays so the map
+// renders with selection/freeze/click intact but without prediction colouring.
+const NO_MODELS: MockPredictionModel[] = []
+const NO_PREDICTIONS: MockModelPredictions[] = []
+
 function AtlasView() {
   const { acquisitionId, gridId } = Route.useParams()
   const navigate = useNavigate()
-  const grid = getGrid(gridId)
-  const squares = getGridSquares(gridId)
-  const models = getPredictionModels()
-  const predictions = getGridPredictions(gridId)
+  const { data: gridResponse } = useGetGridGridsGridUuidGet(gridId)
+  const { data: squareResponses } = useGetGridGridsquaresGridsGridUuidGridsquaresGet(gridId)
+
+  const grid = useMemo(
+    () => (gridResponse ? gridResponseToMock(gridResponse) : null),
+    [gridResponse]
+  )
+  const squares = useMemo(
+    () => (squareResponses ?? []).map(gridSquareResponseToMock),
+    [squareResponses]
+  )
 
   const [showLatent, setShowLatent] = useState(false)
   const [selectedSquareId, setSelectedSquareId] = useState<string | null>(null)
@@ -67,8 +80,8 @@ function AtlasView() {
           squares={squares}
           gridName={grid?.name ?? gridId}
           onSquareClick={handleSquareNavigate}
-          predictions={predictions}
-          models={models}
+          predictions={NO_PREDICTIONS}
+          models={NO_MODELS}
           selectedSquareId={selectedSquareId}
           onSquareHover={(id) => {
             if (!frozen) setSelectedSquareId(id)

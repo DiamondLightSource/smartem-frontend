@@ -1,6 +1,11 @@
+import {
+  useGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet,
+  useGetGridsquareGridsquaresGridsquareUuidGet,
+} from '@smartem/api'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useMemo } from 'react'
 import { SquareMap } from '~/components/spatial/SquareMap'
-import { getFoilHoles, getGridSquare } from '~/data/mock-session-detail'
+import { foilHoleResponseToMock, gridSquareResponseToMock } from '~/data/api-adapters'
 
 export const Route = createFileRoute(
   '/acquisitions/$acquisitionId/grids/$gridId/squares_/$squareId/'
@@ -11,8 +16,18 @@ export const Route = createFileRoute(
 function SquareIndexView() {
   const { acquisitionId, gridId, squareId } = Route.useParams()
   const navigate = useNavigate()
-  const square = getGridSquare(squareId)
-  const foilholes = getFoilHoles(squareId)
+  const { data: squareResponse } = useGetGridsquareGridsquaresGridsquareUuidGet(squareId)
+  const { data: foilholeResponses } =
+    useGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet(squareId)
+
+  const square = useMemo(
+    () => (squareResponse ? gridSquareResponseToMock(squareResponse) : null),
+    [squareResponse]
+  )
+  const foilholes = useMemo(
+    () => (foilholeResponses ?? []).map(foilHoleResponseToMock),
+    [foilholeResponses]
+  )
 
   return (
     <SquareMap
