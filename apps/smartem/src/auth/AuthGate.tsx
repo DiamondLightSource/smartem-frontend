@@ -2,18 +2,19 @@ import { Login } from '@mui/icons-material'
 import { Box, Button, Typography } from '@mui/material'
 import { setAuthToken } from '@smartem/api'
 import type { PropsWithChildren } from 'react'
-import { AuthProvider, useAuth } from './AuthProvider'
-import { isAuthEnabled } from './config'
+import { useAuth } from './AuthContext'
+import { KeycloakAuthProvider } from './KeycloakAuthProvider'
+import { MockAuthProvider } from './MockAuthProvider'
 
 export const AuthGate = ({ children }: PropsWithChildren) => {
-  if (!isAuthEnabled()) {
-    return <>{children}</>
+  if (import.meta.env.VITE_ENABLE_MOCKS === 'true') {
+    return <MockAuthProvider onTokenChange={setAuthToken}>{children}</MockAuthProvider>
   }
 
   return (
-    <AuthProvider onTokenChange={setAuthToken}>
+    <KeycloakAuthProvider onTokenChange={setAuthToken}>
       <AuthBoundary>{children}</AuthBoundary>
-    </AuthProvider>
+    </KeycloakAuthProvider>
   )
 }
 

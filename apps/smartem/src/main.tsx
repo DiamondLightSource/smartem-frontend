@@ -22,22 +22,18 @@ async function loadRuntimeConfig(): Promise<void> {
   setRuntimeConfig(config)
 }
 
-async function enableMocking(): Promise<void> {
-  if (import.meta.env.VITE_ENABLE_MOCKS !== 'true') {
-    return
-  }
-
+async function startMockWorker(): Promise<void> {
   const { worker } = await import('./mocks/browser')
-
   await worker.start({
     onUnhandledRequest: 'warn',
   })
 }
 
+const useMocks = import.meta.env.VITE_ENABLE_MOCKS === 'true'
+
 const rootElement = document.getElementById('root')
 if (rootElement && !rootElement.innerHTML) {
-  loadRuntimeConfig()
-    .then(() => enableMocking())
+  ;(useMocks ? startMockWorker() : loadRuntimeConfig())
     .then(() => {
       const root = createRoot(rootElement)
       root.render(
