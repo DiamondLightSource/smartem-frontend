@@ -1,31 +1,13 @@
 import Keycloak, { type KeycloakError } from 'keycloak-js'
-import {
-  createContext,
-  type PropsWithChildren,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import { type PropsWithChildren, useEffect, useRef, useState } from 'react'
+import { AuthContext, defaultAuth } from './AuthContext'
 import { getKeycloakConfig } from './config'
 import type { Auth, AuthUser } from './types'
 
 const MIN_SECONDS_BEFORE_EXPIRY = 10
 const MIN_REFRESH_INTERVAL_SECONDS = 5
 
-const defaultAuth: Auth = {
-  initialised: false,
-  authenticated: false,
-  login: () => {},
-  logout: () => {},
-  getToken: () => '',
-}
-
-const AuthContext = createContext<Auth>(defaultAuth)
-
-export const useAuth = () => useContext(AuthContext)
-
-interface AuthProviderProps extends PropsWithChildren {
+interface KeycloakAuthProviderProps extends PropsWithChildren {
   onTokenChange?: (token: string) => void
 }
 
@@ -51,7 +33,7 @@ function buildAuth(keycloak: Keycloak): Auth {
   return auth
 }
 
-export const AuthProvider = ({ children, onTokenChange }: AuthProviderProps) => {
+export const KeycloakAuthProvider = ({ children, onTokenChange }: KeycloakAuthProviderProps) => {
   const [auth, setAuth] = useState<Auth>(defaultAuth)
   const refreshTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
   const onTokenChangeRef = useRef(onTokenChange)

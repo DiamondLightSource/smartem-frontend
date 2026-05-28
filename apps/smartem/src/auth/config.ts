@@ -2,7 +2,6 @@ import type { KeycloakServerConfig } from 'keycloak-js'
 
 export interface RuntimeConfig {
   keycloak: KeycloakServerConfig
-  authEnabled: boolean
 }
 
 let runtimeConfig: RuntimeConfig | null = null
@@ -19,7 +18,5 @@ const getRuntimeConfig = (): RuntimeConfig => {
   }
   return runtimeConfig
 }
-
-export const isAuthEnabled = (): boolean => getRuntimeConfig().authEnabled
 
 export const getKeycloakConfig = (): KeycloakServerConfig => getRuntimeConfig().keycloak

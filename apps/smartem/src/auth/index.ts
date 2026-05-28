@@ -1,5 +1,6 @@
+export { useAuth } from './AuthContext'
 export { AuthGate } from './AuthGate'
-export { AuthProvider, useAuth } from './AuthProvider'
 export type { RuntimeConfig } from './config'
 export { setRuntimeConfig } from './config'
+export { KeycloakAuthProvider } from './KeycloakAuthProvider'
 export type { Auth, AuthUser } from './types'
