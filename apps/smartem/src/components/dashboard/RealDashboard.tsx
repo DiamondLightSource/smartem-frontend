@@ -1,7 +1,12 @@
 import { Box, ButtonBase, Chip, CircularProgress, Tooltip, Typography } from '@mui/material'
-import { type AcquisitionResponse, useGetAcquisitionsAcquisitionsGet } from '@smartem/api'
+import {
+  type AcquisitionResponse,
+  useGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet,
+  useGetAcquisitionsAcquisitionsGet,
+} from '@smartem/api'
 import { Link } from '@tanstack/react-router'
 import { useCallback, useMemo, useRef, useState } from 'react'
+import { ErrorBoundary } from '~/components/ErrorBoundary'
 import { gray, statusColors } from '~/theme'
 
 // ============================================================================
@@ -28,6 +33,27 @@ const statusColor: Record<AcqStatus, string> = {
 
 function isActiveStatus(s: AcqStatus | null | undefined): boolean {
   return s === 'started' || s === 'paused'
+}
+
+// Activity heuristic. The backend currently sets every acquisition to
+// `started` and never updates the status to `completed`, so a strict
+// status-based partition lumps the entire history into Active. Treat an
+// acquisition as Active only if its status flag agrees AND it began
+// within the recency window. Everything else lands in Recent.
+const ACTIVE_RECENCY_MS = 24 * 60 * 60 * 1000
+
+function isActiveNow(acq: AcquisitionResponse, nowMs: number): boolean {
+  if (!isActiveStatus(acq.status)) return false
+  const startMs = parseTimeMs(acq.start_time)
+  if (startMs == null) return false
+  return nowMs - startMs <= ACTIVE_RECENCY_MS
+}
+
+// Best-available identity for grouping/colouring acquisitions by instrument.
+// `instrument_model` is the canonical field but is null on most records in
+// the current DB; fall back to `instrument_id` so the panels still partition.
+function instrumentKey(acq: AcquisitionResponse): string | null {
+  return acq.instrument_model ?? acq.instrument_id ?? null
 }
 
 // ============================================================================
@@ -390,16 +416,17 @@ function SessionRow({
   const status: AcqStatus = acq.status ?? 'planned'
   const color = statusColor[status]
   const isRunning = status === 'started'
-  const instColor = acq.instrument_model ? instrumentColor(acq.instrument_model) : gray[600]
+  const identity = instrumentKey(acq)
+  const instColor = identity ? instrumentColor(identity) : gray[600]
 
   const duration = formatDuration(acq.start_time, acq.end_time)
-  const instrumentLabel = acq.instrument_model ?? acq.instrument_id ?? '—'
+  const instrumentLabel = identity ?? '—'
 
   return (
     <Box>
       <Box
         onClick={() => onToggle(acq.uuid)}
-        onMouseEnter={() => acq.instrument_model && onHoverInstrument(acq.instrument_model)}
+        onMouseEnter={() => identity && onHoverInstrument(identity)}
         onMouseLeave={() => onHoverInstrument(null)}
         sx={{
           display: 'flex',
@@ -466,6 +493,18 @@ function SessionRow({
 }
 
 function SessionDetailCard({ acq }: { acq: AcquisitionResponse }) {
+  // Lazy-fetch grids only when the row is expanded - one extra request per
+  // expansion rather than N+1 for the whole list. The hook only fires when
+  // this component is mounted (i.e. `expanded` is true upstream).
+  const { data: grids } = useGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet(acq.uuid)
+  const gridsTotal = grids?.length
+  const gridsCompleted = grids?.filter(
+    (g) =>
+      g.status === 'grid squares decision completed' ||
+      g.status === 'scan completed' ||
+      g.status === 'grid squares decision started'
+  ).length
+
   const started = formatTimeShort(acq.start_time)
   const ended = formatTimeShort(acq.end_time)
 
@@ -481,7 +520,10 @@ function SessionDetailCard({ acq }: { acq: AcquisitionResponse }) {
         backgroundColor: '#fafbfc',
       }}
     >
-      <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
+      <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap', alignItems: 'flex-start' }}>
+        {gridsTotal != null && (
+          <MetricItem label="Grids" value={`${gridsCompleted ?? 0}/${gridsTotal}`} />
+        )}
         {started && <MetricItem label="Started" value={started} />}
         {ended && <MetricItem label="Ended" value={ended} />}
         {acq.instrument_model && <MetricItem label="Instrument" value={acq.instrument_model} />}
@@ -537,9 +579,8 @@ function SessionsPanel({
   const matchesFilter = useCallback(
     (acq: AcquisitionResponse) => {
       if (!hasFilter) return true
-      if (acq.instrument_model && selectedInstruments.has(acq.instrument_model)) return true
-      if (acq.instrument_id && selectedInstruments.has(acq.instrument_id)) return true
-      return false
+      const key = instrumentKey(acq)
+      return key != null && selectedInstruments.has(key)
     },
     [hasFilter, selectedInstruments]
   )
@@ -553,8 +594,9 @@ function SessionsPanel({
     })
   }, [acquisitions, matchesFilter])
 
-  const active = sorted.filter((a) => isActiveStatus(a.status))
-  const recent = sorted.filter((a) => !isActiveStatus(a.status))
+  const nowMs = Date.now()
+  const active = sorted.filter((a) => isActiveNow(a, nowMs))
+  const recent = sorted.filter((a) => !isActiveNow(a, nowMs))
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
@@ -683,28 +725,34 @@ function buildGanttConfig(range: TimelineRange, nowMs: number): GanttConfig {
 }
 
 interface GanttRow {
-  model: string
+  key: string
   color: string
-  blocks: { acq: AcquisitionResponse; startMs: number; endMs: number }[]
+  blocks: { acq: AcquisitionResponse; startMs: number; endMs: number; openEnded: boolean }[]
 }
 
 function buildGanttRows(acquisitions: AcquisitionResponse[], nowMs: number): GanttRow[] {
-  const byModel = new Map<string, GanttRow>()
+  const byKey = new Map<string, GanttRow>()
   for (const acq of acquisitions) {
-    const model = acq.instrument_model
-    if (!model) continue
+    const key = instrumentKey(acq)
+    if (!key) continue
     const startMs = parseTimeMs(acq.start_time)
     if (startMs == null) continue
-    const endMs = parseTimeMs(acq.end_time) ?? nowMs
+    const realEnd = parseTimeMs(acq.end_time)
+    const openEnded = realEnd == null
+    // Open-ended blocks (no real end_time) are rendered as a fixed-width
+    // marker rather than stretching to "now", which would create one giant
+    // overlap blob across the whole window when many acquisitions in the
+    // same row never closed.
+    const endMs = realEnd ?? Math.min(nowMs, startMs + 30 * 60 * 1000)
 
-    let row = byModel.get(model)
+    let row = byKey.get(key)
     if (!row) {
-      row = { model, color: instrumentColor(model), blocks: [] }
-      byModel.set(model, row)
+      row = { key, color: instrumentColor(key), blocks: [] }
+      byKey.set(key, row)
     }
-    row.blocks.push({ acq, startMs, endMs })
+    row.blocks.push({ acq, startMs, endMs, openEnded })
   }
-  return [...byModel.values()].sort((a, b) => a.model.localeCompare(b.model))
+  return [...byKey.values()].sort((a, b) => a.key.localeCompare(b.key))
 }
 
 function GanttBlockEl({
@@ -722,15 +770,20 @@ function GanttBlockEl({
 }) {
   const leftPct = Math.max(0, ((block.startMs - ganttStart) / ganttRange) * 100)
   const rightPct = Math.min(100, ((block.endMs - ganttStart) / ganttRange) * 100)
-  const widthPct = rightPct - leftPct
-  if (widthPct <= 0) return null
+  // Don't drop blocks whose computed span is sub-pixel; clamp to a minimum
+  // visible width so single-tick markers (e.g. open-ended acquisitions) still
+  // show up on Week/Month ranges.
+  const widthPct = Math.max(0.4, rightPct - leftPct)
+  if (rightPct <= 0 || leftPct >= 100) return null
 
   const status: AcqStatus = block.acq.status ?? 'planned'
-  const isActive = isActiveStatus(status)
   const isAbandoned = status === 'abandoned'
 
   return (
-    <Tooltip title={`${block.acq.name} (${statusLabel[status]})`} placement="top">
+    <Tooltip
+      title={`${block.acq.name} (${statusLabel[status]})${block.openEnded ? ' - open-ended' : ''}`}
+      placement="top"
+    >
       <Box
         sx={{
           position: 'absolute',
@@ -744,9 +797,10 @@ function GanttBlockEl({
           cursor: 'pointer',
           transition: 'opacity 0.15s ease',
           '&:hover': { opacity: 1 },
-          ...(isActive && {
-            borderRight: `2px solid ${rowColor}`,
-            backgroundImage: `linear-gradient(90deg, ${rowColor} 0%, ${rowColor}cc 100%)`,
+          ...(block.openEnded && {
+            // Hatched-look gradient to signal "still open / unknown duration"
+            backgroundImage: `repeating-linear-gradient(45deg, ${rowColor} 0 3px, ${rowColor}80 3px 6px)`,
+            borderRight: `1.5px dashed ${rowColor}`,
           }),
         }}
       />
@@ -809,10 +863,10 @@ function GanttTimeline({
         >
           <Box sx={{ height: 20, flexShrink: 0 }} />
           {rows.map((row) => {
-            const isActive = activeInstruments.has(row.model)
+            const isActive = activeInstruments.has(row.key)
             return (
               <Box
-                key={row.model}
+                key={row.key}
                 sx={{
                   flex: 1,
                   display: 'flex',
@@ -831,7 +885,7 @@ function GanttTimeline({
                     color: isActive ? row.color : 'text.secondary',
                   }}
                 >
-                  {row.model}
+                  {row.key}
                 </Typography>
               </Box>
             )
@@ -904,13 +958,13 @@ function GanttTimeline({
             />
 
             {rows.map((row, rowIdx) => {
-              const isActive = activeInstruments.has(row.model)
+              const isActive = activeInstruments.has(row.key)
               const rowTop = `${(rowIdx / Math.max(rows.length, 1)) * 100}%`
               const rowHeight = `${100 / Math.max(rows.length, 1)}%`
 
               return (
                 <Box
-                  key={row.model}
+                  key={row.key}
                   sx={{
                     position: 'absolute',
                     top: rowTop,
@@ -993,24 +1047,25 @@ export default function RealDashboard() {
     setExpandedSession((prev) => (prev === uuid ? null : uuid))
   }, [])
 
-  // Expanding a session also "highlights" its instrument model
-  const expandedInstrumentModel = useMemo(() => {
+  // Expanding a session also "highlights" its instrument (using the same
+  // identity key the Timeline rows are grouped by, so the highlight maps).
+  const expandedInstrumentKey = useMemo(() => {
     if (!expandedSession || !acquisitions) return null
-    return acquisitions.find((a) => a.uuid === expandedSession)?.instrument_model ?? null
+    const acq = acquisitions.find((a) => a.uuid === expandedSession)
+    return acq ? instrumentKey(acq) : null
   }, [expandedSession, acquisitions])
 
   // Combined set used by the timeline to dim non-relevant rows
   const activeInstruments = useMemo(() => {
     const set = new Set(selectedInstruments)
     if (hoveredInstrument) set.add(hoveredInstrument)
-    if (expandedInstrumentModel) set.add(expandedInstrumentModel)
+    if (expandedInstrumentKey) set.add(expandedInstrumentKey)
     return set
-  }, [selectedInstruments, hoveredInstrument, expandedInstrumentModel])
+  }, [selectedInstruments, hoveredInstrument, expandedInstrumentKey])
 
   // The instruments panel's own highlight: hover relay from sessions, or
-  // the expanded session's instrument model. Same shape as MockDashboard's
-  // contract so the panel can be swapped to a real one without rewiring.
-  const instrumentsPanelHighlight = hoveredInstrument ?? expandedInstrumentModel
+  // the expanded session's instrument key.
+  const instrumentsPanelHighlight = hoveredInstrument ?? expandedInstrumentKey
 
   if (isLoading) {
     return (
@@ -1062,11 +1117,13 @@ export default function RealDashboard() {
             backgroundColor: 'background.paper',
           }}
         >
-          <InstrumentsPanel
-            selectedInstruments={selectedInstruments}
-            highlightedInstrument={instrumentsPanelHighlight}
-            onToggleInstrument={toggleInstrument}
-          />
+          <ErrorBoundary label="Instruments panel">
+            <InstrumentsPanel
+              selectedInstruments={selectedInstruments}
+              highlightedInstrument={instrumentsPanelHighlight}
+              onToggleInstrument={toggleInstrument}
+            />
+          </ErrorBoundary>
         </Box>
         <DividerV onDrag={handleVDrag} />
         <Box
@@ -1079,13 +1136,15 @@ export default function RealDashboard() {
             backgroundColor: 'background.paper',
           }}
         >
-          <SessionsPanel
-            acquisitions={acquisitionList}
-            selectedInstruments={selectedInstruments}
-            expandedSession={expandedSession}
-            onToggleSession={toggleSession}
-            onHoverInstrument={setHoveredInstrument}
-          />
+          <ErrorBoundary label="Acquisitions panel">
+            <SessionsPanel
+              acquisitions={acquisitionList}
+              selectedInstruments={selectedInstruments}
+              expandedSession={expandedSession}
+              onToggleSession={toggleSession}
+              onHoverInstrument={setHoveredInstrument}
+            />
+          </ErrorBoundary>
         </Box>
       </Box>
 
@@ -1102,12 +1161,14 @@ export default function RealDashboard() {
           backgroundColor: 'background.paper',
         }}
       >
-        <GanttTimeline
-          acquisitions={acquisitionList}
-          activeInstruments={activeInstruments}
-          range={timelineRange}
-          onRangeChange={setTimelineRange}
-        />
+        <ErrorBoundary label="Timeline panel">
+          <GanttTimeline
+            acquisitions={acquisitionList}
+            activeInstruments={activeInstruments}
+            range={timelineRange}
+            onRangeChange={setTimelineRange}
+          />
+        </ErrorBoundary>
       </Box>
     </Box>
   )
