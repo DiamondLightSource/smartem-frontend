@@ -1,6 +1,5 @@
 import { Box, ButtonBase, Typography } from '@mui/material'
 import { Link, useParams, useRouterState } from '@tanstack/react-router'
-import { getGrid } from '~/data/mock-session-detail'
 import { gray } from '~/theme'
 
 const tabs = [
@@ -18,8 +17,6 @@ export function ViewSwitcher() {
   const router = useRouterState()
   const pathname = router.location.pathname
 
-  const grid = getGrid(gridId)
-
   return (
     <Box
       sx={{
@@ -34,7 +31,7 @@ export function ViewSwitcher() {
       }}
     >
       <Typography variant="body2" sx={{ fontWeight: 600, mr: 1.5 }}>
-        {grid?.name ?? gridId}
+        {gridId}
       </Typography>
 
       {tabs.map((tab) => {
