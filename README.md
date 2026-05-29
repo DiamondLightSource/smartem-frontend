@@ -15,7 +15,7 @@ A React-based web application for visualising and analysing electron microscopy 
 
 - Node.js 20 or later
 - npm or compatible package manager
-- SmartEM backend API running (default: http://localhost:8000)
+- SmartEM backend API running. The Vite dev server proxies `/api` to `http://localhost:8000` by default — set `VITE_API_PROXY_TARGET` (e.g. in `apps/smartem/.env.local`) to override, for example `http://localhost:30080` when running the dev k3s stack from [smartem-devtools](https://DiamondLightSource.github.io/smartem-devtools/operations/kubernetes).
 
 ## Quick Start
 
