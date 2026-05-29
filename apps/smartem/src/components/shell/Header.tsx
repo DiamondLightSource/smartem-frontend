@@ -17,7 +17,6 @@ import { Link, useNavigate, useRouterState } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import { useAuth } from '~/auth'
 import { type CommandGroup, CommandPalette } from '~/components/widgets/CommandPalette'
-import { sessions } from '~/data/mock-dashboard'
 import { gray } from '~/theme'
 
 const navLinks = [
@@ -77,21 +76,9 @@ export function Header() {
                   : ['home', 'overview'],
         })),
       },
-      {
-        id: 'acquisitions',
-        label: 'Acquisitions',
-        items: sessions.map((s) => ({
-          id: `acq-${s.id}`,
-          label: s.name,
-          description: `${s.instrumentName} — ${s.gridsCompleted}/${s.gridsTotal} grids`,
-          onSelect: () =>
-            navigate({
-              to: '/acquisitions/$acquisitionId',
-              params: { acquisitionId: s.id },
-            }),
-          keywords: [s.instrumentName, s.status],
-        })),
-      },
+      // Acquisitions-by-name jump targets used to be sourced from the mock
+      // sessions list. They need the real API search endpoint, which is not
+      // wired yet; the group is left out rather than rendered from mocks.
     ],
     [navigate]
   )
