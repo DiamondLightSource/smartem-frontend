@@ -35,20 +35,6 @@ function isActiveStatus(s: AcqStatus | null | undefined): boolean {
   return s === 'started' || s === 'paused'
 }
 
-// Activity heuristic. The backend currently sets every acquisition to
-// `started` and never updates the status to `completed`, so a strict
-// status-based partition lumps the entire history into Active. Treat an
-// acquisition as Active only if its status flag agrees AND it began
-// within the recency window. Everything else lands in Recent.
-const ACTIVE_RECENCY_MS = 24 * 60 * 60 * 1000
-
-function isActiveNow(acq: AcquisitionResponse, nowMs: number): boolean {
-  if (!isActiveStatus(acq.status)) return false
-  const startMs = parseTimeMs(acq.start_time)
-  if (startMs == null) return false
-  return nowMs - startMs <= ACTIVE_RECENCY_MS
-}
-
 // Best-available identity for grouping/colouring acquisitions by instrument.
 // `instrument_model` is the canonical field but is null on most records in
 // the current DB; fall back to `instrument_id` so the panels still partition.
@@ -77,10 +63,18 @@ function formatDuration(startIso: string | null, endIso: string | null): string 
   return `${hours}h ${mins}m`
 }
 
-function formatTimeShort(iso: string | null): string | null {
+function formatDateTime(iso: string | null): string | null {
   const t = parseTimeMs(iso)
   if (t == null) return null
-  return new Date(t).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
+  // Historic data and long-running sessions need a full date plus time;
+  // a bare HH:MM is ambiguous once you're looking at months-old records.
+  return new Date(t).toLocaleString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
 }
 
 // ============================================================================
@@ -505,8 +499,8 @@ function SessionDetailCard({ acq }: { acq: AcquisitionResponse }) {
       g.status === 'grid squares decision started'
   ).length
 
-  const started = formatTimeShort(acq.start_time)
-  const ended = formatTimeShort(acq.end_time)
+  const started = formatDateTime(acq.start_time)
+  const ended = formatDateTime(acq.end_time)
 
   return (
     <Box
@@ -594,9 +588,13 @@ function SessionsPanel({
     })
   }, [acquisitions, matchesFilter])
 
-  const nowMs = Date.now()
-  const active = sorted.filter((a) => isActiveNow(a, nowMs))
-  const recent = sorted.filter((a) => !isActiveNow(a, nowMs))
+  // Status-only partition. We can't infer "is this still actually running"
+  // from start_time + recency because there's no reliable acquisition-end
+  // signal from the agent/backend yet (tracked separately - see PR comment
+  // referencing the new bug issue). When that lands, completed acquisitions
+  // will flow into Recent naturally via the status flag.
+  const active = sorted.filter((a) => isActiveStatus(a.status))
+  const recent = sorted.filter((a) => !isActiveStatus(a.status))
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
