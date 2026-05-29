@@ -16,6 +16,7 @@ import {
 import { Link, useNavigate, useRouterState } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import { useAuth } from '~/auth'
+import { ErrorBoundary } from '~/components/ErrorBoundary'
 import { type CommandGroup, CommandPalette } from '~/components/widgets/CommandPalette'
 import { gray } from '~/theme'
 
@@ -206,19 +207,35 @@ export function Header() {
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, ml: 2, flexShrink: 0 }}>
             <SettingsMenu />
-            <AuthControls />
+            {/* AuthControls reads `useAuth()`; isolating it means a broken
+                auth context state can't blank out the rest of the header. */}
+            <ErrorBoundary
+              label="Auth controls"
+              fallback={() => (
+                <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.625rem' }}>
+                  auth error
+                </Typography>
+              )}
+            >
+              <AuthControls />
+            </ErrorBoundary>
           </Box>
         </Toolbar>
       </AppBar>
 
-      <CommandPalette
-        groups={commandGroups}
-        isOpen={paletteOpen}
-        onClose={() => setPaletteOpen(false)}
-        shortcutKey="/"
-        requireMeta={false}
-        placeholder="Search or jump to..."
-      />
+      {/* CommandPalette is a portaled modal with search/filter logic and
+          dynamic group rendering - the most non-trivial piece in the header.
+          A broken palette shouldn't take the header down with it. */}
+      <ErrorBoundary label="Command palette" fallback={() => null}>
+        <CommandPalette
+          groups={commandGroups}
+          isOpen={paletteOpen}
+          onClose={() => setPaletteOpen(false)}
+          shortcutKey="/"
+          requireMeta={false}
+          placeholder="Search or jump to..."
+        />
+      </ErrorBoundary>
     </>
   )
 }
