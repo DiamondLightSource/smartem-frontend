@@ -100,6 +100,29 @@
         }
       }
     },
+    "/acquisitions/grid-counts": {
+      "get": {
+        "summary": "Get Acquisition Grid Counts",
+        "description": "Per-acquisition grid totals for summary views.\n\nA single grouped query in place of one /acquisitions/{uuid}/grids call per\nacquisition. Every acquisition is returned, including those with no grids\n(grids_total == 0), via an outer join. Declared before the\n/acquisitions/{acquisition_uuid} route so the static segment is matched\nfirst rather than being parsed as a uuid.",
+        "operationId": "get_acquisition_grid_counts_acquisitions_grid_counts_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AcquisitionGridCountResponse"
+                  },
+                  "type": "array",
+                  "title": "Response Get Acquisition Grid Counts Acquisitions Grid Counts Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/acquisitions/{acquisition_uuid}": {
       "get": {
         "summary": "Get Acquisition",
@@ -3839,6 +3862,25 @@
           "computer_name"
         ],
         "title": "AcquisitionResponse"
+      },
+      "AcquisitionGridCountResponse": {
+        "properties": {
+          "acquisition_uuid": {
+            "type": "string",
+            "title": "Acquisition Uuid"
+          },
+          "grids_total": {
+            "type": "integer",
+            "title": "Grids Total"
+          },
+          "grids_completed": {
+            "type": "integer",
+            "title": "Grids Completed"
+          }
+        },
+        "type": "object",
+        "required": ["acquisition_uuid", "grids_total", "grids_completed"],
+        "title": "AcquisitionGridCountResponse"
       },
       "AcquisitionStatus": {
         "type": "string",

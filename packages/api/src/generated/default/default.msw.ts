@@ -25,6 +25,7 @@ import {
   MicrographStatus
 } from '../models';
 import type {
+  AcquisitionGridCountResponse,
   AcquisitionResponse,
   AgentInstructionAcknowledgementResponse,
   AgentLogBatchResponse,
@@ -53,6 +54,8 @@ import type {
 export const getGetAcquisitionsAcquisitionsGetResponseMock = (): AcquisitionResponse[] => (Array.from({ length: faker.number.int({min: 1, max: 10}) }, (_, i) => i + 1).map(() => ({uuid: faker.string.alpha({length: {min: 10, max: 20}}), name: faker.string.alpha({length: {min: 10, max: 20}}), status: faker.helpers.arrayElement([faker.helpers.arrayElement(Object.values(AcquisitionStatus)),null,]), start_time: faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z',null,]), end_time: faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z',null,]), paused_time: faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z',null,]), storage_path: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}),null,]), atlas_path: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}),null,]), clustering_mode: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}),null,]), clustering_radius: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}),null,]), instrument_model: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}),null,]), instrument_id: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}),null,]), computer_name: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}),null,])})))
 
 export const getCreateAcquisitionAcquisitionsPostResponseMock = (overrideResponse: Partial<Extract<AcquisitionResponse, object>> = {}): AcquisitionResponse => ({uuid: faker.string.alpha({length: {min: 10, max: 20}}), name: faker.string.alpha({length: {min: 10, max: 20}}), status: faker.helpers.arrayElement([faker.helpers.arrayElement(Object.values(AcquisitionStatus)),null,]), start_time: faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z',null,]), end_time: faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z',null,]), paused_time: faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z',null,]), storage_path: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}),null,]), atlas_path: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}),null,]), clustering_mode: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}),null,]), clustering_radius: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}),null,]), instrument_model: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}),null,]), instrument_id: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}),null,]), computer_name: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}),null,]), ...overrideResponse})
+
+export const getGetAcquisitionGridCountsAcquisitionsGridCountsGetResponseMock = (): AcquisitionGridCountResponse[] => (Array.from({ length: faker.number.int({min: 1, max: 10}) }, (_, i) => i + 1).map(() => ({acquisition_uuid: faker.string.alpha({length: {min: 10, max: 20}}), grids_total: faker.number.int(), grids_completed: faker.number.int()})))
 
 export const getGetAcquisitionAcquisitionsAcquisitionUuidGetResponseMock = (overrideResponse: Partial<Extract<AcquisitionResponse, object>> = {}): AcquisitionResponse => ({uuid: faker.string.alpha({length: {min: 10, max: 20}}), name: faker.string.alpha({length: {min: 10, max: 20}}), status: faker.helpers.arrayElement([faker.helpers.arrayElement(Object.values(AcquisitionStatus)),null,]), start_time: faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z',null,]), end_time: faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z',null,]), paused_time: faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z',null,]), storage_path: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}),null,]), atlas_path: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}),null,]), clustering_mode: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}),null,]), clustering_radius: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}),null,]), instrument_model: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}),null,]), instrument_id: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}),null,]), computer_name: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}),null,]), ...overrideResponse})
 
@@ -229,6 +232,18 @@ export const getCreateAcquisitionAcquisitionsPostMockHandler = (overrideResponse
     ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
     : getCreateAcquisitionAcquisitionsPostResponseMock(),
       { status: 201
+      })
+  }, options)
+}
+
+export const getGetAcquisitionGridCountsAcquisitionsGridCountsGetMockHandler = (overrideResponse?: AcquisitionGridCountResponse[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<AcquisitionGridCountResponse[]> | AcquisitionGridCountResponse[]), options?: RequestHandlerOptions) => {
+  return http.get('*/acquisitions/grid-counts', async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+
+
+    return HttpResponse.json(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getGetAcquisitionGridCountsAcquisitionsGridCountsGetResponseMock(),
+      { status: 200
       })
   }, options)
 }
@@ -1167,6 +1182,7 @@ export const getDefaultMock = () => [
   getGetHealthHealthGetMockHandler(),
   getGetAcquisitionsAcquisitionsGetMockHandler(),
   getCreateAcquisitionAcquisitionsPostMockHandler(),
+  getGetAcquisitionGridCountsAcquisitionsGridCountsGetMockHandler(),
   getGetAcquisitionAcquisitionsAcquisitionUuidGetMockHandler(),
   getUpdateAcquisitionAcquisitionsAcquisitionUuidPutMockHandler(),
   getDeleteAcquisitionAcquisitionsAcquisitionUuidDeleteMockHandler(),
