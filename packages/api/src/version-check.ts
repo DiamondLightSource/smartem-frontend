@@ -10,16 +10,27 @@ export interface VersionInfo {
 }
 
 /**
- * Fetches the server's API version from the /status endpoint
+ * Reduce a setuptools_scm version to the portion that matters for compatibility:
+ * the release (and pre-release) segment, with the volatile PEP 440 local segment
+ * (`+gsha…`) and the `.devN` suffix stripped. The backend version changes on every
+ * commit, so comparing full strings is meaningless; comparing release portions is
+ * the semantic signal. Example: `0.1.1rc48.dev3+gcd5206327` -> `0.1.1rc48`.
+ */
+function releasePortion(version: string): string {
+  return version.split('+')[0].replace(/\.dev\d+$/, '')
+}
+
+/**
+ * Fetches the live backend API version from the `/version` endpoint (ADR 0020).
  */
 async function fetchServerVersion(): Promise<string | null> {
   try {
-    const response = await fetch(`${apiUrl()}/openapi.json`)
+    const response = await fetch(`${apiUrl()}/version`)
     if (!response.ok) {
       return null
     }
-    const spec = await response.json()
-    return spec.info?.version || null
+    const body = (await response.json()) as { version?: string }
+    return body.version ?? null
   } catch (error) {
     console.warn('Failed to fetch server API version:', error)
     return null
@@ -27,21 +38,25 @@ async function fetchServerVersion(): Promise<string | null> {
 }
 
 /**
- * Checks if the client API version matches the server API version
- * Returns version information and compatibility status
+ * Compares the backend API version the client was generated against (`API_VERSION`)
+ * with the live backend version, semantically. This is an OBSERVATION, never an
+ * enforced gate (ADR 0020): rolling deploys where the two momentarily differ must
+ * not break the app.
  */
 export async function checkApiVersion(): Promise<VersionInfo> {
   const serverVersion = await fetchServerVersion()
 
-  const compatible = serverVersion ? serverVersion === API_VERSION : true
+  const compatible = serverVersion
+    ? releasePortion(serverVersion) === releasePortion(API_VERSION)
+    : true
 
   let message = ''
   if (!serverVersion) {
     message = 'Unable to determine server API version'
   } else if (compatible) {
-    message = 'Client and server API versions match'
+    message = 'Client and server API versions are compatible'
   } else {
-    message = `API version mismatch: client expects ${API_VERSION} but server is ${serverVersion}`
+    message = `API version drift: client built against ${API_VERSION}, server reports ${serverVersion}`
   }
 
   return {
@@ -54,7 +69,7 @@ export async function checkApiVersion(): Promise<VersionInfo> {
 }
 
 /**
- * Logs API version information to console
+ * Logs API version information to the console. Observe-only.
  */
 export async function logApiVersion(): Promise<void> {
   const versionInfo = await checkApiVersion()
@@ -69,7 +84,7 @@ export async function logApiVersion(): Promise<void> {
 
   if (!versionInfo.compatible) {
     console.warn(
-      '⚠️  API version mismatch detected. Consider regenerating the client with `npm run api:update`'
+      '⚠️  API version drift detected (advisory). Run `npm run api:update` to rebuild the client against the current backend.'
     )
   }
 }

@@ -44,8 +44,8 @@ Full documentation: <https://DiamondLightSource.github.io/smartem-devtools>
 
 When adding new API endpoints or modifying existing ones:
 
-1. Update the backend OpenAPI specification
-2. Run `npm run api:update` to regenerate the client
+1. Change the backend API in smartem-decisions — it regenerates and publishes the canonical OpenAPI spec
+2. Run `npm run api:update` to refresh `packages/api/src/openapi.json` from the canonical backend spec and regenerate the `@smartem/api` client
 3. Update components to use the new hooks
 4. Run `npm run typecheck` to verify type safety
 
