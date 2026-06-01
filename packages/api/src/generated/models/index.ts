@@ -7,6 +7,7 @@
  */
 
 export * from './acquisitionCreateRequest';
+export * from './acquisitionGridCountResponse';
 export * from './acquisitionResponse';
 export * from './acquisitionStatus';
 export * from './acquisitionUpdateRequest';

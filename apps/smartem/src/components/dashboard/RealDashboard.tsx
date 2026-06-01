@@ -1,7 +1,8 @@
 import { Box, ButtonBase, Chip, CircularProgress, Tooltip, Typography } from '@mui/material'
 import {
+  type AcquisitionGridCountResponse,
   type AcquisitionResponse,
-  useGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet,
+  useGetAcquisitionGridCountsAcquisitionsGridCountsGet,
   useGetAcquisitionsAcquisitionsGet,
 } from '@smartem/api'
 import { Link } from '@tanstack/react-router'
@@ -398,11 +399,13 @@ function InstrumentsPanel({
 
 function SessionRow({
   acq,
+  counts,
   expanded,
   onToggle,
   onHoverInstrument,
 }: {
   acq: AcquisitionResponse
+  counts?: AcquisitionGridCountResponse
   expanded: boolean
   onToggle: (uuid: string) => void
   onHoverInstrument: (id: string | null) => void
@@ -465,6 +468,11 @@ function SessionRow({
                 {duration}
               </Typography>
             )}
+            {counts && (
+              <Typography variant="caption" sx={{ fontSize: '0.6875rem', color: 'text.disabled' }}>
+                {counts.grids_completed}/{counts.grids_total} grids
+              </Typography>
+            )}
           </Box>
         </Box>
         <Chip
@@ -481,24 +489,20 @@ function SessionRow({
           }}
         />
       </Box>
-      {expanded && <SessionDetailCard acq={acq} />}
+      {expanded && <SessionDetailCard acq={acq} counts={counts} />}
     </Box>
   )
 }
 
-function SessionDetailCard({ acq }: { acq: AcquisitionResponse }) {
-  // Lazy-fetch grids only when the row is expanded - one extra request per
-  // expansion rather than N+1 for the whole list. The hook only fires when
-  // this component is mounted (i.e. `expanded` is true upstream).
-  const { data: grids } = useGetAcquisitionGridsAcquisitionsAcquisitionUuidGridsGet(acq.uuid)
-  const gridsTotal = grids?.length
-  const gridsCompleted = grids?.filter(
-    (g) =>
-      g.status === 'grid squares decision completed' ||
-      g.status === 'scan completed' ||
-      g.status === 'grid squares decision started'
-  ).length
-
+function SessionDetailCard({
+  acq,
+  counts,
+}: {
+  acq: AcquisitionResponse
+  counts?: AcquisitionGridCountResponse
+}) {
+  // Grid counts come from the single /acquisitions/grid-counts summary fetched
+  // once at the dashboard level, not a per-expansion /grids request.
   const started = formatDateTime(acq.start_time)
   const ended = formatDateTime(acq.end_time)
 
@@ -515,8 +519,8 @@ function SessionDetailCard({ acq }: { acq: AcquisitionResponse }) {
       }}
     >
       <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap', alignItems: 'flex-start' }}>
-        {gridsTotal != null && (
-          <MetricItem label="Grids" value={`${gridsCompleted ?? 0}/${gridsTotal}`} />
+        {counts && (
+          <MetricItem label="Grids" value={`${counts.grids_completed}/${counts.grids_total}`} />
         )}
         {started && <MetricItem label="Started" value={started} />}
         {ended && <MetricItem label="Ended" value={ended} />}
@@ -557,12 +561,14 @@ function MetricItem({ label, value }: { label: string; value: string }) {
 
 function SessionsPanel({
   acquisitions,
+  gridCounts,
   selectedInstruments,
   expandedSession,
   onToggleSession,
   onHoverInstrument,
 }: {
   acquisitions: AcquisitionResponse[]
+  gridCounts: Map<string, AcquisitionGridCountResponse>
   selectedInstruments: Set<string>
   expandedSession: string | null
   onToggleSession: (uuid: string) => void
@@ -622,6 +628,7 @@ function SessionsPanel({
               <SessionRow
                 key={acq.uuid}
                 acq={acq}
+                counts={gridCounts.get(acq.uuid)}
                 expanded={expandedSession === acq.uuid}
                 onToggle={onToggleSession}
                 onHoverInstrument={onHoverInstrument}
@@ -638,6 +645,7 @@ function SessionsPanel({
               <SessionRow
                 key={acq.uuid}
                 acq={acq}
+                counts={gridCounts.get(acq.uuid)}
                 expanded={expandedSession === acq.uuid}
                 onToggle={onToggleSession}
                 onHoverInstrument={onHoverInstrument}
@@ -1006,6 +1014,15 @@ const MAX_TIMELINE_FRAC = 0.6
 export default function RealDashboard() {
   const { data: acquisitions, isLoading, error } = useGetAcquisitionsAcquisitionsGet()
 
+  // One summary fetch for the whole list, keyed by acquisition uuid, instead of
+  // a /grids request per row (or per expansion).
+  const { data: gridCounts } = useGetAcquisitionGridCountsAcquisitionsGridCountsGet()
+  const gridCountsByUuid = useMemo(() => {
+    const map = new Map<string, AcquisitionGridCountResponse>()
+    for (const c of gridCounts ?? []) map.set(c.acquisition_uuid, c)
+    return map
+  }, [gridCounts])
+
   // Instrument selection state - kept intact for when /instruments is wired
   // (see smartem-devtools#81). For now only Sessions/Timeline read from it,
   // and only the Acquisitions side derives instrument identities (from
@@ -1137,6 +1154,7 @@ export default function RealDashboard() {
           <ErrorBoundary label="Acquisitions panel">
             <SessionsPanel
               acquisitions={acquisitionList}
+              gridCounts={gridCountsByUuid}
               selectedInstruments={selectedInstruments}
               expandedSession={expandedSession}
               onToggleSession={toggleSession}

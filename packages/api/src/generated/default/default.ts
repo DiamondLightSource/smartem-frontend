@@ -26,6 +26,7 @@ import type {
 
 import type {
   AcquisitionCreateRequest,
+  AcquisitionGridCountResponse,
   AcquisitionResponse,
   AcquisitionUpdateRequest,
   AgentInstructionAcknowledgement,
@@ -437,6 +438,105 @@ export const useCreateAcquisitionAcquisitionsPost = <TError = HTTPValidationErro
       return useMutation(getCreateAcquisitionAcquisitionsPostMutationOptions(options), queryClient);
     }
     /**
+ * Per-acquisition grid totals for summary views.
+
+A single grouped query in place of one /acquisitions/{uuid}/grids call per
+acquisition. Every acquisition is returned, including those with no grids
+(grids_total == 0), via an outer join. Declared before the
+/acquisitions/{acquisition_uuid} route so the static segment is matched
+first rather than being parsed as a uuid.
+ * @summary Get Acquisition Grid Counts
+ */
+export const getAcquisitionGridCountsAcquisitionsGridCountsGet = (
+
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+
+
+      return customInstance<AcquisitionGridCountResponse[]>(
+      {url: `/acquisitions/grid-counts`, method: 'GET', signal
+    },
+      options);
+    }
+
+
+
+
+export const getGetAcquisitionGridCountsAcquisitionsGridCountsGetQueryKey = () => {
+    return [
+    `/acquisitions/grid-counts`
+    ] as const;
+    }
+
+
+export const getGetAcquisitionGridCountsAcquisitionsGridCountsGetQueryOptions = <TData = Awaited<ReturnType<typeof getAcquisitionGridCountsAcquisitionsGridCountsGet>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAcquisitionGridCountsAcquisitionsGridCountsGet>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAcquisitionGridCountsAcquisitionsGridCountsGetQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAcquisitionGridCountsAcquisitionsGridCountsGet>>> = ({ signal }) => getAcquisitionGridCountsAcquisitionsGridCountsGet(requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn,   staleTime: 300000, retry: 1,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAcquisitionGridCountsAcquisitionsGridCountsGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetAcquisitionGridCountsAcquisitionsGridCountsGetQueryResult = NonNullable<Awaited<ReturnType<typeof getAcquisitionGridCountsAcquisitionsGridCountsGet>>>
+export type GetAcquisitionGridCountsAcquisitionsGridCountsGetQueryError = unknown
+
+
+export function useGetAcquisitionGridCountsAcquisitionsGridCountsGet<TData = Awaited<ReturnType<typeof getAcquisitionGridCountsAcquisitionsGridCountsGet>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAcquisitionGridCountsAcquisitionsGridCountsGet>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAcquisitionGridCountsAcquisitionsGridCountsGet>>,
+          TError,
+          Awaited<ReturnType<typeof getAcquisitionGridCountsAcquisitionsGridCountsGet>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAcquisitionGridCountsAcquisitionsGridCountsGet<TData = Awaited<ReturnType<typeof getAcquisitionGridCountsAcquisitionsGridCountsGet>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAcquisitionGridCountsAcquisitionsGridCountsGet>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAcquisitionGridCountsAcquisitionsGridCountsGet>>,
+          TError,
+          Awaited<ReturnType<typeof getAcquisitionGridCountsAcquisitionsGridCountsGet>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAcquisitionGridCountsAcquisitionsGridCountsGet<TData = Awaited<ReturnType<typeof getAcquisitionGridCountsAcquisitionsGridCountsGet>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAcquisitionGridCountsAcquisitionsGridCountsGet>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get Acquisition Grid Counts
+ */
+
+export function useGetAcquisitionGridCountsAcquisitionsGridCountsGet<TData = Awaited<ReturnType<typeof getAcquisitionGridCountsAcquisitionsGridCountsGet>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAcquisitionGridCountsAcquisitionsGridCountsGet>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetAcquisitionGridCountsAcquisitionsGridCountsGetQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+/**
  * Get a single acquisition by ID
  * @summary Get Acquisition
  */
