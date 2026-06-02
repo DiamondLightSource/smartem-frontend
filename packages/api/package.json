@@ -4,7 +4,7 @@
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
-    "api:fetch": "curl -s https://diamondlightsource.github.io/smartem-devtools/api/smartem/swagger.json -o src/openapi.json",
+    "api:fetch": "curl -fsSL https://raw.githubusercontent.com/DiamondLightSource/smartem-decisions/main/docs/api/openapi.json -o src/openapi.json",
     "api:fetch:local": "curl -s http://localhost:8000/openapi.json -o src/openapi.json",
     "api:generate": "orval --config orval.config.ts && node scripts/extract-api-version.js",
     "api:update": "npm run api:fetch && npm run api:generate"
