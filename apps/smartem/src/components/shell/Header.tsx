@@ -153,9 +153,7 @@ export function Header() {
           label: m.name,
           description: m.description || undefined,
           keywords: ['model', 'prediction'],
-          // Jumps to the catalogue for now; switch to '/models/$modelName' once the model
-          // detail route lands (DiamondLightSource/smartem-frontend#110).
-          onSelect: () => navigate({ to: '/models' }),
+          onSelect: () => navigate({ to: '/models/$modelName', params: { modelName: m.name } }),
         })),
       })
     }
