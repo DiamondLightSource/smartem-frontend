@@ -25,6 +25,7 @@ import { Route as AcquisitionsAcquisitionIdGridsGridIdPredictionsRouteImport } f
 import { Route as AcquisitionsAcquisitionIdGridsGridIdAtlasRouteImport } from './routes/acquisitions.$acquisitionId.grids.$gridId.atlas'
 import { Route as AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRouteImport } from './routes/acquisitions.$acquisitionId.grids.$gridId.squares_.$squareId'
 import { Route as AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdIndexRouteImport } from './routes/acquisitions.$acquisitionId.grids.$gridId.squares_.$squareId.index'
+import { Route as AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdPredictionsRouteImport } from './routes/acquisitions.$acquisitionId.grids.$gridId.squares_.$squareId.predictions'
 import { Route as AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdHolesHoleIdRouteImport } from './routes/acquisitions.$acquisitionId.grids.$gridId.squares_.$squareId.holes_.$holeId'
 
 const ModelsRoute = ModelsRouteImport.update({
@@ -118,6 +119,15 @@ const AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdIndexRoute =
     getParentRoute: () =>
       AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRoute,
   } as any)
+const AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdPredictionsRoute =
+  AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdPredictionsRouteImport.update(
+    {
+      id: '/predictions',
+      path: '/predictions',
+      getParentRoute: () =>
+        AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRoute,
+    } as any,
+  )
 const AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdHolesHoleIdRoute =
   AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdHolesHoleIdRouteImport.update(
     {
@@ -144,6 +154,7 @@ export interface FileRoutesByFullPath {
   '/acquisitions/$acquisitionId/grids/$gridId/workspace': typeof AcquisitionsAcquisitionIdGridsGridIdWorkspaceRoute
   '/acquisitions/$acquisitionId/grids/$gridId/': typeof AcquisitionsAcquisitionIdGridsGridIdIndexRoute
   '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId': typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRouteWithChildren
+  '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId/predictions': typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdPredictionsRoute
   '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId/': typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdIndexRoute
   '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId/holes/$holeId': typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdHolesHoleIdRoute
 }
@@ -158,6 +169,7 @@ export interface FileRoutesByTo {
   '/acquisitions/$acquisitionId/grids/$gridId/squares': typeof AcquisitionsAcquisitionIdGridsGridIdSquaresRoute
   '/acquisitions/$acquisitionId/grids/$gridId/workspace': typeof AcquisitionsAcquisitionIdGridsGridIdWorkspaceRoute
   '/acquisitions/$acquisitionId/grids/$gridId': typeof AcquisitionsAcquisitionIdGridsGridIdIndexRoute
+  '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId/predictions': typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdPredictionsRoute
   '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId': typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdIndexRoute
   '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId/holes/$holeId': typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdHolesHoleIdRoute
 }
@@ -178,6 +190,7 @@ export interface FileRoutesById {
   '/acquisitions/$acquisitionId/grids/$gridId/workspace': typeof AcquisitionsAcquisitionIdGridsGridIdWorkspaceRoute
   '/acquisitions/$acquisitionId/grids/$gridId/': typeof AcquisitionsAcquisitionIdGridsGridIdIndexRoute
   '/acquisitions/$acquisitionId/grids/$gridId/squares_/$squareId': typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRouteWithChildren
+  '/acquisitions/$acquisitionId/grids/$gridId/squares_/$squareId/predictions': typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdPredictionsRoute
   '/acquisitions/$acquisitionId/grids/$gridId/squares_/$squareId/': typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdIndexRoute
   '/acquisitions/$acquisitionId/grids/$gridId/squares_/$squareId/holes_/$holeId': typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdHolesHoleIdRoute
 }
@@ -199,6 +212,7 @@ export interface FileRouteTypes {
     | '/acquisitions/$acquisitionId/grids/$gridId/workspace'
     | '/acquisitions/$acquisitionId/grids/$gridId/'
     | '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId'
+    | '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId/predictions'
     | '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId/'
     | '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId/holes/$holeId'
   fileRoutesByTo: FileRoutesByTo
@@ -213,6 +227,7 @@ export interface FileRouteTypes {
     | '/acquisitions/$acquisitionId/grids/$gridId/squares'
     | '/acquisitions/$acquisitionId/grids/$gridId/workspace'
     | '/acquisitions/$acquisitionId/grids/$gridId'
+    | '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId/predictions'
     | '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId'
     | '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId/holes/$holeId'
   id:
@@ -232,6 +247,7 @@ export interface FileRouteTypes {
     | '/acquisitions/$acquisitionId/grids/$gridId/workspace'
     | '/acquisitions/$acquisitionId/grids/$gridId/'
     | '/acquisitions/$acquisitionId/grids/$gridId/squares_/$squareId'
+    | '/acquisitions/$acquisitionId/grids/$gridId/squares_/$squareId/predictions'
     | '/acquisitions/$acquisitionId/grids/$gridId/squares_/$squareId/'
     | '/acquisitions/$acquisitionId/grids/$gridId/squares_/$squareId/holes_/$holeId'
   fileRoutesById: FileRoutesById
@@ -356,6 +372,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdIndexRouteImport
       parentRoute: typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRoute
     }
+    '/acquisitions/$acquisitionId/grids/$gridId/squares_/$squareId/predictions': {
+      id: '/acquisitions/$acquisitionId/grids/$gridId/squares_/$squareId/predictions'
+      path: '/predictions'
+      fullPath: '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId/predictions'
+      preLoaderRoute: typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdPredictionsRouteImport
+      parentRoute: typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRoute
+    }
     '/acquisitions/$acquisitionId/grids/$gridId/squares_/$squareId/holes_/$holeId': {
       id: '/acquisitions/$acquisitionId/grids/$gridId/squares_/$squareId/holes_/$holeId'
       path: '/holes/$holeId'
@@ -367,12 +390,15 @@ declare module '@tanstack/react-router' {
 }
 
 interface AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRouteChildren {
+  AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdPredictionsRoute: typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdPredictionsRoute
   AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdIndexRoute: typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdIndexRoute
   AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdHolesHoleIdRoute: typeof AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdHolesHoleIdRoute
 }
 
 const AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRouteChildren: AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdRouteChildren =
   {
+    AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdPredictionsRoute:
+      AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdPredictionsRoute,
     AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdIndexRoute:
       AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdIndexRoute,
     AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdHolesHoleIdRoute:
