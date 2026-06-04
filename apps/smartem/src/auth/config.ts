@@ -2,6 +2,9 @@ import type { KeycloakServerConfig } from 'keycloak-js'
 
 export interface RuntimeConfig {
   keycloak: KeycloakServerConfig
+  // Optional per-deployment feature toggles, overlaid on the compile-time defaults in
+  // config/feature-flags.ts. Absent in mock mode (no config.json is loaded).
+  features?: Record<string, boolean>
 }
 
 let runtimeConfig: RuntimeConfig | null = null
@@ -20,3 +23,8 @@ const getRuntimeConfig = (): RuntimeConfig => {
 }
 
 export const getKeycloakConfig = (): KeycloakServerConfig => getRuntimeConfig().keycloak
+
+// Non-throwing: feature flags are optional and config is absent in mock mode, so callers
+// fall back to compile-time defaults rather than erroring.
+export const getRuntimeFeatureOverrides = (): Record<string, boolean> | undefined =>
+  runtimeConfig?.features
