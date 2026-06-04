@@ -8,6 +8,7 @@ import type {
   LatentRepresentationResponse,
   MicrographResponse,
   MicrographStatus,
+  OverallQualityPrediction,
   QualityPredictionModelResponse,
   QualityPredictionResponse,
 } from '@smartem/api'
@@ -191,4 +192,24 @@ export function latentResponsesToCoordsByUuid(
     byUuid.set(r.gridsquare_uuid, { x: r.x, y: r.y, clusterIndex: r.index ?? 0 })
   }
   return byUuid
+}
+
+// Latest predicted value per foilhole for one (model, gridsquare), keyed by foilhole uuid -
+// drives the per-model prediction overlay on the square map.
+export function foilholePredictionMap(responses: QualityPredictionResponse[]): Map<string, number> {
+  const sorted = [...responses].sort((a, b) => a.timestamp.localeCompare(b.timestamp))
+  const byFoilhole = new Map<string, number>()
+  for (const r of sorted) {
+    if (r.foilhole_uuid) byFoilhole.set(r.foilhole_uuid, r.value)
+  }
+  return byFoilhole
+}
+
+// Cross-model "overall" predicted value per foilhole for a gridsquare.
+export function overallPredictionMap(responses: OverallQualityPrediction[]): Map<string, number> {
+  const byFoilhole = new Map<string, number>()
+  for (const r of responses) {
+    byFoilhole.set(r.foilhole_uuid, r.value)
+  }
+  return byFoilhole
 }
