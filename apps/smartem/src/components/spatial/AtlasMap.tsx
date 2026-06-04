@@ -23,6 +23,7 @@ interface AtlasMapProps {
   onSquareClick: (squareUuid: string) => void
   predictions?: MockModelPredictions[]
   models?: MockPredictionModel[]
+  suggestedSquareIds?: Set<string>
   selectedSquareId?: string | null
   onSquareHover?: (squareUuid: string | null) => void
   frozenSelection?: boolean
@@ -35,6 +36,7 @@ export function AtlasMap({
   onSquareClick,
   predictions,
   models,
+  suggestedSquareIds,
   selectedSquareId: externalSelectedId,
   onSquareHover,
   frozenSelection: externalFrozen,
@@ -45,6 +47,7 @@ export function AtlasMap({
   const [internalFrozen, setInternalFrozen] = useState(false)
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 })
   const [showPredictions, setShowPredictions] = useState(false)
+  const [showSuggestions, setShowSuggestions] = useState(false)
   const [selectedModelId, setSelectedModelId] = useState(models?.[0]?.id ?? '')
   const [colorMode, setColorMode] = useState<ColorMode>('quality')
 
@@ -194,6 +197,7 @@ export function AtlasMap({
           {squares.map((sq) => {
             const isHovered = hoveredId === sq.uuid
             const isSelected = selectedId === sq.uuid
+            const isSuggested = showSuggestions && (suggestedSquareIds?.has(sq.uuid) ?? false)
             const fill = getFill(sq)
             const r = getRadius(sq)
             const opacity = isHovered || isSelected ? 1.0 : sq.selected ? 0.8 : 0.5
@@ -207,8 +211,10 @@ export function AtlasMap({
                 r={r}
                 fill={fill}
                 opacity={opacity}
-                stroke={isSelected ? '#e59344' : isHovered ? gray[900] : 'none'}
-                strokeWidth={isSelected ? 12 : isHovered ? 8 : 0}
+                stroke={
+                  isSelected ? '#e59344' : isHovered ? gray[900] : isSuggested ? '#2f6feb' : 'none'
+                }
+                strokeWidth={isSelected ? 12 : isHovered ? 8 : isSuggested ? 10 : 0}
                 style={{ cursor: 'pointer', transition: 'opacity 0.1s' }}
                 onMouseEnter={() => handleHover(sq.uuid)}
                 onMouseLeave={() => handleHover(null)}
@@ -352,6 +358,24 @@ export function AtlasMap({
             }}
           >
             Clusters
+          </ButtonBase>
+        )}
+
+        {suggestedSquareIds && suggestedSquareIds.size > 0 && (
+          <ButtonBase
+            onClick={() => setShowSuggestions((s) => !s)}
+            sx={{
+              px: 0.75,
+              py: 0.25,
+              borderRadius: 0.5,
+              fontSize: '0.625rem',
+              fontWeight: showSuggestions ? 600 : 400,
+              color: showSuggestions ? '#2f6feb' : 'text.disabled',
+              backgroundColor: showSuggestions ? gray[50] : 'transparent',
+              '&:hover': { backgroundColor: gray[100] },
+            }}
+          >
+            Suggestions ({suggestedSquareIds.size})
           </ButtonBase>
         )}
 

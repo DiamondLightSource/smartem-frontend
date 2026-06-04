@@ -5,6 +5,7 @@ import {
   useGetGridGridsGridUuidGet,
   useGetGridGridsquaresGridsGridUuidGridsquaresGet,
   useGetPredictionModelsPredictionModelsGet,
+  useGetSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGet as useSuggestedSquares,
 } from '@smartem/api'
 import { useQueries } from '@tanstack/react-query'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
@@ -57,6 +58,23 @@ function AtlasView() {
         predictionResponsesToMockPredictions(m.id, gridId, predictionResults[i]?.data ?? [])
       ),
     [models, gridId, predictionResults]
+  )
+
+  // Squares the system suggests collecting next. The endpoint needs a prediction model and a
+  // separate latent-rep model; the API doesn't expose model types, so we default to the first
+  // model for prediction and the second (if any) for the latent representation. A proper
+  // model-type distinction is tracked in #111.
+  const predictionModelName = models[0]?.id ?? ''
+  const latentModelName = models[1]?.id ?? models[0]?.id ?? ''
+  const { data: suggestedSquares } = useSuggestedSquares(
+    gridId,
+    predictionModelName,
+    latentModelName,
+    { query: { enabled: !!predictionModelName } }
+  )
+  const suggestedSquareIds = useMemo(
+    () => new Set((suggestedSquares ?? []).map((s) => s.uuid)),
+    [suggestedSquares]
   )
 
   // Latent representation comes from a specific latent-rep model; lacking a picker, use the
@@ -127,6 +145,7 @@ function AtlasView() {
           onSquareClick={handleSquareNavigate}
           predictions={predictions}
           models={models}
+          suggestedSquareIds={suggestedSquareIds}
           selectedSquareId={selectedSquareId}
           onSquareHover={(id) => {
             if (!frozen) setSelectedSquareId(id)
