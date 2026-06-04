@@ -8,6 +8,7 @@ import {
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import { WeightsMatrix } from '~/components/weights/WeightsMatrix'
+import { WeightsTimeline } from '~/components/weights/WeightsTimeline'
 import { gray, statusColors } from '~/theme'
 
 export const Route = createFileRoute('/models/$modelName')({
@@ -100,7 +101,7 @@ function ModelDetail() {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2, flexWrap: 'wrap' }}>
           <Typography variant="h6">Metric weights</Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            latest recorded weight per metric for the selected grid
+            weight history and latest values for the selected grid
           </Typography>
           <Box sx={{ flex: 1 }} />
           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
@@ -131,7 +132,10 @@ function ModelDetail() {
         </Box>
 
         {gridUuid ? (
-          <WeightsMatrix weightsByModel={weightsForModel} />
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <WeightsTimeline weights={weightsData?.[modelName] ?? []} />
+            <WeightsMatrix weightsByModel={weightsForModel} />
+          </Box>
         ) : (
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
             No grids available to show weights for.

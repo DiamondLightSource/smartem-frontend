@@ -10,9 +10,9 @@ import {
   valueToHeatmapColor,
 } from '~/utils/heatmap'
 
-type MetricKey = 'quality' | 'resolution' | 'astigmatism' | 'particleCount'
+type BaseMetric = 'quality' | 'resolution' | 'astigmatism' | 'particleCount'
 
-const METRIC_OPTIONS: Record<MetricKey, HeatmapOptions> = {
+const METRIC_OPTIONS: Record<BaseMetric, HeatmapOptions> = {
   quality: { label: 'Quality', type: 'linear', binCount: 5 },
   resolution: { label: 'Resolution (A)', max: 5, type: 'log', binCount: 5 },
   astigmatism: { label: 'Astigmatism (nm)', max: 50, type: 'log', binCount: 5 },
@@ -25,63 +25,103 @@ const METRIC_OPTIONS: Record<MetricKey, HeatmapOptions> = {
   },
 }
 
+const BASE_METRICS = Object.keys(METRIC_OPTIONS) as BaseMetric[]
+
+const metricButtonSx = (active: boolean) => ({
+  px: 0.75,
+  py: 0.25,
+  borderRadius: 0.5,
+  fontSize: '0.5625rem',
+  fontWeight: active ? 600 : 400,
+  color: active ? 'text.primary' : 'text.disabled',
+  backgroundColor: active ? gray[50] : 'transparent',
+  '&:hover': { backgroundColor: gray[100] },
+})
+
+// A prediction overlay layer: a model (or the cross-model "overall") whose predicted
+// per-foilhole quality colours the map. Selected via the same control as base metrics and
+// addressed internally as `pred:<id>`.
+export interface PredictionLayer {
+  id: string
+  label: string
+}
+
 interface SquareMapProps {
   foilholes: MockFoilHole[]
   squareLabel: string
   onFoilholeClick?: (uuid: string) => void
+  predictionLayers?: PredictionLayer[]
+  // layer id -> (foilhole uuid -> predicted value, 0..1)
+  predictionValues?: Record<string, Map<string, number>>
 }
 
-export function SquareMap({ foilholes, squareLabel, onFoilholeClick }: SquareMapProps) {
+export function SquareMap({
+  foilholes,
+  squareLabel,
+  onFoilholeClick,
+  predictionLayers = [],
+  predictionValues = {},
+}: SquareMapProps) {
   const [hoveredId, setHoveredId] = useState<string | null>(null)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [selectionFrozen, setSelectionFrozen] = useState(false)
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 })
-  const [metric, setMetric] = useState<MetricKey>('quality')
+  const [metric, setMetric] = useState<string>('quality')
   const [hideNull, setHideNull] = useState(false)
 
-  const useHeatmap = metric !== 'quality'
+  const predLayerId = metric.startsWith('pred:') ? metric.slice(5) : null
+  const isPred = predLayerId !== null
+  const baseMetric = isPred ? null : (metric as BaseMetric)
+  // Prediction layers are 0..1 scores coloured like quality; only the non-quality base
+  // metrics use the binned heatmap scale.
+  const useHeatmap = !isPred && metric !== 'quality'
 
   const metricValues = useMemo(() => {
-    if (!useHeatmap) return null
+    if (!useHeatmap || !baseMetric) return null
     return foilholes.map((fh) => {
-      if (metric === 'resolution') return fh.resolution
-      if (metric === 'astigmatism') return fh.astigmatism
-      if (metric === 'particleCount') return fh.particleCount
+      if (baseMetric === 'resolution') return fh.resolution
+      if (baseMetric === 'astigmatism') return fh.astigmatism
+      if (baseMetric === 'particleCount') return fh.particleCount
       return null
     })
-  }, [foilholes, metric, useHeatmap])
+  }, [foilholes, baseMetric, useHeatmap])
 
   const heatmapBins = useMemo(() => {
-    if (!metricValues) return [] as HeatmapBin[]
-    return computeHeatmapBins(metricValues, METRIC_OPTIONS[metric])
-  }, [metricValues, metric])
+    if (!metricValues || !baseMetric) return [] as HeatmapBin[]
+    return computeHeatmapBins(metricValues, METRIC_OPTIONS[baseMetric])
+  }, [metricValues, baseMetric])
 
   const getMetricValue = useCallback(
     (fh: MockFoilHole): number | null => {
+      if (isPred && predLayerId) return predictionValues[predLayerId]?.get(fh.uuid) ?? null
       if (metric === 'quality') return fh.quality
       if (metric === 'resolution') return fh.resolution
       if (metric === 'astigmatism') return fh.astigmatism
       if (metric === 'particleCount') return fh.particleCount
       return null
     },
-    [metric]
+    [isPred, predLayerId, predictionValues, metric]
   )
 
   const getFill = useCallback(
     (fh: MockFoilHole): string => {
+      if (isPred) {
+        const val = getMetricValue(fh)
+        return val != null ? qualityColor(val) : gray[600]
+      }
       if (!useHeatmap) return qualityColor(fh.quality)
       const val = getMetricValue(fh)
       return valueToHeatmapColor(val, heatmapBins) ?? gray[600]
     },
-    [useHeatmap, getMetricValue, heatmapBins]
+    [isPred, useHeatmap, getMetricValue, heatmapBins]
   )
 
   const isNullMetric = useCallback(
     (fh: MockFoilHole): boolean => {
-      if (!useHeatmap) return false
+      if (!useHeatmap && !isPred) return false
       return getMetricValue(fh) === null
     },
-    [useHeatmap, getMetricValue]
+    [useHeatmap, isPred, getMetricValue]
   )
 
   const handleClick = useCallback(
@@ -111,6 +151,7 @@ export function SquareMap({ foilholes, squareLabel, onFoilholeClick }: SquareMap
 
   const hoveredHole = hoveredId ? foilholes.find((h) => h.uuid === hoveredId) : null
   const selectedHole = selectedId ? foilholes.find((h) => h.uuid === selectedId) : null
+  const hoveredValue = hoveredHole ? getMetricValue(hoveredHole) : null
 
   const avgQuality =
     foilholes.length > 0 ? foilholes.reduce((sum, h) => sum + h.quality, 0) / foilholes.length : 0
@@ -225,9 +266,13 @@ export function SquareMap({ foilholes, squareLabel, onFoilholeClick }: SquareMap
             }}
           >
             {hoveredHole.foilholeId} —{' '}
-            {useHeatmap
-              ? `${getMetricValue(hoveredHole) ?? 'N/A'} ${METRIC_OPTIONS[metric].label}`
-              : `${Math.round(hoveredHole.quality * 100)}%`}
+            {isPred
+              ? hoveredValue != null
+                ? `${Math.round(hoveredValue * 100)}% predicted`
+                : 'no prediction'
+              : useHeatmap && baseMetric
+                ? `${hoveredValue ?? 'N/A'} ${METRIC_OPTIONS[baseMetric].label}`
+                : `${Math.round(hoveredHole.quality * 100)}%`}
             {hoveredHole.isNearGridBar && ' (near grid bar)'}
           </Box>
         )}
@@ -303,29 +348,37 @@ export function SquareMap({ foilholes, squareLabel, onFoilholeClick }: SquareMap
 
         <Box sx={{ flex: 1 }} />
 
-        {/* Metric selector */}
-        <Box sx={{ display: 'flex', gap: 0.25 }}>
-          {(Object.keys(METRIC_OPTIONS) as MetricKey[]).map((key) => (
+        {/* Metric / prediction-layer selector */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
+          {BASE_METRICS.map((key) => (
             <ButtonBase
               key={key}
               onClick={() => setMetric(key)}
-              sx={{
-                px: 0.75,
-                py: 0.25,
-                borderRadius: 0.5,
-                fontSize: '0.5625rem',
-                fontWeight: key === metric ? 600 : 400,
-                color: key === metric ? 'text.primary' : 'text.disabled',
-                backgroundColor: key === metric ? gray[50] : 'transparent',
-                '&:hover': { backgroundColor: gray[100] },
-              }}
+              sx={metricButtonSx(key === metric)}
             >
               {METRIC_OPTIONS[key].label.split(' ')[0]}
             </ButtonBase>
           ))}
+          {predictionLayers.length > 0 && (
+            <Box
+              sx={{ width: '1px', alignSelf: 'stretch', backgroundColor: 'divider', mx: 0.25 }}
+            />
+          )}
+          {predictionLayers.map((layer) => {
+            const key = `pred:${layer.id}`
+            return (
+              <ButtonBase
+                key={key}
+                onClick={() => setMetric(key)}
+                sx={metricButtonSx(key === metric)}
+              >
+                {layer.label}
+              </ButtonBase>
+            )
+          })}
         </Box>
 
-        {useHeatmap && (
+        {(useHeatmap || isPred) && (
           <FormControlLabel
             control={
               <Checkbox
