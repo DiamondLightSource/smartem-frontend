@@ -1,5 +1,6 @@
 import { Box, IconButton, Tooltip, Typography } from '@mui/material'
 import {
+  apiUrl,
   getGetPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGetQueryOptions as gridPredictionQueryOptions,
   getGetLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetQueryOptions as latentRepQueryOptions,
   useGetGridGridsGridUuidGet,
@@ -142,6 +143,7 @@ function AtlasView() {
         <AtlasMap
           squares={squares}
           gridName={grid?.name ?? gridId}
+          imageUrl={`${apiUrl()}/grids/${gridId}/atlas_image`}
           onSquareClick={handleSquareNavigate}
           predictions={predictions}
           models={models}
