@@ -1,26 +1,39 @@
-import { useGetPredictionModelsPredictionModelsGet } from '@smartem/api'
+import {
+  getGetPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGetQueryOptions as gridPredictionQueryOptions,
+  useGetPredictionModelsPredictionModelsGet,
+} from '@smartem/api'
+import { useQueries } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { useMemo } from 'react'
 import { PredictionsView } from '~/components/predictions/PredictionsView'
-import { predictionModelResponseToMock } from '~/data/api-adapters'
-import type { MockModelPredictions } from '~/data/mock-session-detail'
+import {
+  predictionModelResponseToMock,
+  predictionResponsesToMockPredictions,
+} from '~/data/api-adapters'
 
 export const Route = createFileRoute('/acquisitions/$acquisitionId/grids/$gridId/predictions')({
   component: PredictionsRoute,
 })
 
-// Time-series prediction data per (model, grid) is fetched from the per-square /
-// per-foilhole quality-prediction endpoints; that wiring is a separate concern.
-// Until then, render the view with a real model list and an empty predictions array
-// so the picker is functional but charts are empty.
-const NO_PREDICTIONS: MockModelPredictions[] = []
-
 function PredictionsRoute() {
+  const { gridId } = Route.useParams()
   const { data: modelResponses } = useGetPredictionModelsPredictionModelsGet()
   const models = useMemo(
     () => (modelResponses ?? []).map(predictionModelResponseToMock),
     [modelResponses]
   )
 
-  return <PredictionsView models={models} predictions={NO_PREDICTIONS} />
+  const predictionResults = useQueries({
+    queries: models.map((m) => gridPredictionQueryOptions(m.id, gridId)),
+  })
+
+  const predictions = useMemo(
+    () =>
+      models.map((m, i) =>
+        predictionResponsesToMockPredictions(m.id, gridId, predictionResults[i]?.data ?? [])
+      ),
+    [models, gridId, predictionResults]
+  )
+
+  return <PredictionsView models={models} predictions={predictions} />
 }

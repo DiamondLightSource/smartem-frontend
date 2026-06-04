@@ -12,7 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ModelsRouteImport } from './routes/models'
 import { Route as AcquisitionsRouteImport } from './routes/acquisitions'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ModelsIndexRouteImport } from './routes/models.index'
 import { Route as AcquisitionsIndexRouteImport } from './routes/acquisitions.index'
+import { Route as ModelsModelNameRouteImport } from './routes/models.$modelName'
 import { Route as AcquisitionsAcquisitionIdRouteImport } from './routes/acquisitions.$acquisitionId'
 import { Route as AcquisitionsAcquisitionIdIndexRouteImport } from './routes/acquisitions.$acquisitionId.index'
 import { Route as AcquisitionsAcquisitionIdGridsGridIdRouteImport } from './routes/acquisitions.$acquisitionId.grids.$gridId'
@@ -40,10 +42,20 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ModelsIndexRoute = ModelsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ModelsRoute,
+} as any)
 const AcquisitionsIndexRoute = AcquisitionsIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AcquisitionsRoute,
+} as any)
+const ModelsModelNameRoute = ModelsModelNameRouteImport.update({
+  id: '/$modelName',
+  path: '/$modelName',
+  getParentRoute: () => ModelsRoute,
 } as any)
 const AcquisitionsAcquisitionIdRoute =
   AcquisitionsAcquisitionIdRouteImport.update({
@@ -119,9 +131,11 @@ const AcquisitionsAcquisitionIdGridsGridIdSquaresSquareIdHolesHoleIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/acquisitions': typeof AcquisitionsRouteWithChildren
-  '/models': typeof ModelsRoute
+  '/models': typeof ModelsRouteWithChildren
   '/acquisitions/$acquisitionId': typeof AcquisitionsAcquisitionIdRouteWithChildren
+  '/models/$modelName': typeof ModelsModelNameRoute
   '/acquisitions/': typeof AcquisitionsIndexRoute
+  '/models/': typeof ModelsIndexRoute
   '/acquisitions/$acquisitionId/': typeof AcquisitionsAcquisitionIdIndexRoute
   '/acquisitions/$acquisitionId/grids/$gridId': typeof AcquisitionsAcquisitionIdGridsGridIdRouteWithChildren
   '/acquisitions/$acquisitionId/grids/$gridId/atlas': typeof AcquisitionsAcquisitionIdGridsGridIdAtlasRoute
@@ -135,8 +149,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/models': typeof ModelsRoute
+  '/models/$modelName': typeof ModelsModelNameRoute
   '/acquisitions': typeof AcquisitionsIndexRoute
+  '/models': typeof ModelsIndexRoute
   '/acquisitions/$acquisitionId': typeof AcquisitionsAcquisitionIdIndexRoute
   '/acquisitions/$acquisitionId/grids/$gridId/atlas': typeof AcquisitionsAcquisitionIdGridsGridIdAtlasRoute
   '/acquisitions/$acquisitionId/grids/$gridId/predictions': typeof AcquisitionsAcquisitionIdGridsGridIdPredictionsRoute
@@ -150,9 +165,11 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/acquisitions': typeof AcquisitionsRouteWithChildren
-  '/models': typeof ModelsRoute
+  '/models': typeof ModelsRouteWithChildren
   '/acquisitions/$acquisitionId': typeof AcquisitionsAcquisitionIdRouteWithChildren
+  '/models/$modelName': typeof ModelsModelNameRoute
   '/acquisitions/': typeof AcquisitionsIndexRoute
+  '/models/': typeof ModelsIndexRoute
   '/acquisitions/$acquisitionId/': typeof AcquisitionsAcquisitionIdIndexRoute
   '/acquisitions/$acquisitionId/grids/$gridId': typeof AcquisitionsAcquisitionIdGridsGridIdRouteWithChildren
   '/acquisitions/$acquisitionId/grids/$gridId/atlas': typeof AcquisitionsAcquisitionIdGridsGridIdAtlasRoute
@@ -171,7 +188,9 @@ export interface FileRouteTypes {
     | '/acquisitions'
     | '/models'
     | '/acquisitions/$acquisitionId'
+    | '/models/$modelName'
     | '/acquisitions/'
+    | '/models/'
     | '/acquisitions/$acquisitionId/'
     | '/acquisitions/$acquisitionId/grids/$gridId'
     | '/acquisitions/$acquisitionId/grids/$gridId/atlas'
@@ -185,8 +204,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/models'
+    | '/models/$modelName'
     | '/acquisitions'
+    | '/models'
     | '/acquisitions/$acquisitionId'
     | '/acquisitions/$acquisitionId/grids/$gridId/atlas'
     | '/acquisitions/$acquisitionId/grids/$gridId/predictions'
@@ -201,7 +221,9 @@ export interface FileRouteTypes {
     | '/acquisitions'
     | '/models'
     | '/acquisitions/$acquisitionId'
+    | '/models/$modelName'
     | '/acquisitions/'
+    | '/models/'
     | '/acquisitions/$acquisitionId/'
     | '/acquisitions/$acquisitionId/grids/$gridId'
     | '/acquisitions/$acquisitionId/grids/$gridId/atlas'
@@ -217,7 +239,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AcquisitionsRoute: typeof AcquisitionsRouteWithChildren
-  ModelsRoute: typeof ModelsRoute
+  ModelsRoute: typeof ModelsRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -243,12 +265,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/models/': {
+      id: '/models/'
+      path: '/'
+      fullPath: '/models/'
+      preLoaderRoute: typeof ModelsIndexRouteImport
+      parentRoute: typeof ModelsRoute
+    }
     '/acquisitions/': {
       id: '/acquisitions/'
       path: '/'
       fullPath: '/acquisitions/'
       preLoaderRoute: typeof AcquisitionsIndexRouteImport
       parentRoute: typeof AcquisitionsRoute
+    }
+    '/models/$modelName': {
+      id: '/models/$modelName'
+      path: '/$modelName'
+      fullPath: '/models/$modelName'
+      preLoaderRoute: typeof ModelsModelNameRouteImport
+      parentRoute: typeof ModelsRoute
     }
     '/acquisitions/$acquisitionId': {
       id: '/acquisitions/$acquisitionId'
@@ -409,10 +445,23 @@ const AcquisitionsRouteWithChildren = AcquisitionsRoute._addFileChildren(
   AcquisitionsRouteChildren,
 )
 
+interface ModelsRouteChildren {
+  ModelsModelNameRoute: typeof ModelsModelNameRoute
+  ModelsIndexRoute: typeof ModelsIndexRoute
+}
+
+const ModelsRouteChildren: ModelsRouteChildren = {
+  ModelsModelNameRoute: ModelsModelNameRoute,
+  ModelsIndexRoute: ModelsIndexRoute,
+}
+
+const ModelsRouteWithChildren =
+  ModelsRoute._addFileChildren(ModelsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AcquisitionsRoute: AcquisitionsRouteWithChildren,
-  ModelsRoute: ModelsRoute,
+  ModelsRoute: ModelsRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
