@@ -20,6 +20,7 @@ type ColorMode = 'quality' | 'prediction' | 'cluster'
 interface AtlasMapProps {
   squares: MockGridSquare[]
   gridName: string
+  imageUrl?: string
   onSquareClick: (squareUuid: string) => void
   predictions?: MockModelPredictions[]
   models?: MockPredictionModel[]
@@ -33,6 +34,7 @@ interface AtlasMapProps {
 export function AtlasMap({
   squares,
   gridName,
+  imageUrl,
   onSquareClick,
   predictions,
   models,
@@ -194,6 +196,16 @@ export function AtlasMap({
             setTooltipPos({ x: e.clientX - rect.left, y: e.clientY - rect.top })
           }}
         >
+          {imageUrl && (
+            <image
+              href={imageUrl}
+              x="0"
+              y="0"
+              width="4005"
+              height="4005"
+              preserveAspectRatio="none"
+            />
+          )}
           {squares.map((sq) => {
             const isHovered = hoveredId === sq.uuid
             const isSelected = selectedId === sq.uuid

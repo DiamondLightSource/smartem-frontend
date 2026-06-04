@@ -49,6 +49,7 @@ export interface PredictionLayer {
 interface SquareMapProps {
   foilholes: MockFoilHole[]
   squareLabel: string
+  imageUrl?: string
   onFoilholeClick?: (uuid: string) => void
   predictionLayers?: PredictionLayer[]
   // layer id -> (foilhole uuid -> predicted value, 0..1)
@@ -58,6 +59,7 @@ interface SquareMapProps {
 export function SquareMap({
   foilholes,
   squareLabel,
+  imageUrl,
   onFoilholeClick,
   predictionLayers = [],
   predictionValues = {},
@@ -204,6 +206,16 @@ export function SquareMap({
             })
           }}
         >
+          {imageUrl && (
+            <image
+              href={imageUrl}
+              x="0"
+              y="0"
+              width="2880"
+              height="2046"
+              preserveAspectRatio="none"
+            />
+          )}
           {foilholes.map((fh) => {
             const isHovered = hoveredId === fh.uuid
             const isSelected = selectedId === fh.uuid

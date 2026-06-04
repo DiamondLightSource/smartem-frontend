@@ -1,4 +1,5 @@
 import {
+  apiUrl,
   getGetPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGetQueryOptions as squarePredictionQueryOptions,
   useGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet,
   useGetGridsquareGridsquaresGridsquareUuidGet,
@@ -74,6 +75,7 @@ function SquareIndexView() {
     <SquareMap
       foilholes={foilholes}
       squareLabel={square?.gridsquareId ?? squareId}
+      imageUrl={`${apiUrl()}/gridsquares/${squareId}/gridsquare_image`}
       predictionLayers={predictionLayers}
       predictionValues={predictionValues}
       onFoilholeClick={(holeUuid) => {
