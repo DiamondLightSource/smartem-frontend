@@ -3,5 +3,11 @@
     "url": "http://localhost:30090",
     "realm": "dls",
     "clientId": "SmartEM_User"
+  },
+  "features": {
+    "depositions": false,
+    "agentLogs": false,
+    "darkMode": false,
+    "density": false
   }
 }

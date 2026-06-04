@@ -13,18 +13,34 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
+import {
+  useGetAcquisitionsAcquisitionsGet,
+  useGetGridsGridsGet,
+  useGetPredictionModelsPredictionModelsGet,
+} from '@smartem/api'
 import { Link, useNavigate, useRouterState } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import { useAuth } from '~/auth'
 import { ErrorBoundary } from '~/components/ErrorBoundary'
 import { type CommandGroup, CommandPalette } from '~/components/widgets/CommandPalette'
+import { type FeatureName, getFeatureFlag } from '~/config/feature-flags'
 import { gray } from '~/theme'
 
-const navLinks = [
+const navLinks: { label: string; to: string; flag?: FeatureName }[] = [
   { label: 'Acquisitions', to: '/acquisitions' },
   { label: 'Models', to: '/models' },
-  { label: 'Depositions', to: '/depositions' },
-] as const
+  { label: 'Depositions', to: '/depositions', flag: 'depositions' },
+]
+
+const NAV_KEYWORDS: Record<string, string[]> = {
+  Acquisitions: ['sessions', 'list', 'all'],
+  Models: ['ml', 'predictions'],
+  Depositions: ['aria', 'submit'],
+}
+
+// Cap dynamic groups so an empty query doesn't render hundreds of rows; fuzzy search
+// still narrows the full set as the user types.
+const PALETTE_GROUP_LIMIT = 25
 
 function NavLink({ label, to }: { label: string; to: string }) {
   const router = useRouterState()
@@ -58,31 +74,94 @@ export function Header() {
   const navigate = useNavigate()
   const [paletteOpen, setPaletteOpen] = useState(false)
 
-  const commandGroups: CommandGroup[] = useMemo(
-    () => [
+  // Only links whose feature flag (if any) is enabled. Drives both the header nav and the
+  // palette's Navigation group, so a gated feature is hidden in both places at once.
+  const visibleNavLinks = useMemo(
+    () => navLinks.filter((link) => !link.flag || getFeatureFlag(link.flag)),
+    []
+  )
+
+  // Palette search targets - fetched lazily once the palette is first opened, then cached.
+  const { data: acquisitions } = useGetAcquisitionsAcquisitionsGet({
+    query: { enabled: paletteOpen },
+  })
+  const { data: grids } = useGetGridsGridsGet({ query: { enabled: paletteOpen } })
+  const { data: models } = useGetPredictionModelsPredictionModelsGet({
+    query: { enabled: paletteOpen },
+  })
+
+  const commandGroups: CommandGroup[] = useMemo(() => {
+    const groups: CommandGroup[] = [
       {
         id: 'nav',
         label: 'Navigation',
-        items: navLinks.map((link) => ({
+        items: visibleNavLinks.map((link) => ({
           id: `nav-${link.to}`,
           label: link.label,
           onSelect: () => navigate({ to: link.to as string }),
-          keywords:
-            link.label === 'Acquisitions'
-              ? ['sessions', 'list', 'all']
-              : link.label === 'Models'
-                ? ['ml', 'predictions']
-                : link.label === 'Depositions'
-                  ? ['aria', 'submit']
-                  : ['home', 'overview'],
+          keywords: NAV_KEYWORDS[link.label] ?? ['home', 'overview'],
         })),
       },
-      // Acquisitions-by-name jump targets used to be sourced from the mock
-      // sessions list. They need the real API search endpoint, which is not
-      // wired yet; the group is left out rather than rendered from mocks.
-    ],
-    [navigate]
-  )
+    ]
+
+    if (acquisitions?.length) {
+      groups.push({
+        id: 'acquisitions',
+        label: 'Acquisitions',
+        items: acquisitions.slice(0, PALETTE_GROUP_LIMIT).map((a) => ({
+          id: `acq-${a.uuid}`,
+          label: a.name || a.uuid,
+          description: [a.status, a.instrument_model].filter(Boolean).join(' · ') || undefined,
+          keywords: [a.status, a.instrument_model, a.uuid].filter((k): k is string => Boolean(k)),
+          onSelect: () =>
+            navigate({ to: '/acquisitions/$acquisitionId', params: { acquisitionId: a.uuid } }),
+        })),
+      })
+    }
+
+    if (grids?.length) {
+      groups.push({
+        id: 'grids',
+        label: 'Grids',
+        items: grids.slice(0, PALETTE_GROUP_LIMIT).flatMap((g) => {
+          // A grid is only navigable with its parent acquisition; capture the id so the
+          // narrowing survives into the onSelect closure.
+          const acquisitionId = g.acquisition_uuid
+          if (!acquisitionId) return []
+          return [
+            {
+              id: `grid-${g.uuid}`,
+              label: g.name || g.uuid,
+              keywords: [g.uuid],
+              onSelect: () =>
+                navigate({
+                  to: '/acquisitions/$acquisitionId/grids/$gridId',
+                  params: { acquisitionId, gridId: g.uuid },
+                }),
+            },
+          ]
+        }),
+      })
+    }
+
+    if (models?.length) {
+      groups.push({
+        id: 'models',
+        label: 'Models',
+        items: models.slice(0, PALETTE_GROUP_LIMIT).map((m) => ({
+          id: `model-${m.name}`,
+          label: m.name,
+          description: m.description || undefined,
+          keywords: ['model', 'prediction'],
+          // Jumps to the catalogue for now; switch to '/models/$modelName' once the model
+          // detail route lands (DiamondLightSource/smartem-frontend#110).
+          onSelect: () => navigate({ to: '/models' }),
+        })),
+      })
+    }
+
+    return groups
+  }, [navigate, visibleNavLinks, acquisitions, grids, models])
 
   return (
     <>
@@ -148,8 +227,8 @@ export function Header() {
           </Typography>
 
           <Box sx={{ display: 'flex', gap: 0.25, mr: 2, flexShrink: 0 }}>
-            {navLinks.map((link) => (
-              <NavLink key={link.to} {...link} />
+            {visibleNavLinks.map((link) => (
+              <NavLink key={link.to} label={link.label} to={link.to} />
             ))}
           </Box>
 
