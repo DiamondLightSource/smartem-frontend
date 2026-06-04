@@ -1,40 +1,85 @@
 import { Box, IconButton, Tooltip, Typography } from '@mui/material'
 import {
+  getGetPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGetQueryOptions as gridPredictionQueryOptions,
+  getGetLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetQueryOptions as latentRepQueryOptions,
   useGetGridGridsGridUuidGet,
   useGetGridGridsquaresGridsGridUuidGridsquaresGet,
+  useGetPredictionModelsPredictionModelsGet,
 } from '@smartem/api'
+import { useQueries } from '@tanstack/react-query'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import { AtlasMap } from '~/components/spatial/AtlasMap'
 import { LatentSpacePanel } from '~/components/spatial/LatentSpacePanel'
-import { gridResponseToMock, gridSquareResponseToMock } from '~/data/api-adapters'
-import type { MockModelPredictions, MockPredictionModel } from '~/data/mock-session-detail'
+import {
+  gridResponseToMock,
+  gridSquareResponseToMock,
+  latentResponsesToCoordsByUuid,
+  predictionModelResponseToMock,
+  predictionResponsesToMockPredictions,
+} from '~/data/api-adapters'
+import type { MockLatentCoords } from '~/data/mock-session-detail'
 import { gray } from '~/theme'
 
 export const Route = createFileRoute('/acquisitions/$acquisitionId/grids/$gridId/atlas')({
   component: AtlasView,
 })
 
-// Prediction overlays and latent-space items rely on quality-prediction time series
-// endpoints that are not yet wired here; until then, pass empty arrays so the map
-// renders with selection/freeze/click intact but without prediction colouring.
-const NO_MODELS: MockPredictionModel[] = []
-const NO_PREDICTIONS: MockModelPredictions[] = []
-
 function AtlasView() {
   const { acquisitionId, gridId } = Route.useParams()
   const navigate = useNavigate()
   const { data: gridResponse } = useGetGridGridsGridUuidGet(gridId)
   const { data: squareResponses } = useGetGridGridsquaresGridsGridUuidGridsquaresGet(gridId)
+  const { data: modelResponses } = useGetPredictionModelsPredictionModelsGet()
 
   const grid = useMemo(
     () => (gridResponse ? gridResponseToMock(gridResponse) : null),
     [gridResponse]
   )
-  const squares = useMemo(
-    () => (squareResponses ?? []).map(gridSquareResponseToMock),
-    [squareResponses]
+
+  const models = useMemo(
+    () => (modelResponses ?? []).map(predictionModelResponseToMock),
+    [modelResponses]
   )
+
+  // Fan out one prediction + one latent query per model; both endpoints are scoped to
+  // (model, grid). React Query dedupes and caches each, and disables until ids resolve.
+  const predictionResults = useQueries({
+    queries: models.map((m) => gridPredictionQueryOptions(m.id, gridId)),
+  })
+  const latentResults = useQueries({
+    queries: models.map((m) => latentRepQueryOptions(m.id, gridId)),
+  })
+
+  const predictions = useMemo(
+    () =>
+      models.map((m, i) =>
+        predictionResponsesToMockPredictions(m.id, gridId, predictionResults[i]?.data ?? [])
+      ),
+    [models, gridId, predictionResults]
+  )
+
+  // Latent representation comes from a specific latent-rep model; lacking a picker, use the
+  // first model that returns coordinates and merge them onto the squares.
+  const squares = useMemo(() => {
+    const base = (squareResponses ?? []).map(gridSquareResponseToMock)
+    let latentByUuid: Map<string, MockLatentCoords> | null = null
+    for (const result of latentResults) {
+      if (result?.data && result.data.length > 0) {
+        const map = latentResponsesToCoordsByUuid(result.data)
+        if (map.size > 0) {
+          latentByUuid = map
+          break
+        }
+      }
+    }
+    if (!latentByUuid) return base
+    const lookup = latentByUuid
+    return base.map((sq) => {
+      const latent = lookup.get(sq.uuid)
+      return latent ? { ...sq, latent } : sq
+    })
+  }, [squareResponses, latentResults])
 
   const [showLatent, setShowLatent] = useState(false)
   const [selectedSquareId, setSelectedSquareId] = useState<string | null>(null)
@@ -80,8 +125,8 @@ function AtlasView() {
           squares={squares}
           gridName={grid?.name ?? gridId}
           onSquareClick={handleSquareNavigate}
-          predictions={NO_PREDICTIONS}
-          models={NO_MODELS}
+          predictions={predictions}
+          models={models}
           selectedSquareId={selectedSquareId}
           onSquareHover={(id) => {
             if (!frozen) setSelectedSquareId(id)

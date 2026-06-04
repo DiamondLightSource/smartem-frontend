@@ -20,19 +20,23 @@ export function PredictionsView({ models, predictions }: PredictionsViewProps) {
   const visibleCount = Math.max(1, Math.round((sliderValue / 100) * dataPoints.length))
   const visiblePoints = dataPoints.slice(0, visibleCount)
 
-  const foilholeQualities = useMemo(() => {
+  // Prefer per-foilhole values; fall back to square-level when the grid prediction is
+  // square-granular (the common case), so the distribution always reflects real data.
+  const distributionValues = useMemo(() => {
     if (!selectedPrediction) return []
-    return Array.from(selectedPrediction.foilholeQualities.values())
+    const foilhole = Array.from(selectedPrediction.foilholeQualities.values())
+    if (foilhole.length > 0) return foilhole
+    return Array.from(selectedPrediction.squareQualities.values())
   }, [selectedPrediction])
 
   const histogram = useMemo(() => {
     const bins = Array(10).fill(0) as number[]
-    for (const q of foilholeQualities) {
+    for (const q of distributionValues) {
       const idx = Math.min(9, Math.floor(q * 10))
       bins[idx]++
     }
     return bins
-  }, [foilholeQualities])
+  }, [distributionValues])
 
   const maxBin = Math.max(1, ...histogram)
 

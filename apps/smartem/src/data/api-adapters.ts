@@ -5,15 +5,20 @@ import type {
   GridSquareResponse,
   GridSquareStatus,
   GridStatus,
+  LatentRepresentationResponse,
   MicrographResponse,
   MicrographStatus,
   QualityPredictionModelResponse,
+  QualityPredictionResponse,
 } from '@smartem/api'
 import type {
   MockFoilHole,
   MockGrid,
   MockGridSquare,
+  MockLatentCoords,
   MockMicrograph,
+  MockModelPredictions,
+  MockPredictionDataPoint,
   MockPredictionModel,
 } from './mock-session-detail'
 
@@ -133,4 +138,57 @@ export function micrographResponseToMock(r: MicrographResponse): MockMicrograph 
     motionTotal: r.total_motion ?? 0,
     ctfFitResolution: r.ctf_max_resolution_estimate ?? 0,
   }
+}
+
+// Builds the MockModelPredictions shape the atlas/predictions views consume from the
+// grid-level quality-prediction response. The backend returns the latest prediction per
+// grid square (gridsquare_uuid set); when no square-level predictions exist it falls back
+// to per-foilhole rows, still tagged with their parent gridsquare_uuid - so several rows
+// can share a square, which we average for the square heatmap.
+export function predictionResponsesToMockPredictions(
+  modelId: string,
+  gridUuid: string,
+  responses: QualityPredictionResponse[]
+): MockModelPredictions {
+  const sorted = [...responses].sort((a, b) => a.timestamp.localeCompare(b.timestamp))
+
+  const squareSums = new Map<string, { sum: number; count: number }>()
+  const foilholeQualities = new Map<string, number>()
+  const dataPoints: MockPredictionDataPoint[] = []
+
+  for (const r of sorted) {
+    if (r.foilhole_uuid) {
+      foilholeQualities.set(r.foilhole_uuid, r.value)
+    }
+    if (r.gridsquare_uuid) {
+      const acc = squareSums.get(r.gridsquare_uuid)
+      if (acc) {
+        acc.sum += r.value
+        acc.count += 1
+      } else {
+        squareSums.set(r.gridsquare_uuid, { sum: r.value, count: 1 })
+      }
+      dataPoints.push({ timestamp: r.timestamp, squareUuid: r.gridsquare_uuid, quality: r.value })
+    }
+  }
+
+  const squareQualities = new Map<string, number>()
+  for (const [uuid, { sum, count }] of squareSums) {
+    squareQualities.set(uuid, sum / count)
+  }
+
+  return { modelId, gridUuid, dataPoints, squareQualities, foilholeQualities }
+}
+
+// Maps a grid's latent-representation response to per-square coordinates for the atlas
+// cluster colouring and latent-space scatter. Rows without coordinates are skipped.
+export function latentResponsesToCoordsByUuid(
+  responses: LatentRepresentationResponse[]
+): Map<string, MockLatentCoords> {
+  const byUuid = new Map<string, MockLatentCoords>()
+  for (const r of responses) {
+    if (r.gridsquare_uuid == null || r.x == null || r.y == null) continue
+    byUuid.set(r.gridsquare_uuid, { x: r.x, y: r.y, clusterIndex: r.index ?? 0 })
+  }
+  return byUuid
 }
