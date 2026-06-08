@@ -1,11 +1,11 @@
 import { Box, IconButton, Tooltip, Typography } from '@mui/material'
 import {
-  apiUrl,
   getGetPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGetQueryOptions as gridPredictionQueryOptions,
   getGetLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetQueryOptions as latentRepQueryOptions,
   useGetGridGridsGridUuidGet,
   useGetGridGridsquaresGridsGridUuidGridsquaresGet,
   useGetPredictionModelsPredictionModelsGet,
+  useGetGridAtlasImageGridsGridUuidAtlasImageGet as useGridAtlasImage,
   useGetSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGet as useSuggestedSquares,
 } from '@smartem/api'
 import { useQueries } from '@tanstack/react-query'
@@ -21,6 +21,7 @@ import {
   predictionResponsesToMockPredictions,
 } from '~/data/api-adapters'
 import type { MockLatentCoords } from '~/data/mock-session-detail'
+import { useBlobObjectUrl } from '~/hooks/useBlobObjectUrl'
 import { gray } from '~/theme'
 
 export const Route = createFileRoute('/acquisitions/$acquisitionId/grids/$gridId/atlas')({
@@ -33,6 +34,10 @@ function AtlasView() {
   const { data: gridResponse } = useGetGridGridsGridUuidGet(gridId)
   const { data: squareResponses } = useGetGridGridsquaresGridsGridUuidGridsquaresGet(gridId)
   const { data: modelResponses } = useGetPredictionModelsPredictionModelsGet()
+  // Image route is auth-protected; fetch as an authenticated blob and hand the
+  // <image> element an object URL rather than a token-less direct URL.
+  const { data: atlasImageBlob } = useGridAtlasImage(gridId, undefined)
+  const atlasImageUrl = useBlobObjectUrl(atlasImageBlob as Blob | undefined)
 
   const grid = useMemo(
     () => (gridResponse ? gridResponseToMock(gridResponse) : null),
@@ -143,7 +148,7 @@ function AtlasView() {
         <AtlasMap
           squares={squares}
           gridName={grid?.name ?? gridId}
-          imageUrl={`${apiUrl()}/grids/${gridId}/atlas_image`}
+          imageUrl={atlasImageUrl}
           onSquareClick={handleSquareNavigate}
           predictions={predictions}
           models={models}

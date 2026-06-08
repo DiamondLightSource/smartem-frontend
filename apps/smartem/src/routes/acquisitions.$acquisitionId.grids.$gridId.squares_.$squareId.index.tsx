@@ -1,10 +1,10 @@
 import {
-  apiUrl,
   getGetPredictionForGridsquarePredictionModelPredictionModelNameGridsquareGridsquareUuidPredictionGetQueryOptions as squarePredictionQueryOptions,
   useGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet,
   useGetGridsquareGridsquaresGridsquareUuidGet,
   useGetOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGet,
   useGetPredictionModelsPredictionModelsGet,
+  useGetGridsquareImageGridsquaresGridsquareUuidGridsquareImageGet as useGridsquareImage,
 } from '@smartem/api'
 import { useQueries } from '@tanstack/react-query'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
@@ -16,6 +16,7 @@ import {
   gridSquareResponseToMock,
   overallPredictionMap,
 } from '~/data/api-adapters'
+import { useBlobObjectUrl } from '~/hooks/useBlobObjectUrl'
 
 export const Route = createFileRoute(
   '/acquisitions/$acquisitionId/grids/$gridId/squares_/$squareId/'
@@ -32,6 +33,10 @@ function SquareIndexView() {
   const { data: modelResponses } = useGetPredictionModelsPredictionModelsGet()
   const { data: overallResponse } =
     useGetOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGet(squareId)
+  // Image route is auth-protected; fetch as an authenticated blob and hand the
+  // <image> element an object URL rather than a token-less direct URL.
+  const { data: squareImageBlob } = useGridsquareImage(squareId)
+  const squareImageUrl = useBlobObjectUrl(squareImageBlob as Blob | undefined)
 
   const square = useMemo(
     () => (squareResponse ? gridSquareResponseToMock(squareResponse) : null),
@@ -75,7 +80,7 @@ function SquareIndexView() {
     <SquareMap
       foilholes={foilholes}
       squareLabel={square?.gridsquareId ?? squareId}
-      imageUrl={`${apiUrl()}/gridsquares/${squareId}/gridsquare_image`}
+      imageUrl={squareImageUrl}
       predictionLayers={predictionLayers}
       predictionValues={predictionValues}
       onFoilholeClick={(holeUuid) => {
