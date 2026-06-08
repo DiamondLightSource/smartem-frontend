@@ -6,6 +6,8 @@ node_modules/
 /build/
 .idea/
 .env
+.env.local
+.env.*.local
 
 .claude/settings.local.json
 .claude/skills/*/node_modules/
