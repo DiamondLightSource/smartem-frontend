@@ -8,6 +8,14 @@ import { useMemo, useState } from 'react'
 import { gray, statusColors } from '~/theme'
 import { qualityColor } from '~/utils/heatmap'
 
+// The quality-prediction time-series endpoints are typed as metric-keyed records, but a
+// duplicate backend route can shadow them with a flat list payload (smartem-decisions#298),
+// so the runtime value may be an array. Treat any non-record value as empty so callers
+// never spread a non-iterable.
+function asRecord<V>(value: Record<string, V> | null | undefined): Record<string, V> {
+  return value != null && typeof value === 'object' && !Array.isArray(value) ? value : {}
+}
+
 export const Route = createFileRoute(
   '/acquisitions/$acquisitionId/grids/$gridId/squares_/$squareId/predictions'
 )({
@@ -19,36 +27,41 @@ function SquarePredictionsView() {
   const { data: squareSeries } = useSquareSeries(squareId)
   const { data: foilholeSeries } = useFoilholeSeries(squareId)
 
+  // Defend against the shadowed-route shape mismatch (see asRecord / #298).
+  const squareSeriesByMetric = useMemo(() => asRecord(squareSeries), [squareSeries])
+  const foilholeSeriesByMetric = useMemo(() => asRecord(foilholeSeries), [foilholeSeries])
+
   // Metric names are the keys of the per-metric time-series responses.
   const metrics = useMemo(() => {
     const set = new Set<string>()
-    for (const k of Object.keys(squareSeries ?? {})) set.add(k)
-    for (const k of Object.keys(foilholeSeries ?? {})) set.add(k)
+    for (const k of Object.keys(squareSeriesByMetric)) set.add(k)
+    for (const k of Object.keys(foilholeSeriesByMetric)) set.add(k)
     return Array.from(set).sort()
-  }, [squareSeries, foilholeSeries])
+  }, [squareSeriesByMetric, foilholeSeriesByMetric])
 
   const [picked, setPicked] = useState('')
   const metric = picked && metrics.includes(picked) ? picked : (metrics[0] ?? '')
 
   const timePoints = useMemo(() => {
-    const arr = [...(squareSeries?.[metric] ?? [])]
+    const series = squareSeriesByMetric[metric]
+    const arr = Array.isArray(series) ? [...series] : []
     arr.sort((a, b) => (a.timestamp ?? '').localeCompare(b.timestamp ?? ''))
     return arr.map((p) => p.value)
-  }, [squareSeries, metric])
+  }, [squareSeriesByMetric, metric])
 
   // Latest value per foilhole for the selected metric -> distribution.
   const foilholeValues = useMemo(() => {
-    const byHole = foilholeSeries?.[metric] ?? {}
+    const byHole = asRecord(foilholeSeriesByMetric[metric])
     const vals: number[] = []
     for (const series of Object.values(byHole)) {
-      if (series.length === 0) continue
+      if (!Array.isArray(series) || series.length === 0) continue
       const latest = [...series].sort((a, b) =>
         (a.timestamp ?? '').localeCompare(b.timestamp ?? '')
       )
       vals.push(latest[latest.length - 1].value)
     }
     return vals
-  }, [foilholeSeries, metric])
+  }, [foilholeSeriesByMetric, metric])
 
   const histogram = useMemo(() => {
     const bins = Array(10).fill(0) as number[]
