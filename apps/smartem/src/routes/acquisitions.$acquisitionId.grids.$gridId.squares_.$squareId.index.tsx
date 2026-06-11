@@ -5,6 +5,7 @@ import {
   useGetOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGet,
   useGetPredictionModelsPredictionModelsGet,
   useGetGridsquareImageGridsquaresGridsquareUuidGridsquareImageGet as useGridsquareImage,
+  useGetSuggestedHoleCollectionsGridsquaresGridsquareUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedHolesGet as useSuggestedHoles,
 } from '@smartem/api'
 import { useQueries } from '@tanstack/react-query'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
@@ -76,6 +77,23 @@ function SquareIndexView() {
     return { predictionLayers: layers, predictionValues: values }
   }, [models, predictionResults, overallResponse])
 
+  // Foilholes the system suggests collecting next. Mirrors the atlas suggested-squares endpoint:
+  // it needs a prediction model and a separate latent-rep model, but the API doesn't expose model
+  // types, so default to the first model for prediction and the second (if any) for the latent
+  // representation. Proper model-type distinction is tracked in #111.
+  const predictionModelName = models[0]?.name ?? ''
+  const latentModelName = models[1]?.name ?? models[0]?.name ?? ''
+  const { data: suggestedHoles } = useSuggestedHoles(
+    squareId,
+    predictionModelName,
+    latentModelName,
+    { query: { enabled: !!predictionModelName } }
+  )
+  const suggestedHoleIds = useMemo(
+    () => new Set((suggestedHoles ?? []).map((h) => h.uuid)),
+    [suggestedHoles]
+  )
+
   return (
     <SquareMap
       foilholes={foilholes}
@@ -83,6 +101,7 @@ function SquareIndexView() {
       imageUrl={squareImageUrl}
       predictionLayers={predictionLayers}
       predictionValues={predictionValues}
+      suggestedHoleIds={suggestedHoleIds}
       onFoilholeClick={(holeUuid) => {
         navigate({
           to: '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId/holes/$holeId',

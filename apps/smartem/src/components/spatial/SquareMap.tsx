@@ -54,6 +54,8 @@ interface SquareMapProps {
   predictionLayers?: PredictionLayer[]
   // layer id -> (foilhole uuid -> predicted value, 0..1)
   predictionValues?: Record<string, Map<string, number>>
+  // foilholes the system suggests collecting next; highlighted when the toggle is on
+  suggestedHoleIds?: Set<string>
 }
 
 export function SquareMap({
@@ -63,6 +65,7 @@ export function SquareMap({
   onFoilholeClick,
   predictionLayers = [],
   predictionValues = {},
+  suggestedHoleIds,
 }: SquareMapProps) {
   const [hoveredId, setHoveredId] = useState<string | null>(null)
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -70,6 +73,7 @@ export function SquareMap({
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 })
   const [metric, setMetric] = useState<string>('quality')
   const [hideNull, setHideNull] = useState(false)
+  const [showSuggestions, setShowSuggestions] = useState(false)
 
   const predLayerId = metric.startsWith('pred:') ? metric.slice(5) : null
   const isPred = predLayerId !== null
@@ -220,6 +224,7 @@ export function SquareMap({
             const isHovered = hoveredId === fh.uuid
             const isSelected = selectedId === fh.uuid
             const isNull = isNullMetric(fh)
+            const isSuggested = showSuggestions && (suggestedHoleIds?.has(fh.uuid) ?? false)
 
             if (isNull && hideNull) return null
 
@@ -245,9 +250,13 @@ export function SquareMap({
                         ? '#e59344'
                         : isHovered
                           ? gray[900]
-                          : 'none'
+                          : isSuggested
+                            ? '#2f6feb'
+                            : 'none'
                 }
-                strokeWidth={isNull ? 2 : fh.isNearGridBar ? 4 : isHovered || isSelected ? 4 : 0}
+                strokeWidth={
+                  isNull ? 2 : fh.isNearGridBar ? 4 : isHovered || isSelected || isSuggested ? 4 : 0
+                }
                 strokeDasharray={fh.isNearGridBar ? '8 4' : 'none'}
                 strokeOpacity={isNull ? 0.4 : 1}
                 style={{ cursor: 'pointer', transition: 'opacity 0.1s' }}
@@ -389,6 +398,24 @@ export function SquareMap({
             )
           })}
         </Box>
+
+        {suggestedHoleIds && suggestedHoleIds.size > 0 && (
+          <ButtonBase
+            onClick={() => setShowSuggestions((s) => !s)}
+            sx={{
+              px: 0.75,
+              py: 0.25,
+              borderRadius: 0.5,
+              fontSize: '0.625rem',
+              fontWeight: showSuggestions ? 600 : 400,
+              color: showSuggestions ? '#2f6feb' : 'text.disabled',
+              backgroundColor: showSuggestions ? gray[50] : 'transparent',
+              '&:hover': { backgroundColor: gray[100] },
+            }}
+          >
+            Suggestions ({suggestedHoleIds.size})
+          </ButtonBase>
+        )}
 
         {(useHeatmap || isPred) && (
           <FormControlLabel
