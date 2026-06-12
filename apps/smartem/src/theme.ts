@@ -50,7 +50,7 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: '"Inter", ui-sans-serif, system-ui, sans-serif',
+    fontFamily: '"Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif',
     fontSize: 13,
     htmlFontSize: 16,
     h1: { fontSize: '1.75rem', fontWeight: 600, letterSpacing: '-0.01em', lineHeight: 1.25 },

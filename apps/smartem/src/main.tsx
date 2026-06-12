@@ -4,6 +4,10 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { AuthGate, type RuntimeConfig, setRuntimeConfig } from './auth'
 import { routeTree } from './routeTree.gen'
+// Self-hosted Inter (variable, optical-size + weight axes, upright + italic) - no
+// runtime Google Fonts CDN dependency. Matches the axes the CDN <link> used to serve.
+import '@fontsource-variable/inter/opsz.css'
+import '@fontsource-variable/inter/opsz-italic.css'
 import './app.css'
 
 const router = createRouter({ routeTree })
