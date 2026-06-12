@@ -36,8 +36,15 @@ function AtlasView() {
   const { data: modelResponses } = useGetPredictionModelsPredictionModelsGet()
   // Image route is auth-protected; fetch as an authenticated blob and hand the
   // <image> element an object URL rather than a token-less direct URL.
-  const { data: atlasImageBlob } = useGridAtlasImage(gridId, undefined)
+  const { data: atlasImageBlob, isLoading: atlasImageLoading } = useGridAtlasImage(
+    gridId,
+    undefined
+  )
   const atlasImageUrl = useBlobObjectUrl(atlasImageBlob as Blob | undefined)
+  // "Pending" spans the whole wait: the blob fetch plus the extra tick useBlobObjectUrl needs
+  // to mint the object URL. Without the second term the overlay would briefly flash in between
+  // the fetch resolving and the URL existing.
+  const atlasImagePending = atlasImageLoading || (!!atlasImageBlob && !atlasImageUrl)
 
   const grid = useMemo(
     () => (gridResponse ? gridResponseToMock(gridResponse) : null),
@@ -149,6 +156,7 @@ function AtlasView() {
           squares={squares}
           gridName={grid?.name ?? gridId}
           imageUrl={atlasImageUrl}
+          imageLoading={atlasImagePending}
           onSquareClick={handleSquareNavigate}
           predictions={predictions}
           models={models}

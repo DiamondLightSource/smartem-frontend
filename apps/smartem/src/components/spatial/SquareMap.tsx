@@ -1,4 +1,11 @@
-import { Box, ButtonBase, Checkbox, FormControlLabel, Typography } from '@mui/material'
+import {
+  Box,
+  ButtonBase,
+  Checkbox,
+  CircularProgress,
+  FormControlLabel,
+  Typography,
+} from '@mui/material'
 import { useCallback, useMemo, useState } from 'react'
 import type { MockFoilHole } from '~/data/mock-session-detail'
 import { gray, statusColors } from '~/theme'
@@ -50,6 +57,7 @@ interface SquareMapProps {
   foilholes: MockFoilHole[]
   squareLabel: string
   imageUrl?: string
+  imageLoading?: boolean
   onFoilholeClick?: (uuid: string) => void
   predictionLayers?: PredictionLayer[]
   // layer id -> (foilhole uuid -> predicted value, 0..1)
@@ -62,6 +70,7 @@ export function SquareMap({
   foilholes,
   squareLabel,
   imageUrl,
+  imageLoading,
   onFoilholeClick,
   predictionLayers = [],
   predictionValues = {},
@@ -74,6 +83,18 @@ export function SquareMap({
   const [metric, setMetric] = useState<string>('quality')
   const [hideNull, setHideNull] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(false)
+
+  // The micrograph (decoded server-side) lands seconds after the lightweight foilhole geometry.
+  // Hold the overlay back until the image has painted so circles and image reveal together; if
+  // no image is available, reveal once we know. Re-arm on image change by resetting during
+  // render against the previously seen URL - the standard React pattern.
+  const [imageLoaded, setImageLoaded] = useState(false)
+  const [prevImageUrl, setPrevImageUrl] = useState(imageUrl)
+  if (imageUrl !== prevImageUrl) {
+    setPrevImageUrl(imageUrl)
+    setImageLoaded(false)
+  }
+  const imageReady = imageLoaded || (!imageLoading && !imageUrl)
 
   const predLayerId = metric.startsWith('pred:') ? metric.slice(5) : null
   const isPred = predLayerId !== null
@@ -218,55 +239,94 @@ export function SquareMap({
               width="2880"
               height="2046"
               preserveAspectRatio="none"
+              onLoad={() => setImageLoaded(true)}
+              onError={() => setImageLoaded(true)}
+              style={{ opacity: imageLoaded ? 1 : 0, transition: 'opacity 0.4s ease' }}
             />
           )}
-          {foilholes.map((fh) => {
-            const isHovered = hoveredId === fh.uuid
-            const isSelected = selectedId === fh.uuid
-            const isNull = isNullMetric(fh)
-            const isSuggested = showSuggestions && (suggestedHoleIds?.has(fh.uuid) ?? false)
+          <g
+            style={{
+              opacity: imageReady ? 1 : 0,
+              transition: 'opacity 0.4s ease',
+              pointerEvents: imageReady ? 'auto' : 'none',
+            }}
+          >
+            {foilholes.map((fh) => {
+              const isHovered = hoveredId === fh.uuid
+              const isSelected = selectedId === fh.uuid
+              const isNull = isNullMetric(fh)
+              const isSuggested = showSuggestions && (suggestedHoleIds?.has(fh.uuid) ?? false)
 
-            if (isNull && hideNull) return null
+              if (isNull && hideNull) return null
 
-            const fill = isNull ? 'black' : getFill(fh)
-            const opacity = isNull ? 0.2 : isHovered || isSelected ? 1.0 : 0.6
+              const fill = isNull ? 'black' : getFill(fh)
+              const opacity = isNull ? 0.2 : isHovered || isSelected ? 1.0 : 0.6
 
-            return (
-              <circle
-                key={fh.uuid}
-                role="button"
-                tabIndex={0}
-                cx={fh.xLocation}
-                cy={fh.yLocation}
-                r={fh.diameter / 2}
-                fill={fill}
-                opacity={opacity}
-                stroke={
-                  isNull
-                    ? '#cf222e'
-                    : fh.isNearGridBar
-                      ? gray[600]
-                      : isSelected
-                        ? '#e59344'
-                        : isHovered
-                          ? gray[900]
-                          : isSuggested
-                            ? '#2f6feb'
-                            : 'none'
-                }
-                strokeWidth={
-                  isNull ? 2 : fh.isNearGridBar ? 4 : isHovered || isSelected || isSuggested ? 4 : 0
-                }
-                strokeDasharray={fh.isNearGridBar ? '8 4' : 'none'}
-                strokeOpacity={isNull ? 0.4 : 1}
-                style={{ cursor: 'pointer', transition: 'opacity 0.1s' }}
-                onMouseEnter={() => handleHover(fh.uuid)}
-                onMouseLeave={() => handleHover(null)}
-                onClick={() => handleClick(fh.uuid)}
-              />
-            )
-          })}
+              return (
+                <circle
+                  key={fh.uuid}
+                  role="button"
+                  tabIndex={0}
+                  cx={fh.xLocation}
+                  cy={fh.yLocation}
+                  r={fh.diameter / 2}
+                  fill={fill}
+                  opacity={opacity}
+                  stroke={
+                    isNull
+                      ? '#cf222e'
+                      : fh.isNearGridBar
+                        ? gray[600]
+                        : isSelected
+                          ? '#e59344'
+                          : isHovered
+                            ? gray[900]
+                            : isSuggested
+                              ? '#2f6feb'
+                              : 'none'
+                  }
+                  strokeWidth={
+                    isNull
+                      ? 2
+                      : fh.isNearGridBar
+                        ? 4
+                        : isHovered || isSelected || isSuggested
+                          ? 4
+                          : 0
+                  }
+                  strokeDasharray={fh.isNearGridBar ? '8 4' : 'none'}
+                  strokeOpacity={isNull ? 0.4 : 1}
+                  style={{ cursor: 'pointer', transition: 'opacity 0.1s' }}
+                  onMouseEnter={() => handleHover(fh.uuid)}
+                  onMouseLeave={() => handleHover(null)}
+                  onClick={() => handleClick(fh.uuid)}
+                />
+              )
+            })}
+          </g>
         </svg>
+
+        {/* Loading indicator while the micrograph is still being fetched/decoded */}
+        {!imageReady && (
+          <Box
+            sx={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 1,
+              zIndex: 2,
+              pointerEvents: 'none',
+            }}
+          >
+            <CircularProgress size={28} thickness={4} />
+            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+              Loading image…
+            </Typography>
+          </Box>
+        )}
 
         {/* Tooltip */}
         {hoveredHole && (

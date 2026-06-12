@@ -1,4 +1,11 @@
-import { Box, ButtonBase, FormControlLabel, Switch, Typography } from '@mui/material'
+import {
+  Box,
+  ButtonBase,
+  CircularProgress,
+  FormControlLabel,
+  Switch,
+  Typography,
+} from '@mui/material'
 import { useCallback, useMemo, useState } from 'react'
 import type {
   MockGridSquare,
@@ -21,6 +28,7 @@ interface AtlasMapProps {
   squares: MockGridSquare[]
   gridName: string
   imageUrl?: string
+  imageLoading?: boolean
   onSquareClick: (squareUuid: string) => void
   predictions?: MockModelPredictions[]
   models?: MockPredictionModel[]
@@ -35,6 +43,7 @@ export function AtlasMap({
   squares,
   gridName,
   imageUrl,
+  imageLoading,
   onSquareClick,
   predictions,
   models,
@@ -56,6 +65,19 @@ export function AtlasMap({
   const frozen = externalFrozen ?? internalFrozen
   const selectedId = externalSelectedId ?? internalFrozenId
   const hoveredId = internalHoveredId
+
+  // The atlas image (a multi-MB micrograph decoded server-side) arrives seconds after the
+  // lightweight square geometry. Hold the overlay back until the image has painted so the
+  // circles and image reveal together rather than circles-first. If no image is available,
+  // reveal once we know. Re-arm the reveal when the image changes (e.g. switching grids) by
+  // resetting during render against the previously seen URL - the standard React pattern.
+  const [imageLoaded, setImageLoaded] = useState(false)
+  const [prevImageUrl, setPrevImageUrl] = useState(imageUrl)
+  if (imageUrl !== prevImageUrl) {
+    setPrevImageUrl(imageUrl)
+    setImageLoaded(false)
+  }
+  const imageReady = imageLoaded || (!imageLoading && !imageUrl)
 
   const selectedPrediction = useMemo(
     () => predictions?.find((p) => p.modelId === selectedModelId),
@@ -204,47 +226,86 @@ export function AtlasMap({
               width="4005"
               height="4005"
               preserveAspectRatio="none"
+              onLoad={() => setImageLoaded(true)}
+              onError={() => setImageLoaded(true)}
+              style={{ opacity: imageLoaded ? 1 : 0, transition: 'opacity 0.4s ease' }}
             />
           )}
-          {squares.map((sq) => {
-            const isHovered = hoveredId === sq.uuid
-            const isSelected = selectedId === sq.uuid
-            const isSuggested = showSuggestions && (suggestedSquareIds?.has(sq.uuid) ?? false)
-            const fill = getFill(sq)
-            const r = getRadius(sq)
-            const opacity = isHovered || isSelected ? 1.0 : sq.selected ? 0.8 : 0.5
-            return (
-              <circle
-                key={sq.uuid}
-                role="button"
-                tabIndex={0}
-                cx={sq.centerX}
-                cy={sq.centerY}
-                r={r}
-                fill={fill}
-                opacity={opacity}
-                stroke={
-                  isSelected ? '#e59344' : isHovered ? gray[900] : isSuggested ? '#2f6feb' : 'none'
-                }
-                strokeWidth={isSelected ? 12 : isHovered ? 8 : isSuggested ? 10 : 0}
-                style={{ cursor: 'pointer', transition: 'opacity 0.1s' }}
-                onMouseEnter={() => handleHover(sq.uuid)}
-                onMouseLeave={() => handleHover(null)}
-                onClick={() => handleClick(sq.uuid)}
-                onDoubleClick={() => onSquareClick(sq.uuid)}
-              >
-                {sq.hasImageData && sq.status === 'collected' && (
-                  <animate
-                    attributeName="fill-opacity"
-                    dur="1.5s"
-                    values="0.4;0.9;0.4"
-                    repeatCount="indefinite"
-                  />
-                )}
-              </circle>
-            )
-          })}
+          <g
+            style={{
+              opacity: imageReady ? 1 : 0,
+              transition: 'opacity 0.4s ease',
+              pointerEvents: imageReady ? 'auto' : 'none',
+            }}
+          >
+            {squares.map((sq) => {
+              const isHovered = hoveredId === sq.uuid
+              const isSelected = selectedId === sq.uuid
+              const isSuggested = showSuggestions && (suggestedSquareIds?.has(sq.uuid) ?? false)
+              const fill = getFill(sq)
+              const r = getRadius(sq)
+              const opacity = isHovered || isSelected ? 1.0 : sq.selected ? 0.8 : 0.5
+              return (
+                <circle
+                  key={sq.uuid}
+                  role="button"
+                  tabIndex={0}
+                  cx={sq.centerX}
+                  cy={sq.centerY}
+                  r={r}
+                  fill={fill}
+                  opacity={opacity}
+                  stroke={
+                    isSelected
+                      ? '#e59344'
+                      : isHovered
+                        ? gray[900]
+                        : isSuggested
+                          ? '#2f6feb'
+                          : 'none'
+                  }
+                  strokeWidth={isSelected ? 12 : isHovered ? 8 : isSuggested ? 10 : 0}
+                  style={{ cursor: 'pointer', transition: 'opacity 0.1s' }}
+                  onMouseEnter={() => handleHover(sq.uuid)}
+                  onMouseLeave={() => handleHover(null)}
+                  onClick={() => handleClick(sq.uuid)}
+                  onDoubleClick={() => onSquareClick(sq.uuid)}
+                >
+                  {sq.hasImageData && sq.status === 'collected' && (
+                    <animate
+                      attributeName="fill-opacity"
+                      dur="1.5s"
+                      values="0.4;0.9;0.4"
+                      repeatCount="indefinite"
+                    />
+                  )}
+                </circle>
+              )
+            })}
+          </g>
         </svg>
+
+        {/* Loading indicator while the atlas image is still being fetched/decoded */}
+        {!imageReady && (
+          <Box
+            sx={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 1,
+              zIndex: 2,
+              pointerEvents: 'none',
+            }}
+          >
+            <CircularProgress size={28} thickness={4} />
+            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+              Loading atlas image…
+            </Typography>
+          </Box>
+        )}
 
         {/* Tooltip */}
         {hoveredSquare && (
