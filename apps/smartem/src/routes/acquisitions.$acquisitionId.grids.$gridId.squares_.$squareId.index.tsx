@@ -36,8 +36,11 @@ function SquareIndexView() {
     useGetOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGet(squareId)
   // Image route is auth-protected; fetch as an authenticated blob and hand the
   // <image> element an object URL rather than a token-less direct URL.
-  const { data: squareImageBlob } = useGridsquareImage(squareId)
+  const { data: squareImageBlob, isLoading: squareImageLoading } = useGridsquareImage(squareId)
   const squareImageUrl = useBlobObjectUrl(squareImageBlob as Blob | undefined)
+  // "Pending" spans the blob fetch plus the extra tick useBlobObjectUrl needs to mint the
+  // object URL, so the overlay doesn't briefly flash in between the two.
+  const squareImagePending = squareImageLoading || (!!squareImageBlob && !squareImageUrl)
 
   const square = useMemo(
     () => (squareResponse ? gridSquareResponseToMock(squareResponse) : null),
@@ -99,6 +102,7 @@ function SquareIndexView() {
       foilholes={foilholes}
       squareLabel={square?.gridsquareId ?? squareId}
       imageUrl={squareImageUrl}
+      imageLoading={squareImagePending}
       predictionLayers={predictionLayers}
       predictionValues={predictionValues}
       suggestedHoleIds={suggestedHoleIds}
