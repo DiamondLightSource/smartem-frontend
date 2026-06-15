@@ -1,9 +1,13 @@
 import { Box, Chip, Typography } from '@mui/material'
 import {
   type QualityPredictionModelResponse,
+  useGetGridsGridsGet,
+  useGetModelWeightsForGridGridGridUuidModelWeightsGet,
   useGetPredictionModelsPredictionModelsGet,
 } from '@smartem/api'
 import { createFileRoute, Link } from '@tanstack/react-router'
+import { useState } from 'react'
+import { WeightsMatrix } from '~/components/weights/WeightsMatrix'
 import { gray, statusColors } from '~/theme'
 
 export const Route = createFileRoute('/models/')({
@@ -12,6 +16,16 @@ export const Route = createFileRoute('/models/')({
 
 function ModelsCatalogue() {
   const { data: models, isLoading } = useGetPredictionModelsPredictionModelsGet()
+  const { data: grids } = useGetGridsGridsGet()
+
+  // Cross-model weight matrix: pick a grid, then show every model's latest metric weights at
+  // once. The weights endpoint already returns all models keyed by name, and WeightsMatrix
+  // already renders one row per model - the per-model detail page just narrows it to one.
+  const [gridChoice, setGridChoice] = useState('')
+  const gridUuid = gridChoice || grids?.[0]?.uuid || ''
+  const { data: weightsData } = useGetModelWeightsForGridGridGridUuidModelWeightsGet(gridUuid, {
+    query: { enabled: !!gridUuid },
+  })
 
   return (
     <Box
@@ -62,6 +76,52 @@ function ModelsCatalogue() {
           p: 3,
         }}
       >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2, flexWrap: 'wrap' }}>
+          <Typography variant="h6">Weight matrix</Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            metric weights across all models for the selected grid — scrub the slider to see history
+          </Typography>
+          <Box sx={{ flex: 1 }} />
+          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+            Grid
+          </Typography>
+          <Box
+            component="select"
+            value={gridUuid}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setGridChoice(e.target.value)}
+            sx={{
+              fontSize: '0.8125rem',
+              px: 1,
+              py: 0.5,
+              borderRadius: 1,
+              border: '1px solid',
+              borderColor: 'divider',
+              backgroundColor: 'background.paper',
+              color: 'text.primary',
+              cursor: 'pointer',
+            }}
+          >
+            {(grids ?? []).map((g) => (
+              <option key={g.uuid} value={g.uuid}>
+                {g.name}
+              </option>
+            ))}
+          </Box>
+        </Box>
+
+        {gridUuid ? (
+          <WeightsMatrix weightsByModel={weightsData ?? {}} showTimeSlider />
+        ) : (
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            No grids available to show weights for.
+          </Typography>
+        )}
+
+        <Box sx={{ my: 3, borderTop: '1px solid', borderColor: 'divider' }} />
+
+        <Typography variant="h6" sx={{ mb: 2 }}>
+          Registered models
+        </Typography>
         {isLoading && (
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
             Loading models…

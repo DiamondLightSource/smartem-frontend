@@ -1,14 +1,18 @@
-import { Box, Tooltip, Typography } from '@mui/material'
+import { Box, Slider, Tooltip, Typography } from '@mui/material'
 import type { QualityPredictionModelWeight } from '@smartem/api'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { gray } from '~/theme'
 import { cellFillColor, cellTextColor } from './cellColor'
 
 interface Props {
   weightsByModel: Record<string, QualityPredictionModelWeight[]>
+  // When true, render a client-side "as of {timestamp}" slider that re-colours the matrix from the
+  // already-fetched history. Off by default so the per-model detail page (which pairs the matrix
+  // with a full timeline) is unchanged.
+  showTimeSlider?: boolean
 }
 
-interface LatestCell {
+interface Cell {
   weight: number
   timestamp: string | undefined
 }
@@ -18,11 +22,14 @@ const CELL_MIN_WIDTH = 100
 const ROW_HEADER_WIDTH = 160
 const COL_HEADER_HEIGHT = 40
 
-function formatTimestamp(ts: string | undefined): string {
-  if (!ts) return '—'
-  const d = new Date(ts)
-  if (Number.isNaN(d.getTime())) return ts
-  return d.toLocaleString(undefined, {
+function tsMillis(ts: string | undefined): number {
+  if (!ts) return Number.NaN
+  return new Date(ts).getTime()
+}
+
+function formatMillis(ms: number): string {
+  if (Number.isNaN(ms)) return '—'
+  return new Date(ms).toLocaleString(undefined, {
     year: 'numeric',
     month: 'short',
     day: '2-digit',
@@ -31,20 +38,36 @@ function formatTimestamp(ts: string | undefined): string {
   })
 }
 
-function pickLatest(entries: QualityPredictionModelWeight[]): LatestCell | undefined {
-  if (entries.length === 0) return undefined
-  let best = entries[0]
-  for (const entry of entries) {
-    if ((entry.timestamp ?? '') > (best.timestamp ?? '')) best = entry
-  }
-  return { weight: best.weight, timestamp: best.timestamp }
+function formatTimestamp(ts: string | undefined): string {
+  if (!ts) return '—'
+  const ms = new Date(ts).getTime()
+  if (Number.isNaN(ms)) return ts
+  return formatMillis(ms)
 }
 
-export function WeightsMatrix({ weightsByModel }: Props) {
-  const { models, metrics, cells } = useMemo(() => {
+// Latest weight recorded at or before `asOf` (ms). asOf = +Infinity yields the latest overall, so
+// the default view matches the previous "current weights" behaviour.
+function pickAtOrBefore(entries: QualityPredictionModelWeight[], asOf: number): Cell | undefined {
+  let bestT = Number.NEGATIVE_INFINITY
+  let best: Cell | undefined
+  for (const entry of entries) {
+    const t = tsMillis(entry.timestamp)
+    if (Number.isNaN(t) || t > asOf) continue
+    if (t > bestT) {
+      bestT = t
+      best = { weight: entry.weight, timestamp: entry.timestamp }
+    }
+  }
+  return best
+}
+
+export function WeightsMatrix({ weightsByModel, showTimeSlider = false }: Props) {
+  const { models, metrics, grouped, minT, maxT } = useMemo(() => {
     const modelSet = Object.keys(weightsByModel)
     const metricSet = new Set<string>()
     const grouped = new Map<string, QualityPredictionModelWeight[]>()
+    let minT = Number.POSITIVE_INFINITY
+    let maxT = Number.NEGATIVE_INFINITY
 
     for (const [modelName, entries] of Object.entries(weightsByModel)) {
       for (const entry of entries) {
@@ -54,21 +77,38 @@ export function WeightsMatrix({ weightsByModel }: Props) {
         const bucket = grouped.get(key)
         if (bucket) bucket.push(entry)
         else grouped.set(key, [entry])
+        const t = tsMillis(entry.timestamp)
+        if (!Number.isNaN(t)) {
+          if (t < minT) minT = t
+          if (t > maxT) maxT = t
+        }
       }
-    }
-
-    const cellMap = new Map<string, LatestCell>()
-    for (const [key, entries] of grouped.entries()) {
-      const latest = pickLatest(entries)
-      if (latest) cellMap.set(key, latest)
     }
 
     return {
       models: modelSet,
       metrics: Array.from(metricSet).sort(),
-      cells: cellMap,
+      grouped,
+      minT,
+      maxT,
     }
   }, [weightsByModel])
+
+  const hasTimeline =
+    showTimeSlider && Number.isFinite(minT) && Number.isFinite(maxT) && maxT > minT
+  // null = "latest" (the rightmost / default position). A concrete ms value pins the matrix to a
+  // point in history.
+  const [asOf, setAsOf] = useState<number | null>(null)
+  const effectiveAsOf = hasTimeline && asOf !== null ? asOf : Number.POSITIVE_INFINITY
+
+  const cells = useMemo(() => {
+    const cellMap = new Map<string, Cell>()
+    for (const [key, entries] of grouped.entries()) {
+      const cell = pickAtOrBefore(entries, effectiveAsOf)
+      if (cell) cellMap.set(key, cell)
+    }
+    return cellMap
+  }, [grouped, effectiveAsOf])
 
   if (models.length === 0 || metrics.length === 0) {
     return (
@@ -83,8 +123,64 @@ export function WeightsMatrix({ weightsByModel }: Props) {
   const gridTemplateColumns = `${ROW_HEADER_WIDTH}px repeat(${metrics.length}, minmax(${CELL_MIN_WIDTH}px, 1fr))`
   const gridTemplateRows = `${COL_HEADER_HEIGHT}px repeat(${models.length}, ${CELL_HEIGHT}px)`
 
+  const sliderValue = asOf ?? maxT
+  const isLatest = asOf === null || asOf >= maxT
+  const sliderStep = Math.max(1, Math.round((maxT - minT) / 500))
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      {hasTimeline && (
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+          <Typography variant="caption" sx={{ color: 'text.secondary', minWidth: 56 }}>
+            As of
+          </Typography>
+          <Slider
+            size="small"
+            min={minT}
+            max={maxT}
+            step={sliderStep}
+            value={sliderValue}
+            onChange={(_, value) => setAsOf(typeof value === 'number' ? value : value[0])}
+            valueLabelDisplay="auto"
+            valueLabelFormat={(value) => formatMillis(value)}
+            aria-label="Show weights as of"
+            sx={{ flex: 1, minWidth: 200, maxWidth: 480 }}
+          />
+          <Typography
+            variant="caption"
+            sx={{
+              color: 'text.primary',
+              fontVariantNumeric: 'tabular-nums',
+              minWidth: 150,
+              textAlign: 'right',
+            }}
+          >
+            {formatMillis(sliderValue)}
+          </Typography>
+          <Box
+            component="button"
+            type="button"
+            disabled={isLatest}
+            onClick={() => setAsOf(null)}
+            sx={{
+              fontSize: '0.6875rem',
+              fontWeight: 600,
+              px: 1,
+              py: 0.25,
+              borderRadius: 1,
+              border: '1px solid',
+              borderColor: isLatest ? gray[200] : 'divider',
+              backgroundColor: 'background.paper',
+              color: isLatest ? 'text.disabled' : 'text.secondary',
+              cursor: isLatest ? 'default' : 'pointer',
+              '&:hover': isLatest ? {} : { borderColor: gray[400], color: 'text.primary' },
+            }}
+          >
+            {isLatest ? 'Latest' : 'Reset to latest'}
+          </Box>
+        </Box>
+      )}
+
       <Box sx={{ display: 'grid', gridTemplateColumns, gridTemplateRows, gap: 1 }}>
         <Box
           sx={{
