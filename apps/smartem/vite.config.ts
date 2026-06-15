@@ -17,7 +17,7 @@ export default defineConfig(({ mode }) => {
       tsconfigPaths(),
       mode === 'analyze' &&
         visualizer({
-          open: true,
+          open: !process.env.CI,
           filename: 'bundle-analysis.html',
           gzipSize: true,
           brotliSize: true,
