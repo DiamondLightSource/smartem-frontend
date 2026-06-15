@@ -1,6 +1,7 @@
 import tailwindcss from '@tailwindcss/vite'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import react from '@vitejs/plugin-react'
+import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig, loadEnv } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
@@ -9,7 +10,19 @@ export default defineConfig(({ mode }) => {
   const proxyTarget = env.VITE_API_PROXY_TARGET || 'http://localhost:8000'
 
   return {
-    plugins: [react(), tailwindcss(), TanStackRouterVite(), tsconfigPaths()],
+    plugins: [
+      react(),
+      tailwindcss(),
+      TanStackRouterVite(),
+      tsconfigPaths(),
+      mode === 'analyze' &&
+        visualizer({
+          open: true,
+          filename: 'bundle-analysis.html',
+          gzipSize: true,
+          brotliSize: true,
+        }),
+    ],
     resolve: {
       dedupe: ['react', 'react-dom', 'react/jsx-runtime', '@mui/material'],
     },
