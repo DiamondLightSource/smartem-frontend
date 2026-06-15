@@ -172,6 +172,19 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+      - name: Bundle analysis
+        if: needs.version.outputs.should_release == 'true'
+        run: npm run analyze -w @smartem/app
+
+      - name: Upload bundle analysis
+        if: needs.version.outputs.should_release == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: smartem-bundle-analysis
+          path: ${{ env.APP_DIR }}/bundle-analysis.html
+          if-no-files-found: error
+          retention-days: 7
+
   publish-container:
     name: Publish container to GHCR
     runs-on: ubuntu-latest
