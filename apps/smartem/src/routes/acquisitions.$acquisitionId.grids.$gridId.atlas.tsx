@@ -9,10 +9,11 @@ import {
   useGetSuggestedSquareCollectionsGridGridUuidPredictionModelPredictionModelNameLatentRepLatentRepModelNameSuggestedSquaresGet as useSuggestedSquares,
 } from '@smartem/api'
 import { useQueries } from '@tanstack/react-query'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import { AtlasMap } from '~/components/spatial/AtlasMap'
 import { LatentSpacePanel } from '~/components/spatial/LatentSpacePanel'
+import { SquarePreviewPanel } from '~/components/spatial/SquarePreviewPanel'
 import {
   gridResponseToMock,
   gridSquareResponseToMock,
@@ -30,7 +31,6 @@ export const Route = createFileRoute('/acquisitions/$acquisitionId/grids/$gridId
 
 function AtlasView() {
   const { acquisitionId, gridId } = Route.useParams()
-  const navigate = useNavigate()
   const { data: gridResponse } = useGetGridGridsGridUuidGet(gridId)
   const { data: squareResponses } = useGetGridGridsquaresGridsGridUuidGridsquaresGet(gridId)
   const { data: modelResponses } = useGetPredictionModelsPredictionModelsGet()
@@ -132,32 +132,31 @@ function AtlasView() {
     [squares]
   )
 
-  const handleSquareClick = (uuid: string) => {
-    if (frozen && uuid === selectedSquareId) {
-      setFrozen(false)
-      setSelectedSquareId(null)
-    } else {
-      setFrozen(true)
-      setSelectedSquareId(uuid)
-    }
+  // Clicking a square locks it and opens the side-by-side grid-square preview (issue #68). Hover
+  // only highlights - the heavy micrograph loads on this explicit commit, not on hover. Opening the
+  // preview hides the latent panel so only one right-hand panel shows at a time.
+  const previewOpen = frozen && selectedSquareId !== null
+
+  const lockSquare = (uuid: string) => {
+    setSelectedSquareId(uuid)
+    setFrozen(true)
+    setShowLatent(false)
   }
 
-  const handleSquareNavigate = (uuid: string) => {
-    navigate({
-      to: '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId',
-      params: { acquisitionId, gridId, squareId: uuid },
-    })
+  const closePreview = () => {
+    setFrozen(false)
+    setSelectedSquareId(null)
   }
 
   return (
-    <Box sx={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
-      <Box sx={{ flex: 1, overflow: 'hidden' }}>
+    <Box sx={{ display: 'flex', height: '100%', overflow: 'hidden', position: 'relative' }}>
+      <Box sx={{ flex: 1, overflow: 'hidden', minWidth: 0 }}>
         <AtlasMap
           squares={squares}
           gridName={grid?.name ?? gridId}
           imageUrl={atlasImageUrl}
           imageLoading={atlasImagePending}
-          onSquareClick={handleSquareNavigate}
+          onSquareClick={lockSquare}
           predictions={predictions}
           models={models}
           suggestedSquareIds={suggestedSquareIds}
@@ -167,14 +166,38 @@ function AtlasView() {
           }}
           frozenSelection={frozen}
           onFreezeToggle={() => {
-            setFrozen((f) => !f)
-            if (frozen) setSelectedSquareId(null)
+            if (frozen) closePreview()
+            else {
+              setFrozen(true)
+              setShowLatent(false)
+            }
           }}
         />
       </Box>
 
+      {/* Grid-square preview panel (issue #68): atlas + selected square side by side */}
+      {previewOpen && selectedSquareId && (
+        <Box
+          sx={{
+            flex: '1 1 0',
+            minWidth: 320,
+            maxWidth: 760,
+            borderLeft: '1px solid',
+            borderColor: 'divider',
+            overflow: 'hidden',
+          }}
+        >
+          <SquarePreviewPanel
+            acquisitionId={acquisitionId}
+            gridId={gridId}
+            squareId={selectedSquareId}
+            onClose={closePreview}
+          />
+        </Box>
+      )}
+
       {/* Latent space side panel */}
-      {showLatent && (
+      {!previewOpen && showLatent && (
         <Box
           sx={{
             width: 360,
@@ -208,7 +231,7 @@ function AtlasView() {
             <LatentSpacePanel
               items={latentItems}
               selectedId={selectedSquareId}
-              onItemClick={handleSquareClick}
+              onItemClick={lockSquare}
               onItemHover={(id) => {
                 if (!frozen) setSelectedSquareId(id)
               }}
@@ -218,7 +241,7 @@ function AtlasView() {
       )}
 
       {/* Floating action button to open latent panel */}
-      {!showLatent && (
+      {!previewOpen && !showLatent && (
         <Tooltip title="Show latent space" placement="left">
           <IconButton
             onClick={() => setShowLatent(true)}
