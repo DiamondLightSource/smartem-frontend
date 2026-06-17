@@ -23,6 +23,7 @@ import {
 } from '~/data/api-adapters'
 import type { MockLatentCoords } from '~/data/mock-session-detail'
 import { useBlobObjectUrl } from '~/hooks/useBlobObjectUrl'
+import { useImageNaturalSize } from '~/hooks/useImageNaturalSize'
 import { gray } from '~/theme'
 
 export const Route = createFileRoute('/acquisitions/$acquisitionId/grids/$gridId/atlas')({
@@ -41,6 +42,7 @@ function AtlasView() {
     undefined
   )
   const atlasImageUrl = useBlobObjectUrl(atlasImageBlob as Blob | undefined)
+  const atlasSize = useImageNaturalSize(atlasImageUrl)
   // "Pending" spans the whole wait: the blob fetch plus the extra tick useBlobObjectUrl needs
   // to mint the object URL. Without the second term the overlay would briefly flash in between
   // the fetch resolving and the URL existing.
@@ -156,6 +158,8 @@ function AtlasView() {
           gridName={grid?.name ?? gridId}
           imageUrl={atlasImageUrl}
           imageLoading={atlasImagePending}
+          imageWidth={atlasSize?.width}
+          imageHeight={atlasSize?.height}
           onSquareClick={lockSquare}
           predictions={predictions}
           models={models}
@@ -175,26 +179,28 @@ function AtlasView() {
         />
       </Box>
 
-      {/* Grid-square preview panel (issue #68): atlas + selected square side by side */}
-      {previewOpen && selectedSquareId && (
-        <Box
-          sx={{
-            flex: '1 1 0',
-            minWidth: 320,
-            maxWidth: 760,
-            borderLeft: '1px solid',
-            borderColor: 'divider',
-            overflow: 'hidden',
-          }}
-        >
+      {/* Grid-square preview panel (issue #68): atlas + selected square side by side. The container
+          stays mounted and animates its width so the atlas reflows smoothly instead of snapping; the
+          panel contents (and their image fetch) mount only while open. */}
+      <Box
+        sx={{
+          flexShrink: 0,
+          width: previewOpen ? 'min(46%, 760px)' : 0,
+          borderLeft: previewOpen ? '1px solid' : '0px solid',
+          borderColor: 'divider',
+          overflow: 'hidden',
+          transition: 'width 0.22s ease',
+        }}
+      >
+        {previewOpen && selectedSquareId && (
           <SquarePreviewPanel
             acquisitionId={acquisitionId}
             gridId={gridId}
             squareId={selectedSquareId}
             onClose={closePreview}
           />
-        </Box>
-      )}
+        )}
+      </Box>
 
       {/* Latent space side panel */}
       {!previewOpen && showLatent && (

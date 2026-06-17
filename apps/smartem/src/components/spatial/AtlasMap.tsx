@@ -29,6 +29,10 @@ interface AtlasMapProps {
   gridName: string
   imageUrl?: string
   imageLoading?: boolean
+  // Natural pixel size of the atlas image. Square coords are in this space, so the viewBox must
+  // match it; falls back to a square guess until the image has decoded.
+  imageWidth?: number
+  imageHeight?: number
   onSquareClick: (squareUuid: string) => void
   predictions?: MockModelPredictions[]
   models?: MockPredictionModel[]
@@ -44,6 +48,8 @@ export function AtlasMap({
   gridName,
   imageUrl,
   imageLoading,
+  imageWidth,
+  imageHeight,
   onSquareClick,
   predictions,
   models,
@@ -173,6 +179,12 @@ export function AtlasMap({
 
   const activeMode = showPredictions ? 'prediction' : colorMode
 
+  // Square coords live in the atlas image's native pixel space; match the viewBox to it (falling
+  // back to a square guess until the image decodes) so the overlay sits on the image instead of
+  // being stretched by forcing a non-square image into a square box.
+  const vbW = imageWidth ?? 4005
+  const vbH = imageHeight ?? 4005
+
   return (
     <Box
       sx={{
@@ -202,7 +214,7 @@ export function AtlasMap({
           }}
         />
         <svg
-          viewBox="0 0 4005 4005"
+          viewBox={`0 0 ${vbW} ${vbH}`}
           role="img"
           aria-label="Atlas map showing grid squares"
           style={{
@@ -223,8 +235,8 @@ export function AtlasMap({
               href={imageUrl}
               x="0"
               y="0"
-              width="4005"
-              height="4005"
+              width={vbW}
+              height={vbH}
               preserveAspectRatio="none"
               onLoad={() => setImageLoaded(true)}
               onError={() => setImageLoaded(true)}

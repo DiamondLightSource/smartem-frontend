@@ -16,6 +16,8 @@ function SquareIndexView() {
     squareLabel,
     imageUrl,
     imageLoading,
+    imageWidth,
+    imageHeight,
     predictionLayers,
     predictionValues,
     suggestedHoleIds,
@@ -27,6 +29,8 @@ function SquareIndexView() {
       squareLabel={squareLabel}
       imageUrl={imageUrl}
       imageLoading={imageLoading}
+      imageWidth={imageWidth}
+      imageHeight={imageHeight}
       predictionLayers={predictionLayers}
       predictionValues={predictionValues}
       suggestedHoleIds={suggestedHoleIds}
