@@ -58,6 +58,10 @@ interface SquareMapProps {
   squareLabel: string
   imageUrl?: string
   imageLoading?: boolean
+  // Natural pixel size of the micrograph. Foilhole coords are in this space, so the viewBox must
+  // match it; falls back to the standard gridsquare image size until the image has decoded.
+  imageWidth?: number
+  imageHeight?: number
   onFoilholeClick?: (uuid: string) => void
   predictionLayers?: PredictionLayer[]
   // layer id -> (foilhole uuid -> predicted value, 0..1)
@@ -71,6 +75,8 @@ export function SquareMap({
   squareLabel,
   imageUrl,
   imageLoading,
+  imageWidth,
+  imageHeight,
   onFoilholeClick,
   predictionLayers = [],
   predictionValues = {},
@@ -183,6 +189,11 @@ export function SquareMap({
   const avgQuality =
     foilholes.length > 0 ? foilholes.reduce((sum, h) => sum + h.quality, 0) / foilholes.length : 0
 
+  // Foilhole coords live in the micrograph's native pixel space; match the viewBox to it (falling
+  // back to the standard gridsquare size until the image decodes) so the overlay stays on the image.
+  const vbW = imageWidth ?? 2880
+  const vbH = imageHeight ?? 2046
+
   return (
     <Box
       sx={{
@@ -212,7 +223,7 @@ export function SquareMap({
           }}
         />
         <svg
-          viewBox="0 0 2880 2046"
+          viewBox={`0 0 ${vbW} ${vbH}`}
           role="img"
           aria-label="Grid square map showing foilholes"
           style={{
@@ -236,8 +247,8 @@ export function SquareMap({
               href={imageUrl}
               x="0"
               y="0"
-              width="2880"
-              height="2046"
+              width={vbW}
+              height={vbH}
               preserveAspectRatio="none"
               onLoad={() => setImageLoaded(true)}
               onError={() => setImageLoaded(true)}

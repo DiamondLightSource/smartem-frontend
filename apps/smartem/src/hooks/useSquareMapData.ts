@@ -18,12 +18,15 @@ import {
 } from '~/data/api-adapters'
 import type { MockFoilHole } from '~/data/mock-session-detail'
 import { useBlobObjectUrl } from './useBlobObjectUrl'
+import { useImageNaturalSize } from './useImageNaturalSize'
 
 export interface SquareMapData {
   squareLabel: string
   foilholes: MockFoilHole[]
   imageUrl?: string
   imageLoading: boolean
+  imageWidth?: number
+  imageHeight?: number
   predictionLayers: PredictionLayer[]
   predictionValues: Record<string, Map<string, number>>
   suggestedHoleIds: Set<string>
@@ -46,6 +49,7 @@ export function useSquareMapData(squareId: string): SquareMapData {
   // "Pending" spans the blob fetch plus the extra tick useBlobObjectUrl needs to mint the object
   // URL, so the overlay doesn't briefly flash in between the two.
   const imageLoading = squareImageLoading || (!!squareImageBlob && !imageUrl)
+  const naturalSize = useImageNaturalSize(imageUrl)
 
   const square = useMemo(
     () => (squareResponse ? gridSquareResponseToMock(squareResponse) : null),
@@ -107,6 +111,8 @@ export function useSquareMapData(squareId: string): SquareMapData {
     foilholes,
     imageUrl,
     imageLoading,
+    imageWidth: naturalSize?.width,
+    imageHeight: naturalSize?.height,
     predictionLayers,
     predictionValues,
     suggestedHoleIds,
