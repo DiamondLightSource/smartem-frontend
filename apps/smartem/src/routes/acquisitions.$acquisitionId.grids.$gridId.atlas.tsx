@@ -184,8 +184,12 @@ function AtlasView() {
           panel contents (and their image fetch) mount only while open. */}
       <Box
         sx={{
+          // Responsive split (percentage of the window, no fixed px cap): the panel takes ~42% of
+          // the row when open and the atlas (flex: 1) reflows into the rest. Width animates so the
+          // atlas slides over rather than snapping, and the split scales with the window.
           flexShrink: 0,
-          width: previewOpen ? 'min(46%, 760px)' : 0,
+          width: previewOpen ? '42%' : 0,
+          minWidth: 0,
           borderLeft: previewOpen ? '1px solid' : '0px solid',
           borderColor: 'divider',
           overflow: 'hidden',
