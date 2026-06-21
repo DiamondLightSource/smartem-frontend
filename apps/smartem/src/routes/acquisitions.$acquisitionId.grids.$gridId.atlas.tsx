@@ -12,6 +12,7 @@ import { useQueries } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import { AtlasMap } from '~/components/spatial/AtlasMap'
+import { EmptySquarePanel } from '~/components/spatial/EmptySquarePanel'
 import { LatentSpacePanel } from '~/components/spatial/LatentSpacePanel'
 import { SquarePreviewPanel } from '~/components/spatial/SquarePreviewPanel'
 import {
@@ -134,10 +135,10 @@ function AtlasView() {
     [squares]
   )
 
-  // Clicking a square locks it and opens the side-by-side grid-square preview (issue #68). Hover
-  // only highlights - the heavy micrograph loads on this explicit commit, not on hover. Opening the
-  // preview hides the latent panel so only one right-hand panel shows at a time.
-  const previewOpen = frozen && selectedSquareId !== null
+  // Clicking a square commits it (issue #68): hover only highlights, the heavy micrograph loads on the
+  // explicit commit. The right-hand panel is always present (committed square / latent space / empty
+  // placeholder), so the atlas never reflows when a square is picked.
+  const committedSquareId = frozen ? selectedSquareId : null
 
   const lockSquare = (uuid: string) => {
     setSelectedSquareId(uuid)
@@ -151,8 +152,9 @@ function AtlasView() {
   }
 
   return (
-    <Box sx={{ display: 'flex', height: '100%', overflow: 'hidden', position: 'relative' }}>
-      <Box sx={{ flex: 1, overflow: 'hidden', minWidth: 0 }}>
+    <Box sx={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
+      {/* Atlas pane - always the complementary width of the persistent panel, so it never reflows. */}
+      <Box sx={{ flex: 1, overflow: 'hidden', minWidth: 0, position: 'relative' }}>
         <AtlasMap
           squares={squares}
           gridName={grid?.name ?? gridId}
@@ -177,113 +179,99 @@ function AtlasView() {
             }
           }}
         />
-      </Box>
 
-      {/* Grid-square preview panel (issue #68): atlas + selected square side by side. The container
-          stays mounted and animates its width so the atlas reflows smoothly instead of snapping; the
-          panel contents (and their image fetch) mount only while open. */}
-      <Box
-        sx={{
-          // Responsive split (percentage of the window, no fixed px cap): the panel takes ~42% of
-          // the row when open and the atlas (flex: 1) reflows into the rest. Width animates so the
-          // atlas slides over rather than snapping, and the split scales with the window.
-          flexShrink: 0,
-          width: previewOpen ? '42%' : 0,
-          minWidth: 0,
-          borderLeft: previewOpen ? '1px solid' : '0px solid',
-          borderColor: 'divider',
-          overflow: 'hidden',
-          transition: 'width 0.22s ease',
-        }}
-      >
-        {previewOpen && selectedSquareId && (
-          <SquarePreviewPanel
-            acquisitionId={acquisitionId}
-            gridId={gridId}
-            squareId={selectedSquareId}
-            onClose={closePreview}
-          />
+        {/* Open latent space - floats over the atlas, top-right, while the latent panel is closed. */}
+        {!showLatent && (
+          <Tooltip title="Show latent space" placement="left">
+            <IconButton
+              onClick={() => setShowLatent(true)}
+              size="small"
+              sx={{
+                position: 'absolute',
+                right: 12,
+                top: 12,
+                zIndex: 5,
+                backgroundColor: '#ffffff',
+                border: '1px solid',
+                borderColor: 'divider',
+                '&:hover': { backgroundColor: gray[100] },
+              }}
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                role="img"
+                aria-label="Scatter plot"
+              >
+                <circle cx="4" cy="12" r="2" fill="#5878a3" />
+                <circle cx="7" cy="5" r="2" fill="#e59344" />
+                <circle cx="12" cy="9" r="2" fill="#6ba059" />
+                <circle cx="10" cy="3" r="1.5" fill="#d1605e" />
+                <circle cx="3" cy="7" r="1.5" fill="#a77c9f" />
+              </svg>
+            </IconButton>
+          </Tooltip>
         )}
       </Box>
 
-      {/* Latent space side panel */}
-      {!previewOpen && showLatent && (
-        <Box
-          sx={{
-            width: 360,
-            flexShrink: 0,
-            borderLeft: '1px solid',
-            borderColor: 'divider',
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden',
-          }}
-        >
+      {/* Persistent right-hand panel (issue #68): latent space, the committed grid square, or an empty
+          placeholder. Fixed share of the row so the atlas keeps its position when a square is clicked. */}
+      <Box
+        sx={{
+          flexShrink: 0,
+          width: '42%',
+          minWidth: 0,
+          borderLeft: '1px solid',
+          borderColor: 'divider',
+          overflow: 'hidden',
+        }}
+      >
+        {showLatent ? (
           <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              px: 1.5,
-              height: 28,
-              backgroundColor: gray[100],
-              borderBottom: '1px solid',
-              borderColor: 'divider',
-              flexShrink: 0,
-            }}
+            sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}
           >
-            <Typography variant="caption" sx={{ fontWeight: 600, fontSize: '0.6875rem' }}>
-              Latent Space
-            </Typography>
-            <Box sx={{ flex: 1 }} />
-            <CloseButton onClick={() => setShowLatent(false)} />
-          </Box>
-          <Box sx={{ flex: 1, overflow: 'hidden' }}>
-            <LatentSpacePanel
-              items={latentItems}
-              selectedId={selectedSquareId}
-              onItemClick={lockSquare}
-              onItemHover={(id) => {
-                if (!frozen) setSelectedSquareId(id)
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                px: 1.5,
+                height: 28,
+                backgroundColor: gray[100],
+                borderBottom: '1px solid',
+                borderColor: 'divider',
+                flexShrink: 0,
               }}
-            />
-          </Box>
-        </Box>
-      )}
-
-      {/* Floating action button to open latent panel */}
-      {!previewOpen && !showLatent && (
-        <Tooltip title="Show latent space" placement="left">
-          <IconButton
-            onClick={() => setShowLatent(true)}
-            size="small"
-            sx={{
-              position: 'absolute',
-              right: 12,
-              top: 12,
-              zIndex: 5,
-              backgroundColor: '#ffffff',
-              border: '1px solid',
-              borderColor: 'divider',
-              '&:hover': { backgroundColor: gray[100] },
-            }}
-          >
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              role="img"
-              aria-label="Scatter plot"
             >
-              <circle cx="4" cy="12" r="2" fill="#5878a3" />
-              <circle cx="7" cy="5" r="2" fill="#e59344" />
-              <circle cx="12" cy="9" r="2" fill="#6ba059" />
-              <circle cx="10" cy="3" r="1.5" fill="#d1605e" />
-              <circle cx="3" cy="7" r="1.5" fill="#a77c9f" />
-            </svg>
-          </IconButton>
-        </Tooltip>
-      )}
+              <Typography variant="caption" sx={{ fontWeight: 600, fontSize: '0.6875rem' }}>
+                Latent Space
+              </Typography>
+              <Box sx={{ flex: 1 }} />
+              <CloseButton onClick={() => setShowLatent(false)} />
+            </Box>
+            <Box sx={{ flex: 1, overflow: 'hidden' }}>
+              <LatentSpacePanel
+                items={latentItems}
+                selectedId={selectedSquareId}
+                onItemClick={lockSquare}
+                onItemHover={(id) => {
+                  if (!frozen) setSelectedSquareId(id)
+                }}
+              />
+            </Box>
+          </Box>
+        ) : committedSquareId ? (
+          <SquarePreviewPanel
+            acquisitionId={acquisitionId}
+            gridId={gridId}
+            squareId={committedSquareId}
+            onClose={closePreview}
+          />
+        ) : (
+          <EmptySquarePanel />
+        )}
+      </Box>
     </Box>
   )
 }
