@@ -194,25 +194,67 @@ export function AtlasMap({
         overflow: 'hidden',
       }}
     >
+      {/* Header bar - mirrors the grid-square panel header so the two panes line up at the top. */}
       <Box
         sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 0.5,
+          px: 1.5,
+          py: 1,
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+          backgroundColor: gray[50],
+          flexShrink: 0,
+        }}
+      >
+        <Box
+          sx={{
+            width: '3px',
+            alignSelf: 'stretch',
+            minHeight: 20,
+            borderRadius: 1,
+            backgroundColor: gray[400],
+          }}
+        />
+        <Box sx={{ minWidth: 0, flex: 1 }}>
+          <Typography
+            variant="caption"
+            noWrap
+            sx={{ fontWeight: 700, display: 'block', lineHeight: 1.25 }}
+          >
+            {gridName}
+          </Typography>
+          <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.625rem' }}>
+            {squares.length} squares{frozen ? ' · selection locked' : ''}
+          </Typography>
+        </Box>
+      </Box>
+
+      <Box
+        sx={{
+          // Right-align the atlas image so it butts against the grid-square panel instead of floating
+          // centred; dark canvas matches the panel so the (dark) micrograph blends into the matting.
           flex: 1,
           position: 'relative',
           overflow: 'hidden',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center',
+          justifyContent: 'flex-end',
+          backgroundColor: gray[900],
         }}
       >
-        {/* Image placeholder background */}
-        <Box
-          sx={{
-            position: 'absolute',
-            inset: 0,
-            background: `repeating-conic-gradient(${gray[200]} 0% 25%, ${gray[50]} 0% 50%) 50% / 20px 20px`,
-            borderRadius: 1,
-          }}
-        />
+        {/* Checkered placeholder while the atlas image loads; dropped once it is ready. */}
+        {!imageReady && (
+          <Box
+            sx={{
+              position: 'absolute',
+              inset: 0,
+              background: `repeating-conic-gradient(${gray[200]} 0% 25%, ${gray[50]} 0% 50%) 50% / 20px 20px`,
+              borderRadius: 1,
+            }}
+          />
+        )}
         <svg
           viewBox={`0 0 ${vbW} ${vbH}`}
           role="img"
@@ -359,28 +401,6 @@ export function AtlasMap({
           flexWrap: 'wrap',
         }}
       >
-        <Typography variant="caption" sx={{ fontWeight: 600 }}>
-          {gridName}
-        </Typography>
-        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-          {squares.length} squares
-        </Typography>
-
-        {frozen && (
-          <Typography
-            variant="caption"
-            sx={{
-              color: statusColors.paused,
-              fontWeight: 500,
-              fontSize: '0.625rem',
-            }}
-          >
-            selection locked
-          </Typography>
-        )}
-
-        <Box sx={{ flex: 1 }} />
-
         {/* Prediction overlay toggle */}
         {models && models.length > 0 && (
           <>
@@ -463,6 +483,8 @@ export function AtlasMap({
             Suggestions ({suggestedSquareIds.size})
           </ButtonBase>
         )}
+
+        <Box sx={{ flex: 1 }} />
 
         <ColorLegend mode={activeMode} bins={predBins} />
       </Box>
