@@ -93,27 +93,35 @@ function AtlasView() {
     [suggestedSquares]
   )
 
-  // Latent representation comes from a specific latent-rep model; lacking a picker, use the
-  // first model that returns coordinates and merge them onto the squares.
+  // Latent representation comes from a specific latent-rep model. Collect every model that returned
+  // coordinates (the picker options) and merge the selected model's coordinates onto the squares;
+  // default to the first model with data until the user picks one.
+  const latentByModel = useMemo(() => {
+    const out: { id: string; label: string; coords: Map<string, MockLatentCoords> }[] = []
+    models.forEach((m, i) => {
+      const data = latentResults[i]?.data
+      if (data && data.length > 0) {
+        const coords = latentResponsesToCoordsByUuid(data)
+        if (coords.size > 0) out.push({ id: m.id, label: m.name, coords })
+      }
+    })
+    return out
+  }, [models, latentResults])
+
+  const [latentModel, setLatentModel] = useState('')
+  const activeLatentModel = latentByModel.some((l) => l.id === latentModel)
+    ? latentModel
+    : (latentByModel[0]?.id ?? '')
+
   const squares = useMemo(() => {
     const base = (squareResponses ?? []).map(gridSquareResponseToMock)
-    let latentByUuid: Map<string, MockLatentCoords> | null = null
-    for (const result of latentResults) {
-      if (result?.data && result.data.length > 0) {
-        const map = latentResponsesToCoordsByUuid(result.data)
-        if (map.size > 0) {
-          latentByUuid = map
-          break
-        }
-      }
-    }
-    if (!latentByUuid) return base
-    const lookup = latentByUuid
+    const lookup = latentByModel.find((l) => l.id === activeLatentModel)?.coords
+    if (!lookup) return base
     return base.map((sq) => {
       const latent = lookup.get(sq.uuid)
       return latent ? { ...sq, latent } : sq
     })
-  }, [squareResponses, latentResults])
+  }, [squareResponses, latentByModel, activeLatentModel])
 
   const [showLatent, setShowLatent] = useState(false)
   const [selectedSquareId, setSelectedSquareId] = useState<string | null>(null)
@@ -237,6 +245,9 @@ function AtlasView() {
               if (!frozen) setSelectedSquareId(id)
             }}
             onClose={() => setShowLatent(false)}
+            models={latentByModel.map((l) => ({ id: l.id, label: l.label }))}
+            selectedModel={activeLatentModel}
+            onModelChange={setLatentModel}
           />
         ) : committedSquareId ? (
           <SquarePreviewPanel
