@@ -30,7 +30,7 @@ npm run dev
 npm run dev:mock
 ```
 
-Your application will be available at `http://localhost:5174`.
+Your application will be available at `http://localhost:5173`.
 
 ## Technology Stack
 
