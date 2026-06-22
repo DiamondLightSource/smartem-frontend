@@ -22,7 +22,7 @@
     "@smartem/ui": "*",
     "@tanstack/react-query": "^5.100.6",
     "@tanstack/react-router": "^1.168.3",
-    "@tanstack/router-devtools": "^1.166.11",
+    "@tanstack/react-router-devtools": "^1.166.13",
     "keycloak-js": "^26.1.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
