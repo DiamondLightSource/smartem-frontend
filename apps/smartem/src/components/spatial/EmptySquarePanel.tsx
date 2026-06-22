@@ -7,13 +7,7 @@ import { gray } from '~/theme'
 // by the real grid-square panel without the layout shifting.
 export function EmptySquarePanel() {
   return (
-    <PaneFrame
-      title="Grid square"
-      subtitle="None selected"
-      accentColor={gray[300]}
-      titleMuted
-      bodyBackground={gray[900]}
-    >
+    <PaneFrame title="Grid square" subtitle="None selected" titleMuted bodyBackground={gray[900]}>
       <Typography variant="caption" sx={{ color: gray[500], px: 3, textAlign: 'center' }}>
         Click a square on the atlas to preview it
       </Typography>

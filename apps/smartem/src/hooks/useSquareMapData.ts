@@ -75,7 +75,7 @@ export function useSquareMapData(squareId: string): SquareMapData {
     models.forEach((m, i) => {
       const map = foilholePredictionMap(predictionResults[i]?.data ?? [])
       if (map.size > 0) {
-        layers.push({ id: m.name, label: m.name.split('-')[0] })
+        layers.push({ id: m.name, label: m.name })
         values[m.name] = map
       }
     })
