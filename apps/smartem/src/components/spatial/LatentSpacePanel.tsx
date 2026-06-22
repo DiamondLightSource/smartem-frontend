@@ -1,5 +1,6 @@
-import { Box, Checkbox, FormControlLabel, Typography } from '@mui/material'
+import { Box, Checkbox, FormControlLabel, IconButton, Typography } from '@mui/material'
 import { useMemo, useState } from 'react'
+import { PaneFrame } from '~/components/layout/PaneFrame'
 import type { MockLatentCoords } from '~/data/mock-session-detail'
 import { gray } from '~/theme'
 import { CLUSTER_PALETTE } from '~/utils/heatmap'
@@ -16,6 +17,8 @@ interface LatentSpacePanelProps {
   selectedId: string | null
   onItemClick?: (id: string) => void
   onItemHover?: (id: string | null) => void
+  // When provided, renders a close button in the pane header (used as the atlas-embedded panel).
+  onClose?: () => void
 }
 
 export function LatentSpacePanel({
@@ -23,6 +26,7 @@ export function LatentSpacePanel({
   selectedId,
   onItemClick,
   onItemHover,
+  onClose,
 }: LatentSpacePanelProps) {
   const [showUnselected, setShowUnselected] = useState(true)
 
@@ -52,97 +56,81 @@ export function LatentSpacePanel({
   const toSvgX = (x: number) => pad.left + ((x - minX) / (maxX - minX)) * plotW
   const toSvgY = (y: number) => pad.top + ((maxY - y) / (maxY - minY)) * plotH
 
-  return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
-      <Box
-        sx={{
-          flex: 1,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          overflow: 'hidden',
-        }}
-      >
-        <svg
-          viewBox={`0 0 ${W} ${H}`}
-          role="img"
-          aria-label="Latent space scatter plot"
-          style={{
-            width: '100%',
-            height: '100%',
-            maxWidth: '100%',
-            maxHeight: '100%',
-            background: gray[900],
-            borderRadius: 4,
-          }}
-        >
-          {items.map((item) => {
-            const isSelected = item.id === selectedId
-            if (!showUnselected && !isSelected) return null
-            const cx = toSvgX(item.latent.x)
-            const cy = toSvgY(item.latent.y)
-            const clusterColor = CLUSTER_PALETTE[item.latent.clusterIndex % CLUSTER_PALETTE.length]
-            const r = item.predictionValue != null ? 3 + item.predictionValue * 5 : 5
-            return (
-              <circle
-                key={item.id}
-                role="button"
-                tabIndex={0}
-                cx={cx}
-                cy={cy}
-                r={isSelected ? r + 2 : r}
-                fill={isSelected ? '#ffffff' : clusterColor}
-                opacity={isSelected ? 1 : 0.75}
-                stroke={isSelected ? '#ffffff' : 'none'}
-                strokeWidth={isSelected ? 2 : 0}
-                style={{ cursor: 'pointer', transition: 'r 0.15s, fill 0.15s' }}
-                onClick={() => onItemClick?.(item.id)}
-                onMouseEnter={() => onItemHover?.(item.id)}
-                onMouseLeave={() => onItemHover?.(null)}
-              />
-            )
-          })}
-        </svg>
-      </Box>
-
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1,
-          px: 2,
-          py: 0.75,
-          borderTop: '1px solid',
-          borderColor: 'divider',
-          flexShrink: 0,
-        }}
-      >
-        <Typography variant="caption" sx={{ fontWeight: 600 }}>
-          Latent Space
-        </Typography>
-        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-          {items.length} points
-        </Typography>
-        <Box sx={{ flex: 1 }} />
-        <FormControlLabel
-          control={
-            <Checkbox
-              size="small"
-              checked={showUnselected}
-              onChange={(e) => setShowUnselected(e.target.checked)}
-              sx={{ p: 0.25 }}
-            />
-          }
-          label={
-            <Typography variant="caption" sx={{ fontSize: '0.625rem' }}>
-              Show all
-            </Typography>
-          }
-          sx={{ mr: 0 }}
-        />
-        <ClusterLegend />
-      </Box>
+  const footer = (
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 2, py: 0.75 }}>
+      <Box sx={{ flex: 1 }} />
+      <FormControlLabel
+        control={
+          <Checkbox
+            size="small"
+            checked={showUnselected}
+            onChange={(e) => setShowUnselected(e.target.checked)}
+            sx={{ p: 0.25 }}
+          />
+        }
+        label={
+          <Typography variant="caption" sx={{ fontSize: '0.625rem' }}>
+            Show all
+          </Typography>
+        }
+        sx={{ mr: 0 }}
+      />
+      <ClusterLegend />
     </Box>
+  )
+
+  return (
+    <PaneFrame
+      title="Latent Space"
+      subtitle={`${items.length} points`}
+      bodyBackground={gray[900]}
+      actions={onClose ? <CloseButton onClick={onClose} /> : undefined}
+      footer={footer}
+    >
+      <svg
+        viewBox={`0 0 ${W} ${H}`}
+        role="img"
+        aria-label="Latent space scatter plot"
+        style={{ width: '100%', height: '100%', maxWidth: '100%', maxHeight: '100%' }}
+      >
+        {items.map((item) => {
+          const isSelected = item.id === selectedId
+          if (!showUnselected && !isSelected) return null
+          const cx = toSvgX(item.latent.x)
+          const cy = toSvgY(item.latent.y)
+          const clusterColor = CLUSTER_PALETTE[item.latent.clusterIndex % CLUSTER_PALETTE.length]
+          const r = item.predictionValue != null ? 3 + item.predictionValue * 5 : 5
+          return (
+            <circle
+              key={item.id}
+              role="button"
+              tabIndex={0}
+              cx={cx}
+              cy={cy}
+              r={isSelected ? r + 2 : r}
+              fill={isSelected ? '#ffffff' : clusterColor}
+              opacity={isSelected ? 1 : 0.75}
+              stroke={isSelected ? '#ffffff' : 'none'}
+              strokeWidth={isSelected ? 2 : 0}
+              style={{ cursor: 'pointer', transition: 'r 0.15s, fill 0.15s' }}
+              onClick={() => onItemClick?.(item.id)}
+              onMouseEnter={() => onItemHover?.(item.id)}
+              onMouseLeave={() => onItemHover?.(null)}
+            />
+          )
+        })}
+      </svg>
+    </PaneFrame>
+  )
+}
+
+function CloseButton({ onClick }: { onClick: () => void }) {
+  return (
+    <IconButton onClick={onClick} size="small" sx={{ p: 0.5 }} aria-label="Close latent space">
+      <svg width="13" height="13" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+        <path d="M3 3l6 6M9 3l-6 6" stroke={gray[700]} strokeWidth="1.5" strokeLinecap="round" />
+      </svg>
+    </IconButton>
   )
 }
 

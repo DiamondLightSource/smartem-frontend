@@ -9,6 +9,7 @@ import {
   Typography,
 } from '@mui/material'
 import { useCallback, useMemo, useState } from 'react'
+import { PaneFrame } from '~/components/layout/PaneFrame'
 import type { MockFoilHole } from '~/data/mock-session-detail'
 import { gray, statusColors } from '~/theme'
 import {
@@ -18,7 +19,6 @@ import {
   qualityColor,
   valueToHeatmapColor,
 } from '~/utils/heatmap'
-import { SPATIAL_FOOTER_MIN_HEIGHT } from './layout'
 
 type BaseMetric = 'quality' | 'resolution' | 'astigmatism' | 'particleCount'
 
@@ -327,35 +327,10 @@ export function SquareMap({
 
   const legend = <HeatmapLegend useHeatmap={useHeatmap} bins={heatmapBins} />
 
-  const imageArea = (
-    <Box
-      sx={
-        isPanel
-          ? {
-              // Fill the height between header and controls as an image-viewer canvas. The landscape
-              // micrograph centres within and any leftover reads as dark matting, so the panel never
-              // ends in a white void below the controls.
-              flex: 1,
-              minHeight: 0,
-              position: 'relative',
-              overflow: 'hidden',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: gray[900],
-              borderBottom: '1px solid',
-              borderColor: 'divider',
-            }
-          : {
-              flex: 1,
-              position: 'relative',
-              overflow: 'hidden',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }
-      }
-    >
+  // Inner content of the image canvas (placeholder + svg overlay + loading + tooltip), shared by both
+  // variants: the panel wraps it in a PaneFrame body, the full page in its own canvas Box.
+  const mapContent = (
+    <>
       {/* Checkered placeholder for microscope image. In the panel the area is a dark viewer canvas,
           so drop the checker once the image is ready and let the dark matting show through. */}
       {!(isPanel && imageReady) && (
@@ -508,9 +483,82 @@ export function SquareMap({
           {hoveredHole.isNearGridBar && ' (near grid bar)'}
         </Box>
       )}
-    </Box>
+    </>
   )
 
+  // Embedded preview (issue #68): compose the shared PaneFrame so the header and footer line up with the
+  // atlas pane structurally. The orange accent echoes the locked-square ring tying the two panes together.
+  if (isPanel) {
+    return (
+      <PaneFrame
+        title={squareLabel}
+        subtitle={`${foilholes.length} foilholes · avg ${Math.round(avgQuality * 100)}%${
+          selectionFrozen ? ' · locked' : ''
+        }`}
+        accentColor="#e59344"
+        bodyBackground={gray[900]}
+        actions={
+          <>
+            {onExpand && (
+              <Tooltip title="Open full square view" placement="bottom">
+                <IconButton
+                  onClick={onExpand}
+                  size="small"
+                  sx={{ p: 0.5 }}
+                  aria-label="Open full square view"
+                >
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path
+                      d="M6 3h7v7M13 3l-7 7M11 9v4H3V5h4"
+                      stroke={gray[700]}
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </IconButton>
+              </Tooltip>
+            )}
+            {onClose && (
+              <Tooltip title="Close grid square" placement="bottom">
+                <IconButton
+                  onClick={onClose}
+                  size="small"
+                  sx={{ p: 0.5 }}
+                  aria-label="Close grid square panel"
+                >
+                  <svg width="13" height="13" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                    <path
+                      d="M3 3l6 6M9 3l-6 6"
+                      stroke={gray[700]}
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </IconButton>
+              </Tooltip>
+            )}
+          </>
+        }
+        footer={
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, px: 1.5, py: 1.25 }}>
+            {selectedHoleDetail}
+            {metricSelector}
+            <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
+              {suggestionsToggle}
+              {hideNullToggle}
+              <Box sx={{ flex: 1 }} />
+              {legend}
+            </Box>
+          </Box>
+        }
+      >
+        {mapContent}
+      </PaneFrame>
+    )
+  }
+
+  // Full-page square view: micrograph canvas plus a single horizontal control bar.
   return (
     <Box
       sx={{
@@ -520,135 +568,39 @@ export function SquareMap({
         overflow: 'hidden',
       }}
     >
-      {isPanel && (
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 0.5,
-            px: 1.5,
-            py: 1,
-            borderBottom: '1px solid',
-            borderColor: 'divider',
-            backgroundColor: gray[50],
-            flexShrink: 0,
-          }}
-        >
-          {/* Orange accent echoes the locked-square ring on the atlas, tying the two panes together. */}
-          <Box
-            sx={{
-              width: '3px',
-              alignSelf: 'stretch',
-              minHeight: 20,
-              borderRadius: 1,
-              backgroundColor: '#e59344',
-            }}
-          />
-          <Box sx={{ minWidth: 0, flex: 1 }}>
-            <Typography
-              variant="caption"
-              noWrap
-              sx={{ fontWeight: 700, display: 'block', lineHeight: 1.25 }}
-            >
-              {squareLabel}
-            </Typography>
-            <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.625rem' }}>
-              {foilholes.length} foilholes · avg {Math.round(avgQuality * 100)}%
-              {selectionFrozen ? ' · locked' : ''}
-            </Typography>
-          </Box>
-          {onExpand && (
-            <Tooltip title="Open full square view" placement="bottom">
-              <IconButton
-                onClick={onExpand}
-                size="small"
-                sx={{ p: 0.5 }}
-                aria-label="Open full square view"
-              >
-                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path
-                    d="M6 3h7v7M13 3l-7 7M11 9v4H3V5h4"
-                    stroke={gray[700]}
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </IconButton>
-            </Tooltip>
-          )}
-          {onClose && (
-            <Tooltip title="Close grid square" placement="bottom">
-              <IconButton
-                onClick={onClose}
-                size="small"
-                sx={{ p: 0.5 }}
-                aria-label="Close grid square panel"
-              >
-                <svg width="13" height="13" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                  <path
-                    d="M3 3l6 6M9 3l-6 6"
-                    stroke={gray[700]}
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </IconButton>
-            </Tooltip>
-          )}
-        </Box>
-      )}
-
-      {imageArea}
-
-      {isPanel ? (
-        // Controls pinned directly below the viewer canvas (the image area above takes the slack), so
-        // there is no empty band at the foot of the panel. Shares its height floor with the atlas footer
-        // so the two footers line up; the stacked controls centre within it.
-        <Box
-          sx={{
-            flexShrink: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            gap: 1,
-            px: 1.5,
-            py: 1.25,
-            minHeight: SPATIAL_FOOTER_MIN_HEIGHT,
-          }}
-        >
-          {selectedHoleDetail}
-          {metricSelector}
-          <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
-            {suggestionsToggle}
-            {hideNullToggle}
-            <Box sx={{ flex: 1 }} />
-            {legend}
-          </Box>
-        </Box>
-      ) : (
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1,
-            px: 2,
-            py: 0.75,
-            borderTop: '1px solid',
-            borderColor: 'divider',
-            flexShrink: 0,
-            flexWrap: 'wrap',
-          }}
-        >
-          {statsItems}
-          {selectedHoleDetail}
-          <Box sx={{ flex: 1 }} />
-          {metricSelector}
-          {suggestionsToggle}
-          {hideNullToggle}
-          {legend}
-        </Box>
-      )}
+      <Box
+        sx={{
+          flex: 1,
+          position: 'relative',
+          overflow: 'hidden',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        {mapContent}
+      </Box>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
+          px: 2,
+          py: 0.75,
+          borderTop: '1px solid',
+          borderColor: 'divider',
+          flexShrink: 0,
+          flexWrap: 'wrap',
+        }}
+      >
+        {statsItems}
+        {selectedHoleDetail}
+        <Box sx={{ flex: 1 }} />
+        {metricSelector}
+        {suggestionsToggle}
+        {hideNullToggle}
+        {legend}
+      </Box>
     </Box>
   )
 }

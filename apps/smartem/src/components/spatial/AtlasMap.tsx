@@ -7,6 +7,7 @@ import {
   Typography,
 } from '@mui/material'
 import { useCallback, useMemo, useState } from 'react'
+import { PaneFrame } from '~/components/layout/PaneFrame'
 import type {
   MockGridSquare,
   MockModelPredictions,
@@ -21,7 +22,6 @@ import {
   qualityColor,
   valueToHeatmapColor,
 } from '~/utils/heatmap'
-import { SPATIAL_FOOTER_MIN_HEIGHT } from './layout'
 
 type ColorMode = 'quality' | 'prediction' | 'cluster'
 
@@ -186,315 +186,258 @@ export function AtlasMap({
   const vbW = imageWidth ?? 4005
   const vbH = imageHeight ?? 4005
 
-  return (
+  const atlasFooter = (
     <Box
       sx={{
         display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        overflow: 'hidden',
+        alignItems: 'center',
+        gap: 1,
+        px: 2,
+        py: 0.75,
+        flexWrap: 'wrap',
       }}
     >
-      {/* Header bar - mirrors the grid-square panel header so the two panes line up at the top. */}
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 0.5,
-          px: 1.5,
-          py: 1,
-          borderBottom: '1px solid',
-          borderColor: 'divider',
-          backgroundColor: gray[50],
-          flexShrink: 0,
-        }}
-      >
-        <Box
-          sx={{
-            width: '3px',
-            alignSelf: 'stretch',
-            minHeight: 20,
-            borderRadius: 1,
-            backgroundColor: gray[400],
-          }}
-        />
-        <Box sx={{ minWidth: 0, flex: 1 }}>
-          <Typography
-            variant="caption"
-            noWrap
-            sx={{ fontWeight: 700, display: 'block', lineHeight: 1.25 }}
-          >
-            {gridName}
-          </Typography>
-          <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.625rem' }}>
-            {squares.length} squares{frozen ? ' · selection locked' : ''}
-          </Typography>
-        </Box>
-      </Box>
-
-      <Box
-        sx={{
-          // Dark viewer canvas matching the grid-square panel so the (dark) micrograph blends into the
-          // matting. The image itself is left-aligned inside the SVG (preserveAspectRatio) so it lines up
-          // with the page header; the slack falls to the right, into the seam before the panel.
-          flex: 1,
-          position: 'relative',
-          overflow: 'hidden',
-          backgroundColor: gray[900],
-        }}
-      >
-        {/* Checkered placeholder while the atlas image loads; dropped once it is ready. */}
-        {!imageReady && (
-          <Box
-            sx={{
-              position: 'absolute',
-              inset: 0,
-              background: `repeating-conic-gradient(${gray[200]} 0% 25%, ${gray[50]} 0% 50%) 50% / 20px 20px`,
-              borderRadius: 1,
-            }}
+      {/* Prediction overlay toggle */}
+      {models && models.length > 0 && (
+        <>
+          <FormControlLabel
+            control={
+              <Switch
+                size="small"
+                checked={showPredictions}
+                onChange={() => {
+                  setShowPredictions((p) => !p)
+                  setColorMode(showPredictions ? 'quality' : 'prediction')
+                }}
+              />
+            }
+            label={
+              <Typography variant="caption" sx={{ fontSize: '0.625rem' }}>
+                Predictions
+              </Typography>
+            }
+            sx={{ mr: 0.5, ml: 0 }}
           />
-        )}
-        <svg
-          viewBox={`0 0 ${vbW} ${vbH}`}
-          role="img"
-          aria-label="Atlas map showing grid squares"
-          // Left-align the scaled image inside the (full-width) SVG so its left edge lines up with the
-          // page header / left margin, consistent with the rest of the page. The SVG fills the pane, so
-          // flex justify-content can't move it - the alignment has to happen inside via
-          // preserveAspectRatio (xMin = left, YMid = vertically centred); the leftover slack falls into
-          // the seam between the atlas and the grid-square panel as dark matting.
-          preserveAspectRatio="xMinYMid meet"
-          style={{
-            width: '100%',
-            height: '100%',
-            maxWidth: '100%',
-            maxHeight: '100%',
-            position: 'relative',
-            zIndex: 1,
-          }}
-          onMouseMove={(e) => {
-            const rect = e.currentTarget.getBoundingClientRect()
-            setTooltipPos({ x: e.clientX - rect.left, y: e.clientY - rect.top })
+          {showPredictions && (
+            <Box sx={{ display: 'flex', gap: 0.25 }}>
+              {models.map((m) => (
+                <ButtonBase
+                  key={m.id}
+                  onClick={() => setSelectedModelId(m.id)}
+                  sx={{
+                    px: 0.75,
+                    py: 0.25,
+                    borderRadius: 0.5,
+                    fontSize: '0.5625rem',
+                    fontWeight: m.id === selectedModelId ? 600 : 400,
+                    color: m.id === selectedModelId ? 'text.primary' : 'text.disabled',
+                    backgroundColor: m.id === selectedModelId ? gray[50] : 'transparent',
+                    '&:hover': { backgroundColor: gray[100] },
+                  }}
+                >
+                  {m.name.split('-')[0]}
+                </ButtonBase>
+              ))}
+            </Box>
+          )}
+        </>
+      )}
+
+      {/* Color mode: cluster toggle */}
+      {!showPredictions && (
+        <ButtonBase
+          onClick={() => setColorMode((m) => (m === 'cluster' ? 'quality' : 'cluster'))}
+          sx={{
+            px: 0.75,
+            py: 0.25,
+            borderRadius: 0.5,
+            fontSize: '0.625rem',
+            fontWeight: colorMode === 'cluster' ? 600 : 400,
+            color: colorMode === 'cluster' ? 'text.primary' : 'text.disabled',
+            backgroundColor: colorMode === 'cluster' ? gray[50] : 'transparent',
+            '&:hover': { backgroundColor: gray[100] },
           }}
         >
-          {imageUrl && (
-            <image
-              href={imageUrl}
-              x="0"
-              y="0"
-              width={vbW}
-              height={vbH}
-              preserveAspectRatio="none"
-              onLoad={() => setImageLoaded(true)}
-              onError={() => setImageLoaded(true)}
-              style={{ opacity: imageLoaded ? 1 : 0, transition: 'opacity 0.4s ease' }}
-            />
-          )}
-          <g
-            style={{
-              opacity: imageReady ? 1 : 0,
-              transition: 'opacity 0.4s ease',
-              pointerEvents: imageReady ? 'auto' : 'none',
-            }}
-          >
-            {squares.map((sq) => {
-              const isHovered = hoveredId === sq.uuid
-              const isSelected = selectedId === sq.uuid
-              const isSuggested = showSuggestions && (suggestedSquareIds?.has(sq.uuid) ?? false)
-              const fill = getFill(sq)
-              const r = getRadius(sq)
-              const opacity = isHovered || isSelected ? 1.0 : sq.selected ? 0.8 : 0.5
-              return (
-                <circle
-                  key={sq.uuid}
-                  role="button"
-                  tabIndex={0}
-                  cx={sq.centerX}
-                  cy={sq.centerY}
-                  r={r}
-                  fill={fill}
-                  opacity={opacity}
-                  stroke={
-                    isSelected
-                      ? '#e59344'
-                      : isHovered
-                        ? gray[900]
-                        : isSuggested
-                          ? '#2f6feb'
-                          : 'none'
-                  }
-                  strokeWidth={isSelected ? 12 : isHovered ? 8 : isSuggested ? 10 : 0}
-                  style={{ cursor: 'pointer', transition: 'opacity 0.1s' }}
-                  onMouseEnter={() => handleHover(sq.uuid)}
-                  onMouseLeave={() => handleHover(null)}
-                  onClick={() => handleClick(sq.uuid)}
-                  onDoubleClick={() => onSquareClick(sq.uuid)}
-                >
-                  {sq.hasImageData && sq.status === 'collected' && (
-                    <animate
-                      attributeName="fill-opacity"
-                      dur="1.5s"
-                      values="0.4;0.9;0.4"
-                      repeatCount="indefinite"
-                    />
-                  )}
-                </circle>
-              )
-            })}
-          </g>
-        </svg>
+          Clusters
+        </ButtonBase>
+      )}
 
-        {/* Loading indicator while the atlas image is still being fetched/decoded */}
-        {!imageReady && (
-          <Box
-            sx={{
-              position: 'absolute',
-              inset: 0,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 1,
-              zIndex: 2,
-              pointerEvents: 'none',
-            }}
-          >
-            <CircularProgress size={28} thickness={4} />
-            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-              Loading atlas image…
-            </Typography>
-          </Box>
-        )}
+      {suggestedSquareIds && suggestedSquareIds.size > 0 && (
+        <ButtonBase
+          onClick={() => setShowSuggestions((s) => !s)}
+          sx={{
+            px: 0.75,
+            py: 0.25,
+            borderRadius: 0.5,
+            fontSize: '0.625rem',
+            fontWeight: showSuggestions ? 600 : 400,
+            color: showSuggestions ? '#2f6feb' : 'text.disabled',
+            backgroundColor: showSuggestions ? gray[50] : 'transparent',
+            '&:hover': { backgroundColor: gray[100] },
+          }}
+        >
+          Suggestions ({suggestedSquareIds.size})
+        </ButtonBase>
+      )}
 
-        {/* Tooltip */}
-        {hoveredSquare && (
-          <Box
-            sx={{
-              position: 'absolute',
-              left: tooltipPos.x + 12,
-              top: tooltipPos.y - 30,
-              backgroundColor: gray[900],
-              color: '#ffffff',
-              px: 1,
-              py: 0.5,
-              borderRadius: 1,
-              fontSize: '0.75rem',
-              pointerEvents: 'none',
-              whiteSpace: 'nowrap',
-              zIndex: 10,
-            }}
-          >
-            {hoveredSquare.gridsquareId} — {Math.round(hoveredSquare.quality * 100)}%
-            {showPredictions &&
-              predValues?.get(hoveredSquare.uuid) != null &&
-              ` (pred: ${predValues.get(hoveredSquare.uuid)?.toFixed(3)})`}
-          </Box>
-        )}
-      </Box>
+      <Box sx={{ flex: 1 }} />
 
-      {/* Controls bar - shares the grid-square panel's footer height so the two footers line up. */}
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1,
-          px: 2,
-          py: 0.75,
-          minHeight: SPATIAL_FOOTER_MIN_HEIGHT,
-          borderTop: '1px solid',
-          borderColor: 'divider',
-          flexShrink: 0,
-          flexWrap: 'wrap',
+      <ColorLegend mode={activeMode} bins={predBins} />
+    </Box>
+  )
+
+  return (
+    // Dark bodyBackground matches the grid-square panel so the (dark) micrograph blends into the matting.
+    // The image is left-aligned inside the SVG (preserveAspectRatio) so it lines up with the page header;
+    // the slack falls to the right, into the seam before the panel.
+    <PaneFrame
+      title={gridName}
+      subtitle={`${squares.length} squares${frozen ? ' · selection locked' : ''}`}
+      bodyBackground={gray[900]}
+      footer={atlasFooter}
+    >
+      {/* Checkered placeholder while the atlas image loads; dropped once it is ready. */}
+      {!imageReady && (
+        <Box
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            background: `repeating-conic-gradient(${gray[200]} 0% 25%, ${gray[50]} 0% 50%) 50% / 20px 20px`,
+            borderRadius: 1,
+          }}
+        />
+      )}
+      <svg
+        viewBox={`0 0 ${vbW} ${vbH}`}
+        role="img"
+        aria-label="Atlas map showing grid squares"
+        // Left-align the scaled image inside the (full-width) SVG so its left edge lines up with the
+        // page header / left margin, consistent with the rest of the page. The SVG fills the pane, so
+        // flex justify-content can't move it - the alignment has to happen inside via
+        // preserveAspectRatio (xMin = left, YMid = vertically centred); the leftover slack falls into
+        // the seam between the atlas and the grid-square panel as dark matting.
+        preserveAspectRatio="xMinYMid meet"
+        style={{
+          width: '100%',
+          height: '100%',
+          maxWidth: '100%',
+          maxHeight: '100%',
+          position: 'relative',
+          zIndex: 1,
+        }}
+        onMouseMove={(e) => {
+          const rect = e.currentTarget.getBoundingClientRect()
+          setTooltipPos({ x: e.clientX - rect.left, y: e.clientY - rect.top })
         }}
       >
-        {/* Prediction overlay toggle */}
-        {models && models.length > 0 && (
-          <>
-            <FormControlLabel
-              control={
-                <Switch
-                  size="small"
-                  checked={showPredictions}
-                  onChange={() => {
-                    setShowPredictions((p) => !p)
-                    setColorMode(showPredictions ? 'quality' : 'prediction')
-                  }}
-                />
-              }
-              label={
-                <Typography variant="caption" sx={{ fontSize: '0.625rem' }}>
-                  Predictions
-                </Typography>
-              }
-              sx={{ mr: 0.5, ml: 0 }}
-            />
-            {showPredictions && (
-              <Box sx={{ display: 'flex', gap: 0.25 }}>
-                {models.map((m) => (
-                  <ButtonBase
-                    key={m.id}
-                    onClick={() => setSelectedModelId(m.id)}
-                    sx={{
-                      px: 0.75,
-                      py: 0.25,
-                      borderRadius: 0.5,
-                      fontSize: '0.5625rem',
-                      fontWeight: m.id === selectedModelId ? 600 : 400,
-                      color: m.id === selectedModelId ? 'text.primary' : 'text.disabled',
-                      backgroundColor: m.id === selectedModelId ? gray[50] : 'transparent',
-                      '&:hover': { backgroundColor: gray[100] },
-                    }}
-                  >
-                    {m.name.split('-')[0]}
-                  </ButtonBase>
-                ))}
-              </Box>
-            )}
-          </>
+        {imageUrl && (
+          <image
+            href={imageUrl}
+            x="0"
+            y="0"
+            width={vbW}
+            height={vbH}
+            preserveAspectRatio="none"
+            onLoad={() => setImageLoaded(true)}
+            onError={() => setImageLoaded(true)}
+            style={{ opacity: imageLoaded ? 1 : 0, transition: 'opacity 0.4s ease' }}
+          />
         )}
+        <g
+          style={{
+            opacity: imageReady ? 1 : 0,
+            transition: 'opacity 0.4s ease',
+            pointerEvents: imageReady ? 'auto' : 'none',
+          }}
+        >
+          {squares.map((sq) => {
+            const isHovered = hoveredId === sq.uuid
+            const isSelected = selectedId === sq.uuid
+            const isSuggested = showSuggestions && (suggestedSquareIds?.has(sq.uuid) ?? false)
+            const fill = getFill(sq)
+            const r = getRadius(sq)
+            const opacity = isHovered || isSelected ? 1.0 : sq.selected ? 0.8 : 0.5
+            return (
+              <circle
+                key={sq.uuid}
+                role="button"
+                tabIndex={0}
+                cx={sq.centerX}
+                cy={sq.centerY}
+                r={r}
+                fill={fill}
+                opacity={opacity}
+                stroke={
+                  isSelected ? '#e59344' : isHovered ? gray[900] : isSuggested ? '#2f6feb' : 'none'
+                }
+                strokeWidth={isSelected ? 12 : isHovered ? 8 : isSuggested ? 10 : 0}
+                style={{ cursor: 'pointer', transition: 'opacity 0.1s' }}
+                onMouseEnter={() => handleHover(sq.uuid)}
+                onMouseLeave={() => handleHover(null)}
+                onClick={() => handleClick(sq.uuid)}
+                onDoubleClick={() => onSquareClick(sq.uuid)}
+              >
+                {sq.hasImageData && sq.status === 'collected' && (
+                  <animate
+                    attributeName="fill-opacity"
+                    dur="1.5s"
+                    values="0.4;0.9;0.4"
+                    repeatCount="indefinite"
+                  />
+                )}
+              </circle>
+            )
+          })}
+        </g>
+      </svg>
 
-        {/* Color mode: cluster toggle */}
-        {!showPredictions && (
-          <ButtonBase
-            onClick={() => setColorMode((m) => (m === 'cluster' ? 'quality' : 'cluster'))}
-            sx={{
-              px: 0.75,
-              py: 0.25,
-              borderRadius: 0.5,
-              fontSize: '0.625rem',
-              fontWeight: colorMode === 'cluster' ? 600 : 400,
-              color: colorMode === 'cluster' ? 'text.primary' : 'text.disabled',
-              backgroundColor: colorMode === 'cluster' ? gray[50] : 'transparent',
-              '&:hover': { backgroundColor: gray[100] },
-            }}
-          >
-            Clusters
-          </ButtonBase>
-        )}
+      {/* Loading indicator while the atlas image is still being fetched/decoded */}
+      {!imageReady && (
+        <Box
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 1,
+            zIndex: 2,
+            pointerEvents: 'none',
+          }}
+        >
+          <CircularProgress size={28} thickness={4} />
+          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+            Loading atlas image…
+          </Typography>
+        </Box>
+      )}
 
-        {suggestedSquareIds && suggestedSquareIds.size > 0 && (
-          <ButtonBase
-            onClick={() => setShowSuggestions((s) => !s)}
-            sx={{
-              px: 0.75,
-              py: 0.25,
-              borderRadius: 0.5,
-              fontSize: '0.625rem',
-              fontWeight: showSuggestions ? 600 : 400,
-              color: showSuggestions ? '#2f6feb' : 'text.disabled',
-              backgroundColor: showSuggestions ? gray[50] : 'transparent',
-              '&:hover': { backgroundColor: gray[100] },
-            }}
-          >
-            Suggestions ({suggestedSquareIds.size})
-          </ButtonBase>
-        )}
-
-        <Box sx={{ flex: 1 }} />
-
-        <ColorLegend mode={activeMode} bins={predBins} />
-      </Box>
-    </Box>
+      {/* Tooltip */}
+      {hoveredSquare && (
+        <Box
+          sx={{
+            position: 'absolute',
+            left: tooltipPos.x + 12,
+            top: tooltipPos.y - 30,
+            backgroundColor: gray[900],
+            color: '#ffffff',
+            px: 1,
+            py: 0.5,
+            borderRadius: 1,
+            fontSize: '0.75rem',
+            pointerEvents: 'none',
+            whiteSpace: 'nowrap',
+            zIndex: 10,
+          }}
+        >
+          {hoveredSquare.gridsquareId} — {Math.round(hoveredSquare.quality * 100)}%
+          {showPredictions &&
+            predValues?.get(hoveredSquare.uuid) != null &&
+            ` (pred: ${predValues.get(hoveredSquare.uuid)?.toFixed(3)})`}
+        </Box>
+      )}
+    </PaneFrame>
   )
 }
 
