@@ -10,12 +10,9 @@
     "node": ">=22.0.0"
   },
   "scripts": {
-    "dev": "npm run dev -w @smartem/legacy",
-    "dev:mock": "npm run dev:mock -w @smartem/legacy",
-    "dev:smartem": "npm run dev -w @smartem/app",
-    "dev:smartem:mock": "npm run dev:mock -w @smartem/app",
-    "build": "npm run build -w @smartem/legacy",
-    "build:smartem": "npm run build -w @smartem/app",
+    "dev": "npm run dev -w @smartem/app",
+    "dev:mock": "npm run dev:mock -w @smartem/app",
+    "build": "npm run build -w @smartem/app",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "api:fetch": "npm run api:fetch -w @smartem/api",
     "api:fetch:local": "npm run api:fetch:local -w @smartem/api",

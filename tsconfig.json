@@ -1,9 +1,4 @@
 {
   "files": [],
-  "references": [
-    { "path": "apps/legacy" },
-    { "path": "apps/smartem" },
-    { "path": "packages/api" },
-    { "path": "packages/ui" }
-  ]
+  "references": [{ "path": "apps/smartem" }, { "path": "packages/api" }, { "path": "packages/ui" }]
 }

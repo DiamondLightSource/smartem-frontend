@@ -162,7 +162,7 @@ jobs:
         run: node scripts/write-version-json.mjs
 
       - name: Build
-        run: npm run build:smartem
+        run: npm run build
 
       - name: Upload dist
         uses: actions/upload-artifact@v7
