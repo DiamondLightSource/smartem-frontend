@@ -239,12 +239,20 @@ export function WeightsMatrix({ weightsByModel, showTimeSlider = false }: Props)
                 borderColor: 'divider',
               }}
             >
-              <Typography
-                variant="body2"
-                sx={{ fontWeight: 600, fontSize: '0.8125rem', color: 'text.primary' }}
-              >
-                {model}
-              </Typography>
+              <Tooltip title={model} placement="top">
+                <Typography
+                  variant="body2"
+                  noWrap
+                  sx={{
+                    fontWeight: 600,
+                    fontSize: '0.8125rem',
+                    color: 'text.primary',
+                    minWidth: 0,
+                  }}
+                >
+                  {model}
+                </Typography>
+              </Tooltip>
             </Box>
           )
 
