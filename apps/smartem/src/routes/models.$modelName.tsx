@@ -23,7 +23,8 @@ function ModelDetail() {
   const [gridChoice, setGridChoice] = useState('')
   const gridUuid = gridChoice || grids?.[0]?.uuid || ''
 
-  const { data: weightsData } = useGetModelWeightsForGridGridGridUuidModelWeightsGet(gridUuid)
+  const { data: weightsData, isLoading: weightsLoading } =
+    useGetModelWeightsForGridGridGridUuidModelWeightsGet(gridUuid)
 
   // The weights endpoint returns every model's weights for the grid; narrow to this model.
   const weightsForModel = useMemo<Record<string, QualityPredictionModelWeight[]>>(
@@ -133,7 +134,7 @@ function ModelDetail() {
 
         {gridUuid ? (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            <WeightsTimeline weights={weightsData?.[modelName] ?? []} />
+            <WeightsTimeline weights={weightsData?.[modelName] ?? []} loading={weightsLoading} />
             <WeightsMatrix weightsByModel={weightsForModel} />
           </Box>
         ) : (
