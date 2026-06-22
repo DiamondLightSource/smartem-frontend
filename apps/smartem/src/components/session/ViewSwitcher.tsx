@@ -36,7 +36,11 @@ export function ViewSwitcher() {
 
       {tabs.map((tab) => {
         const to = `/acquisitions/${acquisitionId}/grids/${gridId}${tab.suffix}`
-        const isActive = pathname.endsWith(tab.suffix)
+        // Squares has a Table/Gallery sub-route, so keep the tab active on either.
+        const isActive =
+          tab.key === 'squares'
+            ? pathname.endsWith('/squares') || pathname.endsWith('/squares/gallery')
+            : pathname.endsWith(tab.suffix)
         return (
           <ButtonBase
             key={tab.key}
