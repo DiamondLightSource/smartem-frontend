@@ -3,7 +3,6 @@ WORKDIR /app
 
 COPY package.json package-lock.json ./
 COPY apps/smartem/package.json apps/smartem/
-COPY apps/legacy/package.json apps/legacy/
 COPY packages/api/package.json packages/api/
 COPY packages/ui/package.json packages/ui/
 RUN npm ci --ignore-scripts
@@ -22,7 +21,7 @@ ENV FRONTEND_VERSION=$FRONTEND_VERSION \
 
 RUN npm run api:generate -w @smartem/api
 RUN node scripts/write-version-json.mjs
-RUN npm run build:smartem
+RUN npm run build
 
 FROM nginx:1.30-alpine
 RUN rm /etc/nginx/conf.d/default.conf
