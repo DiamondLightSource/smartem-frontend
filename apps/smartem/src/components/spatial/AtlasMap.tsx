@@ -21,6 +21,7 @@ import {
   qualityColor,
   valueToHeatmapColor,
 } from '~/utils/heatmap'
+import { SPATIAL_FOOTER_MIN_HEIGHT } from './layout'
 
 type ColorMode = 'quality' | 'prediction' | 'cluster'
 
@@ -233,14 +234,12 @@ export function AtlasMap({
 
       <Box
         sx={{
-          // Right-align the atlas image so it butts against the grid-square panel instead of floating
-          // centred; dark canvas matches the panel so the (dark) micrograph blends into the matting.
+          // Dark viewer canvas matching the grid-square panel so the (dark) micrograph blends into the
+          // matting. The image itself is left-aligned inside the SVG (preserveAspectRatio) so it lines up
+          // with the page header; the slack falls to the right, into the seam before the panel.
           flex: 1,
           position: 'relative',
           overflow: 'hidden',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'flex-end',
           backgroundColor: gray[900],
         }}
       >
@@ -259,6 +258,12 @@ export function AtlasMap({
           viewBox={`0 0 ${vbW} ${vbH}`}
           role="img"
           aria-label="Atlas map showing grid squares"
+          // Left-align the scaled image inside the (full-width) SVG so its left edge lines up with the
+          // page header / left margin, consistent with the rest of the page. The SVG fills the pane, so
+          // flex justify-content can't move it - the alignment has to happen inside via
+          // preserveAspectRatio (xMin = left, YMid = vertically centred); the leftover slack falls into
+          // the seam between the atlas and the grid-square panel as dark matting.
+          preserveAspectRatio="xMinYMid meet"
           style={{
             width: '100%',
             height: '100%',
@@ -387,7 +392,7 @@ export function AtlasMap({
         )}
       </Box>
 
-      {/* Controls bar */}
+      {/* Controls bar - shares the grid-square panel's footer height so the two footers line up. */}
       <Box
         sx={{
           display: 'flex',
@@ -395,6 +400,7 @@ export function AtlasMap({
           gap: 1,
           px: 2,
           py: 0.75,
+          minHeight: SPATIAL_FOOTER_MIN_HEIGHT,
           borderTop: '1px solid',
           borderColor: 'divider',
           flexShrink: 0,

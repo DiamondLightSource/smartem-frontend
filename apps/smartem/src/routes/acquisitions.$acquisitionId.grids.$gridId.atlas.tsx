@@ -221,7 +221,7 @@ function AtlasView() {
       <Box
         sx={{
           flexShrink: 0,
-          width: '42%',
+          width: '50%',
           minWidth: 0,
           borderLeft: '1px solid',
           borderColor: 'divider',
