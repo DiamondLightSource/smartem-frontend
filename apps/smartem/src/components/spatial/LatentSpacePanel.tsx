@@ -5,7 +5,7 @@ import type { MockLatentCoords } from '~/data/mock-session-detail'
 import { gray } from '~/theme'
 import { CLUSTER_PALETTE } from '~/utils/heatmap'
 
-interface LatentSpaceItem {
+export interface LatentSpaceItem {
   id: string
   label: string
   latent: MockLatentCoords

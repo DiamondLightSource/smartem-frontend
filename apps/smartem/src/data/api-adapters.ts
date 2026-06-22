@@ -194,6 +194,20 @@ export function latentResponsesToCoordsByUuid(
   return byUuid
 }
 
+// Maps a gridsquare's latent-representation response to per-foilhole coordinates for the
+// square-level latent-space scatter. Keyed by foilhole uuid (vs the grid version's square
+// uuid); rows without coordinates are skipped.
+export function latentResponsesToCoordsByFoilhole(
+  responses: LatentRepresentationResponse[]
+): Map<string, MockLatentCoords> {
+  const byUuid = new Map<string, MockLatentCoords>()
+  for (const r of responses) {
+    if (r.foilhole_uuid == null || r.x == null || r.y == null) continue
+    byUuid.set(r.foilhole_uuid, { x: r.x, y: r.y, clusterIndex: r.index ?? 0 })
+  }
+  return byUuid
+}
+
 // Latest predicted value per foilhole for one (model, gridsquare), keyed by foilhole uuid -
 // drives the per-model prediction overlay on the square map.
 export function foilholePredictionMap(responses: QualityPredictionResponse[]): Map<string, number> {
