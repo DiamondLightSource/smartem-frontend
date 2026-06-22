@@ -9,13 +9,16 @@ import {
   TableHead,
   TableRow,
   TableSortLabel,
+  Tooltip,
   Typography,
 } from '@mui/material'
 import type { GridSquareStatus } from '@smartem/api'
 import {
+  getGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetQueryOptions as foilholesQueryOptions,
   useGetGridGridsquaresGridsGridUuidGridsquaresGet,
   useGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet,
 } from '@smartem/api'
+import { useQueries } from '@tanstack/react-query'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Fragment, useMemo, useState } from 'react'
 import { gray, statusColors } from '~/theme'
@@ -24,7 +27,7 @@ export const Route = createFileRoute('/acquisitions/$acquisitionId/grids/$gridId
   component: SquaresTable,
 })
 
-type SortField = 'defocus' | 'magnification' | 'gridsquareId'
+type SortField = 'defocus' | 'magnification' | 'gridsquareId' | 'holes' | 'score'
 type SortDir = 'asc' | 'desc'
 
 function SquaresTable() {
@@ -35,6 +38,26 @@ function SquaresTable() {
     isLoading,
     error,
   } = useGetGridGridsquaresGridsGridUuidGridsquaresGet(gridId)
+
+  // Per-square foilhole counts and weighted quality, for the Holes/Score columns and their sorts.
+  // Cheap JSON fan-out (one list per square); React Query shares this cache with the expanded
+  // sub-table, so opening a row doesn't refetch.
+  const foilholeQueries = useQueries({
+    queries: (squares ?? []).map((sq) => foilholesQueryOptions(sq.uuid)),
+  })
+  const foilholeStats = useMemo(() => {
+    const m = new Map<string, { count: number; score: number | null }>()
+    ;(squares ?? []).forEach((sq, i) => {
+      const data = foilholeQueries[i]?.data
+      if (!data) return
+      const qualities = data.map((f) => f.quality).filter((q): q is number => q != null)
+      const score = qualities.length
+        ? qualities.reduce((s, v) => s + v, 0) / qualities.length
+        : null
+      m.set(sq.uuid, { count: data.length, score })
+    })
+    return m
+  }, [squares, foilholeQueries])
 
   const [sortField, setSortField] = useState<SortField>('gridsquareId')
   const [sortDir, setSortDir] = useState<SortDir>('asc')
@@ -55,11 +78,15 @@ function SquaresTable() {
       let cmp = 0
       if (sortField === 'defocus') cmp = (a.defocus ?? 0) - (b.defocus ?? 0)
       else if (sortField === 'magnification') cmp = (a.magnification ?? 0) - (b.magnification ?? 0)
+      else if (sortField === 'holes')
+        cmp = (foilholeStats.get(a.uuid)?.count ?? -1) - (foilholeStats.get(b.uuid)?.count ?? -1)
+      else if (sortField === 'score')
+        cmp = (foilholeStats.get(a.uuid)?.score ?? -1) - (foilholeStats.get(b.uuid)?.score ?? -1)
       else cmp = a.gridsquare_id.localeCompare(b.gridsquare_id)
       return sortDir === 'desc' ? -cmp : cmp
     })
     return arr
-  }, [squares, sortField, sortDir])
+  }, [squares, sortField, sortDir, foilholeStats])
 
   const handleSort = (field: SortField) => {
     if (field === sortField) {
@@ -123,11 +150,31 @@ function SquaresTable() {
                 Magnification
               </TableSortLabel>
             </TableCell>
+            <TableCell>
+              <TableSortLabel
+                active={sortField === 'holes'}
+                direction={sortField === 'holes' ? sortDir : 'desc'}
+                onClick={() => handleSort('holes')}
+              >
+                Holes
+              </TableSortLabel>
+            </TableCell>
+            <TableCell>
+              <TableSortLabel
+                active={sortField === 'score'}
+                direction={sortField === 'score' ? sortDir : 'desc'}
+                onClick={() => handleSort('score')}
+              >
+                Score
+              </TableSortLabel>
+            </TableCell>
+            <TableCell sx={{ width: 44 }} />
           </TableRow>
         </TableHead>
         <TableBody>
           {sorted.map((sq) => {
             const isOpen = expanded.has(sq.uuid)
+            const stats = foilholeStats.get(sq.uuid)
             return (
               <Fragment key={sq.uuid}>
                 <TableRow
@@ -188,10 +235,44 @@ function SquaresTable() {
                       {sq.magnification != null ? `${(sq.magnification / 1000).toFixed(0)}k` : '--'}
                     </Typography>
                   </TableCell>
+                  <TableCell>
+                    <Typography
+                      variant="body2"
+                      sx={{ fontVariantNumeric: 'tabular-nums', color: 'text.secondary' }}
+                    >
+                      {stats?.count ?? '--'}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography
+                      variant="body2"
+                      sx={{ fontVariantNumeric: 'tabular-nums', color: 'text.secondary' }}
+                    >
+                      {stats?.score != null ? `${Math.round(stats.score * 100)}%` : '--'}
+                    </Typography>
+                  </TableCell>
+                  <TableCell sx={{ width: 44, pr: 1 }}>
+                    <Tooltip title="View predictions">
+                      <IconButton
+                        size="small"
+                        aria-label="View predictions"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          navigate({
+                            to: '/acquisitions/$acquisitionId/grids/$gridId/squares/$squareId/predictions',
+                            params: { acquisitionId, gridId, squareId: sq.uuid },
+                          })
+                        }}
+                        sx={{ p: 0.25 }}
+                      >
+                        <InsightsGlyph />
+                      </IconButton>
+                    </Tooltip>
+                  </TableCell>
                 </TableRow>
                 {isOpen && (
                   <TableRow>
-                    <TableCell colSpan={6} sx={{ py: 0, backgroundColor: gray[50] }}>
+                    <TableCell colSpan={9} sx={{ py: 0, backgroundColor: gray[50] }}>
                       <FoilholeSubTable squareUuid={sq.uuid} />
                     </TableCell>
                   </TableRow>
@@ -301,6 +382,20 @@ function Chevron({ open }: { open: boolean }) {
       style={{ transform: open ? 'rotate(90deg)' : 'none', transition: 'transform 0.12s' }}
     >
       <path d="M6 4l4 4-4 4V4z" />
+    </svg>
+  )
+}
+
+function InsightsGlyph() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" role="img" aria-hidden="true">
+      <path
+        d="M2 11l3-3 3 2 5-6"
+        stroke={gray[600]}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   )
 }
