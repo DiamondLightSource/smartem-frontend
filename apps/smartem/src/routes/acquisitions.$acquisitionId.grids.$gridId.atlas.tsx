@@ -1,4 +1,4 @@
-import { Box, IconButton, Tooltip, Typography } from '@mui/material'
+import { Box, IconButton, Tooltip } from '@mui/material'
 import {
   getGetPredictionForGridPredictionModelPredictionModelNameGridGridUuidPredictionGetQueryOptions as gridPredictionQueryOptions,
   getGetLatentRepPredictionModelPredictionModelNameGridGridUuidLatentRepresentationGetQueryOptions as latentRepQueryOptions,
@@ -229,38 +229,15 @@ function AtlasView() {
         }}
       >
         {showLatent ? (
-          <Box
-            sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}
-          >
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                px: 1.5,
-                height: 28,
-                backgroundColor: gray[100],
-                borderBottom: '1px solid',
-                borderColor: 'divider',
-                flexShrink: 0,
-              }}
-            >
-              <Typography variant="caption" sx={{ fontWeight: 600, fontSize: '0.6875rem' }}>
-                Latent Space
-              </Typography>
-              <Box sx={{ flex: 1 }} />
-              <CloseButton onClick={() => setShowLatent(false)} />
-            </Box>
-            <Box sx={{ flex: 1, overflow: 'hidden' }}>
-              <LatentSpacePanel
-                items={latentItems}
-                selectedId={selectedSquareId}
-                onItemClick={lockSquare}
-                onItemHover={(id) => {
-                  if (!frozen) setSelectedSquareId(id)
-                }}
-              />
-            </Box>
-          </Box>
+          <LatentSpacePanel
+            items={latentItems}
+            selectedId={selectedSquareId}
+            onItemClick={lockSquare}
+            onItemHover={(id) => {
+              if (!frozen) setSelectedSquareId(id)
+            }}
+            onClose={() => setShowLatent(false)}
+          />
         ) : committedSquareId ? (
           <SquarePreviewPanel
             acquisitionId={acquisitionId}
@@ -273,15 +250,5 @@ function AtlasView() {
         )}
       </Box>
     </Box>
-  )
-}
-
-function CloseButton({ onClick }: { onClick: () => void }) {
-  return (
-    <IconButton onClick={onClick} size="small" sx={{ p: 0.25 }}>
-      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" role="img" aria-label="Close">
-        <path d="M3 3l6 6M9 3l-6 6" stroke={gray[600]} strokeWidth="1.5" strokeLinecap="round" />
-      </svg>
-    </IconButton>
   )
 }
