@@ -68,6 +68,10 @@ interface SquareMapProps {
   imageWidth?: number
   imageHeight?: number
   onFoilholeClick?: (uuid: string) => void
+  // Optional controlled hover. When provided, the hovered foilhole is owned by the caller so the
+  // map and a sibling view (the latent-space panel) can cross-highlight; left uncontrolled otherwise.
+  hoveredId?: string | null
+  onHoveredIdChange?: (uuid: string | null) => void
   predictionLayers?: PredictionLayer[]
   // layer id -> (foilhole uuid -> predicted value, 0..1)
   predictionValues?: Record<string, Map<string, number>>
@@ -91,6 +95,8 @@ export function SquareMap({
   imageWidth,
   imageHeight,
   onFoilholeClick,
+  hoveredId: controlledHoveredId,
+  onHoveredIdChange,
   predictionLayers = [],
   predictionValues = {},
   suggestedHoleIds,
@@ -98,7 +104,9 @@ export function SquareMap({
   onClose,
   onExpand,
 }: SquareMapProps) {
-  const [hoveredId, setHoveredId] = useState<string | null>(null)
+  const [internalHoveredId, setInternalHoveredId] = useState<string | null>(null)
+  // Controlled when the caller passes hoveredId; otherwise the map owns it.
+  const hoveredId = controlledHoveredId !== undefined ? controlledHoveredId : internalHoveredId
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [selectionFrozen, setSelectionFrozen] = useState(false)
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 })
@@ -192,10 +200,11 @@ export function SquareMap({
   const handleHover = useCallback(
     (uuid: string | null) => {
       if (!selectionFrozen) {
-        setHoveredId(uuid)
+        if (onHoveredIdChange) onHoveredIdChange(uuid)
+        else setInternalHoveredId(uuid)
       }
     },
-    [selectionFrozen]
+    [selectionFrozen, onHoveredIdChange]
   )
 
   const hoveredHole = hoveredId ? foilholes.find((h) => h.uuid === hoveredId) : null
