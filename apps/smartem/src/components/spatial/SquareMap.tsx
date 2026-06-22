@@ -18,6 +18,7 @@ import {
   qualityColor,
   valueToHeatmapColor,
 } from '~/utils/heatmap'
+import { SPATIAL_FOOTER_MIN_HEIGHT } from './layout'
 
 type BaseMetric = 'quality' | 'resolution' | 'astigmatism' | 'particleCount'
 
@@ -601,16 +602,19 @@ export function SquareMap({
       {imageArea}
 
       {isPanel ? (
-        // Controls pinned directly below the viewer canvas at their natural height (the image area
-        // above takes the slack), so there is no empty band at the foot of the panel.
+        // Controls pinned directly below the viewer canvas (the image area above takes the slack), so
+        // there is no empty band at the foot of the panel. Shares its height floor with the atlas footer
+        // so the two footers line up; the stacked controls centre within it.
         <Box
           sx={{
             flexShrink: 0,
             display: 'flex',
             flexDirection: 'column',
+            justifyContent: 'center',
             gap: 1,
             px: 1.5,
             py: 1.25,
+            minHeight: SPATIAL_FOOTER_MIN_HEIGHT,
           }}
         >
           {selectedHoleDetail}
