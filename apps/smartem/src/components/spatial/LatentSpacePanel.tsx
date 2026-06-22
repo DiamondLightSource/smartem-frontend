@@ -1,4 +1,12 @@
-import { Box, Checkbox, FormControlLabel, IconButton, Typography } from '@mui/material'
+import {
+  Box,
+  Checkbox,
+  FormControlLabel,
+  IconButton,
+  MenuItem,
+  Select,
+  Typography,
+} from '@mui/material'
 import { useMemo, useState } from 'react'
 import { PaneFrame } from '~/components/layout/PaneFrame'
 import type { MockLatentCoords } from '~/data/mock-session-detail'
@@ -19,6 +27,11 @@ interface LatentSpacePanelProps {
   onItemHover?: (id: string | null) => void
   // When provided, renders a close button in the pane header (used as the atlas-embedded panel).
   onClose?: () => void
+  // Optional latent-representation model picker (rendered in the footer when more than one model
+  // returned coordinates). The caller owns which model's coordinates feed `items`.
+  models?: { id: string; label: string }[]
+  selectedModel?: string
+  onModelChange?: (id: string) => void
 }
 
 export function LatentSpacePanel({
@@ -27,6 +40,9 @@ export function LatentSpacePanel({
   onItemClick,
   onItemHover,
   onClose,
+  models,
+  selectedModel,
+  onModelChange,
 }: LatentSpacePanelProps) {
   const [showUnselected, setShowUnselected] = useState(true)
 
@@ -56,8 +72,29 @@ export function LatentSpacePanel({
   const toSvgX = (x: number) => pad.left + ((x - minX) / (maxX - minX)) * plotW
   const toSvgY = (y: number) => pad.top + ((maxY - y) / (maxY - minY)) * plotH
 
+  const showModelPicker = !!models && models.length > 1 && !!onModelChange
   const footer = (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 1.5, py: 1 }}>
+      {showModelPicker && (
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.625rem' }}>
+            Latent
+          </Typography>
+          <Select
+            size="small"
+            variant="standard"
+            value={selectedModel ?? ''}
+            onChange={(e) => onModelChange?.(e.target.value)}
+            sx={{ fontSize: '0.625rem', '& .MuiSelect-select': { py: 0.25, pr: 2.5 } }}
+          >
+            {models?.map((m) => (
+              <MenuItem key={m.id} value={m.id} sx={{ fontSize: '0.75rem' }}>
+                {m.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </Box>
+      )}
       <Box sx={{ flex: 1 }} />
       <FormControlLabel
         control={
