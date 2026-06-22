@@ -5,6 +5,8 @@ import {
   CircularProgress,
   FormControlLabel,
   IconButton,
+  MenuItem,
+  Select,
   Tooltip,
   Typography,
 } from '@mui/material'
@@ -210,6 +212,19 @@ export function SquareMap({
 
   const isPanel = variant === 'panel'
 
+  // Panel header subtitle: the square summary by default, swapping to the selected foilhole's detail
+  // when one is picked. Keeping that (variable-length) detail in the fixed-height header rather than the
+  // footer means the footer stays at a constant height aligned with the atlas footer.
+  const panelSubtitle = selectedHole
+    ? [
+        selectedHole.foilholeId,
+        `${Math.round(selectedHole.quality * 100)}%`,
+        selectedHole.status,
+        `${selectedHole.micrographCount} mic`,
+        ...(selectedHole.isNearGridBar ? ['near grid bar'] : []),
+      ].join(' · ')
+    : `${foilholes.length} foilholes · avg ${Math.round(avgQuality * 100)}%${selectionFrozen ? ' · locked' : ''}`
+
   // Shared control leaves, composed differently per variant: a single horizontal bar for the full
   // page, a stacked block under the micrograph for the embedded panel.
   const statsItems = (
@@ -273,16 +288,34 @@ export function SquareMap({
         </ButtonBase>
       ))}
       {predictionLayers.length > 0 && (
-        <Box sx={{ width: '1px', alignSelf: 'stretch', backgroundColor: 'divider', mx: 0.25 }} />
+        <>
+          <Box sx={{ width: '1px', alignSelf: 'stretch', backgroundColor: 'divider', mx: 0.25 }} />
+          <Select
+            size="small"
+            variant="standard"
+            displayEmpty
+            value={isPred ? (predLayerId ?? '') : ''}
+            onChange={(e) => {
+              if (e.target.value) setMetric(`pred:${e.target.value}`)
+            }}
+            renderValue={(value) =>
+              value ? (predictionLayers.find((l) => l.id === value)?.label ?? value) : 'Predictions'
+            }
+            sx={{
+              fontSize: '0.5625rem',
+              maxWidth: 180,
+              color: isPred ? 'text.primary' : 'text.disabled',
+              '& .MuiSelect-select': { py: 0.25, pr: 2.5 },
+            }}
+          >
+            {predictionLayers.map((layer) => (
+              <MenuItem key={layer.id} value={layer.id} sx={{ fontSize: '0.75rem' }}>
+                {layer.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </>
       )}
-      {predictionLayers.map((layer) => {
-        const key = `pred:${layer.id}`
-        return (
-          <ButtonBase key={key} onClick={() => setMetric(key)} sx={metricButtonSx(key === metric)}>
-            {layer.label}
-          </ButtonBase>
-        )
-      })}
     </Box>
   )
 
@@ -492,10 +525,7 @@ export function SquareMap({
     return (
       <PaneFrame
         title={squareLabel}
-        subtitle={`${foilholes.length} foilholes · avg ${Math.round(avgQuality * 100)}%${
-          selectionFrozen ? ' · locked' : ''
-        }`}
-        accentColor="#e59344"
+        subtitle={panelSubtitle}
         bodyBackground={gray[900]}
         actions={
           <>
@@ -541,8 +571,7 @@ export function SquareMap({
           </>
         }
         footer={
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, px: 1.5, py: 1.25 }}>
-            {selectedHoleDetail}
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, px: 1.5, py: 1 }}>
             {metricSelector}
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
               {suggestionsToggle}

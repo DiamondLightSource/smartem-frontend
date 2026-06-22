@@ -57,7 +57,7 @@ export function LatentSpacePanel({
   const toSvgY = (y: number) => pad.top + ((maxY - y) / (maxY - minY)) * plotH
 
   const footer = (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 2, py: 0.75 }}>
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 1.5, py: 1 }}>
       <Box sx={{ flex: 1 }} />
       <FormControlLabel
         control={

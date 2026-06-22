@@ -3,6 +3,8 @@ import {
   ButtonBase,
   CircularProgress,
   FormControlLabel,
+  MenuItem,
+  Select,
   Switch,
   Typography,
 } from '@mui/material'
@@ -73,6 +75,10 @@ export function AtlasMap({
   const selectedId = externalSelectedId ?? internalFrozenId
   const hoveredId = internalHoveredId
 
+  // The model whose predictions colour the overlay. Falls back to the first model so toggling
+  // Predictions on always shows something and the picker never displays an out-of-range value.
+  const effectiveModelId = selectedModelId || models?.[0]?.id || ''
+
   // The atlas image (a multi-MB micrograph decoded server-side) arrives seconds after the
   // lightweight square geometry. Hold the overlay back until the image has painted so the
   // circles and image reveal together rather than circles-first. If no image is available,
@@ -87,8 +93,8 @@ export function AtlasMap({
   const imageReady = imageLoaded || (!imageLoading && !imageUrl)
 
   const selectedPrediction = useMemo(
-    () => predictions?.find((p) => p.modelId === selectedModelId),
-    [predictions, selectedModelId]
+    () => predictions?.find((p) => p.modelId === effectiveModelId),
+    [predictions, effectiveModelId]
   )
 
   const predValues = useMemo(() => {
@@ -192,8 +198,8 @@ export function AtlasMap({
         display: 'flex',
         alignItems: 'center',
         gap: 1,
-        px: 2,
-        py: 0.75,
+        px: 1.5,
+        py: 1,
         flexWrap: 'wrap',
       }}
     >
@@ -219,25 +225,27 @@ export function AtlasMap({
             sx={{ mr: 0.5, ml: 0 }}
           />
           {showPredictions && (
-            <Box sx={{ display: 'flex', gap: 0.25 }}>
-              {models.map((m) => (
-                <ButtonBase
-                  key={m.id}
-                  onClick={() => setSelectedModelId(m.id)}
-                  sx={{
-                    px: 0.75,
-                    py: 0.25,
-                    borderRadius: 0.5,
-                    fontSize: '0.5625rem',
-                    fontWeight: m.id === selectedModelId ? 600 : 400,
-                    color: m.id === selectedModelId ? 'text.primary' : 'text.disabled',
-                    backgroundColor: m.id === selectedModelId ? gray[50] : 'transparent',
-                    '&:hover': { backgroundColor: gray[100] },
-                  }}
-                >
-                  {m.name.split('-')[0]}
-                </ButtonBase>
-              ))}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <Typography variant="caption" sx={{ fontSize: '0.625rem', color: 'text.secondary' }}>
+                Model
+              </Typography>
+              <Select
+                size="small"
+                variant="standard"
+                value={effectiveModelId}
+                onChange={(e) => setSelectedModelId(e.target.value)}
+                sx={{
+                  fontSize: '0.625rem',
+                  maxWidth: 200,
+                  '& .MuiSelect-select': { py: 0.25, pr: 2.5 },
+                }}
+              >
+                {models.map((m) => (
+                  <MenuItem key={m.id} value={m.id} sx={{ fontSize: '0.75rem' }}>
+                    {m.name}
+                  </MenuItem>
+                ))}
+              </Select>
             </Box>
           )}
         </>
