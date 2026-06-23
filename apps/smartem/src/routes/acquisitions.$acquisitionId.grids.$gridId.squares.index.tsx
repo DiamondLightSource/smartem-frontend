@@ -307,6 +307,19 @@ function FoilholeSubTable({ squareUuid }: { squareUuid: string }) {
     return m
   }, [predictions])
 
+  // The grid-wide index reads as an arbitrary five-digit number in isolation, so each ranked hole
+  // also gets its position within this square: foilhole uuid -> rank (1-based), out of rankedCount.
+  const { rankInSquare, rankedCount } = useMemo(() => {
+    const ranked = [...orderByFoilhole.entries()]
+      .filter(([, idx]) => idx > 0)
+      .sort((a, b) => a[1] - b[1])
+    const m = new Map<string, number>()
+    ranked.forEach(([uuid], i) => {
+      m.set(uuid, i + 1)
+    })
+    return { rankInSquare: m, rankedCount: ranked.length }
+  }, [orderByFoilhole])
+
   const rows = useMemo(() => {
     const rank = (uuid: string) => {
       const idx = orderByFoilhole.get(uuid) ?? 0
@@ -366,8 +379,8 @@ function FoilholeSubTable({ squareUuid }: { squareUuid: string }) {
       <Table size="small" sx={{ mt: 0.5, maxWidth: 520 }}>
         <TableHead>
           <TableRow>
-            <TableCell sx={{ py: 0.25, width: 72 }}>
-              <Tooltip title="Suggested grid-wide acquisition order">
+            <TableCell sx={{ py: 0.25, width: 116 }}>
+              <Tooltip title="Suggested acquisition order: grid-wide index, with the hole's position within this square">
                 <TableSortLabel
                   active={sortField === 'order'}
                   direction={sortField === 'order' ? dir : 'asc'}
@@ -393,18 +406,34 @@ function FoilholeSubTable({ squareUuid }: { squareUuid: string }) {
         <TableBody>
           {rows.map((fh) => {
             const order = orderByFoilhole.get(fh.uuid) ?? 0
+            const rank = rankInSquare.get(fh.uuid)
             return (
               <TableRow key={fh.uuid}>
                 <TableCell sx={{ py: 0.25 }}>
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      fontVariantNumeric: 'tabular-nums',
-                      color: order > 0 ? 'text.primary' : 'text.disabled',
-                    }}
-                  >
-                    {order > 0 ? order : '--'}
-                  </Typography>
+                  {order > 0 ? (
+                    <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.75 }}>
+                      <Typography
+                        variant="caption"
+                        sx={{ fontVariantNumeric: 'tabular-nums', color: 'text.primary' }}
+                      >
+                        {order}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          fontVariantNumeric: 'tabular-nums',
+                          color: 'text.disabled',
+                          fontSize: '0.6875rem',
+                        }}
+                      >
+                        {rank}/{rankedCount}
+                      </Typography>
+                    </Box>
+                  ) : (
+                    <Typography variant="caption" sx={{ color: 'text.disabled' }}>
+                      --
+                    </Typography>
+                  )}
                 </TableCell>
                 <TableCell sx={{ py: 0.25 }}>
                   <Typography variant="caption">
