@@ -17,6 +17,7 @@ import {
   getGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGetQueryOptions as foilholesQueryOptions,
   useGetGridGridsquaresGridsGridUuidGridsquaresGet,
   useGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet,
+  useGetOverallPredictionForGridsquareGridsquareGridsquareUuidOverallPredictionGet as useOverallPrediction,
 } from '@smartem/api'
 import { useQueries } from '@tanstack/react-query'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
@@ -29,6 +30,7 @@ export const Route = createFileRoute('/acquisitions/$acquisitionId/grids/$gridId
 
 type SortField = 'defocus' | 'magnification' | 'gridsquareId' | 'holes' | 'score'
 type SortDir = 'asc' | 'desc'
+type FoilholeSortField = 'order' | 'quality'
 
 function SquaresTable() {
   const { acquisitionId, gridId } = Route.useParams()
@@ -286,21 +288,68 @@ function SquaresTable() {
   )
 }
 
-// Lazily loaded when a square row is expanded: its foilholes with a weighted aggregate
-// (mean predicted quality) and a per-foilhole table sortable by quality.
+// Lazily loaded when a square row is expanded: its foilholes joined to the overall-quality
+// prediction, showing the model's suggested acquisition order (issue #98) alongside predicted
+// quality, sortable by either. The order index is grid-wide - holes from other squares interleave -
+// so within a single square the numbers are a monotonic but non-contiguous subset; holes with no
+// prediction yet (index 0) are unranked and always sink to the bottom.
 function FoilholeSubTable({ squareUuid }: { squareUuid: string }) {
   const { data: foilholes, isLoading } =
     useGetGridsquareFoilholesGridsquaresGridsquareUuidFoilholesGet(squareUuid)
-  const [dir, setDir] = useState<SortDir>('desc')
+  const { data: predictions } = useOverallPrediction(squareUuid)
+  const [sortField, setSortField] = useState<FoilholeSortField>('order')
+  const [dir, setDir] = useState<SortDir>('asc')
+
+  // foilhole uuid -> suggested grid-wide acquisition index (1-based; 0 means not yet ordered).
+  const orderByFoilhole = useMemo(() => {
+    const m = new Map<string, number>()
+    for (const p of predictions ?? []) m.set(p.foilhole_uuid, p.suggested_acquisition_index)
+    return m
+  }, [predictions])
+
+  // The grid-wide index reads as an arbitrary five-digit number in isolation, so each ranked hole
+  // also gets its position within this square: foilhole uuid -> rank (1-based), out of rankedCount.
+  const { rankInSquare, rankedCount } = useMemo(() => {
+    const ranked = [...orderByFoilhole.entries()]
+      .filter(([, idx]) => idx > 0)
+      .sort((a, b) => a[1] - b[1])
+    const m = new Map<string, number>()
+    ranked.forEach(([uuid], i) => {
+      m.set(uuid, i + 1)
+    })
+    return { rankInSquare: m, rankedCount: ranked.length }
+  }, [orderByFoilhole])
 
   const rows = useMemo(() => {
+    const rank = (uuid: string) => {
+      const idx = orderByFoilhole.get(uuid) ?? 0
+      return idx > 0 ? idx : Number.POSITIVE_INFINITY
+    }
     const arr = [...(foilholes ?? [])]
     arr.sort((a, b) => {
+      if (sortField === 'order') {
+        const ra = rank(a.uuid)
+        const rb = rank(b.uuid)
+        if (ra === rb) return 0
+        // Unranked holes stay at the bottom whichever way the column is sorted.
+        if (ra === Number.POSITIVE_INFINITY) return 1
+        if (rb === Number.POSITIVE_INFINITY) return -1
+        return dir === 'desc' ? rb - ra : ra - rb
+      }
       const cmp = (a.quality ?? 0) - (b.quality ?? 0)
       return dir === 'desc' ? -cmp : cmp
     })
     return arr
-  }, [foilholes, dir])
+  }, [foilholes, orderByFoilhole, sortField, dir])
+
+  const handleSort = (field: FoilholeSortField) => {
+    if (field === sortField) {
+      setDir((d) => (d === 'asc' ? 'desc' : 'asc'))
+    } else {
+      setSortField(field)
+      setDir(field === 'order' ? 'asc' : 'desc')
+    }
+  }
 
   if (isLoading) {
     return (
@@ -327,15 +376,26 @@ function FoilholeSubTable({ squareUuid }: { squareUuid: string }) {
         {rows.length} foilholes
         {avg != null ? ` · weighted quality ${Math.round(avg * 100)}%` : ''}
       </Typography>
-      <Table size="small" sx={{ mt: 0.5, maxWidth: 460 }}>
+      <Table size="small" sx={{ mt: 0.5, maxWidth: 520 }}>
         <TableHead>
           <TableRow>
+            <TableCell sx={{ py: 0.25, width: 116 }}>
+              <Tooltip title="Suggested acquisition order: grid-wide index, with the hole's position within this square">
+                <TableSortLabel
+                  active={sortField === 'order'}
+                  direction={sortField === 'order' ? dir : 'asc'}
+                  onClick={() => handleSort('order')}
+                >
+                  Order
+                </TableSortLabel>
+              </Tooltip>
+            </TableCell>
             <TableCell sx={{ py: 0.25 }}>Foilhole</TableCell>
             <TableCell sx={{ py: 0.25 }}>
               <TableSortLabel
-                active
-                direction={dir}
-                onClick={() => setDir((d) => (d === 'asc' ? 'desc' : 'asc'))}
+                active={sortField === 'quality'}
+                direction={sortField === 'quality' ? dir : 'desc'}
+                onClick={() => handleSort('quality')}
               >
                 Quality
               </TableSortLabel>
@@ -344,26 +404,56 @@ function FoilholeSubTable({ squareUuid }: { squareUuid: string }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((fh) => (
-            <TableRow key={fh.uuid}>
-              <TableCell sx={{ py: 0.25 }}>
-                <Typography variant="caption">
-                  {fh.foilhole_id}
-                  {fh.is_near_grid_bar ? ' · grid bar' : ''}
-                </Typography>
-              </TableCell>
-              <TableCell sx={{ py: 0.25 }}>
-                <Typography variant="caption" sx={{ fontVariantNumeric: 'tabular-nums' }}>
-                  {fh.quality != null ? `${Math.round(fh.quality * 100)}%` : '--'}
-                </Typography>
-              </TableCell>
-              <TableCell sx={{ py: 0.25 }}>
-                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                  {fh.status}
-                </Typography>
-              </TableCell>
-            </TableRow>
-          ))}
+          {rows.map((fh) => {
+            const order = orderByFoilhole.get(fh.uuid) ?? 0
+            const rank = rankInSquare.get(fh.uuid)
+            return (
+              <TableRow key={fh.uuid}>
+                <TableCell sx={{ py: 0.25 }}>
+                  {order > 0 ? (
+                    <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.75 }}>
+                      <Typography
+                        variant="caption"
+                        sx={{ fontVariantNumeric: 'tabular-nums', color: 'text.primary' }}
+                      >
+                        {order}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          fontVariantNumeric: 'tabular-nums',
+                          color: 'text.disabled',
+                          fontSize: '0.6875rem',
+                        }}
+                      >
+                        {rank}/{rankedCount}
+                      </Typography>
+                    </Box>
+                  ) : (
+                    <Typography variant="caption" sx={{ color: 'text.disabled' }}>
+                      --
+                    </Typography>
+                  )}
+                </TableCell>
+                <TableCell sx={{ py: 0.25 }}>
+                  <Typography variant="caption">
+                    {fh.foilhole_id}
+                    {fh.is_near_grid_bar ? ' · grid bar' : ''}
+                  </Typography>
+                </TableCell>
+                <TableCell sx={{ py: 0.25 }}>
+                  <Typography variant="caption" sx={{ fontVariantNumeric: 'tabular-nums' }}>
+                    {fh.quality != null ? `${Math.round(fh.quality * 100)}%` : '--'}
+                  </Typography>
+                </TableCell>
+                <TableCell sx={{ py: 0.25 }}>
+                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                    {fh.status}
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            )
+          })}
         </TableBody>
       </Table>
     </Box>
