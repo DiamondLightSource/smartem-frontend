@@ -227,3 +227,14 @@ export function overallPredictionMap(responses: OverallQualityPrediction[]): Map
   }
   return byFoilhole
 }
+
+// Suggested grid-wide acquisition order per foilhole. Index 0 means "not yet ordered", so it is
+// omitted - callers treat a missing entry as unranked.
+export function overallOrderMap(responses: OverallQualityPrediction[]): Map<string, number> {
+  const byFoilhole = new Map<string, number>()
+  for (const r of responses) {
+    if (r.suggested_acquisition_index > 0)
+      byFoilhole.set(r.foilhole_uuid, r.suggested_acquisition_index)
+  }
+  return byFoilhole
+}

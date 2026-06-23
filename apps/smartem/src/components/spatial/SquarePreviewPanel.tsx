@@ -31,6 +31,7 @@ export function SquarePreviewPanel({
     predictionLayers,
     predictionValues,
     suggestedHoleIds,
+    orderByFoilhole,
   } = useSquareMapData(squareId)
 
   return (
@@ -45,6 +46,7 @@ export function SquarePreviewPanel({
       predictionLayers={predictionLayers}
       predictionValues={predictionValues}
       suggestedHoleIds={suggestedHoleIds}
+      orderByFoilhole={orderByFoilhole}
       onClose={onClose}
       onExpand={() =>
         navigate({

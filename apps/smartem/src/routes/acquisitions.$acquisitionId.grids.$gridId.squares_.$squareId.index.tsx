@@ -31,6 +31,7 @@ function SquareIndexView() {
     predictionLayers,
     predictionValues,
     suggestedHoleIds,
+    orderByFoilhole,
   } = useSquareMapData(squareId)
 
   // Fan out one latent-rep query per model, scoped to this gridsquare. Mirrors the atlas, which does
@@ -86,6 +87,7 @@ function SquareIndexView() {
           predictionLayers={predictionLayers}
           predictionValues={predictionValues}
           suggestedHoleIds={suggestedHoleIds}
+          orderByFoilhole={orderByFoilhole}
           onFoilholeClick={openHole}
           hoveredId={hoveredId}
           onHoveredIdChange={setHoveredId}

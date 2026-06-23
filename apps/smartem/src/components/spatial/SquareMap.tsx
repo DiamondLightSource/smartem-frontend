@@ -12,6 +12,11 @@ import {
 } from '@mui/material'
 import { useCallback, useMemo, useState } from 'react'
 import { PaneFrame } from '~/components/layout/PaneFrame'
+import {
+  AcquisitionPathOverlay,
+  type PathPoint,
+  type PathStyle,
+} from '~/components/spatial/AcquisitionPathOverlay'
 import type { MockFoilHole } from '~/data/mock-session-detail'
 import { gray, statusColors } from '~/theme'
 import {
@@ -38,6 +43,12 @@ const METRIC_OPTIONS: Record<BaseMetric, HeatmapOptions> = {
 }
 
 const BASE_METRICS = Object.keys(METRIC_OPTIONS) as BaseMetric[]
+
+const PATH_STYLES: { id: PathStyle; label: string }[] = [
+  { id: 'gradient', label: 'Gradient' },
+  { id: 'numbered', label: 'Numbered' },
+  { id: 'sparse', label: 'Sparse' },
+]
 
 const metricButtonSx = (active: boolean) => ({
   px: 0.75,
@@ -77,6 +88,8 @@ interface SquareMapProps {
   predictionValues?: Record<string, Map<string, number>>
   // foilholes the system suggests collecting next; highlighted when the toggle is on
   suggestedHoleIds?: Set<string>
+  // foilhole uuid -> suggested grid-wide acquisition index (1-based); drives the optional path overlay
+  orderByFoilhole?: Map<string, number>
   // "full" (default) fills the viewport with the micrograph and a horizontal control bar - the
   // standalone square page. "panel" is the atlas-embedded preview (issue #68): a compact header, the
   // micrograph fitted to its aspect ratio at the top, and the controls stacked in the space below so
@@ -100,6 +113,7 @@ export function SquareMap({
   predictionLayers = [],
   predictionValues = {},
   suggestedHoleIds,
+  orderByFoilhole,
   variant = 'full',
   onClose,
   onExpand,
@@ -113,6 +127,8 @@ export function SquareMap({
   const [metric, setMetric] = useState<string>('quality')
   const [hideNull, setHideNull] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(false)
+  const [showPath, setShowPath] = useState(false)
+  const [pathStyle, setPathStyle] = useState<PathStyle>('gradient')
 
   // The micrograph (decoded server-side) lands seconds after the lightweight foilhole geometry.
   // Hold the overlay back until the image has painted so circles and image reveal together; if
@@ -213,6 +229,22 @@ export function SquareMap({
 
   const avgQuality =
     foilholes.length > 0 ? foilholes.reduce((sum, h) => sum + h.quality, 0) / foilholes.length : 0
+
+  // Foilholes that carry a suggested acquisition index, ordered into the path. The index is grid-wide,
+  // so within this square the holes are a sparse slice of it; rank renumbers them 1..M locally.
+  const pathPoints = useMemo<PathPoint[]>(() => {
+    if (!orderByFoilhole || orderByFoilhole.size === 0) return []
+    return foilholes
+      .flatMap((fh) => {
+        const idx = orderByFoilhole.get(fh.uuid)
+        return idx ? [{ fh, idx }] : []
+      })
+      .sort((a, b) => a.idx - b.idx)
+      .map(({ fh }, i) => ({ uuid: fh.uuid, x: fh.xLocation, y: fh.yLocation, rank: i + 1 }))
+  }, [foilholes, orderByFoilhole])
+  const hasPath = pathPoints.length > 1
+  const hoveredRank =
+    showPath && hoveredHole ? pathPoints.find((p) => p.uuid === hoveredHole.uuid)?.rank : undefined
 
   // Foilhole coords live in the micrograph's native pixel space; match the viewBox to it (falling
   // back to the standard gridsquare size until the image decodes) so the overlay stays on the image.
@@ -347,6 +379,41 @@ export function SquareMap({
       </ButtonBase>
     ) : null
 
+  // "Path" enables the acquisition-order overlay; when on, three buttons switch between the styles
+  // so we can compare them on real squares before settling on one (issue #98).
+  const pathControls = hasPath ? (
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+      <ButtonBase
+        onClick={() => setShowPath((s) => !s)}
+        sx={{
+          px: 0.75,
+          py: 0.25,
+          borderRadius: 0.5,
+          fontSize: '0.625rem',
+          fontWeight: showPath ? 600 : 400,
+          color: showPath ? '#2f6feb' : 'text.disabled',
+          backgroundColor: showPath ? gray[50] : 'transparent',
+          '&:hover': { backgroundColor: gray[100] },
+        }}
+      >
+        Path
+      </ButtonBase>
+      {showPath && (
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
+          {PATH_STYLES.map((s) => (
+            <ButtonBase
+              key={s.id}
+              onClick={() => setPathStyle(s.id)}
+              sx={metricButtonSx(s.id === pathStyle)}
+            >
+              {s.label}
+            </ButtonBase>
+          ))}
+        </Box>
+      )}
+    </Box>
+  ) : null
+
   const hideNullToggle =
     useHeatmap || isPred ? (
       <FormControlLabel
@@ -471,6 +538,14 @@ export function SquareMap({
               />
             )
           })}
+          {showPath && hasPath && (
+            <AcquisitionPathOverlay
+              points={pathPoints}
+              total={pathPoints.length}
+              style={pathStyle}
+              vbW={vbW}
+            />
+          )}
         </g>
       </svg>
 
@@ -523,6 +598,7 @@ export function SquareMap({
               ? `${hoveredValue ?? 'N/A'} ${METRIC_OPTIONS[baseMetric].label}`
               : `${Math.round(hoveredHole.quality * 100)}%`}
           {hoveredHole.isNearGridBar && ' (near grid bar)'}
+          {hoveredRank != null && ` · order ${hoveredRank}/${pathPoints.length}`}
         </Box>
       )}
     </>
@@ -584,6 +660,7 @@ export function SquareMap({
             {metricSelector}
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
               {suggestionsToggle}
+              {pathControls}
               {hideNullToggle}
               <Box sx={{ flex: 1 }} />
               {legend}
@@ -636,6 +713,7 @@ export function SquareMap({
         <Box sx={{ flex: 1 }} />
         {metricSelector}
         {suggestionsToggle}
+        {pathControls}
         {hideNullToggle}
         {legend}
       </Box>

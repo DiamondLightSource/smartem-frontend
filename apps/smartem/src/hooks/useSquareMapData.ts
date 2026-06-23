@@ -14,6 +14,7 @@ import {
   foilHoleResponseToMock,
   foilholePredictionMap,
   gridSquareResponseToMock,
+  overallOrderMap,
   overallPredictionMap,
 } from '~/data/api-adapters'
 import type { MockFoilHole } from '~/data/mock-session-detail'
@@ -30,6 +31,8 @@ export interface SquareMapData {
   predictionLayers: PredictionLayer[]
   predictionValues: Record<string, Map<string, number>>
   suggestedHoleIds: Set<string>
+  // foilhole uuid -> suggested grid-wide acquisition index (1-based; unranked holes are absent).
+  orderByFoilhole: Map<string, number>
 }
 
 // Fetches everything SquareMap needs for one gridsquare: foilhole geometry, the authenticated
@@ -106,6 +109,10 @@ export function useSquareMapData(squareId: string): SquareMapData {
     [suggestedHoles]
   )
 
+  // Reuse the overall-prediction response (already fetched for the "Overall" overlay) for the
+  // acquisition-order path; no extra request.
+  const orderByFoilhole = useMemo(() => overallOrderMap(overallResponse ?? []), [overallResponse])
+
   return {
     squareLabel: square?.gridsquareId ?? squareId,
     foilholes,
@@ -116,5 +123,6 @@ export function useSquareMapData(squareId: string): SquareMapData {
     predictionLayers,
     predictionValues,
     suggestedHoleIds,
+    orderByFoilhole,
   }
 }
