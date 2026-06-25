@@ -15,6 +15,7 @@ export interface PathPoint {
   x: number
   y: number
   rank: number
+  gridIndex: number
 }
 
 interface AcquisitionPathOverlayProps {
@@ -24,11 +25,12 @@ interface AcquisitionPathOverlayProps {
   vbW: number
 }
 
-const START_COLOR = '#2f6feb'
-const END_COLOR = '#e59344'
+export const START_COLOR = '#2f6feb'
+export const END_COLOR = '#e59344'
 const LINE_COLOR = '#2f6feb'
+const BREAK_COLOR = '#cf222e'
 
-function lerpColor(a: string, b: string, t: number): string {
+export function lerpColor(a: string, b: string, t: number): string {
   const pa = [
     Number.parseInt(a.slice(1, 3), 16),
     Number.parseInt(a.slice(3, 5), 16),
@@ -67,7 +69,9 @@ export function AcquisitionPathOverlay({ points, total, style, vbW }: Acquisitio
   const first = points[0]
   const last = points[points.length - 1]
   const prevLast = points[points.length - 2]
-  const polyPoints = points.map((p) => `${p.x},${p.y}`).join(' ')
+
+  const isBreak = (i: number) =>
+    i < points.length - 1 && points[i + 1].gridIndex !== points[i].gridIndex + 1
 
   const badge = (p: PathPoint) => (
     <g key={`badge-${p.uuid}`}>
@@ -101,34 +105,46 @@ export function AcquisitionPathOverlay({ points, total, style, vbW }: Acquisitio
 
   return (
     <g style={{ pointerEvents: 'none' }}>
-      {style === 'gradient' ? (
-        points.slice(0, -1).map((p, i) => {
-          const next = points[i + 1]
-          return (
-            <line
-              key={`seg-${p.uuid}`}
-              x1={p.x}
-              y1={p.y}
-              x2={next.x}
-              y2={next.y}
-              stroke={lerpColor(START_COLOR, END_COLOR, i / (points.length - 1))}
-              strokeWidth={stroke}
-              strokeLinecap="round"
-              opacity={0.9}
-            />
-          )
-        })
-      ) : (
-        <polyline
-          points={polyPoints}
-          fill="none"
-          stroke={LINE_COLOR}
-          strokeWidth={stroke}
-          strokeLinejoin="round"
-          strokeLinecap="round"
-          opacity={0.5}
-        />
-      )}
+      {style === 'gradient'
+        ? points.slice(0, -1).map((p, i) => {
+            const next = points[i + 1]
+            const segColor = lerpColor(START_COLOR, END_COLOR, i / (points.length - 1))
+            const brk = isBreak(i)
+            return (
+              <line
+                key={`seg-${p.uuid}`}
+                x1={p.x}
+                y1={p.y}
+                x2={next.x}
+                y2={next.y}
+                stroke={brk ? BREAK_COLOR : segColor}
+                strokeWidth={stroke}
+                strokeLinecap="round"
+                strokeDasharray={brk ? `${stroke * 3} ${stroke * 2}` : 'none'}
+                opacity={brk ? 0.7 : 0.9}
+              />
+            )
+          })
+        : points.slice(0, -1).map((p, i) => {
+            const next = points[i + 1]
+            const brk = isBreak(i)
+            return (
+              <line
+                key={`seg-${p.uuid}`}
+                x1={p.x}
+                y1={p.y}
+                x2={next.x}
+                y2={next.y}
+                fill="none"
+                stroke={brk ? BREAK_COLOR : LINE_COLOR}
+                strokeWidth={stroke}
+                strokeLinejoin="round"
+                strokeLinecap="round"
+                strokeDasharray={brk ? `${stroke * 3} ${stroke * 2}` : 'none'}
+                opacity={brk ? 0.5 : 0.5}
+              />
+            )
+          })}
 
       {/* End-of-path arrowhead for the styles that rely on it for direction. */}
       {(style === 'gradient' || style === 'sparse') && (
