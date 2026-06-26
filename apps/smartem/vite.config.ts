@@ -1,9 +1,9 @@
+import { fileURLToPath } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import react from '@vitejs/plugin-react'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig, loadEnv } from 'vite'
-import tsconfigPaths from 'vite-tsconfig-paths'
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
@@ -14,7 +14,6 @@ export default defineConfig(({ mode }) => {
       react(),
       tailwindcss(),
       TanStackRouterVite(),
-      tsconfigPaths(),
       mode === 'analyze' &&
         visualizer({
           open: !process.env.CI,
@@ -24,6 +23,7 @@ export default defineConfig(({ mode }) => {
         }),
     ],
     resolve: {
+      alias: { '~': fileURLToPath(new URL('./src', import.meta.url)) },
       dedupe: ['react', 'react-dom', 'react/jsx-runtime', '@mui/material'],
     },
     server: {
