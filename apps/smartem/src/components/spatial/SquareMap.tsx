@@ -14,8 +14,11 @@ import { useCallback, useMemo, useState } from 'react'
 import { PaneFrame } from '~/components/layout/PaneFrame'
 import {
   AcquisitionPathOverlay,
+  END_COLOR,
+  lerpColor,
   type PathPoint,
   type PathStyle,
+  START_COLOR,
 } from '~/components/spatial/AcquisitionPathOverlay'
 import type { MockFoilHole } from '~/data/mock-session-detail'
 import { gray, statusColors } from '~/theme'
@@ -240,11 +243,34 @@ export function SquareMap({
         return idx ? [{ fh, idx }] : []
       })
       .sort((a, b) => a.idx - b.idx)
-      .map(({ fh }, i) => ({ uuid: fh.uuid, x: fh.xLocation, y: fh.yLocation, rank: i + 1 }))
+      .map(({ fh, idx }, i) => ({
+        uuid: fh.uuid,
+        x: fh.xLocation,
+        y: fh.yLocation,
+        rank: i + 1,
+        gridIndex: idx,
+      }))
   }, [foilholes, orderByFoilhole])
   const hasPath = pathPoints.length > 1
-  const hoveredRank =
-    showPath && hoveredHole ? pathPoints.find((p) => p.uuid === hoveredHole.uuid)?.rank : undefined
+
+  const rankByUuid = useMemo(() => {
+    const map = new Map<string, number>()
+    for (const p of pathPoints) map.set(p.uuid, p.rank)
+    return map
+  }, [pathPoints])
+
+  const hoveredPathPoint =
+    showPath && hoveredHole ? pathPoints.find((p) => p.uuid === hoveredHole.uuid) : undefined
+  const hoveredRank = hoveredPathPoint?.rank
+  const hoveredBreakAfter = (() => {
+    if (!hoveredPathPoint) return false
+    const idx = pathPoints.indexOf(hoveredPathPoint)
+    return (
+      idx >= 0 &&
+      idx < pathPoints.length - 1 &&
+      pathPoints[idx + 1].gridIndex !== hoveredPathPoint.gridIndex + 1
+    )
+  })()
 
   // Foilhole coords live in the micrograph's native pixel space; match the viewBox to it (falling
   // back to the standard gridsquare size until the image decodes) so the overlay stays on the image.
@@ -500,8 +526,23 @@ export function SquareMap({
 
             if (isNull && hideNull) return null
 
-            const fill = isNull ? 'black' : getFill(fh)
-            const opacity = isNull ? 0.2 : isHovered || isSelected ? 1.0 : 0.6
+            const pathRank = showPath ? rankByUuid.get(fh.uuid) : undefined
+            const fill = isNull
+              ? 'black'
+              : pathRank != null
+                ? lerpColor(
+                    START_COLOR,
+                    END_COLOR,
+                    (pathRank - 1) / Math.max(pathPoints.length - 1, 1)
+                  )
+                : getFill(fh)
+            const opacity = isNull
+              ? 0.2
+              : isHovered || isSelected
+                ? 1.0
+                : pathRank != null
+                  ? 0.85
+                  : 0.6
 
             return (
               <circle
@@ -599,6 +640,7 @@ export function SquareMap({
               : `${Math.round(hoveredHole.quality * 100)}%`}
           {hoveredHole.isNearGridBar && ' (near grid bar)'}
           {hoveredRank != null && ` · order ${hoveredRank}/${pathPoints.length}`}
+          {hoveredBreakAfter && ' · break after'}
         </Box>
       )}
     </>
