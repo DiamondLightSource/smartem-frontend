@@ -23,7 +23,7 @@ RUN npm run api:generate -w @smartem/api
 RUN node scripts/write-version-json.mjs
 RUN npm run build
 
-FROM nginx:1.30-alpine
+FROM nginx:1.31-alpine
 RUN rm /etc/nginx/conf.d/default.conf
 COPY apps/smartem/nginx.conf /etc/nginx/templates/default.conf.template
 ENV BACKEND_HOST=smartem-http-api-service \
